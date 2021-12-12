@@ -22,8 +22,8 @@ echo
 echo "Gerando aplicativos base Unix do Hexagonix®... {"
 echo
 
-echo "Gerando aplicativos base Unix do Hexagonix®... {" >> ../../log.log
-echo >> ../../log.log
+echo "Gerando aplicativos base Unix do Hexagonix®... {" $LOG
+echo >> $LOG
 	
 # Vamos agora automatizar a construção dos aplicativos base Unix
 
@@ -41,7 +41,7 @@ do
 	
 	echo >> $LOG
 	
-	fasm $h ../`basename $h .asm`.app -d $BANDEIRAS >> $LOG || desmontar
+	fasm $h ../../`basename $h .asm`.app -d $BANDEIRAS >> $LOG || desmontar
 	
 	echo " [Ok]"
 	
@@ -79,10 +79,10 @@ echo
 echo "} Aplicativos base Unix gerados com sucesso."
 echo
 
-echo "} Aplicativos base Unix gerados com sucesso." >> ../../log.log
-echo >> ../../log.log
-echo "----------------------------------------------------------------------" >> ../../log.log
-echo >> ../../log.log
+echo "} Aplicativos base Unix gerados com sucesso." >> $LOG
+echo >> $LOG
+echo "----------------------------------------------------------------------" >> $LOG
+echo >> $LOG
 
 }
 
@@ -123,7 +123,7 @@ exit
 	
 }
 
-export LOG="../../../log.log"
+export LOG="/dev/null"
 export DESTINO="../../Andromeda"
 
 case $1 in
