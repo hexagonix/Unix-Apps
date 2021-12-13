@@ -32,20 +32,20 @@ use32
 ;; arquivo por arquivo. O arquivo contém uma estrutura instanciável com definição de 
 ;; parâmetros no momento da instância, tornando o cabeçalho tão personalizável quanto antes.
 
-include "../../LibAPP/HAPP.s" ;; Aqui está uma estrutura para o cabeçalho HAPP
+include "../../../LibAPP/HAPP.s" ;; Aqui está uma estrutura para o cabeçalho HAPP
 
 ;; Instância | Estrutura | Arquitetura | Versão | Subversão | Entrada | Tipo  
 cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 8, 40, loginAndromeda, 01h
 
 ;;************************************************************************************
                     
-include "../../LibAPP/andrmda.s"
-include "../../LibAPP/Estelar/estelar.s"
-include "../../LibAPP/Unix.s"
-include "../../LibAPP/macros.s"
-include "../../LibAPP/log.s"
-include "../../LibAPP/sistema.s"
-include "../../LibAPP/verUtils.s"
+include "../../../LibAPP/andrmda.s"
+include "../../../LibAPP/Estelar/estelar.s"
+include "../../../LibAPP/Unix.s"
+include "../../../LibAPP/macros.s"
+include "../../../LibAPP/log.s"
+include "../../../LibAPP/sistema.s"
+include "../../../LibAPP/verUtils.s"
 
 tamanhoLimiteBusca = 32768
 

@@ -71,10 +71,6 @@ cd ..
 
 done
 
-cp *.app $DESTINO
-
-rm -r *.app
-
 echo
 echo "} Aplicativos base Unix gerados com sucesso."
 echo
@@ -99,7 +95,6 @@ gerarBaseUnix
 desmontar()
 {
 
-cd ..
 cd ..
 
 rm -r *.app
