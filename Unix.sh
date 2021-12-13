@@ -1,4 +1,8 @@
 #!/bin/sh
+#
+# Este arquivo deve estar em Apps/Unix para ser executado. Nese diretório deve
+# ser clonado o repositório Unix-Apps
+#
 #;;************************************************************************************
 #;;
 #;;    
@@ -22,7 +26,7 @@ echo
 echo "Gerando aplicativos base Unix do Hexagonix®... {"
 echo
 
-echo "Gerando aplicativos base Unix do Hexagonix®... {" $LOG
+echo "Gerando aplicativos base Unix do Hexagonix®... {" >> $LOG
 echo >> $LOG
 	
 # Vamos agora automatizar a construção dos aplicativos base Unix
