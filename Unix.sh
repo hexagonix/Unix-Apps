@@ -90,7 +90,7 @@ hexagonix()
 {
 
 export DESTINO="../../Hexagonix"
-export BANDEIRAS="UNIX=SIM -d TIPOLOGIN=UNIX -d VERBOSE=SIM"
+#export BANDEIRAS="UNIX=SIM -d TIPOLOGIN=UNIX -d VERBOSE=SIM"
 
 gerarBaseUnix
 

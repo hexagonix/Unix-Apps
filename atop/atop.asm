@@ -401,6 +401,9 @@ include "idioma/atop.en.s"
 
 }
 
+.corFonte:            dd 0
+.corFundo:            dd 0
+
 listaRemanescente: dd ?
 limiteExibicao:    dd 0
 numeroProcessos:   dd 0

@@ -1056,14 +1056,26 @@ posicaoBX:         dw 0                 ;; Marcação da posição de busca no c
 
 login:
 
-
 .parametroAjuda:   db "?", 0  
 .usuarioROOT:      db "root", 0
 .colcheteEsquerdo: db " [", 0
 .colcheteDireito:  db "]", 0
 .temaClaro:        db "claro", 0
 .temaEscuro:       db "escuro", 0
-.loginUnix:        db 10, "login versao ", versaoLOGIN, 10, 0
+
+match =PT, IDIOMA
+{
+
+include "idioma/login.pt.s"
+
+}
+
+match =EN, IDIOMA
+{
+
+include "idioma/login.en.s"
+
+}
 
 match =SIM, VERBOSE
 {

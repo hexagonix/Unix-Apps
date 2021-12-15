@@ -1,3 +1,27 @@
+;;************************************************************************************
+;;
+;;    
+;;        %#@$%&@$%&@$%$             Sistema Operacional Hexagonix®
+;;        #$@$@$@#@#@#@$
+;;        @#@$%    %#$#%
+;;        @#$@$    #@#$@
+;;        #@#$$    !@#@#     Copyright © 2016-2021 Felipe Miguel Nery Lunkes
+;;        @#@%!$&%$&$#@#             Todos os direitos reservados
+;;        !@$%#%&#&@&$%#
+;;        @$#!%&@&@#&*@&
+;;        $#$#%    &%$#@
+;;        @#!$$    !#@#@
+;;
+;;
+;;************************************************************************************
+;;                                                                                  
+;;               Gerenciador de Login do Sistema Operacional Andromeda®                 
+;;                                                                   
+;;                  Copyright © 2016-2021 Felipe Miguel Nery Lunkes                
+;;                          Todos os direitos reservados.                    
+;;                                                                   
+;;************************************************************************************
+
 .solicitarUsuario: db 10, "Realizar login para: ", 0
 .solicitarSenha:   db 10, "Digite sua senha UNIX: ", 0 
 .uso:              db 10, 10, "Uso: login [usuario]", 10, 10
@@ -20,3 +44,4 @@
                    db "        @#!$$    !#@#@", 10, 10, 0	
 .versaoAndromeda:  db "Sistema Operacional Andromeda versao ", 0
 .dadosErrados:     db 10, "Falha na autenticacao.", 10, 0
+.loginUnix:        db 10, "login versao ", versaoLOGIN, 10, 0

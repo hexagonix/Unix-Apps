@@ -33,5 +33,3 @@
 .processos:           db " running processes.", 0
 .processosCarregados: db "Running processes: ", 10, 10, 0
 .numeroProcessos:     db 10, "Number of processes (PIDs) running: ", 0 
-.corFonte:            dd 0
-.corFundo:            dd 0
