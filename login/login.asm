@@ -1042,18 +1042,6 @@ terminar:
 
 ;;************************************************************************************
 
-shellPadrao:       db "sh.app", 0       ;; Nome do arquivo que contêm o Shell padrão do Andromeda®
-vd0:               db "vd0", 0          ;; Dispositivo de saída padrão do Sistema
-vd1:               db "vd1", 0	        ;; Dispositivo de saída secundário em memória (Buffer)
-arquivo:           db "usuario.unx", 0  ;; Nome do arquivo de gerenciamento de login
-tentarShellPadrao: db 0                 ;; Sinaliza a tentativa de se carregar o Shell padrão
-shellAndromeda:    times 11 db 0        ;; Armazena o nome do Shell à ser utilizado pelo Sistema
-usuario:           times 15 db 0        ;; Nome de usuário obtido no arquivo
-senhaObtida:       times 64 db 0        ;; Senha obtida no arquivo
-parametros:        db 0                 ;; Se o aplicativo recebeu algum parâmetro
-ponto:             db ".", 0            ;; Caractere de ponto
-posicaoBX:         dw 0                 ;; Marcação da posição de busca no conteúdo do arquivo
-
 login:
 
 .parametroAjuda:   db "?", 0  
@@ -1091,12 +1079,22 @@ match =SIM, VERBOSE
 
 }
 
+shellPadrao:       db "sh.app", 0       ;; Nome do arquivo que contêm o Shell padrão do Andromeda®
+vd0:               db "vd0", 0          ;; Dispositivo de saída padrão do Sistema
+vd1:               db "vd1", 0	        ;; Dispositivo de saída secundário em memória (Buffer)
+arquivo:           db "usuario.unx", 0  ;; Nome do arquivo de gerenciamento de login
+tentarShellPadrao: db 0                 ;; Sinaliza a tentativa de se carregar o Shell padrão
+shellAndromeda:    times 11 db 0        ;; Armazena o nome do Shell à ser utilizado pelo Sistema
+usuario:           times 15 db 0        ;; Nome de usuário obtido no arquivo
+senhaObtida:       times 64 db 0        ;; Senha obtida no arquivo
+parametros:        db 0                 ;; Se o aplicativo recebeu algum parâmetro
+ponto:             db ".", 0            ;; Caractere de ponto
+posicaoBX:         dw 0                 ;; Marcação da posição de busca no conteúdo do arquivo
 usuarioSolicitado: times 17 db 0
 usuarioAnterior:   times 17 db 0
 escolhaTema:       times 7 db 0
-
-codigoAnterior: dd 0
-errado: db 0
+codigoAnterior:    dd 0
+errado:            db 0
 
 ;;************************************************************************************
 
