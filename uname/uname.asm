@@ -91,10 +91,38 @@ exibirTudo:
 	Andromeda retornarVersao
 	
 	imprimirString
-	
-	mov esi, uname.maquina
+
+	mov esi, uname.espaco
 	
 	imprimirString
+
+;; Vamos agora exibir o nome de host 
+
+	mov edi, enderecoCarregamento
+	mov esi, uname.arquivoUnix
+	
+	Andromeda abrir
+	
+	jc .arquivoNaoEncontrado ;; Se não for encontrado, exibir o padrão
+
+;; Se encontrado, exibir o nome de host definido 
+
+	mov esi, enderecoCarregamento
+
+	Andromeda tamanhoString
+
+	mov edx, eax 
+	dec edx
+
+	mov al, 0
+	
+	Andromeda inserirCaractere
+
+	mov esi, enderecoCarregamento
+	
+	imprimirString
+
+.continuarHost:
 
 	mov esi, uname.espaco
 	
@@ -141,6 +169,14 @@ exibirTudo:
 	novaLinha
 	
 	jmp terminar
+
+.arquivoNaoEncontrado:
+
+	mov esi, uname.maquina
+	
+	imprimirString
+
+	jmp .continuarHost
 
 ;;************************************************************************************
 
@@ -290,7 +326,7 @@ uname:
 .sistemaOperacional:       db "Sistema Operacional Andromeda(R)", 0
 .usuario:                  db " ", 0
 .espaco:                   db " ", 0
-.maquina:                  db " Hexagonix-PC", 0
+.maquina:                  db "Hexagonix-PC", 0
 .colcheteEsquerdo:         db "[", 0
 .colcheteDireito:          db "]", 0
 .pontoVirgula:             db "; ", 0
@@ -303,7 +339,8 @@ uname:
 .parametroAjuda2:          db "--ajuda", 0
 .parametroExibirTudo:      db "-t", 0
 .parametroExibirVersao:    db "-v", 0   
-.parametroExibirAndromeda: db "-a", 0           
+.parametroExibirAndromeda: db "-a", 0   
+.arquivoUnix:              db "host.unx", 0        
 
 nomeProcessador: db 0
 
