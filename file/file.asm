@@ -1,11 +1,11 @@
 ;;************************************************************************************
 ;;
 ;;    
-;;        %#@$%&@$%&@$%$             Sistema Operacional Andromeda®
+;;        %#@$%&@$%&@$%$             Sistema Operacional Hexagonix®
 ;;        #$@$@$@#@#@#@$
 ;;        @#@$%    %#$#%
 ;;        @#$@$    #@#$@
-;;        #@#$$    !@#@#     Copyright © 2016-2021 Felipe Miguel Nery Lunkes
+;;        #@#$$    !@#@#     Copyright © 2016-2022 Felipe Miguel Nery Lunkes
 ;;        @#@%!$&%$&$#@#             Todos os direitos reservados
 ;;        !@$%#%&#&@&$%#
 ;;        @$#!%&@&@#&*@&
@@ -394,7 +394,7 @@ fileUnix:
 .uso:             db 10, 10, "Uso: file [arquivo]", 10, 10
                   db "Recupera as informacoes do arquivo e envia para a saida padrao.", 10, 10
                   db "file versao ", versaoFILE, 10, 10
-                  db "Copyright (C) 2017-2021 Felipe Miguel Nery Lunkes", 10
+                  db "Copyright (C) 2017-2022 Felipe Miguel Nery Lunkes", 10
                   db "Todos os direitos reservados.", 10, 0
 .arquivoInvalido: db 10, 10, "O nome de arquivo e invalido. Digite um nome de arquivo valido.", 10, 0
 .infoArquivo:     db 10, 10, "Nome do arquivo: ", 0

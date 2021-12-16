@@ -1,12 +1,12 @@
 ;;************************************************************************************
 ;;
 ;;    
-;;        %#@$%&@$%&@$%$             Sistema Operacional Andromeda®
+;;        %#@$%&@$%&@$%$             Sistema Operacional Hexagonix®
 ;;        #$@$@$@#@#@#@$
 ;;        @#@$%    %#$#%
 ;;        @#$@$    #@#$@
-;;        #@#$$    !@#@#     Copyright © 2020-2021 Felipe Miguel Nery Lunkes
-;;        @#@%!$&%$&$#@#              Todos os direitos reservados
+;;        #@#$$    !@#@#     Copyright © 2016-2022 Felipe Miguel Nery Lunkes
+;;        @#@%!$&%$&$#@#             Todos os direitos reservados
 ;;        !@$%#%&#&@&$%#
 ;;        @$#!%&@&@#&*@&
 ;;        $#$#%    &%$#@
@@ -387,7 +387,7 @@ cowsay:
                   db "Essa alteracao deve ser solicitada ANTES da mensagem.", 10
                   db 'Em caso de frase, o caractere " deve constar antes e depois da frase.', 10, 10
                   db "cowsay versao ", versaoCOWSAY, 10, 10
-                  db "Copyright (C) 2020-2021 Felipe Miguel Nery Lunkes", 10
+                  db "Copyright (C) 2020-2022 Felipe Miguel Nery Lunkes", 10
                   db "Todos os direitos reservados.", 10, 0
 .parametroAjuda:  db "?", 0
 .parametroAjuda2: db "--ajuda", 0

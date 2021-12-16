@@ -1,11 +1,11 @@
 ;;************************************************************************************
 ;;
 ;;    
-;;        %#@$%&@$%&@$%$             Sistema Operacional Andromeda®
+;;        %#@$%&@$%&@$%$             Sistema Operacional Hexagonix®
 ;;        #$@$@$@#@#@#@$
 ;;        @#@$%    %#$#%
 ;;        @#$@$    #@#$@
-;;        #@#$$    !@#@#     Copyright © 2016-2021 Felipe Miguel Nery Lunkes
+;;        #@#$$    !@#@#     Copyright © 2016-2022 Felipe Miguel Nery Lunkes
 ;;        @#@%!$&%$&$#@#             Todos os direitos reservados
 ;;        !@$%#%&#&@&$%#
 ;;        @$#!%&@&@#&*@&
@@ -101,7 +101,7 @@ log:
 .uso:             db 10, 10, "Uso: log", 10, 10
                   db "Exibe os relatorios e mensagens do Kernel Hexagon(R).", 10, 10
                   db "log versao ", versaoLOG, 10, 10
-                  db "Copyright (C) 2017-2021 Felipe Miguel Nery Lunkes", 10
+                  db "Copyright (C) 2017-2022 Felipe Miguel Nery Lunkes", 10
                   db "Todos os direitos reservados.", 10, 0
 .parametroAjuda:  db "?", 0
 .parametroAjuda2: db "--ajuda", 0

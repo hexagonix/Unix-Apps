@@ -1,11 +1,11 @@
 ;;************************************************************************************
 ;;
 ;;    
-;;        %#@$%&@$%&@$%$             Sistema Operacional Andromeda®
+;;        %#@$%&@$%&@$%$             Sistema Operacional Hexagonix®
 ;;        #$@$@$@#@#@#@$
 ;;        @#@$%    %#$#%
 ;;        @#$@$    #@#$@
-;;        #@#$$    !@#@#     Copyright © 2016-2021 Felipe Miguel Nery Lunkes
+;;        #@#$$    !@#@#     Copyright © 2016-2022 Felipe Miguel Nery Lunkes
 ;;        @#@%!$&%$&$#@#             Todos os direitos reservados
 ;;        !@$%#%&#&@&$%#
 ;;        @$#!%&@&@#&*@&
@@ -293,7 +293,7 @@ energia:
 .parametroAjuda:     db "?", 0  
 .parametroAjuda2:    db "--ajuda", 0
 .sistema:            db 10, "Sistema Operacional Andromeda(R)", 10, 10
-                     db "Copyright (C) 2016-2021 Felipe Miguel Nery Lunkes", 10
+                     db "Copyright (C) 2016-2022 Felipe Miguel Nery Lunkes", 10
                      db "Todos os direitos reservados.", 10, 0
 .argumentos:         db 10, 10, "Um argumento e necessario para controlar o estado deste computador.", 10, 0
 .uso:                db 10, 10, "Uso: energia [argumento]", 10, 10
@@ -302,7 +302,7 @@ energia:
                      db "-d - Prepara e inicia o desligamento do computador.", 10
                      db "-r - Prepara e reinicia o computador.", 10, 10                                    
                      db "energia versao ", versaoENERGIA, 10, 10
-                     db "Copyright (C) 2021 Felipe Miguel Nery Lunkes", 10
+                     db "Copyright (C) 2022 Felipe Miguel Nery Lunkes", 10
 					 db "Todos os direitos reservados.", 10, 0
 
 energia.Verbose:

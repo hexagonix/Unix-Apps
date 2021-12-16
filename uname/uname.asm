@@ -1,11 +1,11 @@
 ;;************************************************************************************
 ;;
 ;;    
-;;        %#@$%&@$%&@$%$             Sistema Operacional Andromeda®
+;;        %#@$%&@$%&@$%$             Sistema Operacional Hexagonix®
 ;;        #$@$@$@#@#@#@$
 ;;        @#@$%    %#$#%
 ;;        @#$@$    #@#$@
-;;        #@#$$    !@#@#     Copyright © 2016-2021 Felipe Miguel Nery Lunkes
+;;        #@#$$    !@#@#     Copyright © 2016-2022 Felipe Miguel Nery Lunkes
 ;;        @#@%!$&%$&$#@#             Todos os direitos reservados
 ;;        !@$%#%&#&@&$%#
 ;;        @$#!%&@&@#&*@&
@@ -284,7 +284,7 @@ uname:
                            db "-a - Exibe a versao do sistema operacional.", 10    
                            db "-v - Exibe apenas o nome do Sistema.", 10, 10                                    
                            db "uname versao ", versaoUNAME, 10, 10
-                           db "Copyright (C) 2017-2021 Felipe Miguel Nery Lunkes", 10
+                           db "Copyright (C) 2017-2022 Felipe Miguel Nery Lunkes", 10
                            db "Todos os direitos reservados.", 10, 0
 .parametrosSistema:        db " Unix" , 0 
 .sistemaOperacional:       db "Sistema Operacional Andromeda(R)", 0

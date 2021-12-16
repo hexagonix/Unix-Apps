@@ -1,11 +1,11 @@
 ;;************************************************************************************
 ;;
 ;;    
-;;        %#@$%&@$%&@$%$             Sistema Operacional Andromeda®
+;;        %#@$%&@$%&@$%$             Sistema Operacional Hexagonix®
 ;;        #$@$@$@#@#@#@$
 ;;        @#@$%    %#$#%
 ;;        @#$@$    #@#$@
-;;        #@#$$    !@#@#     Copyright © 2016-2021 Felipe Miguel Nery Lunkes
+;;        #@#$$    !@#@#     Copyright © 2016-2022 Felipe Miguel Nery Lunkes
 ;;        @#@%!$&%$&$#@#             Todos os direitos reservados
 ;;        !@$%#%&#&@&$%#
 ;;        @$#!%&@&@#&*@&
@@ -193,7 +193,7 @@ rm:
 .uso:             db 10, 10, "Uso: rm [arquivo]", 10, 10
                   db "Solicita a exclusao de um arquivo no disco atual.", 10, 10
                   db "rm versao ", versaoRM, 10, 10
-                  db "Copyright (C) 2017-2021 Felipe Miguel Nery Lunkes", 10
+                  db "Copyright (C) 2017-2022 Felipe Miguel Nery Lunkes", 10
                   db "Todos os direitos reservados.", 10, 0
 .confirmacao:     db "Voce tem certeza que deseja excluir este arquivo (s/N)? ", 0
 .deletado:        db 10, 10, "O arquivo solicitado foi deletado com sucesso.", 10, 0
