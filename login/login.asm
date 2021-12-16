@@ -1,11 +1,11 @@
 ;;************************************************************************************
 ;;
 ;;    
-;;        %#@$%&@$%&@$%$             Sistema Operacional Andromeda®
+;;        %#@$%&@$%&@$%$             Sistema Operacional Hexagonix®
 ;;        #$@$@$@#@#@#@$
 ;;        @#@$%    %#$#%
 ;;        @#$@$    #@#$@
-;;        #@#$$    !@#@#     Copyright © 2016-2021 Felipe Miguel Nery Lunkes
+;;        #@#$$    !@#@#     Copyright © 2016-2022 Felipe Miguel Nery Lunkes
 ;;        @#@%!$&%$&$#@#             Todos os direitos reservados
 ;;        !@$%#%&#&@&$%#
 ;;        @$#!%&@&@#&*@&
@@ -17,7 +17,7 @@
 ;;                                                                                  
 ;;               Gerenciador de Login do Sistema Operacional Andromeda®                 
 ;;                                                                   
-;;                  Copyright © 2016-2021 Felipe Miguel Nery Lunkes                
+;;                  Copyright © 2016-2022 Felipe Miguel Nery Lunkes                
 ;;                          Todos os direitos reservados.                    
 ;;                                                                   
 ;;************************************************************************************
@@ -1061,7 +1061,7 @@ login:
 .uso:              db 10, 10, "Uso: login [usuario]", 10, 10
                    db "Realiza login em um usuario cadastrado.", 10, 10               
                    db "login versao ", versaoLOGIN, 10, 10
-                   db "Copyright (C) 2017-2021 Felipe Miguel Nery Lunkes", 10
+                   db "Copyright (C) 2017-2022 Felipe Miguel Nery Lunkes", 10
                    db "Todos os direitos reservados.", 10, 0
 .semArquivoUnix:   db 10, 10, "O arquivo de configuracao do ambiente Unix de controle de contas nao foi encontrado.", 10, 0        
 .parametroAjuda:   db "?", 0  
@@ -1072,7 +1072,7 @@ login:
                    db "        #$@$@$@#@#@#@$", 10
                    db "        @#@$&    %#$#%", 10
                    db "        @#$@$    #@#$@", 10
-                   db "        #@#$$    !@#@#     Copyright (C) 2016-2021 Felipe Miguel Nery Lunkes",10
+                   db "        #@#$$    !@#@#     Copyright (C) 2016-2022 Felipe Miguel Nery Lunkes",10
                    db "        @#@%!$&%$&$#@#              Todos os direitos reservados",10
                    db "        !@$%#%&#&@&$%#", 10
                    db "        @$#!%&@&@#&*@&", 10

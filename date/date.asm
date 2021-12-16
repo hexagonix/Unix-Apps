@@ -1,11 +1,11 @@
 ;;************************************************************************************
 ;;
 ;;    
-;;        %#@$%&@$%&@$%$             Sistema Operacional Andromeda®
+;;        %#@$%&@$%&@$%$             Sistema Operacional Hexagonix®
 ;;        #$@$@$@#@#@#@$
 ;;        @#@$%    %#$#%
 ;;        @#$@$    #@#$@
-;;        #@#$$    !@#@#     Copyright © 2015-2021 Felipe Miguel Nery Lunkes
+;;        #@#$$    !@#@#     Copyright © 2016-2022 Felipe Miguel Nery Lunkes
 ;;        @#@%!$&%$&$#@#             Todos os direitos reservados
 ;;        !@$%#%&#&@&$%#
 ;;        @$#!%&@&@#&*@&
@@ -341,7 +341,7 @@ date:
 .uso:             db 10, 10, "Uso: date", 10, 10
                   db "Exibe data e hora do sistema.", 10, 10
                   db "date versao ", versaoDATE, 10, 10
-                  db "Copyright (C) 2020-2021 Felipe Miguel Nery Lunkes", 10
+                  db "Copyright (C) 2020-2022 Felipe Miguel Nery Lunkes", 10
                   db "Todos os direitos reservados.", 10, 0
 .domingo:         db " (domingo)", 0
 .segunda:         db " (segunda-feira)", 0

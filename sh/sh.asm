@@ -1,14 +1,14 @@
 ;;************************************************************************************
 ;;
 ;;    
-;;        %#@$%&@$%&@$%$             Sistema Operacional Andromeda®
+;;        %#@$%&@$%&@$%$             Sistema Operacional Hexagonix®
 ;;        #$@$@$@#@#@#@$
 ;;        @#@$%    %#$#%
 ;;        @#$@$    #@#$@
-;;        #@#$$    !@#@#     Copyright © 2016-2021 Felipe Miguel Nery Lunkes
+;;        #@#$$    !@#@#     Copyright © 2016-2022 Felipe Miguel Nery Lunkes
 ;;        @#@%!$&%$&$#@#             Todos os direitos reservados
 ;;        !@$%#%&#&@&$%#
-;;        @$#!%&@&@#&*@&              Shell Unix para Andromeda®
+;;        @$#!%&@&@#&*@&
 ;;        $#$#%    &%$#@
 ;;        @#!$$    !#@#@
 ;;
@@ -495,7 +495,7 @@ sh:
 .uso:                  db 10, 10, "Uso: sh", 10, 10
                        db "Inicia um Shell Unix para o usuario atual.", 10, 10               
                        db "sh versao ", versaoSH, 10, 10
-                       db "Copyright (C) 2017-2021 Felipe Miguel Nery Lunkes", 10
+                       db "Copyright (C) 2017-2022 Felipe Miguel Nery Lunkes", 10
                        db "Todos os direitos reservados.", 10, 0
 .parametroAjuda:       db "?", 0   
 .parametroAjuda2:      db "--ajuda", 0

@@ -1,11 +1,11 @@
 ;;************************************************************************************
 ;;
 ;;    
-;;        %#@$%&@$%&@$%$             Sistema Operacional Andromeda®
+;;        %#@$%&@$%&@$%$             Sistema Operacional Hexagonix®
 ;;        #$@$@$@#@#@#@$
 ;;        @#@$%    %#$#%
 ;;        @#$@$    #@#$@
-;;        #@#$$    !@#@#     Copyright © 2016-2021 Felipe Miguel Nery Lunkes
+;;        #@#$$    !@#@#     Copyright © 2016-2022 Felipe Miguel Nery Lunkes
 ;;        @#@%!$&%$&$#@#             Todos os direitos reservados
 ;;        !@$%#%&#&@&$%#
 ;;        @$#!%&@&@#&*@&
@@ -188,7 +188,7 @@ man:
                   db "Versao CoreUtils: ", versaoCoreUtils, 10
                   db "Versao UnixUtils: ", versaoUnixUtils, 10, 10                        
                   db "man versao ", versaoMAN, 10, 10
-                  db "Copyright (C) 2018-2021 Felipe Miguel Nery Lunkes", 10
+                  db "Copyright (C) 2018-2022 Felipe Miguel Nery Lunkes", 10
                   db "Todos os direitos reservados.", 10, 0
 .aguardar:        db "Pressione <q> para sair.", 0
 .naoEncontrado:   db ": manual nao encontrado para este utilitario.", 10, 0

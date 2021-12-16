@@ -1,11 +1,11 @@
 ;;************************************************************************************
 ;;
 ;;    
-;;        %#@$%&@$%&@$%$             Sistema Operacional Andromeda®
+;;        %#@$%&@$%&@$%$             Sistema Operacional Hexagonix®
 ;;        #$@$@$@#@#@#@$
 ;;        @#@$%    %#$#%
 ;;        @#$@$    #@#$@
-;;        #@#$$    !@#@#     Copyright © 2016-2021 Felipe Miguel Nery Lunkes
+;;        #@#$$    !@#@#     Copyright © 2016-2022 Felipe Miguel Nery Lunkes
 ;;        @#@%!$&%$&$#@#             Todos os direitos reservados
 ;;        !@$%#%&#&@&$%#
 ;;        @$#!%&@&@#&*@&
@@ -322,7 +322,7 @@ mount:
                     db "Realiza a montagem de um volume em um ponto de montagem do sistema de arquivos.", 10, 10
                     db "Caso nenhum parametro seja fornecido, quaisquer montagens realizadas serao exibidas.", 10, 10
                     db "mount versao ", versaoMOUNT, 10, 10
-                    db "Copyright (C) 2017-2021 Felipe Miguel Nery Lunkes", 10
+                    db "Copyright (C) 2017-2022 Felipe Miguel Nery Lunkes", 10
                     db "Todos os direitos reservados.", 10, 0
 .erroAbrindo:       db "Erro ao montar o volume no ponto de montagem especificado.", 10
                     db "Tente informar um nome valido ou referencia de um volume conectado.", 10, 0

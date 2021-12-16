@@ -1,11 +1,11 @@
 ;;************************************************************************************
 ;;
 ;;    
-;;        %#@$%&@$%&@$%$             Sistema Operacional Andromeda®
+;;        %#@$%&@$%&@$%$             Sistema Operacional Hexagonix®
 ;;        #$@$@$@#@#@#@$
 ;;        @#@$%    %#$#%
 ;;        @#$@$    #@#$@
-;;        #@#$$    !@#@#     Copyright © 2016-2021 Felipe Miguel Nery Lunkes
+;;        #@#$$    !@#@#     Copyright © 2016-2022 Felipe Miguel Nery Lunkes
 ;;        @#@%!$&%$&$#@#             Todos os direitos reservados
 ;;        !@$%#%&#&@&$%#
 ;;        @$#!%&@&@#&*@&
@@ -183,7 +183,7 @@ ps:
                    db "-v - Exibe apenas o uso de memoria dos processos em execucao.", 10, 10  
                    db "-o - Exibe o numero de processos na fila de execucao.", 10, 10            
                    db "ps versao ", versaoPS, 10, 10
-                   db "Copyright (C) 2017-2021 Felipe Miguel Nery Lunkes", 10
+                   db "Copyright (C) 2017-2022 Felipe Miguel Nery Lunkes", 10
                    db "Todos os direitos reservados.", 0
 .parametroAjuda:   db "?", 0  
 .parametroAjuda2:  db "--ajuda", 0

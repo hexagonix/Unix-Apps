@@ -1,11 +1,11 @@
 ;;************************************************************************************
 ;;
 ;;    
-;;        %#@$%&@$%&@$%$             Sistema Operacional Andromeda®
+;;        %#@$%&@$%&@$%$             Sistema Operacional Hexagonix®
 ;;        #$@$@$@#@#@#@$
 ;;        @#@$%    %#$#%
 ;;        @#$@$    #@#$@
-;;        #@#$$    !@#@#     Copyright © 2020-2021 Felipe Miguel Nery Lunkes
+;;        #@#$$    !@#@#     Copyright © 2020-2022 Felipe Miguel Nery Lunkes
 ;;        @#@%!$&%$&$#@#              Todos os direitos reservados
 ;;        !@$%#%&#&@&$%#
 ;;        @$#!%&@&@#&*@&         hash - Um novo shell Unix para Andromeda®
@@ -450,7 +450,7 @@ hash:
 .uso:                  db 10, 10, "Uso: hash", 10, 10
                        db "Inicia um hashell Unix para o usuario atual.", 10, 10               
                        db "hash versao ", versaoHASH, 10, 10
-                       db "Copyright (C) 2020-2021 Felipe Miguel Nery Lunkes", 10
+                       db "Copyright (C) 2020-2022 Felipe Miguel Nery Lunkes", 10
                        db "Todos os direitos reservados.", 10, 0
 .parametroAjuda:       db "?", 0   
 .parametroAjuda2:      db "--ajuda", 0   

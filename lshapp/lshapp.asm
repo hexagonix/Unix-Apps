@@ -1,11 +1,11 @@
 ;;************************************************************************************
 ;;
 ;;    
-;;        %#@$%&@$%&@$%$             Sistema Operacional Andromeda®
+;;        %#@$%&@$%&@$%$             Sistema Operacional Hexagonix®
 ;;        #$@$@$@#@#@#@$
 ;;        @#@$%    %#$#%
 ;;        @#$@$    #@#$@
-;;        #@#$$    !@#@#     Copyright © 2020-2021 Felipe Miguel Nery Lunkes
+;;        #@#$$    !@#@#     Copyright © 2016-2022 Felipe Miguel Nery Lunkes
 ;;        @#@%!$&%$&$#@#             Todos os direitos reservados
 ;;        !@$%#%&#&@&$%#
 ;;        @$#!%&@&@#&*@&
@@ -374,7 +374,7 @@ lshapp:
 .uso:                 db 10, 10, "Uso: lshapp [arquivo]", 10, 10
                       db "Recupera as informacoes de uma imagem HAPP.", 10, 10
                       db "lshapp versao ", versaoLSHAPP, 10, 10
-                      db "Copyright (C) 2020-2021 Felipe Miguel Nery Lunkes", 10
+                      db "Copyright (C) 2020-2022 Felipe Miguel Nery Lunkes", 10
                       db "Todos os direitos reservados.", 10, 0
 .arquivoInvalido:     db 10, 10, "O nome de arquivo e invalido. Digite um nome de arquivo valido.", 10, 0
 .infoArquivo:         db 10, 10, "Nome do arquivo: ", 0

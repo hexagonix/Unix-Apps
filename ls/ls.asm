@@ -1,11 +1,11 @@
 ;;************************************************************************************
 ;;
 ;;    
-;;        %#@$%&@$%&@$%$             Sistema Operacional Andromeda®
+;;        %#@$%&@$%&@$%$             Sistema Operacional Hexagonix®
 ;;        #$@$@$@#@#@#@$
 ;;        @#@$%    %#$#%
 ;;        @#$@$    #@#$@
-;;        #@#$$    !@#@#     Copyright © 2016-2021 Felipe Miguel Nery Lunkes
+;;        #@#$$    !@#@#     Copyright © 2016-2022 Felipe Miguel Nery Lunkes
 ;;        @#@%!$&%$&$#@#             Todos os direitos reservados
 ;;        !@$%#%&#&@&$%#
 ;;        @$#!%&@&@#&*@&
@@ -635,7 +635,7 @@ ls:
 				   db "Parametros disponiveis:", 10, 10
 				   db "-a - Lista todos os arquivos disponiveis no volume.", 10, 10
                    db "ls versao ", versaoLS, 10, 10
-                   db "Copyright (C) 2017-2021 Felipe Miguel Nery Lunkes", 10
+                   db "Copyright (C) 2017-2022 Felipe Miguel Nery Lunkes", 10
                    db "Todos os direitos reservados.", 10, 0
 .parametroAjuda:   db "?", 0    
 .parametroAjuda2:  db "--ajuda", 0
