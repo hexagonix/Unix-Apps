@@ -390,14 +390,14 @@ atop:
 match =PT, IDIOMA
 {
 
-include "idioma/atop.pt.s"
+include "idiomas/atop.pt.s"
 
 }
 
 match =EN, IDIOMA
 {
 
-include "idioma/atop.en.s"
+include "idiomas/atop.en.s"
 
 }
 

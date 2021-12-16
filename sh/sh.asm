@@ -486,14 +486,14 @@ sh:
 match =PT, IDIOMA
 {
 
-include "idioma/sh.pt.s"
+include "idiomas/sh.pt.s"
 
 }
 
 match =EN, IDIOMA
 {
 
-include "idioma/sh.en.s"
+include "idiomas/sh.en.s"
 
 }
 

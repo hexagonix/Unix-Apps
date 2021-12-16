@@ -384,14 +384,14 @@ cowsay:
 match =PT, IDIOMA
 {
 
-include "idioma/cowsay.pt.s"
+include "idiomas/cowsay.pt.s"
 
 }
 
 match =EN, IDIOMA
 {
 
-include "idioma/cowsay.en.s"
+include "idiomas/cowsay.en.s"
 
 }
 

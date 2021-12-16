@@ -116,14 +116,14 @@ cat:
 match =PT, IDIOMA
 {
 
-include "idioma/cat.pt.s"
+include "idiomas/cat.pt.s"
 
 }
 
 match =EN, IDIOMA
 {
 
-include "idioma/cat.en.s"
+include "idiomas/cat.en.s"
 
 }
      

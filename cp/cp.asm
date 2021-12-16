@@ -238,14 +238,14 @@ cp:
 match =PT, IDIOMA
 {
 
-include "idioma/cp.pt.s"
+include "idiomas/cp.pt.s"
 
 }
 
 match =EN, IDIOMA
 {
 
-include "idioma/cp.en.s"
+include "idiomas/cp.en.s"
 
 }
                

@@ -119,14 +119,14 @@ clear:
 match =PT, IDIOMA
 {
 
-include "idioma/clear.pt.s"
+include "idiomas/clear.pt.s"
 
 }
 
 match =EN, IDIOMA
 {
 
-include "idioma/clear.en.s"
+include "idiomas/clear.en.s"
 
 }
 
