@@ -1,13 +1,4 @@
 # Aplicativos e utilitários do Hexagonix
-
- ┌┐ ┌┐                                 
- ││ ││
- │└─┘├──┬┐┌┬──┬──┬──┬─┐┌┬┐┌┐    
- │┌─┐││─┼┼┼┤┌┐│┌┐│┌┐│┌┐┼┼┼┼┘          
- ││ │││─┼┼┼┤┌┐│└┘│└┘││││├┼┼┐
- └┘ └┴──┴┘└┴┘└┴─┐├──┴┘└┴┴┘└┘
-              ┌─┘│          
-              └──┘          
               
 Este repositório contém os aplicativos e utilitários padrão do Hexagonix.
 
