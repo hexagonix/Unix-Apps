@@ -321,7 +321,7 @@ uname:
                            db "Copyright (C) 2017-2022 Felipe Miguel Nery Lunkes", 10
                            db "Todos os direitos reservados.", 10, 0
 .parametrosSistema:        db " Unix" , 0 
-.sistemaOperacional:       db "Sistema Operacional Andromeda(R)", 0
+.sistemaOperacional:       db "Sistema Operacional Hexagonix(R)", 0
 .usuario:                  db " ", 0
 .espaco:                   db " ", 0
 .maquina:                  db "Hexagonix-PC", 0
