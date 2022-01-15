@@ -80,6 +80,13 @@ login:
 .parametroAjuda:   db "?", 0  
 .parametroAjuda2:  db "--ajuda", 0 
 .usuarioROOT:      db "root", 0
+.versaoAndromeda:  db "Sistema Operacional Andromeda versao ", 0
+.dadosErrados:     db 10, "Falha na autenticacao.", 10, 0
+.colcheteEsquerdo: db " [", 0
+.colcheteDireito:  db "]", 0
+.temaClaro:        db "claro", 0
+.temaEscuro:       db "escuro", 0
+.loginUnix:        db 10, "login versao ", versaoLOGIN, 10, 0
 .sobreAndromeda:   db 10, 10   
                    db "        %#@$%&@$%&@$%$ tm          Sistema Operacional Andromeda(R)", 10
                    db "        #$@$@$@#@#@#@$", 10
@@ -90,14 +97,7 @@ login:
                    db "        !@$%#%&#&@&$%#", 10
                    db "        @$#!%&@&@#&*@&", 10
                    db "        $#$#%    &%$#@", 10
-                   db "        @#!$$    !#@#@", 10, 10, 0	
-.versaoAndromeda:  db "Sistema Operacional Andromeda versao ", 0
-.dadosErrados:     db 10, "Falha na autenticacao.", 10, 0
-.colcheteEsquerdo: db " [", 0
-.colcheteDireito:  db "]", 0
-.temaClaro:        db "claro", 0
-.temaEscuro:       db "escuro", 0
-.loginUnix:        db 10, "login versao ", versaoLOGIN, 10, 0
+                   db "        @#!$$    !#@#@", 10, 10, 0
 
 match =SIM, VERBOSE
 {
@@ -119,8 +119,6 @@ escolhaTema:       times 7 db 0
 
 codigoAnterior: dd 0
 errado: db 0
-
-;;************************************************************************************
 
 ;;************************************************************************************			
 
