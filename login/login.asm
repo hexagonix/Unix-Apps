@@ -47,6 +47,81 @@ include "../../../LibAPP/verUtils.s"
 
 tamanhoLimiteBusca = 32768
 
+;;************************************************************************************
+;;
+;;                    Área de dados e variáveis do aplicativo
+;;
+;;************************************************************************************
+
+;;************************************************************************************
+
+shellPadrao:       db "sh.app", 0       ;; Nome do arquivo que contêm o Shell padrão do Andromeda®
+vd0:               db "vd0", 0          ;; Dispositivo de saída padrão do Sistema
+vd1:               db "vd1", 0	        ;; Dispositivo de saída secundário em memória (Buffer)
+arquivo:           db "usuario.unx", 0  ;; Nome do arquivo de gerenciamento de login
+tentarShellPadrao: db 0                 ;; Sinaliza a tentativa de se carregar o Shell padrão
+shellAndromeda:    times 11 db 0        ;; Armazena o nome do Shell à ser utilizado pelo Sistema
+usuario:           times 15 db 0        ;; Nome de usuário obtido no arquivo
+senhaObtida:       times 64 db 0        ;; Senha obtida no arquivo
+parametros:        db 0                 ;; Se o aplicativo recebeu algum parâmetro
+ponto:             db ".", 0            ;; Caractere de ponto
+posicaoBX:         dw 0                 ;; Marcação da posição de busca no conteúdo do arquivo
+
+login:
+
+.solicitarUsuario: db 10, "Realizar login para: ", 0
+.solicitarSenha:   db 10, "Digite sua senha UNIX: ", 0 
+.uso:              db 10, 10, "Uso: login [usuario]", 10, 10
+                   db "Realiza login em um usuario cadastrado.", 10, 10               
+                   db "login versao ", versaoLOGIN, 10, 10
+                   db "Copyright (C) 2017-2022 Felipe Miguel Nery Lunkes", 10
+                   db "Todos os direitos reservados.", 10, 0
+.semArquivoUnix:   db 10, 10, "O arquivo de configuracao do ambiente Unix de controle de contas nao foi encontrado.", 10, 0        
+.parametroAjuda:   db "?", 0  
+.parametroAjuda2:  db "--ajuda", 0 
+.usuarioROOT:      db "root", 0
+.sobreAndromeda:   db 10, 10   
+                   db "        %#@$%&@$%&@$%$ tm          Sistema Operacional Andromeda(R)", 10
+                   db "        #$@$@$@#@#@#@$", 10
+                   db "        @#@$&    %#$#%", 10
+                   db "        @#$@$    #@#$@", 10
+                   db "        #@#$$    !@#@#     Copyright (C) 2016-2022 Felipe Miguel Nery Lunkes",10
+                   db "        @#@%!$&%$&$#@#              Todos os direitos reservados",10
+                   db "        !@$%#%&#&@&$%#", 10
+                   db "        @$#!%&@&@#&*@&", 10
+                   db "        $#$#%    &%$#@", 10
+                   db "        @#!$$    !#@#@", 10, 10, 0	
+.versaoAndromeda:  db "Sistema Operacional Andromeda versao ", 0
+.dadosErrados:     db 10, "Falha na autenticacao.", 10, 0
+.colcheteEsquerdo: db " [", 0
+.colcheteDireito:  db "]", 0
+.temaClaro:        db "claro", 0
+.temaEscuro:       db "escuro", 0
+.loginUnix:        db 10, "login versao ", versaoLOGIN, 10, 0
+
+match =SIM, VERBOSE
+{
+
+.verboseLogin:             db "login versao ", versaoLOGIN, ".", 0
+.verboseProcurarArquivo:   db "Procurando banco de dados de usuarios 'USUARIO.UNX' em /...", 0
+.verboseArquivoEncontrado: db "O banco de dados foi encontrado e sera processado.", 0
+.verboseArquivoAusente:    db "O arquivo nao foi encontrado. O shell padrao sera executado (sh.app).", 0
+.verboseErro:              db "Um erro nao manipulavel foi encontrado.", 0
+.verboseLoginAceito:       db "Login autorizado.", 0
+.verboseLoginRecusado:     db "Tentativa de login impedida por falha na autenticação.", 0
+.verboseLogout:            db "Logout realizado com sucesso.", 0
+
+}
+
+usuarioSolicitado: times 17 db 0
+usuarioAnterior:   times 17 db 0
+escolhaTema:       times 7 db 0
+
+codigoAnterior: dd 0
+errado: db 0
+
+;;************************************************************************************
+
 ;;************************************************************************************			
 
 loginAndromeda: ;; Ponto de entrada
@@ -1029,81 +1104,6 @@ verificarConsistencia:
 terminar:	
 
 	Andromeda encerrarProcesso
-
-;;************************************************************************************
-
-;;************************************************************************************
-;;
-;;                    Área de dados e variáveis do aplicativo
-;;
-;;************************************************************************************
-
-;;************************************************************************************
-
-shellPadrao:       db "sh.app", 0       ;; Nome do arquivo que contêm o Shell padrão do Andromeda®
-vd0:               db "vd0", 0          ;; Dispositivo de saída padrão do Sistema
-vd1:               db "vd1", 0	        ;; Dispositivo de saída secundário em memória (Buffer)
-arquivo:           db "usuario.unx", 0  ;; Nome do arquivo de gerenciamento de login
-tentarShellPadrao: db 0                 ;; Sinaliza a tentativa de se carregar o Shell padrão
-shellAndromeda:    times 11 db 0        ;; Armazena o nome do Shell à ser utilizado pelo Sistema
-usuario:           times 15 db 0        ;; Nome de usuário obtido no arquivo
-senhaObtida:       times 64 db 0        ;; Senha obtida no arquivo
-parametros:        db 0                 ;; Se o aplicativo recebeu algum parâmetro
-ponto:             db ".", 0            ;; Caractere de ponto
-posicaoBX:         dw 0                 ;; Marcação da posição de busca no conteúdo do arquivo
-
-login:
-
-.solicitarUsuario: db 10, "Realizar login para: ", 0
-.solicitarSenha:   db 10, "Digite sua senha UNIX: ", 0 
-.uso:              db 10, 10, "Uso: login [usuario]", 10, 10
-                   db "Realiza login em um usuario cadastrado.", 10, 10               
-                   db "login versao ", versaoLOGIN, 10, 10
-                   db "Copyright (C) 2017-2022 Felipe Miguel Nery Lunkes", 10
-                   db "Todos os direitos reservados.", 10, 0
-.semArquivoUnix:   db 10, 10, "O arquivo de configuracao do ambiente Unix de controle de contas nao foi encontrado.", 10, 0        
-.parametroAjuda:   db "?", 0  
-.parametroAjuda2:  db "--ajuda", 0 
-.usuarioROOT:      db "root", 0
-.sobreAndromeda:   db 10, 10   
-                   db "        %#@$%&@$%&@$%$ tm          Sistema Operacional Andromeda(R)", 10
-                   db "        #$@$@$@#@#@#@$", 10
-                   db "        @#@$&    %#$#%", 10
-                   db "        @#$@$    #@#$@", 10
-                   db "        #@#$$    !@#@#     Copyright (C) 2016-2022 Felipe Miguel Nery Lunkes",10
-                   db "        @#@%!$&%$&$#@#              Todos os direitos reservados",10
-                   db "        !@$%#%&#&@&$%#", 10
-                   db "        @$#!%&@&@#&*@&", 10
-                   db "        $#$#%    &%$#@", 10
-                   db "        @#!$$    !#@#@", 10, 10, 0	
-.versaoAndromeda:  db "Sistema Operacional Andromeda versao ", 0
-.dadosErrados:     db 10, "Falha na autenticacao.", 10, 0
-.colcheteEsquerdo: db " [", 0
-.colcheteDireito:  db "]", 0
-.temaClaro:        db "claro", 0
-.temaEscuro:       db "escuro", 0
-.loginUnix:        db 10, "login versao ", versaoLOGIN, 10, 0
-
-match =SIM, VERBOSE
-{
-
-.verboseLogin:             db "login versao ", versaoLOGIN, ".", 0
-.verboseProcurarArquivo:   db "Procurando banco de dados de usuarios 'USUARIO.UNX' em /...", 0
-.verboseArquivoEncontrado: db "O banco de dados foi encontrado e sera processado.", 0
-.verboseArquivoAusente:    db "O arquivo nao foi encontrado. O shell padrao sera executado (sh.app).", 0
-.verboseErro:              db "Um erro nao manipulavel foi encontrado.", 0
-.verboseLoginAceito:       db "Login autorizado.", 0
-.verboseLoginRecusado:     db "Tentativa de login impedida por falha na autenticação.", 0
-.verboseLogout:            db "Logout realizado com sucesso.", 0
-
-}
-
-usuarioSolicitado: times 17 db 0
-usuarioAnterior:   times 17 db 0
-escolhaTema:       times 7 db 0
-
-codigoAnterior: dd 0
-errado: db 0
 
 ;;************************************************************************************
 
