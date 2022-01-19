@@ -338,7 +338,7 @@ lshmod:
                       db "<!> Verifique a ortografia e tente novamente.", 10, 0  
 .tipoArquitetura:     db 10, 10, "> Arquitetura de destino do modulo: ", 0
 .verHexagon:          db 10, "> Versao do modulo: ", 0
-.camposVersaoHexagon: db " -> [HBoot:versao e HBoot:subversao].", 0
+.camposVersaoHexagon: db " -> [HBOOT:versao e HBOOT:subversao].", 0
 .ponto:               db ".", 0
 .cabecalho:           db 10, "<+> Este arquivo contem uma imagem de modulo HBoot valida -> [HBOOT:+].", 0
 .i386:                db "i386", 0
