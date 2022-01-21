@@ -34,6 +34,46 @@ include "../../../LibAPP/andrmda.s"
 include "../../../LibAPP/Unix.s"
 
 ;;************************************************************************************
+;;
+;;                    Área de dados e variáveis do aplicativo
+;;
+;;************************************************************************************
+	
+lshmod:
+
+.uso:                 db 10, 10, "Uso: lshmod [arquivo]", 10, 10
+                      db "Recupera as informacoes de uma imagem ou modulo HBoot.", 10, 10
+                      db "lshmod versao ", versaoLSHMOD, 10, 10
+                      db "Copyright (C) 2022 Felipe Miguel Nery Lunkes", 10
+                      db "Todos os direitos reservados.", 10, 0
+.arquivoInvalido:     db 10, 10, "O nome de arquivo e invalido. Digite um nome de arquivo valido.", 10, 0
+.infoArquivo:         db 10, 10, "Nome do arquivo: ", 0
+.tamanhoArquivo:      db 10, "Tamanho deste arquivo: ", 0
+.bytes:               db " bytes.", 10, 0
+.imagemInvalida:      db 10, "<!> Esta nao e uma imagem de modulo HBoot. Tente outro arquivo.", 10, 0
+.semArquivo:          db 10, 10, "<!> O arquivo solicitado nao esta disponivel neste disco.", 10, 10
+                      db "<!> Verifique a ortografia e tente novamente.", 10, 0  
+.tipoArquitetura:     db 10, 10, "> Arquitetura de destino: ", 0
+.verModulo:           db 10, "> Versao do modulo: ", 0
+.ponto:               db ".", 0
+.cabecalho:           db 10, "<+> Este arquivo contem uma imagem HBoot ou modulo HBoot valida.", 0
+.i386:                db "i386", 0
+.amd64:               db "amd64", 0
+.arquiteturaInvalida: db "desconhecida", 0
+.entradaCodigo:       db 10, "> Nome interno da imagem do HBoot ou modulo: ", 0
+.parametroAjuda:      db "?", 0
+.parametroAjuda2:     db "--ajuda", 0
+.nomeMod:             dd 0
+.arquitetura:         db 0
+.verMod:              db 0
+.subverMod:           db 0
+
+parametro:            dd ?
+nomeArquivo: times 13 db 0
+regES:	              dw 0
+nomeModulo: times 8   db 0
+
+;;************************************************************************************
 
 inicioAPP:
 	
@@ -167,10 +207,10 @@ verificarArquivoHBootMod:
     mov byte[lshmod.arquitetura], dh
 
     mov dh, byte[edi+6]
-    mov byte[lshmod.versaoMinima], dh
+    mov byte[lshmod.verMod], dh
 
     mov dh, byte[edi+7]
-    mov byte[lshmod.subverMinima], dh
+    mov byte[lshmod.subverMod], dh
 
 	mov esi, dword[edi+8]
 	mov dword[nomeModulo+0], esi
@@ -227,15 +267,15 @@ verificarArquivoHBootMod:
 
 .continuar:
 
-	mov esi, lshmod.campoArquitetura
+	mov esi, lshmod.ponto
 
 	imprimirString
 
-    mov esi, lshmod.verHexagon
+    mov esi, lshmod.verModulo
 
     imprimirString
 
-    mov dh, byte[lshmod.versaoMinima]
+    mov dh, byte[lshmod.verMod]
     movzx eax, dh
 
     imprimirInteiro
@@ -244,12 +284,12 @@ verificarArquivoHBootMod:
 
     imprimirString
 
-    mov dh, byte[lshmod.subverMinima]
+    mov dh, byte[lshmod.subverMod]
     movzx eax, dh
 
     imprimirInteiro
 
-	mov esi, lshmod.camposVersaoHexagon
+	mov esi, lshmod.ponto
 
 	imprimirString
 
@@ -261,7 +301,7 @@ verificarArquivoHBootMod:
 	
    	imprimirString
 
-   	mov esi, lshmod.campoNome
+   	mov esi, lshmod.ponto
 
    	imprimirString
 
@@ -315,49 +355,5 @@ terminar:
 	Andromeda encerrarProcesso
 
 ;;************************************************************************************
-
-;;************************************************************************************
-;;
-;;                    Área de dados e variáveis do aplicativo
-;;
-;;************************************************************************************
-	
-lshmod:
-
-.uso:                 db 10, 10, "Uso: lshmod [arquivo]", 10, 10
-                      db "Recupera as informacoes de uma imagem de modulo HBoot.", 10, 10
-                      db "lshmod versao ", versaoLSHMOD, 10, 10
-                      db "Copyright (C) 2022 Felipe Miguel Nery Lunkes", 10
-                      db "Todos os direitos reservados.", 10, 0
-.arquivoInvalido:     db 10, 10, "O nome de arquivo e invalido. Digite um nome de arquivo valido.", 10, 0
-.infoArquivo:         db 10, 10, "Nome do arquivo: ", 0
-.tamanhoArquivo:      db 10, "Tamanho deste arquivo: ", 0
-.bytes:               db " bytes.", 10, 0
-.imagemInvalida:      db 10, "<!> Esta nao e uma imagem de modulo HBoot -> [HBOOT:-]. Tente outro arquivo.", 10, 0
-.semArquivo:          db 10, 10, "<!> O arquivo solicitado nao esta disponivel neste disco.", 10, 10
-                      db "<!> Verifique a ortografia e tente novamente.", 10, 0  
-.tipoArquitetura:     db 10, 10, "> Arquitetura de destino do modulo: ", 0
-.verHexagon:          db 10, "> Versao do modulo: ", 0
-.camposVersaoHexagon: db " -> [HBOOT:versao e HBOOT:subversao].", 0
-.ponto:               db ".", 0
-.cabecalho:           db 10, "<+> Este arquivo contem uma imagem de modulo HBoot valida -> [HBOOT:+].", 0
-.i386:                db "i386", 0
-.amd64:               db "amd64", 0
-.campoArquitetura:    db " -> [HBOOT:arquitetura].", 0
-.arquiteturaInvalida: db "desconhecida", 0
-.entradaCodigo:       db 10, "> Nome interno do modulo: ", 0
-.campoNome:           db " -> [HBOOT:nome].", 0
-.parametroAjuda:      db "?", 0
-.parametroAjuda2:     db "--ajuda", 0
-.nomeMod:             dd 0
-.arquitetura:         db 0
-.versaoMinima:        db 0
-.subverMinima:        db 0
-.especieImagem:       db 0
-
-parametro:            dd ?
-nomeArquivo: times 13 db 0
-regES:	              dw 0
-nomeModulo: times 8   db 0
 
 bufferArquivo:
