@@ -69,6 +69,17 @@ posicaoBX:         dw 0                 ;; Marcação da posição de busca no c
 
 login:
 
+.sobreAndromeda:   db 10, 10   
+                   db "        %#@$%&@$%&@$%$ tm          Sistema Operacional Andromeda(R)", 10
+                   db "        #$@$@$@#@#@#@$", 10
+                   db "        @#@$&    %#$#%", 10
+                   db "        @#$@$    #@#$@", 10
+                   db "        #@#$$    !@#@#     Copyright (C) 2016-2022 Felipe Miguel Nery Lunkes",10
+                   db "        @#@%!$&%$&$#@#              Todos os direitos reservados",10
+                   db "        !@$%#%&#&@&$%#", 10
+                   db "        @$#!%&@&@#&*@&", 10
+                   db "        $#$#%    &%$#@", 10
+                   db "        @#!$$    !#@#@", 10, 10, 0
 .solicitarUsuario: db 10, "Realizar login para: ", 0
 .solicitarSenha:   db 10, "Digite sua senha UNIX: ", 0 
 .uso:              db 10, 10, "Uso: login [usuario]", 10, 10
@@ -87,17 +98,6 @@ login:
 .temaClaro:        db "claro", 0
 .temaEscuro:       db "escuro", 0
 .loginUnix:        db 10, "login versao ", versaoLOGIN, 10, 0
-.sobreAndromeda:   db 10, 10   
-                   db "        %#@$%&@$%&@$%$ tm          Sistema Operacional Andromeda(R)", 10
-                   db "        #$@$@$@#@#@#@$", 10
-                   db "        @#@$&    %#$#%", 10
-                   db "        @#$@$    #@#$@", 10
-                   db "        #@#$$    !@#@#     Copyright (C) 2016-2022 Felipe Miguel Nery Lunkes",10
-                   db "        @#@%!$&%$&$#@#              Todos os direitos reservados",10
-                   db "        !@$%#%&#&@&$%#", 10
-                   db "        @$#!%&@&@#&*@&", 10
-                   db "        $#$#%    &%$#@", 10
-                   db "        @#!$$    !#@#@", 10, 10, 0
 
 match =SIM, VERBOSE
 {
