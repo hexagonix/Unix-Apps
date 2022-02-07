@@ -71,6 +71,7 @@ fnt:
                   db "ZXCVBNM<>?", 10
                   db "zxcvbnm,./", 10, 10
                   db "Sistema Operacional Hexagonix(R)", 10, 0
+.tamanhoSuperior: db 10, 10, "Este arquivo de fonte excede o tamanho maximo de 2 Kb.", 10, 0
 .parametroAjuda:  db "?", 0
 .parametroAjuda2: db "--ajuda", 0
 
@@ -209,6 +210,24 @@ validarFonte:
 	cmp byte[edi+3], "T"
 	jne .naoHFNT
 
+.verificarTamanho:
+
+	Andromeda arquivoExiste
+
+;; Em EAX, o tamanho do arquivo. Ele não deve ser maior que 2000 bytes, o que poderia
+;; sobrescrever dados na memória do Hexagon
+
+	mov ebx, 2000
+
+	cmp eax, ebx
+	jng .continuar
+
+	jmp .tamanhoSuperior
+
+.continuar:
+
+	clc 
+	
 	ret
 
 .erroSemFonte:
@@ -224,6 +243,14 @@ validarFonte:
 	stc
 
 	ret
+
+.tamanhoSuperior:
+
+	mov esi, fnt.tamanhoSuperior
+	
+	imprimirString
+
+	jmp terminar
 
 ;;************************************************************************************
 
