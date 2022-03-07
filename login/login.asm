@@ -37,7 +37,7 @@ cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 8, 58, loginAndromeda, 01h
 
 ;;************************************************************************************
                     
-include "../../../LibAPP/andrmda.s"
+include "../../../LibAPP/hexagon.s"
 include "../../../LibAPP/Estelar/estelar.s"
 include "../../../LibAPP/Unix.s"
 include "../../../LibAPP/macros.s"

@@ -30,7 +30,7 @@ cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 8, 40, inicioShell, 01h
 
 ;;************************************************************************************
 
-include "../../../LibAPP/andrmda.s"
+include "../../../LibAPP/hexagon.s"
 include "../../../LibAPP/erros.s"
 include "../../../LibAPP/Unix.s"
 

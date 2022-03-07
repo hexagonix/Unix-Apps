@@ -317,8 +317,8 @@ init:
 
 .verboseInit:              db "init versao ", versaoINIT, ".", 0
 .verboseProcurarArquivo:   db "Procurando arquivo de configuracao em /...", 0
-.verboseArquivoEncontrado: db "O arquivo foi encontrado e sera processado.", 0
-.verboseArquivoAusente:    db "A imagem nao foi encontrada. O shell padrao sera executado (sh.app)", 0
+.verboseArquivoEncontrado: db "Arquivo de configuracao encontrado.", 0
+.verboseArquivoAusente:    db "Arquivo de configuracao nao encontrado. O shell padrao sera executado (sh.app)", 0
 .verboseErro:              db "Um erro nao manipulavel foi encontrado.", 0
 
 }
