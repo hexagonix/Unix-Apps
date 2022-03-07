@@ -46,6 +46,28 @@ include "../../../LibAPP/log.s"
 
 tamanhoLimiteBusca = 32768
 
+;;************************************************************************************
+
+shellPadrao: db "sh.app", 0     ;; Nome do arquivo que contêm o Shell padrão Unix
+vd0: db "vd0", 0                ;; Dispositivo de saída padrão do Sistema
+vd1: db "vd1", 0	            ;; Dispositivo de saída secundário em memória (Buffer)
+arquivo: db "init.unx", 0       ;; Nome do arquivo de configuração do Inicializador do Sistema (Init) do Andromeda®
+tentarShellPadrao: db 0         ;; Sinaliza a tentativa de se carregar o Shell padrão
+servicoAndromeda: times 11 db 0 ;; Armazena o nome do Shell à ser utilizado pelo Sistema
+
+match =SIM, VERBOSE
+{
+
+init:
+
+.verboseInit:              db "init versao ", versaoINIT, ".", 0
+.verboseProcurarArquivo:   db "Procurando arquivo de configuracao em /...", 0
+.verboseArquivoEncontrado: db "Arquivo de configuracao encontrado.", 0
+.verboseArquivoAusente:    db "Arquivo de configuracao nao encontrado. O shell padrao sera executado (sh.app)", 0
+.verboseErro:              db "Um erro nao manipulavel foi encontrado.", 0
+
+} 
+
 ;;************************************************************************************			
 
 initAndromeda: ;; Ponto de entrada do Inicializador do Sistema (Init) do Andromeda®
@@ -301,28 +323,6 @@ obterShellPadrao:
 	
 	ret						
 		
-;;************************************************************************************
-
-shellPadrao: db "sh.app", 0     ;; Nome do arquivo que contêm o Shell padrão Unix
-vd0: db "vd0", 0                ;; Dispositivo de saída padrão do Sistema
-vd1: db "vd1", 0	            ;; Dispositivo de saída secundário em memória (Buffer)
-arquivo: db "init.unx", 0       ;; Nome do arquivo de configuração do Inicializador do Sistema (Init) do Andromeda®
-tentarShellPadrao: db 0         ;; Sinaliza a tentativa de se carregar o Shell padrão
-servicoAndromeda: times 11 db 0 ;; Armazena o nome do Shell à ser utilizado pelo Sistema
-
-match =SIM, VERBOSE
-{
-
-init:
-
-.verboseInit:              db "init versao ", versaoINIT, ".", 0
-.verboseProcurarArquivo:   db "Procurando arquivo de configuracao em /...", 0
-.verboseArquivoEncontrado: db "Arquivo de configuracao encontrado.", 0
-.verboseArquivoAusente:    db "Arquivo de configuracao nao encontrado. O shell padrao sera executado (sh.app)", 0
-.verboseErro:              db "Um erro nao manipulavel foi encontrado.", 0
-
-}
-
-;;************************************************************************************                
+;;************************************************************************************               
                 
 bufferArquivo:                  ;; Local onde o arquivo de configuração será aberto
