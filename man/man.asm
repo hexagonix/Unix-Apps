@@ -38,7 +38,10 @@ include "../../../LibAPP/Unix.s"
 inicioAPP:
 
     mov	[utilitario], edi
-	
+
+	cmp byte[edi], 0
+	je usoAplicativo
+
 	mov edi, man.parametroAjuda
 	mov esi, [utilitario]
 	
