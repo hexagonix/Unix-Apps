@@ -51,20 +51,20 @@ inicioAPP:
 	mov edi, rm.parametroAjuda
 	mov esi, [parametro]
 	
-	Andromeda compararPalavrasString
+	Hexagonix compararPalavrasString
 	
 	jc usoAplicativo
 
 	mov edi, rm.parametroAjuda2
 	mov esi, [parametro]
 	
-	Andromeda compararPalavrasString
+	Hexagonix compararPalavrasString
 	
 	jc usoAplicativo
 	
 	mov esi, [parametro]
 	
-	Andromeda arquivoExiste
+	Hexagonix arquivoExiste
 	
 	jc .arquivoNaoEncontrado
 	
@@ -77,7 +77,7 @@ inicioAPP:
 	
 .obterTeclas:
 
-	Andromeda aguardarTeclado
+	Hexagonix aguardarTeclado
 	
 	cmp al, 's'
 	je .deletar
@@ -104,11 +104,11 @@ inicioAPP:
 
 .deletar:
 
-	Andromeda imprimirCaractere
+	Hexagonix imprimirCaractere
 	
 	mov esi, [parametro]
 	
-	Andromeda deletarArquivo
+	Hexagonix deletarArquivo
 	
 	jc .erroDeletando
 	
@@ -120,7 +120,7 @@ inicioAPP:
 
 .abortar:
 
-	Andromeda imprimirCaractere
+	Hexagonix imprimirCaractere
 	
 	mov esi, rm.abortar
 	
@@ -175,7 +175,7 @@ semParametro:
 
 terminar:	
 
-	Andromeda encerrarProcesso
+	Hexagonix encerrarProcesso
 
 ;;************************************************************************************
 

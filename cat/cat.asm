@@ -50,21 +50,21 @@ inicioAPP:
 	mov edi, cat.parametroAjuda
 	mov esi, [parametro]
 	
-	Andromeda compararPalavrasString
+	Hexagonix compararPalavrasString
 	
 	jc usoAplicativo
 
 	mov edi, cat.parametroAjuda2
 	mov esi, [parametro]
 	
-	Andromeda compararPalavrasString
+	Hexagonix compararPalavrasString
 	
 	jc usoAplicativo
 	
 	mov edi, bufferArquivo
 	mov esi, [parametro]
 	
-	Andromeda abrir
+	Hexagonix abrir
 	
 	jc .arquivoNaoEncontrado
 	
@@ -99,7 +99,7 @@ usoAplicativo:
 
 terminar:	
 
-	Andromeda encerrarProcesso
+	Hexagonix encerrarProcesso
 
 ;;************************************************************************************
 

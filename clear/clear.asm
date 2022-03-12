@@ -47,14 +47,14 @@ inicioAPP:
 	mov edi, clear.parametroAjuda
 	mov esi, [parametro]
 	
-	Andromeda compararPalavrasString
+	Hexagonix compararPalavrasString
 	
 	jc usoAplicativo
 
 	mov edi, clear.parametroAjuda2
 	mov esi, [parametro]
 	
-	Andromeda compararPalavrasString
+	Hexagonix compararPalavrasString
 	
 	jc usoAplicativo
 	
@@ -66,17 +66,17 @@ realizarLimpeza:
 
 	mov esi, vd1         ;; Abrir o dispositivo de saída secundário em memória (Buffer) 
 	
-	Andromeda abrir      ;; Abre o dispositivo
+	Hexagonix abrir      ;; Abre o dispositivo
 	
 	jc .erro
 	
-	Andromeda limparTela ;; Limpa seu conteúdo
+	Hexagonix limparTela ;; Limpa seu conteúdo
 	
 	mov esi, vd0         ;; Reabre o dispositivo de saída padrão 
 	
-	Andromeda abrir      ;; Abre o dispositivo
+	Hexagonix abrir      ;; Abre o dispositivo
 
-	Andromeda limparTela
+	Hexagonix limparTela
 	
 	jmp terminar
 	
@@ -92,7 +92,7 @@ realizarLimpeza:
 
 terminar:	
 
-	Andromeda encerrarProcesso
+	Hexagonix encerrarProcesso
 
 ;;************************************************************************************
 

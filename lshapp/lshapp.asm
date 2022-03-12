@@ -50,22 +50,22 @@ inicioAPP:
 	mov edi, lshapp.parametroAjuda
 	mov esi, [parametro]
 	
-	Andromeda compararPalavrasString
+	Hexagonix compararPalavrasString
 	
 	jc usoAplicativo
 
 	mov edi, lshapp.parametroAjuda2
 	mov esi, [parametro]
 	
-	Andromeda compararPalavrasString
+	Hexagonix compararPalavrasString
 	
 	jc usoAplicativo
 
 	mov esi, [parametro]
 	
-	Andromeda cortarString
+	Hexagonix cortarString
 	
-	Andromeda tamanhoString
+	Hexagonix tamanhoString
 	
 	cmp eax, 13
 	jl .obterInformacoes
@@ -78,7 +78,7 @@ inicioAPP:
 	
 .obterInformacoes:
 
-    Andromeda arquivoExiste
+    Hexagonix arquivoExiste
 
     jc .semArquivo
     
@@ -140,7 +140,7 @@ verificarArquivoHAPP:
 	mov esi, nomeArquivo
 	mov edi, bufferArquivo
 
-	Andromeda abrir
+	Hexagonix abrir
 
 	jc inicioAPP.semArquivo
 
@@ -337,9 +337,9 @@ manterArquivo:
 	push esi
 	push eax
 
-	Andromeda cortarString
+	Hexagonix cortarString
 
-	Andromeda tamanhoString
+	Hexagonix tamanhoString
 
 	mov ecx, eax
 
@@ -357,7 +357,7 @@ manterArquivo:
 
 terminar:	
 
-	Andromeda encerrarProcesso
+	Hexagonix encerrarProcesso
 
 ;;************************************************************************************
 

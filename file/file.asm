@@ -50,22 +50,22 @@ inicioAPP:
 	mov edi, fileUnix.parametroAjuda
 	mov esi, [parametro]
 	
-	Andromeda compararPalavrasString
+	Hexagonix compararPalavrasString
 	
 	jc usoAplicativo
 
 	mov edi, fileUnix.parametroAjuda2
 	mov esi, [parametro]
 	
-	Andromeda compararPalavrasString
+	Hexagonix compararPalavrasString
 	
 	jc usoAplicativo
 	
 	mov esi, [parametro]
 	
-	Andromeda cortarString
+	Hexagonix cortarString
 	
-	Andromeda tamanhoString
+	Hexagonix tamanhoString
 	
 	cmp eax, 13
 	jl .obterInformacoes
@@ -78,7 +78,7 @@ inicioAPP:
 	
 .obterInformacoes:
 
-    Andromeda arquivoExiste
+    Hexagonix arquivoExiste
 
     jc .semArquivo
     
@@ -125,9 +125,9 @@ inicioAPP:
 
 	mov esi, nomeArquivo
 
-	Andromeda stringParaMaiusculo    ;; Iremos checar com base na extensão em maiúsculo
+	Hexagonix stringParaMaiusculo    ;; Iremos checar com base na extensão em maiúsculo
 	
-	Andromeda tamanhoString
+	Hexagonix tamanhoString
 
 	add esi, eax                     ;; Adicionar o tamanho do nome
 
@@ -135,49 +135,49 @@ inicioAPP:
 
 	mov edi, fileUnix.extensaoUNX
 	
-	Andromeda compararPalavrasString  ;; Checar por extensão .UNX
+	Hexagonix compararPalavrasString  ;; Checar por extensão .UNX
 	
 	jc .arquivoUNX
 
 	mov edi, fileUnix.extensaoSIS
 	
-	Andromeda compararPalavrasString  ;; Checar por extensão .SIS
+	Hexagonix compararPalavrasString  ;; Checar por extensão .SIS
 	
 	jc .arquivoSIS
 
 	mov edi, fileUnix.extensaoTXT
 	
-	Andromeda compararPalavrasString  ;; Checar por extensão .TXT
+	Hexagonix compararPalavrasString  ;; Checar por extensão .TXT
 	
 	jc .arquivoTXT
 
 	mov edi, fileUnix.extensaoASM
 	
-	Andromeda compararPalavrasString  ;; Checar por extensão .ASM
+	Hexagonix compararPalavrasString  ;; Checar por extensão .ASM
 	
 	jc .arquivoASM
 
 	mov edi, fileUnix.extensaoCOW
 	
-	Andromeda compararPalavrasString  ;; Checar por extensão .COW
+	Hexagonix compararPalavrasString  ;; Checar por extensão .COW
 	
 	jc .arquivoCOW
 
 	mov edi, fileUnix.extensaoMAN
 	
-	Andromeda compararPalavrasString  ;; Checar por extensão .MAN
+	Hexagonix compararPalavrasString  ;; Checar por extensão .MAN
 	
 	jc .arquivoMAN
 
 	mov edi, fileUnix.extensaoFNT
 	
-	Andromeda compararPalavrasString  ;; Checar por extensão .FNT
+	Hexagonix compararPalavrasString  ;; Checar por extensão .FNT
 	
 	jc .arquivoFNT
 
 	mov edi, fileUnix.extensaoCAN
 	
-	Andromeda compararPalavrasString  ;; Checar por extensão .CAN
+	Hexagonix compararPalavrasString  ;; Checar por extensão .CAN
 	
 	jc .arquivoCAN
 
@@ -282,7 +282,7 @@ verificarArquivoHAPP:
 	mov esi, nomeArquivo
 	mov edi, bufferArquivo
 
-	Andromeda abrir
+	Hexagonix abrir
 
 	jc inicioAPP.semArquivo
 
@@ -313,7 +313,7 @@ verificarArquivoHBoot:
 	mov esi, nomeArquivo
 	mov edi, bufferArquivo
 
-	Andromeda abrir
+	Hexagonix abrir
 
 	jc inicioAPP.semArquivo
 
@@ -357,9 +357,9 @@ manterArquivo:
 	push esi
 	push eax
 
-	Andromeda cortarString
+	Hexagonix cortarString
 
-	Andromeda tamanhoString
+	Hexagonix tamanhoString
 
 	mov ecx, eax
 
@@ -377,7 +377,7 @@ manterArquivo:
 
 terminar:	
 
-	Andromeda encerrarProcesso
+	Hexagonix encerrarProcesso
 
 ;;************************************************************************************
 

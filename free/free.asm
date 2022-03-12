@@ -47,14 +47,14 @@ inicioAPP:
 	mov edi, free.parametroAjuda
 	mov esi, [parametro]
 	
-	Andromeda compararPalavrasString
+	Hexagonix compararPalavrasString
 	
 	jc usoAplicativo
 
     mov edi, free.parametroAjuda2
 	mov esi, [parametro]
 	
-	Andromeda compararPalavrasString
+	Hexagonix compararPalavrasString
 	
 	jc usoAplicativo
 	
@@ -65,7 +65,7 @@ inicioAPP:
 
     imprimirString
 	
-	Andromeda usoMemoria
+	Hexagonix usoMemoria
 	
 	mov eax, ecx
 	
@@ -75,7 +75,7 @@ inicioAPP:
 
     imprimirString
 
-    Andromeda usoMemoria
+    Hexagonix usoMemoria
 	
 	imprimirInteiro
 
@@ -83,7 +83,7 @@ inicioAPP:
 
     imprimirString
 
-    Andromeda usoMemoria
+    Hexagonix usoMemoria
 
 ;; Agora vaos transformar bytes em megabytes
 
@@ -120,7 +120,7 @@ usoAplicativo:
 
 terminar:	
 
-	Andromeda encerrarProcesso
+	Hexagonix encerrarProcesso
 
 ;;************************************************************************************
 

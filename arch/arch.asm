@@ -50,14 +50,14 @@ inicioAPP:
 	mov edi, arch.parametroAjuda
 	mov esi, [parametro]
 	
-	Andromeda compararPalavrasString
+	Hexagonix compararPalavrasString
 	
 	jc usoAplicativo
 
 	mov edi, arch.parametroAjuda2
 	mov esi, [parametro]
 	
-	Andromeda compararPalavrasString
+	Hexagonix compararPalavrasString
 	
 	jc usoAplicativo
 
@@ -66,7 +66,7 @@ inicioAPP:
     novaLinha
     novaLinha
 
-    Andromeda retornarVersao
+    Hexagonix retornarVersao
 
 ;; Em EDX temos a arquitetura
 	
@@ -120,7 +120,7 @@ usoAplicativo:
 
 terminar:	
 
-	Andromeda encerrarProcesso
+	Hexagonix encerrarProcesso
 
 ;;************************************************************************************
 

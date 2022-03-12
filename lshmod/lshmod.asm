@@ -90,22 +90,22 @@ inicioAPP:
 	mov edi, lshmod.parametroAjuda
 	mov esi, [parametro]
 	
-	Andromeda compararPalavrasString
+	Hexagonix compararPalavrasString
 	
 	jc usoAplicativo
 
 	mov edi, lshmod.parametroAjuda2
 	mov esi, [parametro]
 	
-	Andromeda compararPalavrasString
+	Hexagonix compararPalavrasString
 	
 	jc usoAplicativo
 
 	mov esi, [parametro]
 	
-	Andromeda cortarString
+	Hexagonix cortarString
 	
-	Andromeda tamanhoString
+	Hexagonix tamanhoString
 	
 	cmp eax, 13
 	jl .obterInformacoes
@@ -118,7 +118,7 @@ inicioAPP:
 	
 .obterInformacoes:
 
-    Andromeda arquivoExiste
+    Hexagonix arquivoExiste
 
     jc .semArquivo
     
@@ -182,7 +182,7 @@ verificarArquivoHBootMod:
 	mov esi, nomeArquivo
 	mov edi, bufferArquivo
 
-	Andromeda abrir
+	Hexagonix abrir
 
 	jc inicioAPP.semArquivo
 
@@ -222,7 +222,7 @@ verificarArquivoHBootMod:
 
 	mov esi, nomeModulo
 
-	Andromeda cortarString
+	Hexagonix cortarString
 
     mov esi, lshmod.cabecalho
     
@@ -332,9 +332,9 @@ manterArquivo:
 	push esi
 	push eax
 
-	Andromeda cortarString
+	Hexagonix cortarString
 
-	Andromeda tamanhoString
+	Hexagonix tamanhoString
 
 	mov ecx, eax
 
@@ -352,7 +352,7 @@ manterArquivo:
 
 terminar:	
 
-	Andromeda encerrarProcesso
+	Hexagonix encerrarProcesso
 
 ;;************************************************************************************
 

@@ -43,14 +43,14 @@ inicioShell:
 	mov edi, sh.parametroAjuda
 	mov esi, [linhaComando]
 	
-	Andromeda compararPalavrasString
+	Hexagonix compararPalavrasString
 	
 	jc usoAplicativo
 	
 	mov edi, sh.parametroAjuda2
 	mov esi, [linhaComando]
 	
-	Andromeda compararPalavrasString
+	Hexagonix compararPalavrasString
 	
 	jc usoAplicativo
 		
@@ -65,22 +65,22 @@ inicioShell:
 	
 	novaLinha
 	
-	Andromeda obterInfoTela
+	Hexagonix obterInfoTela
 
 	mov byte[maxColunas], bl
 	mov byte[maxLinhas], bh
 
-	Andromeda obterCursor
+	Hexagonix obterCursor
 	
 	dec dh
 	
-	Andromeda definirCursor
+	Hexagonix definirCursor
 	
 	novaLinha
 	
 .iniciarSessao:
 
-	Andromeda obterUsuario
+	Hexagonix obterUsuario
 	
 	push eax
 	
@@ -91,7 +91,7 @@ inicioShell:
 	
 	push esi
 	
-	Andromeda tamanhoString
+	Hexagonix tamanhoString
 	
 	pop esi
 	
@@ -122,7 +122,7 @@ inicioShell:
 	
 	mov esi, sh.usuarioNormal
 	
-	Andromeda tamanhoString
+	Hexagonix tamanhoString
 	
 	push eax
 	
@@ -146,7 +146,7 @@ inicioShell:
 	
 	mov esi, sh.usuarioRoot
 	
-	Andromeda tamanhoString
+	Hexagonix tamanhoString
 	
 	push eax
 	
@@ -167,7 +167,7 @@ inicioShell:
 
 	mov esi, sh.separador
 	
-	Andromeda tamanhoString
+	Hexagonix tamanhoString
 	
 	inc eax
 	
@@ -179,9 +179,9 @@ inicioShell:
 
 	novaLinha
    
-	Andromeda obterCursor
+	Hexagonix obterCursor
 	
-	Andromeda definirCursor
+	Hexagonix definirCursor
 	
 	mov esi, sh.nomeUsuario
 	
@@ -199,9 +199,9 @@ inicioShell:
 
 	sub al, 20
 	
-	Andromeda obterString
+	Hexagonix obterString
 	
-	Andromeda cortarString			 ;; Remover espaços em branco extras
+	Hexagonix cortarString			 ;; Remover espaços em branco extras
 		
 	cmp byte[esi], 0		         ;; Nenhum comando inserido
 	je .obterComando
@@ -212,7 +212,7 @@ inicioShell:
 	
 	mov edi, comandos.sair		
 	
-	Andromeda compararPalavrasString
+	Hexagonix compararPalavrasString
 
 	jc finalizarShell
 
@@ -225,7 +225,7 @@ inicioShell:
 	push esi
 	push edi
 	
-	Andromeda tamanhoString
+	Hexagonix tamanhoString
 	
 	add esi, eax
 
@@ -233,7 +233,7 @@ inicioShell:
 	
 	mov edi, sh.extensaoProgramas
 	
-	Andromeda compararPalavrasString  ;; Checar por extensão .APP
+	Hexagonix compararPalavrasString  ;; Checar por extensão .APP
 	
 	jc .carregarPrograma
 	
@@ -244,7 +244,7 @@ inicioShell:
 		
 ;; Tentar adicionar extensão
 
-	Andromeda tamanhoString
+	Hexagonix tamanhoString
 	
 	mov ebx, eax
 
@@ -282,13 +282,13 @@ inicioShell:
 	cmp eax, Hexagon.imagemInvalida
 	je .imagemHAPPInvalida
 
-	Andromeda obterCursor
+	Hexagonix obterCursor
 	
 	mov dl, byte[maxColunas]    ;; Máximo de caracteres para obter
 
 	sub dl, 17
 	
-	Andromeda definirCursor
+	Hexagonix definirCursor
 	
 	push esi
 	
@@ -307,13 +307,13 @@ inicioShell:
 	
 .limiteAtingido:
 
-	Andromeda obterCursor
+	Hexagonix obterCursor
 	
 	mov dl, byte[maxColunas]    ;; Máximo de caracteres para obter
 
 	sub dl, 17
 	
-	Andromeda definirCursor
+	Hexagonix definirCursor
 	
 	mov esi, sh.limiteProcessos
 	
@@ -325,13 +325,13 @@ inicioShell:
 
 	push esi
 
-	Andromeda obterCursor
+	Hexagonix obterCursor
 	
 	mov dl, byte[maxColunas]    ;; Máximo de caracteres para obter
 
 	sub dl, 17
 	
-	Andromeda definirCursor
+	Hexagonix definirCursor
 	
 	novaLinha
 	novaLinha
@@ -352,7 +352,7 @@ inicioShell:
 
 	mov esi, edi
 	
-	Andromeda cortarString
+	Hexagonix cortarString
 	
 	pop esi
 	
@@ -360,7 +360,7 @@ inicioShell:
 	
 	stc
 	
-	Andromeda iniciarProcesso
+	Hexagonix iniciarProcesso
 	
 	jc .falhaExecutando
 	
@@ -419,7 +419,7 @@ obterArgumentos:
 	mov byte[esi-1], 0
 	mov ebx, esi
 	
-	Andromeda tamanhoString
+	Hexagonix tamanhoString
 	
 	mov ecx, eax
 	
@@ -463,7 +463,7 @@ finalizarShell:
 	
 	mov ebx, 00h
 	
-	Andromeda encerrarProcesso
+	Hexagonix encerrarProcesso
 
 ;;************************************************************************************
 
@@ -481,7 +481,7 @@ finalizarShell:
 
 sh:
 
-.prompt:               db "@Andromeda", 0
+.prompt:               db "@Hexagonix", 0
 .extensaoProgramas:    db ".app", 0	;; Extensão de aplicativos (executáveis Hexagon®)
 .comandoNaoEncontrado: db ": comando nao encontrado.", 10, 0
 .imagemInvalida:       db ": nao e possivel carregar a imagem. Formato executavel nao suportado.", 10, 0

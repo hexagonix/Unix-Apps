@@ -47,14 +47,14 @@ inicioAPP:
     mov edi, cowsay.parametroAjuda
 	mov esi, [parametro]
 	
-	Andromeda compararPalavrasString
+	Hexagonix compararPalavrasString
 	
 	jc usoAplicativo
 
     mov edi, cowsay.parametroAjuda2
 	mov esi, [parametro]
 	
-	Andromeda compararPalavrasString
+	Hexagonix compararPalavrasString
 	
 	jc usoAplicativo
 
@@ -62,7 +62,7 @@ inicioAPP:
 
     mov esi, [mensagemUsuario]
 
-    Andromeda tamanhoString
+    Hexagonix tamanhoString
 
     mov dword[tamanhoMensagem], eax
 
@@ -166,7 +166,7 @@ inicioAPP:
 
     mov esi, [perfilVaquinha]
 
-    Andromeda tamanhoString
+    Hexagonix tamanhoString
 	
 	mov ebx, eax
 
@@ -190,14 +190,14 @@ inicioAPP:
 
     push esi
 
-    Andromeda arquivoExiste
+    Hexagonix arquivoExiste
     jc .vaquinhaInterna
 
     pop esi
 
     mov edi, bufferArquivo
 
-    Andromeda abrir
+    Hexagonix abrir
 
     jc .vaquinhaInterna
     
@@ -246,7 +246,7 @@ obterParametros:
 
     clc ;; Limpar o Carry
 
-    Andromeda encontrarCaractere ;; Solicitar o serviço de busca de caractere
+    Hexagonix encontrarCaractere ;; Solicitar o serviço de busca de caractere
 
     jnc .semArquivoExterno ;; Foi identificado um marcador de frase. Pular carregamento de personagem
 
@@ -255,7 +255,7 @@ obterParametros:
 
 	mov al, ' ' ;; Vamos pesquisar se existe um espaço, que seria a indicação de duas ou mais palavras
 	
-	Andromeda encontrarCaractere ;; Solicitar o serviço de busca de caractere
+	Hexagonix encontrarCaractere ;; Solicitar o serviço de busca de caractere
 	
 	jc .adicionarMensagem ;; Não temos mais de uma palavra, o que indica que não há troca de personagem
 
@@ -292,20 +292,20 @@ obterParametros:
 
     mov esi, [perfilVaquinha] ;; Vamos pegar a string de parâmetro fornecida pelo Sistema
 
-    Andromeda cortarString ;; Cortar ela (trimming), para ter certeza das posições de caracteres
+    Hexagonix cortarString ;; Cortar ela (trimming), para ter certeza das posições de caracteres
 
 ;; Agora vamos fazer a remoção dos caracteres '"', lembrando que só serão removidos o primeiro e 
 ;; último caracteres '"'. Qualquer um no interior da cadeia permanecerá, por enquanto.
 
     mov eax, 00h ;; Posição zero da cadeia cortada, primeiro '"'
 
-    Andromeda removerCaractereString ;; Sistema, remova, por favor
+    Hexagonix removerCaractereString ;; Sistema, remova, por favor
 
-    Andromeda tamanhoString ;; Agora, qual o tamanho da cadeia residual?
+    Hexagonix tamanhoString ;; Agora, qual o tamanho da cadeia residual?
 
     dec eax ;; O último caractere é sempre o terminador, então recue um. Este é o último '"'
 
-    Andromeda removerCaractereString ;; Sistema, remova, por favor
+    Hexagonix removerCaractereString ;; Sistema, remova, por favor
 
     mov [mensagemUsuario], esi ;; A mensagem está pronta para ser exibida
 
@@ -373,7 +373,7 @@ usoAplicativo:
 
 terminar:	
 
-	Andromeda encerrarProcesso
+	Hexagonix encerrarProcesso
 
 ;;************************************************************************************
 

@@ -42,28 +42,28 @@ inicioAPP: ;; Ponto de entrada do Gerenciador de Login do Andromeda®
 	mov edi, whoami.parametroAjuda
 	mov esi, [linhaComando]
 	
-	Andromeda compararPalavrasString
+	Hexagonix compararPalavrasString
 	
 	jc usoAplicativo
 
 	mov edi, whoami.parametroAjuda2
 	mov esi, [linhaComando]
 	
-	Andromeda compararPalavrasString
+	Hexagonix compararPalavrasString
 	
 	jc usoAplicativo
 		
 	mov edi, whoami.parametroTudo
 	mov esi, [linhaComando]
 	
-	Andromeda compararPalavrasString
+	Hexagonix compararPalavrasString
 	
 	jc usuarioEGrupo
 	
 	mov edi, whoami.parametroUsuario
 	mov esi, [linhaComando]
 	
-	Andromeda compararPalavrasString
+	Hexagonix compararPalavrasString
 	
 	jc exibirUsuario
 
@@ -76,7 +76,7 @@ exibirUsuario:
 	novaLinha
 	novaLinha
 	
-	Andromeda obterUsuario
+	Hexagonix obterUsuario
 	
 	imprimirString
 	
@@ -91,7 +91,7 @@ usuarioEGrupo:
 	novaLinha
 	novaLinha
 	
-	Andromeda obterUsuario
+	Hexagonix obterUsuario
 	
 	push eax
 	
@@ -123,7 +123,7 @@ usoAplicativo:
 
 terminar:	
 
-	Andromeda encerrarProcesso
+	Hexagonix encerrarProcesso
 
 ;;************************************************************************************
 

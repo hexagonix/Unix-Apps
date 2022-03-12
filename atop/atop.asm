@@ -42,7 +42,7 @@ inicioAPP: ;; Ponto de entrada do aplicativo
 	
 ;;************************************************************************************
 
-	Andromeda obterCor
+	Hexagonix obterCor
 
 	mov dword[atop.corFonte], eax
 	mov dword[atop.corFundo], ebx
@@ -55,7 +55,7 @@ inicioAPP: ;; Ponto de entrada do aplicativo
 
 verificarResolucao:
 
-    Andromeda obterResolucao
+    Hexagonix obterResolucao
     
     cmp eax, 1
     je .modoGrafico1
@@ -86,14 +86,14 @@ continuarExecucao:
 	mov edi, atop.parametroAjuda
 	mov esi, [parametro]
 	
-	Andromeda compararPalavrasString
+	Hexagonix compararPalavrasString
 	
 	jc usoAplicativo
 
 	mov edi, atop.parametroAjuda2
 	mov esi, [parametro]
 	
-	Andromeda compararPalavrasString
+	Hexagonix compararPalavrasString
 	
 	jc usoAplicativo
 	
@@ -109,7 +109,7 @@ exibirProcessos:
 	
 	imprimirString
 	
-	Andromeda obterProcessos
+	Hexagonix obterProcessos
 	
 	mov [listaRemanescente], esi
 	mov dword[numeroPIDs], eax
@@ -197,7 +197,7 @@ exibirProcessos:
 	
 	call definirCorTexto
 	
-    Andromeda usoMemoria
+    Hexagonix usoMemoria
 	
 	imprimirInteiro
     
@@ -215,7 +215,7 @@ exibirProcessos:
 	
 	call definirCorTexto
 	
-    Andromeda usoMemoria
+    Hexagonix usoMemoria
 	
 	mov eax, ecx
 	
@@ -245,7 +245,7 @@ terminar:
 
 	novaLinha
 	
-	Andromeda encerrarProcesso
+	Hexagonix encerrarProcesso
 
 ;;************************************************************************************
 
@@ -259,7 +259,7 @@ definirCorTexto:
 
 	mov ebx, [atop.corFundo]
 	
-	Andromeda definirCor
+	Hexagonix definirCor
 	
 	ret
 
@@ -270,7 +270,7 @@ definirCorPadrao:
 	mov eax, [atop.corFonte]
 	mov ebx, [atop.corFundo]
 	
-	Andromeda definirCor
+	Hexagonix definirCor
 	
 	ret
 
@@ -287,7 +287,7 @@ colocarEspaco:
 	
 	mov esi, [arquivoAtual]
 	
-	Andromeda tamanhoString
+	Hexagonix tamanhoString
 	
 	mov ebx, 15
 	
@@ -299,7 +299,7 @@ colocarEspaco:
 
 	mov al, ' '
 	
-	Andromeda imprimirCaractere
+	Hexagonix imprimirCaractere
 	
 	dec ecx
 	
@@ -331,7 +331,7 @@ lerListaProcessos:
 	
 	mov al, ' '
 	
-	Andromeda encontrarCaractere
+	Hexagonix encontrarCaractere
 	
 	jc .pronto
 
@@ -339,7 +339,7 @@ lerListaProcessos:
 	
 	call encontrarCaractereLista
 	
-	Andromeda cortarString
+	Hexagonix cortarString
 
 	mov [listaRemanescente], esi
 	

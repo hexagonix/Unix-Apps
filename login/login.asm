@@ -133,14 +133,14 @@ loginAndromeda: ;; Ponto de entrada
 	mov edi, login.parametroAjuda
 	mov esi, [usuarioSolicitado]
 	
-	Andromeda compararPalavrasString
+	Hexagonix compararPalavrasString
 	
 	jc usoAplicativo 
 
 	mov edi, login.parametroAjuda2
 	mov esi, [usuarioSolicitado]
 	
-	Andromeda compararPalavrasString
+	Hexagonix compararPalavrasString
 	
 	jc usoAplicativo    
 
@@ -167,7 +167,7 @@ iniciarExecucao:
   
 	call verificarTema
 
-	Andromeda limparTela
+	Hexagonix limparTela
 
 	call exibirLogoSistema
 	
@@ -194,7 +194,7 @@ match =ANDROMEDA, TIPOLOGIN
 
 	call verificarTema
 
-	Andromeda limparTela
+	Hexagonix limparTela
 
 	call exibirLogoSistema
 
@@ -225,9 +225,9 @@ match =SIM, VERBOSE
 	
 	mov ebx, 01h
 	
-	Andromeda obterString
+	Hexagonix obterString
 	
-	Andromeda cortarString
+	Hexagonix cortarString
 	
 	mov [usuarioSolicitado], esi
 	
@@ -245,13 +245,13 @@ match =SIM, VERBOSE
 	
 	mov ebx, 1234h                  ;; Não queremos eco na senha! 
 	
-	Andromeda obterString
+	Hexagonix obterString
 	
-	Andromeda cortarString
+	Hexagonix cortarString
 	
 	mov edi, senhaObtida
 	
-	Andromeda compararPalavrasString
+	Hexagonix compararPalavrasString
 	
 	jc .loginAceito
 	
@@ -305,7 +305,7 @@ match =SIM, VERBOSE
 	
 	call encontrarShell
 	
-	Andromeda destravar
+	Hexagonix destravar
 	
 .carregarShell:
 	
@@ -313,7 +313,7 @@ match =SIM, VERBOSE
 
 	mov esi, shellAndromeda
 
-	Andromeda arquivoExiste
+	Hexagonix arquivoExiste
 
 	jc .naoEncontrado
 
@@ -322,7 +322,7 @@ match =SIM, VERBOSE
 	
 	clc
 	
-	Andromeda iniciarProcesso      ;; Solicitar o carregamento do Shell do Andromeda®
+	Hexagonix iniciarProcesso      ;; Solicitar o carregamento do Shell do Andromeda®
 
 	jmp .shellFinalizado
 
@@ -364,13 +364,13 @@ limparTerminal:
 
 	mov esi, vd1         ;; Abrir o dispositivo de saída secundário em memória (Buffer) 
 	
-	Andromeda abrir      ;; Abre o dispositivo
+	Hexagonix abrir      ;; Abre o dispositivo
 	
-	Andromeda limparTela ;; Limpa seu conteúdo
+	Hexagonix limparTela ;; Limpa seu conteúdo
 	
 	mov esi, vd0         ;; Reabre o dispositivo de saída padrão 
 	
-	Andromeda abrir      ;; Abre o dispositivo
+	Hexagonix abrir      ;; Abre o dispositivo
 	
 	ret
 	
@@ -383,7 +383,7 @@ registrarUsuario:
 	mov esi, login.usuarioROOT
 	mov edi, usuario
 	
-	Andromeda compararPalavrasString
+	Hexagonix compararPalavrasString
 	
 	jc .root
 	
@@ -399,7 +399,7 @@ registrarUsuario:
 	
 	mov esi, usuario
 	
-	Andromeda definirUsuario
+	Hexagonix definirUsuario
 	
 	ret
 	
@@ -417,7 +417,7 @@ encontrarNomeUsuario:
 	mov esi, arquivo
 	mov edi, bufferArquivo
 	
-	Andromeda abrir
+	Hexagonix abrir
 	
 	jc .arquivoUsuarioAusente
 	
@@ -474,7 +474,7 @@ encontrarNomeUsuario:
     mov edi, usuario
 	mov esi, [usuarioSolicitado]
 	
-	Andromeda compararPalavrasString
+	Hexagonix compararPalavrasString
 	
 	jc .obtido
 	
@@ -553,7 +553,7 @@ verificarTema:
 	mov esi, arquivo
 	mov edi, bufferArquivo
 	
-	Andromeda abrir
+	Hexagonix abrir
 	
 	jc .arquivoUsuarioAusente
 	
@@ -610,14 +610,14 @@ verificarTema:
     mov edi, escolhaTema
 	mov esi, login.temaClaro
 	
-	Andromeda compararPalavrasString
+	Hexagonix compararPalavrasString
 	
 	jc .selecionarTemaClaro
 	
 	mov edi, escolhaTema
 	mov esi, login.temaEscuro
 	
-	Andromeda compararPalavrasString
+	Hexagonix compararPalavrasString
 	
 	jc .selecionarTemaEscuro
 
@@ -637,25 +637,25 @@ verificarTema:
 
 	mov esi, vd1         ;; Abrir o dispositivo de saída secundário em memória (Buffer) 
 	
-	Andromeda abrir      ;; Abre o dispositivo
+	Hexagonix abrir      ;; Abre o dispositivo
 	
 	mov eax, PRETO 
 	mov ebx, BRANCO_ANDROMEDA
 
-	Andromeda definirCor
+	Hexagonix definirCor
 
-	Andromeda limparTela ;; Limpa seu conteúdo
+	Hexagonix limparTela ;; Limpa seu conteúdo
 	
 	mov esi, vd0         ;; Reabre o dispositivo de saída padrão 
 	
-	Andromeda abrir      ;; Abre o dispositivo
+	Hexagonix abrir      ;; Abre o dispositivo
 
 	mov eax, PRETO 
 	mov ebx, BRANCO_ANDROMEDA
 
-	Andromeda definirCor
+	Hexagonix definirCor
 
-	Andromeda limparTela ;; Limpa seu conteúdo
+	Hexagonix limparTela ;; Limpa seu conteúdo
 
 	ret
 
@@ -663,25 +663,25 @@ verificarTema:
 
 	mov esi, vd1         ;; Abrir o dispositivo de saída secundário em memória (Buffer) 
 	
-	Andromeda abrir      ;; Abre o dispositivo
+	Hexagonix abrir      ;; Abre o dispositivo
 	
 	mov eax, BRANCO_ANDROMEDA 
 	mov ebx, PRETO
 
-	Andromeda definirCor
+	Hexagonix definirCor
 
-	Andromeda limparTela ;; Limpa seu conteúdo
+	Hexagonix limparTela ;; Limpa seu conteúdo
 	
 	mov esi, vd0         ;; Reabre o dispositivo de saída padrão 
 	
-	Andromeda abrir      ;; Abre o dispositivo
+	Hexagonix abrir      ;; Abre o dispositivo
 
 	mov eax, BRANCO_ANDROMEDA 
 	mov ebx, PRETO
 
-	Andromeda definirCor
+	Hexagonix definirCor
 
-	Andromeda limparTela ;; Limpa seu conteúdo
+	Hexagonix limparTela ;; Limpa seu conteúdo
 
 .nomeTemaInvalido:
 
@@ -714,7 +714,7 @@ limparVariavel:
 	
 	mov esi, usuario
 	
-	Andromeda tamanhoString
+	Hexagonix tamanhoString
 	
 	push eax
 	
@@ -741,7 +741,7 @@ limparVariaveisUsuario:
 	
 	mov esi, usuario
 	
-	Andromeda tamanhoString
+	Hexagonix tamanhoString
 	
 	push eax
 	
@@ -755,7 +755,7 @@ limparVariaveisUsuario:
 
 	mov esi, usuarioSolicitado
 	
-	Andromeda tamanhoString
+	Hexagonix tamanhoString
 	
 	push eax
 	
@@ -785,7 +785,7 @@ encontrarSenhaUsuario:
 	mov esi, arquivo
 	mov edi, bufferArquivo
 	
-	Andromeda abrir
+	Hexagonix abrir
 	
 	jc .arquivoUsuarioAusente
 	
@@ -884,7 +884,7 @@ encontrarShell:
 	mov esi, arquivo
 	mov edi, bufferArquivo
 	
-	Andromeda abrir
+	Hexagonix abrir
 	
 	jc .arquivoConfiguracaoAusente
 	
@@ -975,7 +975,7 @@ obterShellPadrao:
 	
 	mov esi, shellPadrao
 	
-	Andromeda tamanhoString
+	Hexagonix tamanhoString
 	
 	push eax
 	
@@ -999,11 +999,11 @@ salvarUsuarioAtual:
 	push ds
 	pop es
 	
-	Andromeda obterUsuario
+	Hexagonix obterUsuario
 	
 	push esi
 	
-	Andromeda tamanhoString
+	Hexagonix tamanhoString
 	
 	pop esi
 	
@@ -1017,7 +1017,7 @@ salvarUsuarioAtual:
 	
 	pop es
 	
-	Andromeda obterUsuario
+	Hexagonix obterUsuario
 	
 	mov [codigoAnterior], eax
 	
@@ -1030,7 +1030,7 @@ restaurarUsuario:
 	mov esi, usuarioAnterior
 	mov eax, [codigoAnterior]
 	
-	Andromeda definirUsuario
+	Hexagonix definirUsuario
 	
 	ret
 
@@ -1097,7 +1097,7 @@ verificarConsistencia:
 	call verificarTema             ;; Caso algum processo seja finalizado após alterar
 	                               ;; o plano de fundo padrão
 
-	Andromeda limparTela
+	Hexagonix limparTela
 
 	ret
 
@@ -1105,7 +1105,7 @@ verificarConsistencia:
 
 terminar:	
 
-	Andromeda encerrarProcesso
+	Hexagonix encerrarProcesso
 
 ;;************************************************************************************
 

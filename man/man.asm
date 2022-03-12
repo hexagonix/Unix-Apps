@@ -42,20 +42,20 @@ inicioAPP:
 	mov edi, man.parametroAjuda
 	mov esi, [utilitario]
 	
-	Andromeda compararPalavrasString
+	Hexagonix compararPalavrasString
 	
 	jc usoAplicativo
 
     mov edi, man.parametroAjuda2
 	mov esi, [utilitario]
 	
-	Andromeda compararPalavrasString
+	Hexagonix compararPalavrasString
 	
 	jc usoAplicativo
 
 	mov esi, [utilitario]
 
-    Andromeda tamanhoString
+    Hexagonix tamanhoString
 
 	mov ebx, eax
 
@@ -79,7 +79,7 @@ inicioAPP:
 
     push esi
 
-    Andromeda arquivoExiste
+    Hexagonix arquivoExiste
 
     jc manualNaoEncontrado
 
@@ -87,13 +87,13 @@ inicioAPP:
 
     pop esi
 	
-	Andromeda abrir
+	Hexagonix abrir
 	
 	jc manualNaoEncontrado
 
 ;; Preparação do ambiente
 
-    Andromeda limparTela
+    Hexagonix limparTela
 
     call montarInterface
 	
@@ -119,7 +119,7 @@ montarInterface:
 
 	mov al, ' '
 	
-	Andromeda imprimirCaractere
+	Hexagonix imprimirCaractere
 	
 	dec ecx
 	
@@ -170,7 +170,7 @@ usoAplicativo:
 
 terminar:	
 
-	Andromeda encerrarProcesso
+	Hexagonix encerrarProcesso
 	
 ;;*****************************************************************************
 
@@ -180,7 +180,7 @@ man:
 
 .parametroAjuda:  db "?", 0
 .parametroAjuda2: db "--ajuda",0
-.man:             db "Manual do Andromeda(R)", 0
+.man:             db "Manual do Hexagonix(R)", 0
 .uso:             db 10, 10, "Uso: man [utilitario]", 10, 10
                   db "Exibe ajuda detalhada dos utilitarios Unix instalados.", 10, 10      
                   db "Versao CoreUtils: ", versaoCoreUtils, 10

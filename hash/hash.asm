@@ -43,14 +43,14 @@ inicioShell:
 	mov edi, hash.parametroAjuda
 	mov esi, [linhaComando]
 	
-	Andromeda compararPalavrasString
+	Hexagonix compararPalavrasString
 	
 	jc usoAplicativo
 
 	mov edi, hash.parametroAjuda2
 	mov esi, [linhaComando]
 	
-	Andromeda compararPalavrasString
+	Hexagonix compararPalavrasString
 	
 	jc usoAplicativo
 		
@@ -65,22 +65,22 @@ inicioShell:
 	
 	novaLinha
 	
-	Andromeda obterInfoTela
+	Hexagonix obterInfoTela
 
 	mov byte[maxColunas], bl
 	mov byte[maxLinhas], bh
 
-	Andromeda obterCursor
+	Hexagonix obterCursor
 	
 	dec dh
 	
-	Andromeda definirCursor
+	Hexagonix definirCursor
 	
 	novaLinha
 	
 .iniciarSessao:
 
-	Andromeda obterUsuario
+	Hexagonix obterUsuario
 	
 	push eax
 	
@@ -91,7 +91,7 @@ inicioShell:
 	
 	push  esi
 	
-	Andromeda tamanhoString
+	Hexagonix tamanhoString
 	
 	pop esi
 	
@@ -122,7 +122,7 @@ inicioShell:
 	
 	mov esi, hash.usuarioNormal
 	
-	Andromeda tamanhoString
+	Hexagonix tamanhoString
 	
 	push  eax
 	
@@ -146,7 +146,7 @@ inicioShell:
 	
 	mov esi, hash.usuarioRoot
 	
-	Andromeda tamanhoString
+	Hexagonix tamanhoString
 	
 	push  eax
 	
@@ -167,7 +167,7 @@ inicioShell:
 
 	mov esi, hash.separador
 	
-	Andromeda tamanhoString
+	Hexagonix tamanhoString
 	
 	inc eax
 	
@@ -179,9 +179,9 @@ inicioShell:
 
 	novaLinha
    
-	Andromeda obterCursor
+	Hexagonix obterCursor
 	
-	Andromeda definirCursor
+	Hexagonix definirCursor
 	
 	mov esi, hash.nomeUsuario
 	
@@ -199,9 +199,9 @@ inicioShell:
 
 	sub al, 20
 	
-	Andromeda obterString
+	Hexagonix obterString
 	
-	Andromeda cortarString			 ;; Remover espaços em branco extras
+	Hexagonix cortarString			 ;; Remover espaços em branco extras
 		
 	cmp byte[esi], 0		         ;; Nenhum comando inserido
 	je .obterComando
@@ -212,7 +212,7 @@ inicioShell:
 	
 	mov edi, comandos.sair		
 	
-	Andromeda compararPalavrasString
+	Hexagonix compararPalavrasString
 
 	jc finalizarhashell
 
@@ -238,13 +238,13 @@ inicioShell:
 	cmp eax, Hexagon.imagemInvalida
 	je .imagemHAPPInvalida
 
-	Andromeda obterCursor
+	Hexagonix obterCursor
 	
 	mov dl, byte[maxColunas]    ;; Máximo de caracteres para obter
 
 	sub dl, 17
 	
-	Andromeda definirCursor
+	Hexagonix definirCursor
 	
 	push esi
 	
@@ -263,13 +263,13 @@ inicioShell:
 	
 .limiteAtingido:
 
-	Andromeda obterCursor
+	Hexagonix obterCursor
 	
 	mov dl, byte[maxColunas]    ;; Máximo de caracteres para obter
 
 	sub dl, 17
 	
-	Andromeda definirCursor
+	Hexagonix definirCursor
 	
 	mov esi, hash.limiteProcessos
 	
@@ -281,13 +281,13 @@ inicioShell:
 
 	push esi
 
-	Andromeda obterCursor
+	Hexagonix obterCursor
 	
 	mov dl, byte[maxColunas]    ;; Máximo de caracteres para obter
 
 	sub dl, 17
 	
-	Andromeda definirCursor
+	Hexagonix definirCursor
 	
 	novaLinha
 	novaLinha
@@ -308,7 +308,7 @@ inicioShell:
 
 	mov esi, edi
 	
-	Andromeda cortarString
+	Hexagonix cortarString
 	
 	pop esi
 	
@@ -316,7 +316,7 @@ inicioShell:
 	
 	stc
 	
-	Andromeda iniciarProcesso
+	Hexagonix iniciarProcesso
 	
 	jc .falhaExecutando
 	
@@ -375,7 +375,7 @@ obterArgumentos:
 	mov byte[esi-1], 0
 	mov ebx, esi
 	
-	Andromeda tamanhoString
+	Hexagonix tamanhoString
 	
 	mov ecx, eax
 	
@@ -419,7 +419,7 @@ finalizarhashell:
 	
 	mov ebx, 00h
 	
-	Andromeda encerrarProcesso
+	Hexagonix encerrarProcesso
 
 ;;************************************************************************************
 
@@ -437,7 +437,7 @@ finalizarhashell:
 
 hash:
 
-.prompt:               db "@Andromeda", 0
+.prompt:               db "@Hexagonix", 0
 .comandoNaoEncontrado: db ": arquivo nao encontrado.", 10, 0
 .imagemInvalida:       db ": nao e possivel carregar a imagem. Formato executavel nao suportado.", 10, 0
 .limiteProcessos:      db 10, 10, "Nao existe memoria disponivel para executar o aplicativo solicitado.", 10

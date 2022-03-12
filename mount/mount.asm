@@ -56,14 +56,14 @@ inicioAPP:
 	mov edi, mount.parametroAjuda
 	mov esi, [parametros]
 	
-	Andromeda compararPalavrasString
+	Hexagonix compararPalavrasString
 	
 	jc usoAplicativo
 
 	mov edi, mount.dispositivoPadrao
 	mov esi, [pontoMontagem]
 
-	Andromeda compararPalavrasString
+	Hexagonix compararPalavrasString
 	
 	jc .realizarMontagem
 	
@@ -93,7 +93,7 @@ inicioAPP:
 
 	mov esi, [volume]
 	
-	Andromeda abrir
+	Hexagonix abrir
 	
 	jc erroAbertura
 	
@@ -111,7 +111,7 @@ exibirMontagens:
   
     imprimirString  
 	
-	Andromeda obterDisco
+	Hexagonix obterDisco
 	
 	push eax
 	push edi
@@ -137,7 +137,7 @@ exibirMontagens:
 	
 	mov esi, edi
 	
-	Andromeda cortarString
+	Hexagonix cortarString
 	
 	imprimirString
 	
@@ -229,7 +229,7 @@ erroAbertura:
 
 terminar:	
 
-	Andromeda encerrarProcesso
+	Hexagonix encerrarProcesso
 
 ;;************************************************************************************
 
@@ -246,7 +246,7 @@ obterParametros:
 	
 	mov al, ' '
 	
-	Andromeda encontrarCaractere
+	Hexagonix encontrarCaractere
 	
 	jc usoAplicativo
 

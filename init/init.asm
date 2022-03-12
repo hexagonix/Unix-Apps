@@ -51,7 +51,7 @@ tamanhoLimiteBusca = 32768
 shellPadrao: db "sh.app", 0     ;; Nome do arquivo que contêm o Shell padrão Unix
 vd0: db "vd0", 0                ;; Dispositivo de saída padrão do Sistema
 vd1: db "vd1", 0	            ;; Dispositivo de saída secundário em memória (Buffer)
-arquivo: db "init.unx", 0       ;; Nome do arquivo de configuração do Inicializador do Sistema (Init) do Andromeda®
+arquivo: db "init.unx", 0       ;; Nome do arquivo de configuração do Inicializador do Sistema (Init) do Hexagonix
 tentarShellPadrao: db 0         ;; Sinaliza a tentativa de se carregar o Shell padrão
 servicoAndromeda: times 11 db 0 ;; Armazena o nome do Shell à ser utilizado pelo Sistema
 
@@ -70,16 +70,16 @@ init:
 
 ;;************************************************************************************			
 
-initAndromeda: ;; Ponto de entrada do Inicializador do Sistema (Init) do Andromeda®
+initAndromeda: ;; Ponto de entrada do Inicializador do Sistema (Init) do Hexagonix®
 
-	Andromeda obterPID
+	Hexagonix obterPID
 	
 	cmp eax, 01h
 	je .configurarTerminal
 	
-	Andromeda encerrarProcesso
+	Hexagonix encerrarProcesso
 	
-;; Configura o terminal do Andromeda®
+;; Configura o terminal do Hexagonix
 
 .configurarTerminal:
 
@@ -89,7 +89,7 @@ initAndromeda: ;; Ponto de entrada do Inicializador do Sistema (Init) do Androme
 	
 	call limparTerminal
 		
-;; Aqui poderão ser adicionadas rotinas de configuração do Andromeda®
+;; Aqui poderão ser adicionadas rotinas de configuração do Hexagonix
 
 iniciarExecucao:
 
@@ -100,13 +100,13 @@ match =SIM, VERBOSE
 
 }
 
-	Andromeda travar ;; Impede que o usuário mate o processo de login com uma tecla especial
+	Hexagonix travar ;; Impede que o usuário mate o processo de login com uma tecla especial
 	
-;; Agora o Inicializador do Sistema (Init) do Andromeda® irá verificar a existência de algum arquivo
+;; Agora o Inicializador do Sistema (Init) do Hexagonix irá verificar a existência de algum arquivo
 ;; de configuração de inicialização. Caso este arquivo esteja presente, o Inicializador do Sistema (Init)
-;; do Andromeda® irá buscar a declaração de um Shell para ser utilizado com o Sistema, assim como declarações
-;; de configuração do Andromeda®. Caso este arquivo não seja encontrado, o Inicializador do Sistema (Init) 
-;; do Andromeda® irá carregar o Shell padrão.
+;; do Hexagonix irá buscar a declaração de um Shell para ser utilizado com o Sistema, assim como declarações
+;; de configuração do Hexagonix. Caso este arquivo não seja encontrado, o Inicializador do Sistema (Init) 
+;; do Hexagonix irá carregar o Shell padrão.
   
 match =SIM, VERBOSE
 {
@@ -121,7 +121,7 @@ match =SIM, VERBOSE
 	
 	mov esi, servicoAndromeda
 	
-	Andromeda arquivoExiste
+	Hexagonix arquivoExiste
 	
 	jc .tentarShellPadrao
 
@@ -130,26 +130,26 @@ match =SIM, VERBOSE
 	
 	stc
 	
-	Andromeda iniciarProcesso      ;; Solicitar o carregamento do primeiro serviço
+	Hexagonix iniciarProcesso      ;; Solicitar o carregamento do primeiro serviço
  
 	jnc .servicoFinalizado
 
 .naoEncontrado:                    ;; O serviço não pôde ser localizado
     
-    cmp byte[tentarShellPadrao], 0 ;; Verifica se já se tentou carregar o Shell padrão do Andromeda®
-    je .tentarShellPadrao          ;; Se não, tente carregar o Shell padrão do Andromeda®
+    cmp byte[tentarShellPadrao], 0 ;; Verifica se já se tentou carregar o Shell padrão do Hexagonix
+    je .tentarShellPadrao          ;; Se não, tente carregar o Shell padrão do Hexagonix
     
-	Andromeda encerrarProcesso     ;; Se sim, o Shell padrão também não pode ser executado  
+	Hexagonix encerrarProcesso     ;; Se sim, o Shell padrão também não pode ser executado  
 
-.tentarShellPadrao:                ;; Tentar carregar o Shell padrão do Andromeda®
+.tentarShellPadrao:                ;; Tentar carregar o Shell padrão do Hexagonix
 
-	call obterShellPadrao          ;; Solicitar a configuração do nome do Shell padrão do Andromeda®
+	call obterShellPadrao          ;; Solicitar a configuração do nome do Shell padrão do Hexagonix
 	
-	mov byte[tentarShellPadrao], 1 ;; Sinalizar a tentativa de carregamento do Shell padrão do Andromeda®
+	mov byte[tentarShellPadrao], 1 ;; Sinalizar a tentativa de carregamento do Shell padrão do Hexagonix
 	
-	Andromeda destravar            ;; O Shell pode ser terminado utilizando uma tecla especial
+	Hexagonix destravar            ;; O Shell pode ser terminado utilizando uma tecla especial
 	
-	jmp .carregarServico           ;; Tentar carregar o Shell padrão do Andromeda®
+	jmp .carregarServico           ;; Tentar carregar o Shell padrão do Hexagonix
 	
 .servicoFinalizado:                ;; Tentar carregar o serviço novamente
 
@@ -163,13 +163,13 @@ limparTerminal:
 
 	mov esi, vd1         ;; Abrir o dispositivo de saída secundário em memória (Buffer) 
 	
-	Andromeda abrir      ;; Abre o dispositivo
+	Hexagonix abrir      ;; Abre o dispositivo
 	
-	;; Andromeda limparTela ;; Limpa seu conteúdo
+	;; Hexagonix limparTela ;; Limpa seu conteúdo
 	
 	mov esi, vd0         ;; Reabre o dispositivo de saída padrão 
 	
-	Andromeda abrir      ;; Abre o dispositivo
+	Hexagonix abrir      ;; Abre o dispositivo
 	
 	ret
 	
@@ -187,7 +187,7 @@ encontrarConfiguracaoInit:
 	mov esi, arquivo
 	mov edi, bufferArquivo
 	
-	Andromeda abrir
+	Hexagonix abrir
 	
 	jc .arquivoConfiguracaoAusente
 	
@@ -288,7 +288,7 @@ obterShellPadrao:
 	
 	mov esi, servicoAndromeda
 	
-	Andromeda tamanhoString
+	Hexagonix tamanhoString
 	
 	push eax
 	
@@ -308,7 +308,7 @@ obterShellPadrao:
 	
 	mov esi, shellPadrao
 	
-	Andromeda tamanhoString
+	Hexagonix tamanhoString
 	
 	push eax
 	

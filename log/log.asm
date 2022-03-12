@@ -47,24 +47,24 @@ inicioAPP:
 	mov edi, log.parametroAjuda
 	mov esi, [parametro]
 	
-	Andromeda compararPalavrasString
+	Hexagonix compararPalavrasString
 	
 	jc usoAplicativo
 
 	mov edi, log.parametroAjuda2
 	mov esi, [parametro]
 	
-	Andromeda compararPalavrasString
+	Hexagonix compararPalavrasString
 	
 	jc usoAplicativo
 	
 	mov esi, log.vd2
 	
-	Andromeda abrir
+	Hexagonix abrir
 	
 	mov esi, log.vd1
 
-	Andromeda abrir
+	Hexagonix abrir
 
 	novaLinha
 	
@@ -84,7 +84,7 @@ usoAplicativo:
 
 terminar:	
 
-	Andromeda encerrarProcesso
+	Hexagonix encerrarProcesso
 
 ;;************************************************************************************
 

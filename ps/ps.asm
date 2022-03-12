@@ -46,35 +46,35 @@ inicioAPP: ;; Ponto de entrada do aplicativo
 	mov edi, ps.parametroAjuda
 	mov esi, [parametro]
 	
-	Andromeda compararPalavrasString
+	Hexagonix compararPalavrasString
 	
 	jc usoAplicativo
 
 	mov edi, ps.parametroAjuda2
 	mov esi, [parametro]
 	
-	Andromeda compararPalavrasString
+	Hexagonix compararPalavrasString
 	
 	jc usoAplicativo
 	
 	mov edi, ps.parametroPID
 	mov esi, [parametro]
 	
-	Andromeda compararPalavrasString
+	Hexagonix compararPalavrasString
 	
 	jc parametroPID
 	
 	mov edi, ps.parametroMemoria
 	mov esi, [parametro]
 	
-	Andromeda compararPalavrasString
+	Hexagonix compararPalavrasString
 	
 	jc parametroMemoria
 	
 	mov edi, ps.parametroOutros
 	mov esi, [parametro]
 	
-	Andromeda compararPalavrasString
+	Hexagonix compararPalavrasString
 	
 	jc parametroOutrosProcessos
 	
@@ -84,7 +84,7 @@ inicioAPP: ;; Ponto de entrada do aplicativo
 
 parametroPID:
     
-    Andromeda obterPID
+    Hexagonix obterPID
     
     push eax
     
@@ -111,7 +111,7 @@ parametroMemoria:
     
     imprimirString
     
-    Andromeda usoMemoria
+    Hexagonix usoMemoria
 	
 	imprimirInteiro
     
@@ -121,7 +121,7 @@ parametroMemoria:
     
     novaLinha
 	
-	Andromeda encerrarProcesso
+	Hexagonix encerrarProcesso
     
     jmp terminar
 
@@ -129,7 +129,7 @@ parametroMemoria:
 
 parametroOutrosProcessos:
 
-	Andromeda obterPID
+	Hexagonix obterPID
 	
 	push eax
 	
@@ -163,7 +163,7 @@ terminar:
 
 	novaLinha
 	
-	Andromeda encerrarProcesso
+	Hexagonix encerrarProcesso
 
 ;;************************************************************************************
 
@@ -189,5 +189,5 @@ ps:
 .parametroOutros:  db "-o", 0
 .parametroMemoria: db "-v", 0     
 .numeroProcessos:  db "Existem atualmente ", 0
-.processos:        db " processos na pilha de execucao do Andromeda(R).", 0
+.processos:        db " processos na pilha de execucao do Hexagonix(R).", 0
     

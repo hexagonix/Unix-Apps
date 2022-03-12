@@ -42,7 +42,7 @@ inicioAPP: ;; Ponto de entrada do aplicativo
 	
 ;;************************************************************************************
 
-	Andromeda obterCor
+	Hexagonix obterCor
 
 	mov dword[top.corFonte], eax
 	mov dword[top.corFundo], ebx
@@ -55,14 +55,14 @@ inicioAPP: ;; Ponto de entrada do aplicativo
 	mov edi, top.parametroAjuda
 	mov esi, [parametro]
 	
-	Andromeda compararPalavrasString
+	Hexagonix compararPalavrasString
 	
 	jc usoAplicativo
 
 	mov edi, top.parametroAjuda2
 	mov esi, [parametro]
 	
-	Andromeda compararPalavrasString
+	Hexagonix compararPalavrasString
 	
 	jc usoAplicativo
 	
@@ -78,7 +78,7 @@ exibirProcessos:
 	
 	imprimirString
 	
-	Andromeda obterProcessos
+	Hexagonix obterProcessos
 	
 	push eax
 	
@@ -114,7 +114,7 @@ exibirProcessos:
 	
 	call definirCorTexto
 	
-    Andromeda usoMemoria
+    Hexagonix usoMemoria
 	
 	imprimirInteiro
     
@@ -132,7 +132,7 @@ exibirProcessos:
 	
 	call definirCorTexto
 	
-    Andromeda usoMemoria
+    Hexagonix usoMemoria
 	
 	mov eax, ecx
 	
@@ -162,7 +162,7 @@ terminar:
 
 	novaLinha
 	
-	Andromeda encerrarProcesso
+	Hexagonix encerrarProcesso
 
 ;;************************************************************************************
 
@@ -176,7 +176,7 @@ definirCorTexto:
 
 	mov ebx, [top.corFundo]
 	
-	Andromeda definirCor
+	Hexagonix definirCor
 	
 	ret
 
@@ -187,7 +187,7 @@ definirCorPadrao:
 	mov eax, [top.corFonte]
 	mov ebx, [top.corFundo]
 	
-	Andromeda definirCor
+	Hexagonix definirCor
 	
 	ret
 

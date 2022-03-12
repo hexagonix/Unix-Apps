@@ -50,21 +50,21 @@ inicioAPP:
 	mov edi, hostname.parametroAjuda
 	mov esi, [parametro]
 	
-	Andromeda compararPalavrasString
+	Hexagonix compararPalavrasString
 	
 	jc usoAplicativo
 
 	mov edi, hostname.parametroAjuda2
 	mov esi, [parametro]
 	
-	Andromeda compararPalavrasString
+	Hexagonix compararPalavrasString
 	
 	jc usoAplicativo
 	
 	mov edi, bufferArquivo
 	mov esi, hostname.arquivoUnix
 	
-	Andromeda abrir
+	Hexagonix abrir
 	
 	jc .arquivoNaoEncontrado
 	
@@ -73,14 +73,14 @@ inicioAPP:
 	
 	mov esi, bufferArquivo
 
-	Andromeda tamanhoString
+	Hexagonix tamanhoString
 
 	mov edx, eax 
 	dec edx
 
 	mov al, 0
 	
-	Andromeda inserirCaractere
+	Hexagonix inserirCaractere
 
 	mov esi, bufferArquivo
 	
@@ -112,7 +112,7 @@ usoAplicativo:
 
 terminar:	
 
-	Andromeda encerrarProcesso
+	Hexagonix encerrarProcesso
 
 ;;************************************************************************************
 

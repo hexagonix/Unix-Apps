@@ -55,42 +55,42 @@ inicioAPP:
 	mov edi, energia.parametroAjuda
 	mov esi, [parametro]
 	
-	Andromeda compararPalavrasString
+	Hexagonix compararPalavrasString
 	
 	jc usoAplicativo
 
 	mov edi, energia.parametroAjuda2
 	mov esi, [parametro]
 	
-	Andromeda compararPalavrasString
+	Hexagonix compararPalavrasString
 	
 	jc usoAplicativo
 
 	mov edi, energia.parametroDesligar
 	mov esi, [parametro]
 	
-	Andromeda compararPalavrasString
+	Hexagonix compararPalavrasString
 	
 	jc iniciarDesligamento
 	
 	mov edi, energia.parametroReiniciar
 	mov esi, [parametro]
 	
-	Andromeda compararPalavrasString
+	Hexagonix compararPalavrasString
 	
 	jc iniciarReinicio
 
 	mov edi, energia.parDesligarSemEco
 	mov esi, [parametro]
 	
-	Andromeda compararPalavrasString
+	Hexagonix compararPalavrasString
 	
 	jc iniciarDesligamentoSemEco
 
 	mov edi, energia.parReiniciarSemEco
 	mov esi, [parametro]
 	
-	Andromeda compararPalavrasString
+	Hexagonix compararPalavrasString
 	
 	jc iniciarReinicioSemEco
 
@@ -118,7 +118,7 @@ iniciarDesligamentoSemEco:
 
 	logSistema energia.Verbose.parametroSolicitar, 00h, Log.Prioridades.p4
 
-	Andromeda desligarPC
+	Hexagonix desligarPC
 
 	jmp terminar
 
@@ -132,7 +132,7 @@ iniciarReinicioSemEco:
 
 	logSistema energia.Verbose.parametroSolicitar, 00h, Log.Prioridades.p4
 
-	Andromeda reiniciarPC
+	Hexagonix reiniciarPC
 
 	jmp terminar
 
@@ -158,7 +158,7 @@ desligarHexagon:
 
 	logSistema energia.Verbose.parametroSolicitar, 00h, Log.Prioridades.p4
 
-	Andromeda desligarPC
+	Hexagonix desligarPC
 
 	jmp terminar
 
@@ -172,7 +172,7 @@ reiniciarHexagon:
 
 	logSistema energia.Verbose.parametroSolicitar, 00h, Log.Prioridades.p4
 
-	Andromeda reiniciarPC
+	Hexagonix reiniciarPC
 
 	jmp terminar
 
@@ -194,7 +194,7 @@ prepararSistema:
 
 	mov ecx, 500
 	
-	Andromeda causarAtraso
+	Hexagonix causarAtraso
 	
 	mov esi, energia.msgPronto
 
@@ -206,7 +206,7 @@ prepararSistema:
 
 	mov ecx, 500
 	
-	Andromeda causarAtraso
+	Hexagonix causarAtraso
 	
 	mov esi, energia.msgPronto
 
@@ -218,7 +218,7 @@ prepararSistema:
 
 	mov ecx, 500
 	
-	Andromeda causarAtraso
+	Hexagonix causarAtraso
 	
 	mov esi, energia.msgPronto
 
@@ -230,7 +230,7 @@ prepararSistema:
 
 	mov ecx, 500
 	
-	Andromeda causarAtraso
+	Hexagonix causarAtraso
 	
 	mov esi, energia.msgPronto
 
@@ -266,7 +266,7 @@ terminar:
 
 	logSistema energia.Verbose.falhaSolicitacao, 00h, Log.Prioridades.p4
 
-	Andromeda encerrarProcesso
+	Hexagonix encerrarProcesso
 
 ;;************************************************************************************
 ;;
@@ -284,13 +284,13 @@ energia:
 .parReiniciarSemEco: db "-re", 0
 .msgDesligamento:    db 10, 10, "!> Preparando para desligar seu computador... ", 0
 .msgFinalizando:     db 10, 10, "#> Finalizando todos os processos ainda em execucao...  ", 0
-.msgAndromeda:       db 10, 10, "#> Finalizando o Sistema Operacional Andromeda(R)...    ", 0
+.msgAndromeda:       db 10, 10, "#> Finalizando o Sistema Operacional Hexagonix(R)...    ", 0
 .msgDiscos:          db 10, 10, "#> Finalizando os discos e desligando seu computador... ", 0
 .msgPronto:          db "[Concluido]", 0
 .msgFalha:           db "[Falha]", 0
 .parametroAjuda:     db "?", 0  
 .parametroAjuda2:    db "--ajuda", 0
-.sistema:            db 10, "Sistema Operacional Andromeda(R)", 10, 10
+.sistema:            db 10, "Sistema Operacional Hexagonix(R)", 10, 10
                      db "Copyright (C) 2016-2022 Felipe Miguel Nery Lunkes", 10
                      db "Todos os direitos reservados.", 10, 0
 .argumentos:         db 10, 10, "Um argumento e necessario para controlar o estado deste computador.", 10, 0

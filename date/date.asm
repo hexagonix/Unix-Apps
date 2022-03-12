@@ -47,14 +47,14 @@ inicioAPP:
 	mov edi, date.parametroAjuda
 	mov esi, [parametro]
 	
-	Andromeda compararPalavrasString
+	Hexagonix compararPalavrasString
 	
 	jc usoAplicativo
 
     mov edi, date.parametroAjuda2
 	mov esi, [parametro]
 	
-	Andromeda compararPalavrasString
+	Hexagonix compararPalavrasString
 	
 	jc usoAplicativo
 	
@@ -215,7 +215,7 @@ processarBCD:
 
 ;; Vamos processar o dia
     
-    Andromeda retornarData
+    Hexagonix retornarData
 
     call BCDParaASCII
 
@@ -224,7 +224,7 @@ processarBCD:
 
 ;; Vamos processar o mês
 
-    Andromeda retornarData
+    Hexagonix retornarData
 
     mov eax, ebx 
 
@@ -235,7 +235,7 @@ processarBCD:
 
 ;; Vamos processar o século (primeiros dois dígitos do ano)
 
-    Andromeda retornarData
+    Hexagonix retornarData
 
     mov eax, ecx 
 
@@ -246,7 +246,7 @@ processarBCD:
 
 ;; Vamos processar o ano
 
-    Andromeda retornarData
+    Hexagonix retornarData
 
     mov eax, edx 
 
@@ -257,7 +257,7 @@ processarBCD:
 
 ;; Vamos processar o dia da semana
 
-    Andromeda retornarData
+    Hexagonix retornarData
 
     mov eax, esi 
 
@@ -268,7 +268,7 @@ processarBCD:
 
 ;; Vamos processar a hora
 
-    Andromeda retornarHora
+    Hexagonix retornarHora
 
     mov eax, eax 
 
@@ -279,7 +279,7 @@ processarBCD:
 
 ;; Vamos processar os minutos
 
-    Andromeda retornarHora
+    Hexagonix retornarHora
 
     mov eax, ebx
 
@@ -290,7 +290,7 @@ processarBCD:
 
 ;; Vamos processar os segundos
 
-    Andromeda retornarHora
+    Hexagonix retornarHora
 
     mov eax, ecx
 
@@ -330,7 +330,7 @@ usoAplicativo:
 
 terminar:	
 
-	Andromeda encerrarProcesso
+	Hexagonix encerrarProcesso
 
 ;;************************************************************************************
 

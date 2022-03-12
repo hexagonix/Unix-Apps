@@ -96,14 +96,14 @@ inicioAPP:
 	mov edi, fnt.parametroAjuda
 	mov esi, [parametro]
 	
-	Andromeda compararPalavrasString
+	Hexagonix compararPalavrasString
 	
 	jc usoAplicativo
 
 	mov edi, fnt.parametroAjuda2
 	mov esi, [parametro]
 	
-	Andromeda compararPalavrasString
+	Hexagonix compararPalavrasString
 	
 	jc usoAplicativo
 	
@@ -117,13 +117,13 @@ inicioAPP:
 	
 	mov esi, [parametro]
 	
-	Andromeda cortarString			;; Remover espaços em branco extras
+	Hexagonix cortarString			;; Remover espaços em branco extras
 	
 	call validarFonte
 
 	jc .erroFormato
 
-	Andromeda alterarFonte
+	Hexagonix alterarFonte
 	
 	jc .erroTexto
 	
@@ -141,7 +141,7 @@ inicioAPP:
 	
 	mov ebx, 00h
 	
-	Andromeda encerrarProcesso
+	Hexagonix encerrarProcesso
 	
 .erroTexto:
 
@@ -171,7 +171,7 @@ terminar:
 
 	mov ebx, 00h
 
-	Andromeda encerrarProcesso
+	Hexagonix encerrarProcesso
 	
 ;;************************************************************************************
 
@@ -190,7 +190,7 @@ validarFonte:
 	mov esi, [parametro]
 	mov edi, bufferArquivo
 
-	Andromeda abrir
+	Hexagonix abrir
 
 	jc .erroSemFonte
 
@@ -210,7 +210,7 @@ validarFonte:
 
 .verificarTamanho:
 
-	Andromeda arquivoExiste
+	Hexagonix arquivoExiste
 
 ;; Em EAX, o tamanho do arquivo. Ele não deve ser maior que 2000 bytes, o que poderia
 ;; sobrescrever dados na memória do Hexagon

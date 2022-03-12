@@ -45,7 +45,7 @@ inicioAPP:
 
 ;;************************************************************************************
 
-	Andromeda obterCor
+	Hexagonix obterCor
 
 	mov dword[ls.corFonte], eax
 	mov dword[ls.corFundo], ebx
@@ -56,7 +56,7 @@ inicioAPP:
 
 verificarResolucao:
 
-    Andromeda obterResolucao
+    Hexagonix obterResolucao
     
     cmp eax, 1
     je .modoGrafico1
@@ -90,21 +90,21 @@ verificarParametros:
 	mov edi, ls.parametroAjuda
 	mov esi, [parametro]
 	
-	Andromeda compararPalavrasString
+	Hexagonix compararPalavrasString
 	
 	jc usoAplicativo
 
 	mov edi, ls.parametroAjuda2
 	mov esi, [parametro]
 	
-	Andromeda compararPalavrasString
+	Hexagonix compararPalavrasString
 	
 	jc usoAplicativo
 
 	mov edi, ls.parametroTudo
 	mov esi, [parametro]
 	
-	Andromeda compararPalavrasString
+	Hexagonix compararPalavrasString
 	
 	jc configurarExibicao
 	
@@ -128,7 +128,7 @@ listar:
 	novaLinha
 	novaLinha
 	
-	Andromeda listarArquivos	;; Obter arquivos em ESI
+	Hexagonix listarArquivos	;; Obter arquivos em ESI
 	
 	jc .erroLista
 	
@@ -157,61 +157,61 @@ listar:
 	
 	mov edi, ls.extensaoAPP
 	
-	Andromeda compararPalavrasString  ;; Checar por extensão .APP
+	Hexagonix compararPalavrasString  ;; Checar por extensão .APP
 	
 	jc .aplicativo
 	
 	mov edi, ls.extensaoSIS
 	
-	Andromeda compararPalavrasString
+	Hexagonix compararPalavrasString
 	
 	jc .sistema
 	
 	mov edi, ls.extensaoASM
 	
-	Andromeda compararPalavrasString
+	Hexagonix compararPalavrasString
 	
 	jc .fonteASM
 	
 	mov edi, ls.extensaoBIN
 	
-	Andromeda compararPalavrasString
+	Hexagonix compararPalavrasString
 	
 	jc .arquivoBIN
 	
 	mov edi, ls.extensaoUNX
 	
-	Andromeda compararPalavrasString
+	Hexagonix compararPalavrasString
 	
 	jc .arquivoUNX
 	
 	mov edi, ls.extensaoFNT
 	
-	Andromeda compararPalavrasString
+	Hexagonix compararPalavrasString
 	
 	jc .arquivoFNT
 	
 	mov edi, ls.extensaoOCL
 
-	Andromeda compararPalavrasString
+	Hexagonix compararPalavrasString
 	
 	jc .arquivoOCL
 
 	mov edi, ls.extensaoMOD
 
-	Andromeda compararPalavrasString
+	Hexagonix compararPalavrasString
 	
 	jc .arquivoMOD
 
 	mov edi, ls.extensaoCOW
 
-	Andromeda compararPalavrasString
+	Hexagonix compararPalavrasString
 	
 	jc .arquivoCOW
 
 	mov edi, ls.extensaoMAN
 
-	Andromeda compararPalavrasString
+	Hexagonix compararPalavrasString
 	
 	jc .arquivoMAN
 
@@ -450,7 +450,7 @@ usoAplicativo:
 
 terminar:	
 	
-	Andromeda encerrarProcesso
+	Hexagonix encerrarProcesso
 	
 ;;************************************************************************************
 
@@ -464,7 +464,7 @@ definirCorArquivo:
 
 	mov ebx, dword[ls.corFundo]
 	
-	Andromeda definirCor
+	Hexagonix definirCor
 	
 	ret
 
@@ -475,7 +475,7 @@ definirCorPadrao:
 	mov eax, dword[ls.corFonte]
 	mov ebx, dword[ls.corFundo]
 	
-	Andromeda definirCor
+	Hexagonix definirCor
 	
 	ret
 
@@ -492,7 +492,7 @@ colocarEspaco:
 	
 	mov esi, [arquivoAtual]
 	
-	Andromeda tamanhoString
+	Hexagonix tamanhoString
 	
 	mov ebx, 15
 	
@@ -504,7 +504,7 @@ colocarEspaco:
 
 	mov al, ' '
 	
-	Andromeda imprimirCaractere
+	Hexagonix imprimirCaractere
 	
 	dec ecx
 	
@@ -536,7 +536,7 @@ lerListaArquivos:
 	
 	mov al, ' '
 	
-	Andromeda encontrarCaractere
+	Hexagonix encontrarCaractere
 	
 	jc .pronto
 
@@ -588,7 +588,7 @@ verificarArquivo:
 
 	mov esi, [parametro]
 
-	Andromeda arquivoExiste
+	Hexagonix arquivoExiste
 
 	jc terminar
 
@@ -597,7 +597,7 @@ verificarArquivo:
 
 	mov esi, [parametro]
 
-	Andromeda stringParaMaiusculo
+	Hexagonix stringParaMaiusculo
 
 	mov [parametro], esi
 

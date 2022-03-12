@@ -52,14 +52,14 @@ inicioAPP:
 	mov edi, cp.parametroAjuda
 	mov esi, [parametros]
 	
-	Andromeda compararPalavrasString
+	Hexagonix compararPalavrasString
 	
 	jc usoAplicativo
 
 	mov edi, cp.parametroAjuda2
 	mov esi, [parametros]
 	
-	Andromeda compararPalavrasString
+	Hexagonix compararPalavrasString
 	
 	jc usoAplicativo
 	
@@ -68,13 +68,13 @@ inicioAPP:
 	
 	mov esi, [arquivoEntrada]
 	
-	Andromeda arquivoExiste
+	Hexagonix arquivoExiste
 	
 	jc fonteNaoEncontrado
 	
 	mov esi, [arquivoSaida]
 	
-	Andromeda arquivoExiste
+	Hexagonix arquivoExiste
 	
 	jnc destinoPresente
 
@@ -83,20 +83,20 @@ inicioAPP:
 	mov esi, [arquivoEntrada]
 	mov edi, bufferArquivo
 	
-	Andromeda abrir
+	Hexagonix abrir
 	
 	jc erroAoAbrir
 	
 	mov esi, bufferArquivo
 	
-	Andromeda tamanhoString
+	Hexagonix tamanhoString
 	
 ;; Salvar arquivo no disco
 
 	mov esi, [arquivoSaida]
 	mov edi, bufferArquivo
 	
-	Andromeda salvarArquivo
+	Hexagonix salvarArquivo
 	
 	jc erroAoSalvar
 	
@@ -150,7 +150,7 @@ destinoPresente:
 
 terminar:	
 
-	Andromeda encerrarProcesso
+	Hexagonix encerrarProcesso
 
 ;;************************************************************************************
 
@@ -167,7 +167,7 @@ obterParametros:
 	
 	mov al, ' '
 	
-	Andromeda encontrarCaractere
+	Hexagonix encontrarCaractere
 	
 	jc usoAplicativo
 

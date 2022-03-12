@@ -45,35 +45,35 @@ inicioAPP: ;; Ponto de entrada do aplicativo
 	mov edi, uname.parametroAjuda
 	mov esi, [parametro]
 	
-	Andromeda compararPalavrasString
+	Hexagonix compararPalavrasString
 	
 	jc usoAplicativo
 
 	mov edi, uname.parametroAjuda2
 	mov esi, [parametro]
 	
-	Andromeda compararPalavrasString
+	Hexagonix compararPalavrasString
 	
 	jc usoAplicativo
 	
 	mov edi, uname.parametroExibirTudo
 	mov esi, [parametro]
 	
-	Andromeda compararPalavrasString
+	Hexagonix compararPalavrasString
 	
 	jc exibirTudo
 	
 	mov edi, uname.parametroExibirVersao
 	mov esi, [parametro]
 	
-	Andromeda compararPalavrasString
+	Hexagonix compararPalavrasString
 	
 	jc exibirVersaoApenas
 	
 	mov edi, uname.parametroExibirAndromeda
 	mov esi, [parametro]
 	
-	Andromeda compararPalavrasString
+	Hexagonix compararPalavrasString
 	
 	jc exibirInfoAndromeda
 	
@@ -86,7 +86,7 @@ exibirTudo:
 	novaLinha
 	novaLinha
 	
-	Andromeda retornarVersao
+	Hexagonix retornarVersao
 	
 	imprimirString
 
@@ -99,7 +99,7 @@ exibirTudo:
 	mov edi, enderecoCarregamento
 	mov esi, uname.arquivoUnix
 	
-	Andromeda abrir
+	Hexagonix abrir
 	
 	jc .arquivoNaoEncontrado ;; Se não for encontrado, exibir o padrão
 
@@ -107,14 +107,14 @@ exibirTudo:
 
 	mov esi, enderecoCarregamento
 
-	Andromeda tamanhoString
+	Hexagonix tamanhoString
 
 	mov edx, eax 
 	dec edx
 
 	mov al, 0
 	
-	Andromeda inserirCaractere
+	Hexagonix inserirCaractere
 
 	mov esi, enderecoCarregamento
 	
@@ -126,7 +126,7 @@ exibirTudo:
 	
 	imprimirString
 	
-	Andromeda retornarVersao
+	Hexagonix retornarVersao
 	
 	imprimirString
 	
@@ -204,7 +204,7 @@ exibirVersaoApenas:
 	novaLinha
 	novaLinha
 	
-	Andromeda retornarVersao
+	Hexagonix retornarVersao
 	
 	imprimirString
 	
@@ -218,7 +218,7 @@ exibirVersaoApenas:
  	
 versaoHexagon:
 
-	Andromeda retornarVersao
+	Hexagonix retornarVersao
 	
 	push ecx
 	push ebx
@@ -237,7 +237,7 @@ versaoHexagon:
 	
 	mov al, ch
 	
-	Andromeda imprimirCaractere
+	Hexagonix imprimirCaractere
 	
 	ret
 
@@ -255,7 +255,7 @@ versaoAndromeda:
 
 	mov al, ' '
 
-	Andromeda imprimirCaractere
+	Hexagonix imprimirCaractere
 
 	mov esi, uname.colcheteEsquerdo
 
@@ -295,7 +295,7 @@ usoAplicativo:
 
 terminar:	
 
-	Andromeda encerrarProcesso
+	Hexagonix encerrarProcesso
 	
 ;;*****************************************************************************
 
