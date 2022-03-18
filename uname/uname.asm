@@ -55,70 +55,191 @@ inicioAPP: ;; Ponto de entrada do aplicativo
 	Hexagonix compararPalavrasString
 	
 	jc usoAplicativo
-	
+
+;; -a
+
 	mov edi, uname.parametroExibirTudo
 	mov esi, [parametro]
 	
 	Hexagonix compararPalavrasString
 	
 	jc exibirTudo
+
+;; -s
+
+	mov edi, uname.parametroExibirNomeKernel
+	mov esi, [parametro]
 	
+	Hexagonix compararPalavrasString
+	
+	jc exibirNomeKernel
+
+;; -n
+
+	mov edi, uname.parametroExibirHostname
+	mov esi, [parametro]
+	
+	Hexagonix compararPalavrasString
+	
+	jc exibirHostname
+
+;; -r
+
+	mov edi, uname.parametroExibirLancamento
+	mov esi, [parametro]
+	
+	Hexagonix compararPalavrasString
+	
+	jc exibirLancamento
+
+;; -m
+
+	mov edi, uname.parametroExibirTipo
+	mov esi, [parametro]
+	
+	Hexagonix compararPalavrasString
+	
+	jc exibirArquitetura
+
+;; -p
+
+	mov edi, uname.parametroExibirArch
+	mov esi, [parametro]
+	
+	Hexagonix compararPalavrasString
+	
+	jc exibirArquitetura
+
+;; -i 
+
+	mov edi, uname.parametroExibirPlataforma
+	mov esi, [parametro]
+	
+	Hexagonix compararPalavrasString
+	
+	jc exibirPlataforma
+
+;; -v
+
 	mov edi, uname.parametroExibirVersao
 	mov esi, [parametro]
 	
 	Hexagonix compararPalavrasString
 	
 	jc exibirVersaoApenas
-	
-	mov edi, uname.parametroExibirAndromeda
+
+;; -o
+
+	mov edi, uname.parametroExibirSO
 	mov esi, [parametro]
 	
 	Hexagonix compararPalavrasString
 	
-	jc exibirInfoAndromeda
+	jc exibirInfoSistemaOperacional
 	
-	jmp exibirVersaoApenas
+	jmp exibirNomeKernel
+
+;;************************************************************************************
+
+exibirNomeKernel:
+
+	call espacoPadrao 
+	
+	Hexagonix retornarVersao
+	
+	imprimirString
+
+	jmp terminar 
+
+;;************************************************************************************
+
+exibirHostname:
+
+	call espacoPadrao
+
+	call obterHostname
+
+	jmp terminar 
+
+;;************************************************************************************
+
+exibirLancamento:
+
+	call espacoPadrao
+
+	call versaoHexagon
+
+	jmp terminar 
+
+;;************************************************************************************
+
+exibirArquitetura:
+
+	call espacoPadrao
+
+	Hexagonix retornarVersao
+
+;; Em EDX temos a arquitetura
+	
+    cmp edx, 01
+    je .i386
+
+    cmp edx, 02
+    je .x86_64 
+
+    mov esi, uname.naoSuportado
+
+    imprimirString
+
+    jmp .terminar 
+
+.i386:
+
+    mov esi, uname.arquiteturai386
+
+    imprimirString
+    
+    jmp .terminar
+
+.x86_64:
+
+    mov esi, uname.arquiteturaamd64
+
+    imprimirString
+
+    jmp .terminar
+
+.terminar:
+
+	jmp terminar
+
+;;************************************************************************************
+
+exibirPlataforma:
+
+	call espacoPadrao
+
+	mov esi, uname.plataformaPC
+
+	imprimirString
+
+	jmp terminar 
 
 ;;************************************************************************************
 
 exibirTudo:
 
-	novaLinha
-	novaLinha
+	call espacoPadrao 
 	
-	Hexagonix retornarVersao
-	
+	mov esi, uname.sistemaOperacional
+
 	imprimirString
 
 	mov esi, uname.espaco
 	
 	imprimirString
 
-;; Vamos agora exibir o nome de host 
-
-	mov edi, enderecoCarregamento
-	mov esi, uname.arquivoUnix
-	
-	Hexagonix abrir
-	
-	jc .arquivoNaoEncontrado ;; Se não for encontrado, exibir o padrão
-
-;; Se encontrado, exibir o nome de host definido 
-
-	mov esi, enderecoCarregamento
-
-	Hexagonix tamanhoString
-
-	mov edx, eax 
-	dec edx
-
-	mov al, 0
-	
-	Hexagonix inserirCaractere
-
-	mov esi, enderecoCarregamento
-	
-	imprimirString
+	call obterHostname
 
 .continuarHost:
 
@@ -144,6 +265,10 @@ exibirTudo:
 
 .i386:
 
+	mov al, " "
+
+	Hexagonix imprimirCaractere
+
 	mov esi, uname.arquiteturai386
 
 	imprimirString
@@ -151,6 +276,10 @@ exibirTudo:
 	jmp .continuar
 
 .amd64:
+
+	mov al, " "
+
+	Hexagonix imprimirCaractere
 
 	mov esi, uname.arquiteturaamd64
 
@@ -160,40 +289,25 @@ exibirTudo:
 
 .continuar:
 	
+	mov al, " "
+
+	Hexagonix imprimirCaractere
+
 	mov esi, uname.hexagonix
 	
 	imprimirString
 	
-	novaLinha
-	
 	jmp terminar
-
-.arquivoNaoEncontrado:
-
-	mov esi, uname.maquina
-	
-	imprimirString
-
-	jmp .continuarHost
 
 ;;************************************************************************************
 
-exibirInfoAndromeda:
+exibirInfoSistemaOperacional:
 
-	novaLinha
-	novaLinha
+	call espacoPadrao 
 	
 	mov esi, uname.sistemaOperacional
 	
 	imprimirString
-	
-	mov esi, uname.versao
-	
-	imprimirString
-	
-	call versaoAndromeda
-	
-	novaLinha
 	
 	jmp terminar
 	
@@ -201,15 +315,18 @@ exibirInfoAndromeda:
 
 exibirVersaoApenas:
 
-	novaLinha
-	novaLinha
+	call espacoPadrao 
 	
 	Hexagonix retornarVersao
 	
 	imprimirString
 	
-	novaLinha
-	
+	mov esi, uname.espaco
+
+	imprimirString
+
+	call versaoHexagon
+
 	jmp terminar
 
 ;;************************************************************************************
@@ -243,46 +360,6 @@ versaoHexagon:
 
 ;;************************************************************************************
 
-versaoAndromeda:
-
-	call obterVersaoDistribuicao
-
-	jc .erro 
-
-	mov esi, versaoObtida
-	
-	imprimirString
-
-	mov al, ' '
-
-	Hexagonix imprimirCaractere
-
-	mov esi, uname.colcheteEsquerdo
-
-	imprimirString
-
-	mov esi, codigoObtido
-
-	imprimirString
-
-	mov esi, uname.colcheteDireito
-
-	imprimirString
-
-.continuar:
-
-	ret
-
-.erro:
-
-	mov esi, sistemaBase.versaoAndromeda
-
-	imprimirString
-
-	jmp .continuar
-
-;;************************************************************************************
-
 usoAplicativo:
 
 	mov esi, uname.uso
@@ -295,9 +372,64 @@ usoAplicativo:
 
 terminar:	
 
+	novaLinha 
+
 	Hexagonix encerrarProcesso
 	
 ;;*****************************************************************************
+
+espacoPadrao:
+
+	novaLinha
+	novaLinha
+
+	ret
+
+;;*****************************************************************************
+
+obterHostname:
+
+;; Vamos agora exibir o nome de host 
+
+	mov edi, enderecoCarregamento
+	mov esi, uname.arquivoUnix
+	
+	Hexagonix abrir
+	
+	jc .arquivoNaoEncontrado ;; Se não for encontrado, exibir o padrão
+
+;; Se encontrado, exibir o nome de host definido 
+
+	clc 
+
+	mov esi, enderecoCarregamento
+
+	Hexagonix tamanhoString
+
+	mov edx, eax 
+	dec edx
+
+	mov al, 0
+	
+	Hexagonix inserirCaractere
+
+	mov esi, enderecoCarregamento
+	
+	imprimirString
+
+	jmp .retornar 
+
+.arquivoNaoEncontrado:
+
+	stc 
+
+	mov esi, uname.maquina
+	
+	imprimirString
+
+.retornar:
+
+	ret
 
 ;;************************************************************************************
 ;;
@@ -311,34 +443,60 @@ parametro: dd ?
 
 uname:
 
-.uso:                      db 10, 10, "Uso: uname [parametro]", 10, 10
-                           db "Exibe informacoes do Sistema.", 10, 10 
-                           db "Parametros possiveis (em caso de falta de parametros, a opcao '-v' sera selecionada):", 10, 10
-                           db "-t - Exibe todas as informacoes possiveis do Sistema, do Kernel e da maquina.", 10
-                           db "-a - Exibe a versao do sistema operacional.", 10    
-                           db "-v - Exibe apenas o nome do Sistema.", 10, 10                                    
-                           db "uname versao ", versaoUNAME, 10, 10
-                           db "Copyright (C) 2017-2022 Felipe Miguel Nery Lunkes", 10
-                           db "Todos os direitos reservados.", 10, 0
-.parametrosSistema:        db " Unix" , 0 
-.sistemaOperacional:       db "Sistema Operacional Hexagonix(R)", 0
-.usuario:                  db " ", 0
-.espaco:                   db " ", 0
-.maquina:                  db "Hexagonix-PC", 0
-.colcheteEsquerdo:         db "[", 0
-.colcheteDireito:          db "]", 0
-.pontoVirgula:             db "; ", 0
-.nucleo:                   db " Kernel ", 0
-.versao:                   db " versao ", 0 
-.arquiteturai386:          db " i386", 0
-.arquiteturaamd64:         db " amd64", 0
-.hexagonix:                db " Hexagonix(R)", 0
-.parametroAjuda:           db "?", 0  
-.parametroAjuda2:          db "--ajuda", 0
-.parametroExibirTudo:      db "-t", 0
-.parametroExibirVersao:    db "-v", 0   
-.parametroExibirAndromeda: db "-a", 0   
-.arquivoUnix:              db "host.unx", 0        
+;; Parâmetros (novos) POSIX.2 e compatível com o uname do Linux:
+;;
+;; -a: tudo
+;; -s: nome do kernel
+;; -n: hostname
+;; -r: lançamento do kernel
+;; -v: versão do kernel
+;; -m: tipo de máquina
+;; -p: tipo de processador
+;; -i: plataforma de hardware
+;; -o: sistema operacional
+
+.uso:                       db 10, 10, "Uso: uname [parametro]", 10, 10
+                            db "Exibe informacoes do Sistema.", 10, 10 
+                            db "Parametros possiveis (em caso de falta de parametros, a opcao '-v' sera selecionada):", 10, 10
+                            db " -a: Exibe todas as informacoes possiveis do Sistema, do Kernel e da maquina.", 10
+                            db " -s: Nome do kernel em execucao.", 10
+							db " -n: Exibe o nome de host da maquina executando o Sistema.", 10
+						    db " -r: Lancamento do kernel em execucao.", 10
+						    db " -v: Versao do kernel em execucao.", 10
+						    db " -m: Tipo de maquina.", 10
+						    db " -p: Arquitetura do processador do sistema.", 10
+						    db " -i: Plataforma de hardware do sistema.", 10
+						    db " -o: Nome do sistema operacional em execucao.", 10, 10                                
+                            db "uname versao ", versaoUNAME, 10, 10
+                            db "Copyright (C) 2017-2022 Felipe Miguel Nery Lunkes", 10
+                            db "Todos os direitos reservados.", 10, 0
+.parametrosSistema:         db " Unix" , 0 
+.sistemaOperacional:        db "Hexagonix", 0
+.usuario:                   db " ", 0
+.espaco:                    db " ", 0
+.maquina:                   db "Hexagonix-PC", 0
+.colcheteEsquerdo:          db "[", 0
+.colcheteDireito:           db "]", 0
+.pontoVirgula:              db "; ", 0
+.nucleo:                    db " Kernel ", 0
+.versao:                    db " versao ", 0 
+.arquiteturai386:           db "i386", 0
+.arquiteturaamd64:          db "amd64", 0
+.hexagonix:                 db "Hexagonix", 0
+.parametroAjuda:            db "?", 0  
+.parametroAjuda2:           db "--ajuda", 0
+.parametroExibirTudo:       db "-a", 0
+.parametroExibirNomeKernel: db "-s", 0
+.parametroExibirHostname:   db "-n", 0
+.parametroExibirLancamento: db "-r", 0
+.parametroExibirTipo:       db "-m", 0
+.parametroExibirArch:       db "-p", 0
+.parametroExibirPlataforma: db "-i", 0
+.parametroExibirVersao:     db "-v", 0   
+.parametroExibirSO:         db "-o", 0   
+.arquivoUnix:               db "host.unx", 0
+.naoSuportado:              db "Arquitetura nao identificada.", 0      
+.plataformaPC:              db "PC", 0  
 
 nomeProcessador: db 0
 
