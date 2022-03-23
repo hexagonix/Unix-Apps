@@ -181,6 +181,18 @@ inicioAPP:
 	
 	jc .arquivoCAN
 
+;; Checar agora com duas letras de extensão
+
+;; Checar agora com uma única letra de extensão
+
+	add esi, 2 ;; Adicionar 2 (seria uma remoção de 2) para manter apenas a extensão
+
+	mov edi, fileUnix.extensaoS
+	
+	Hexagonix compararPalavrasString  ;; Checar por extensão .S
+	
+	jc .arquivoS
+
 	jmp .fim
 
 .aplicativo:
@@ -258,6 +270,14 @@ inicioAPP:
 .arquivoASM:
 
 	mov esi, fileUnix.arquivoASM
+
+	imprimirString
+
+	jmp .fim
+
+.arquivoS:
+
+	mov esi, fileUnix.arquivoLibASM
 
 	imprimirString
 
@@ -403,6 +423,7 @@ fileUnix:
 .appValido:       db 10, "Este parece ser um executavel Unix do Hexagon(R).", 10, 0
 .arquivoHBoot:    db 10, "Este parece ser um executavel no formato HBoot (HBoot ou modulo HBoot).", 10, 0
 .arquivoASM:      db 10, "Este parece ser um arquivo fonte em Assembly.", 10, 0
+.arquivoLibASM:   db 10, "Este parece ser um arquivo fonte que contem uma biblioteca Assembly para desenvolvimento.", 10, 0
 .arquivoSIS:      db 10, "Este parece ser um arquivo de sistema.", 10, 0
 .arquivoUnix:     db 10, "Este parece ser um arquivo de configuracao ou de dados de ambiente Unix.", 10, 0               
 .arquivoMAN:      db 10, "Este parece ser um arquivo de manual de ambiente Unix.", 10, 0
@@ -422,6 +443,7 @@ fileUnix:
 .extensaoCOW:     db ".COW", 0
 .extensaoTXT:     db ".TXT", 0
 .extensaoCAN:     db ".CAN", 0
+.extensaoS:       db ".S", 0
 
 parametro: dd ?
 
