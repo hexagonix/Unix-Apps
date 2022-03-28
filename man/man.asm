@@ -26,12 +26,35 @@ use32
 include "../../../LibAPP/HAPP.s" ;; Aqui está uma estrutura para o cabeçalho HAPP
 
 ;; Instância | Estrutura | Arquitetura | Versão | Subversão | Entrada | Tipo  
-cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 8, 40, inicioAPP, 01h
+cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 8, 58, inicioAPP, 01h
 
 ;;************************************************************************************
 
 include "../../../LibAPP/hexagon.s"
 include "../../../LibAPP/Unix.s"
+
+;;************************************************************************************
+
+align 32
+
+utilitario: dd ?
+
+man:
+
+.parametroAjuda:  db "?", 0
+.parametroAjuda2: db "--ajuda",0
+.man:             db "Manual do Hexagonix(R)", 0
+.uso:             db 10, 10, "Uso: man [utilitario]", 10, 10
+                  db "Exibe ajuda detalhada dos utilitarios Unix instalados.", 10, 10      
+                  db "Versao CoreUtils: ", versaoCoreUtils, 10
+                  db "Versao UnixUtils: ", versaoUnixUtils, 10, 10                        
+                  db "man versao ", versaoMAN, 10, 10
+                  db "Copyright (C) 2018-2022 Felipe Miguel Nery Lunkes", 10
+                  db "Todos os direitos reservados.", 10, 0
+.aguardar:        db "Pressione <q> para sair.", 0
+.naoEncontrado:   db ": manual nao encontrado para este utilitario.", 10, 0
+.separador:       db 10, "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++", 10, 0
+.extensaoManual:  db ".man", 0
 
 ;;************************************************************************************
 
@@ -176,24 +199,5 @@ terminar:
 	Hexagonix encerrarProcesso
 	
 ;;*****************************************************************************
-
-utilitario: dd ?
-
-man:
-
-.parametroAjuda:  db "?", 0
-.parametroAjuda2: db "--ajuda",0
-.man:             db "Manual do Hexagonix(R)", 0
-.uso:             db 10, 10, "Uso: man [utilitario]", 10, 10
-                  db "Exibe ajuda detalhada dos utilitarios Unix instalados.", 10, 10      
-                  db "Versao CoreUtils: ", versaoCoreUtils, 10
-                  db "Versao UnixUtils: ", versaoUnixUtils, 10, 10                        
-                  db "man versao ", versaoMAN, 10, 10
-                  db "Copyright (C) 2018-2022 Felipe Miguel Nery Lunkes", 10
-                  db "Todos os direitos reservados.", 10, 0
-.aguardar:        db "Pressione <q> para sair.", 0
-.naoEncontrado:   db ": manual nao encontrado para este utilitario.", 10, 0
-.separador:       db 10, "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++", 10, 0
-.extensaoManual:  db ".man", 0
 
 bufferArquivo:
