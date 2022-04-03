@@ -32,10 +32,8 @@ cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 8, 40, inicioAPP, 01h
 
 include "../../../LibAPP/hexagon.s"
 include "../../../LibAPP/Unix.s"
-include "../../../LibAPP/sistema.s"
 include "../../../LibAPP/verUtils.s"
 	
-
 ;;************************************************************************************			
 
 inicioAPP: ;; Ponto de entrada do aplicativo

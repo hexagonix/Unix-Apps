@@ -42,7 +42,6 @@ include "../../../LibAPP/Estelar/estelar.s"
 include "../../../LibAPP/Unix.s"
 include "../../../LibAPP/macros.s"
 include "../../../LibAPP/log.s"
-include "../../../LibAPP/sistema.s"
 include "../../../LibAPP/verUtils.s"
 
 tamanhoLimiteBusca = 32768
@@ -54,6 +53,8 @@ tamanhoLimiteBusca = 32768
 ;;************************************************************************************
 
 ;;************************************************************************************
+
+align 32
 
 shellPadrao:       db "sh.app", 0       ;; Nome do arquivo que contêm o Shell padrão do Andromeda®
 vd0:               db "vd0", 0          ;; Dispositivo de saída padrão do Sistema
@@ -71,6 +72,7 @@ align 8
 
 login:
 
+.versaoAndromeda:  db "Sistema Operacional Andromeda versao ", 0
 .semArquivoUnix:   db 10, 10, "O arquivo de configuracao do ambiente Unix de controle de contas nao foi encontrado.", 10, 0        
 .solicitarUsuario: db 10, "Realizar login para: ", 0
 .solicitarSenha:   db 10, "Digite sua senha UNIX: ", 0 
@@ -93,12 +95,12 @@ login:
 .parametroAjuda:   db "?", 0  
 .parametroAjuda2:  db "--ajuda", 0 
 .usuarioROOT:      db "root", 0
-.versaoAndromeda:  db "Sistema Operacional Andromeda versao ", 0
 .dadosErrados:     db 10, "Falha na autenticacao.", 10, 0
 .colcheteEsquerdo: db " [", 0
 .colcheteDireito:  db "]", 0
 .temaClaro:        db "claro", 0
 .temaEscuro:       db "escuro", 0
+.semVersao:        db "[desconhecida]", 0
 .loginUnix:        db 10, "login versao ", versaoLOGIN, 10, 0
 
 match =SIM, VERBOSE
@@ -115,7 +117,7 @@ match =SIM, VERBOSE
 
 }
 
-align 4
+align 32
 
 usuarioSolicitado: times 17 db 0
 usuarioAnterior:   times 17 db 0
@@ -1084,7 +1086,7 @@ exibirLogoSistema:
 
 .erro:
 
-	mov esi, sistemaBase.versaoAndromeda
+	mov esi, login.semVersao
 
 	imprimirString
 
