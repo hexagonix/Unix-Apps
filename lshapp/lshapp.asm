@@ -366,7 +366,9 @@ terminar:
 ;;                    Área de dados e variáveis do aplicativo
 ;;
 ;;************************************************************************************
-	
+
+versaoLSHAPP equ "1.7"
+
 lshapp:
 
 .uso:                 db 10, 10, "Uso: lshapp [arquivo]", 10, 10

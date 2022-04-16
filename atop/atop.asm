@@ -383,6 +383,8 @@ encontrarCaractereLista:
 
 parametro: dd ?
 
+versaoATOP equ "1.0-beta"
+
 atop:
 
 .inicio:              db "Visualizador de processos do Sistema Operacional Hexagonix(R)", 10, 10, 0   

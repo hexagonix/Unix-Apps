@@ -93,11 +93,14 @@ terminar:
 ;;                    Área de dados e variáveis do aplicativo
 ;;
 ;;************************************************************************************
+
+versaoLOG equ "1.1"
 	
 log:
 
 .uso:             db 10, 10, "Uso: log", 10, 10
                   db "Exibe os relatorios e mensagens do Kernel Hexagon(R).", 10, 10
+				  db "Aviso! Este utilitario foi descontinuado. Tente outra interface.", 10, 10
                   db "log versao ", versaoLOG, 10, 10
                   db "Copyright (C) 2017-2022 Felipe Miguel Nery Lunkes", 10
                   db "Todos os direitos reservados.", 10, 0

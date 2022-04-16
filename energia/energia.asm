@@ -276,6 +276,8 @@ terminar:
 
 rotuloMENSAGEM equ "[ENERGIA]: "
 
+versaoENERGIA  equ "0.8"
+
 energia:
 
 .parametroDesligar:  db "-d", 0
@@ -293,7 +295,7 @@ energia:
 .sistema:            db 10, "Sistema Operacional Hexagonix(R)", 10, 10
                      db "Copyright (C) 2016-2022 Felipe Miguel Nery Lunkes", 10
                      db "Todos os direitos reservados.", 10, 0
-.argumentos:         db 10, 10, "Um argumento e necessario para controlar o estado deste computador.", 10, 0
+.argumentos:         db 10, 10, "Um argumento e necessario para controlar o estado deste dispositivo.", 10, 0
 .uso:                db 10, 10, "Uso: energia [argumento]", 10, 10
                      db "Controla o estado do computador.", 10, 10 
                      db "Argumentos possiveis:", 10, 10

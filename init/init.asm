@@ -48,6 +48,8 @@ tamanhoLimiteBusca = 32768
 
 ;;************************************************************************************
 
+versaoINIT equ "1.3"
+
 shellPadrao: db "sh.app", 0     ;; Nome do arquivo que contêm o Shell padrão Unix
 vd0: db "vd0", 0                ;; Dispositivo de saída padrão do Sistema
 vd1: db "vd1", 0	            ;; Dispositivo de saída secundário em memória (Buffer)

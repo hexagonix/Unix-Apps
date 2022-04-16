@@ -195,6 +195,8 @@ definirCorPadrao:
 
 parametro: dd ?
 
+versaoTOP equ "1.1"
+
 top:
 
 .inicio:              db "Visualizador de processos do Sistema Operacional Hexagonix(R)", 10, 10, 0   

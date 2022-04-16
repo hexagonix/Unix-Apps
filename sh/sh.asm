@@ -476,8 +476,8 @@ finalizarShell:
 ;; A versão do sh é independente da versão do restante do Sistema.
 ;; Ela deve ser utilizada para identificar para qual versão do Andromeda® o sh foi
 ;; desenvolvido.
-                    
-;;**************************
+            
+versaoSH equ "1.02"
 
 sh:
 

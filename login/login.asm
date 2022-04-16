@@ -54,6 +54,8 @@ tamanhoLimiteBusca = 32768
 
 ;;************************************************************************************
 
+versaoLOGIN equ "2.9"
+
 align 32
 
 shellPadrao:       db "sh.app", 0       ;; Nome do arquivo que contêm o Shell padrão do Andromeda®

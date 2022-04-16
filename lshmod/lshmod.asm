@@ -38,7 +38,9 @@ include "../../../LibAPP/Unix.s"
 ;;                    Área de dados e variáveis do aplicativo
 ;;
 ;;************************************************************************************
-	
+
+versaoLSHMOD equ "0.5"
+
 lshmod:
 
 .uso:                 db 10, 10, "Uso: lshmod [arquivo]", 10, 10

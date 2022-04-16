@@ -230,7 +230,9 @@ usoAplicativo:
 ;;                    Área de dados e variáveis do aplicativo
 ;;
 ;;************************************************************************************
-	
+
+versaoCP equ "1.0"	
+
 cp:
 	
 .naoEncontrado:     db 10, 10, "Arquivo nao encontrado. verifique a ortografia e tente novamente.", 10, 0

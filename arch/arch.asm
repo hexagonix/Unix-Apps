@@ -129,7 +129,9 @@ terminar:
 ;;                    Área de dados e variáveis do aplicativo
 ;;
 ;;************************************************************************************
-	
+
+versaoARCH equ "1.0"
+
 arch:
 
 .uso:             db 10, 10, "Uso: arch", 10

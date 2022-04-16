@@ -38,6 +38,8 @@ include "../../../LibAPP/verUtils.s"
 
 align 32
 
+versaoUNAME equ "2.0"
+
 uname:
 
 ;; Parâmetros (novos) POSIX.2 e compatível com o uname do Linux:

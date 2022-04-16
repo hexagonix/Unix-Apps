@@ -135,6 +135,8 @@ terminar:
 	
 linhaComando: dd 0
 
+versaoWHOAMI equ "1.0"
+
 whoami:
 
 .uso:              db 10, 10, "Uso: whoami", 10, 10

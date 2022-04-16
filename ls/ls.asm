@@ -614,7 +614,9 @@ verificarArquivo:
 ;;                    Área de dados e variáveis do aplicativo
 ;;
 ;;************************************************************************************
-	
+
+versaoLS equ "1.9"
+
 ls:
 
 .extensaoAPP:      db ".APP", 0

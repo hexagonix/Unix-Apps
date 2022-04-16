@@ -435,6 +435,8 @@ finalizarhashell:
                     
 ;;**************************
 
+versaoHASH equ "1.0"
+
 hash:
 
 .prompt:               db "@Hexagonix", 0

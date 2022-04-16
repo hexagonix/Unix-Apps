@@ -95,7 +95,9 @@ terminar:
 ;;                    Área de dados e variáveis do aplicativo
 ;;
 ;;************************************************************************************
-	
+
+versaoECHO equ "1.0"
+
 echo:
 
 .uso:             db 10, 10, "Uso: echo [mensagem]", 10, 10

@@ -309,7 +309,9 @@ usoAplicativo:
 ;;                    Área de dados e variáveis do aplicativo
 ;;
 ;;************************************************************************************
-	
+
+versaoMOUNT equ "2.1"
+
 mount:
 
 .volume:            db 10, 10, "Montando [", 0

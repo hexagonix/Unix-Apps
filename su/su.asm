@@ -670,7 +670,9 @@ terminar:
 ;;                    Área de dados e variáveis do aplicativo
 ;;
 ;;************************************************************************************
-	
+
+versaoSU equ "2.0-bug"
+
 shellPadrao:       db "ash.app", 0     ;; Nome do arquivo que contêm o Shell padrão do Andromeda®
 vd0:               db "vd0", 0         ;; Dispositivo de saída padrão do Sistema
 vd1:               db "vd1", 0	       ;; Dispositivo de saída secundário em memória (Buffer)

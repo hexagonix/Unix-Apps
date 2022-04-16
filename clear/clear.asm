@@ -111,7 +111,9 @@ usoAplicativo:
 ;;                    Área de dados e variáveis do aplicativo
 ;;
 ;;************************************************************************************
-	
+
+versaoCLEAR equ "1.0 "
+
 clear:
 
 .erro:            db 10, 10, "Erro abrindo um dispositivo de saida.", 10, 10, 0

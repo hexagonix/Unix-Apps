@@ -121,7 +121,9 @@ terminar:
 ;;                    Área de dados e variáveis do aplicativo
 ;;
 ;;************************************************************************************
-	
+
+versaoHOSTNAME equ "1.0"
+
 hostname:
 
 .naoEncontrado:   db 10, 10, "Arquivo de host nao encontrado. Verifique se ele foi definido.", 10, 0
