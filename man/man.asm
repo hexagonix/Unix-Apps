@@ -26,7 +26,7 @@ use32
 include "../../../LibAPP/HAPP.s" ;; Aqui está uma estrutura para o cabeçalho HAPP
 
 ;; Instância | Estrutura | Arquitetura | Versão | Subversão | Entrada | Tipo  
-cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 8, 58, inicioAPP, 01h
+cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 9, 00, inicioAPP, 01h
 
 ;;************************************************************************************
 
@@ -36,8 +36,6 @@ include "../../../LibAPP/Unix.s"
 ;;************************************************************************************
 
 align 32
-
-utilitario: dd ?
 
 man:
 
@@ -199,5 +197,7 @@ terminar:
 	Hexagonix encerrarProcesso
 	
 ;;*****************************************************************************
+
+utilitario: dd ?
 
 bufferArquivo:

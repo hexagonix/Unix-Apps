@@ -26,7 +26,7 @@ use32
 include "../../../LibAPP/HAPP.s" ;; Aqui está uma estrutura para o cabeçalho HAPP
 
 ;; Instância | Estrutura | Arquitetura | Versão | Subversão | Entrada | Tipo  
-cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 8, 40, inicioAPP, 01h
+cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 9, 00, inicioAPP, 01h
 
 ;;************************************************************************************
 
@@ -35,6 +35,67 @@ include "../../../LibAPP/Unix.s"
 include "../../../LibAPP/verUtils.s"
 	
 ;;************************************************************************************			
+
+align 32
+
+uname:
+
+;; Parâmetros (novos) POSIX.2 e compatível com o uname do Linux:
+;;
+;; -a: tudo
+;; -s: nome do kernel
+;; -n: hostname
+;; -r: lançamento do kernel
+;; -v: versão do kernel
+;; -m: tipo de máquina
+;; -p: tipo de processador
+;; -i: plataforma de hardware
+;; -o: sistema operacional
+
+.uso:                       db 10, 10, "Uso: uname [parametro]", 10, 10
+                            db "Exibe informacoes do Sistema.", 10, 10 
+                            db "Parametros possiveis (em caso de falta de parametros, a opcao '-s' sera selecionada):", 10, 10
+                            db " -a: Exibe todas as informacoes possiveis do Sistema, do Kernel e da maquina.", 10
+                            db " -s: Nome do kernel em execucao.", 10
+							db " -n: Exibe o nome de host da maquina executando o Sistema.", 10
+						    db " -r: Lancamento do kernel em execucao.", 10
+						    db " -v: Versao do kernel em execucao.", 10
+						    db " -m: Tipo de maquina.", 10
+						    db " -p: Arquitetura do processador do sistema.", 10
+						    db " -i: Plataforma de hardware do sistema.", 10
+						    db " -o: Nome do sistema operacional em execucao.", 10, 10                                
+                            db "uname versao ", versaoUNAME, 10, 10
+                            db "Copyright (C) 2017-2022 Felipe Miguel Nery Lunkes", 10
+                            db "Todos os direitos reservados.", 0
+.parametrosSistema:         db " Unix" , 0 
+.sistemaOperacional:        db "Hexagonix", 0
+.usuario:                   db " ", 0
+.espaco:                    db " ", 0
+.maquina:                   db "Hexagonix-PC", 0
+.colcheteEsquerdo:          db "[", 0
+.colcheteDireito:           db "]", 0
+.pontoVirgula:              db "; ", 0
+.nucleo:                    db " Kernel ", 0
+.versao:                    db " versao ", 0 
+.arquiteturai386:           db "i386", 0
+.arquiteturaamd64:          db "amd64", 0
+.hexagonix:                 db "Hexagonix", 0
+.parametroAjuda:            db "?", 0  
+.parametroAjuda2:           db "--ajuda", 0
+.parametroExibirTudo:       db "-a", 0
+.parametroExibirNomeKernel: db "-s", 0
+.parametroExibirHostname:   db "-n", 0
+.parametroExibirLancamento: db "-r", 0
+.parametroExibirTipo:       db "-m", 0
+.parametroExibirArch:       db "-p", 0
+.parametroExibirPlataforma: db "-i", 0
+.parametroExibirVersao:     db "-v", 0   
+.parametroExibirSO:         db "-o", 0   
+.arquivoUnix:               db "host.unx", 0
+.naoSuportado:              db "Arquitetura nao identificada.", 0      
+.plataformaPC:              db "PC", 0  
+
+;;************************************************************************************
 
 inicioAPP: ;; Ponto de entrada do aplicativo
 
@@ -438,66 +499,5 @@ obterHostname:
 ponto: db ".", 0
 
 parametro: dd ?
-
-uname:
-
-;; Parâmetros (novos) POSIX.2 e compatível com o uname do Linux:
-;;
-;; -a: tudo
-;; -s: nome do kernel
-;; -n: hostname
-;; -r: lançamento do kernel
-;; -v: versão do kernel
-;; -m: tipo de máquina
-;; -p: tipo de processador
-;; -i: plataforma de hardware
-;; -o: sistema operacional
-
-.uso:                       db 10, 10, "Uso: uname [parametro]", 10, 10
-                            db "Exibe informacoes do Sistema.", 10, 10 
-                            db "Parametros possiveis (em caso de falta de parametros, a opcao '-s' sera selecionada):", 10, 10
-                            db " -a: Exibe todas as informacoes possiveis do Sistema, do Kernel e da maquina.", 10
-                            db " -s: Nome do kernel em execucao.", 10
-							db " -n: Exibe o nome de host da maquina executando o Sistema.", 10
-						    db " -r: Lancamento do kernel em execucao.", 10
-						    db " -v: Versao do kernel em execucao.", 10
-						    db " -m: Tipo de maquina.", 10
-						    db " -p: Arquitetura do processador do sistema.", 10
-						    db " -i: Plataforma de hardware do sistema.", 10
-						    db " -o: Nome do sistema operacional em execucao.", 10, 10                                
-                            db "uname versao ", versaoUNAME, 10, 10
-                            db "Copyright (C) 2017-2022 Felipe Miguel Nery Lunkes", 10
-                            db "Todos os direitos reservados.", 10, 0
-.parametrosSistema:         db " Unix" , 0 
-.sistemaOperacional:        db "Hexagonix", 0
-.usuario:                   db " ", 0
-.espaco:                    db " ", 0
-.maquina:                   db "Hexagonix-PC", 0
-.colcheteEsquerdo:          db "[", 0
-.colcheteDireito:           db "]", 0
-.pontoVirgula:              db "; ", 0
-.nucleo:                    db " Kernel ", 0
-.versao:                    db " versao ", 0 
-.arquiteturai386:           db "i386", 0
-.arquiteturaamd64:          db "amd64", 0
-.hexagonix:                 db "Hexagonix", 0
-.parametroAjuda:            db "?", 0  
-.parametroAjuda2:           db "--ajuda", 0
-.parametroExibirTudo:       db "-a", 0
-.parametroExibirNomeKernel: db "-s", 0
-.parametroExibirHostname:   db "-n", 0
-.parametroExibirLancamento: db "-r", 0
-.parametroExibirTipo:       db "-m", 0
-.parametroExibirArch:       db "-p", 0
-.parametroExibirPlataforma: db "-i", 0
-.parametroExibirVersao:     db "-v", 0   
-.parametroExibirSO:         db "-o", 0   
-.arquivoUnix:               db "host.unx", 0
-.naoSuportado:              db "Arquitetura nao identificada.", 0      
-.plataformaPC:              db "PC", 0  
-
-nomeProcessador: db 0
-
-nomeUsuario: times 32 db 0
 
 enderecoCarregamento:
