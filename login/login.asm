@@ -33,7 +33,7 @@ use32
 include "../../../LibAPP/HAPP.s" ;; Aqui está uma estrutura para o cabeçalho HAPP
 
 ;; Instância | Estrutura | Arquitetura | Versão | Subversão | Entrada | Tipo  
-cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 8, 58, loginAndromeda, 01h
+cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 9, 00, loginAndromeda, 01h
 
 ;;************************************************************************************
                     
