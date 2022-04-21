@@ -274,6 +274,7 @@ match =SIM, UNIX
 	novaLinha
 
 }
+
 	mov byte[errado], 1
 
 match =SIM, UNIX 
