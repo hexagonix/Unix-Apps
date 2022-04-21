@@ -497,8 +497,8 @@ sh:
                        db "Todos os direitos reservados.", 10, 0
 .parametroAjuda:       db "?", 0   
 .parametroAjuda2:      db "--ajuda", 0
-.nomeUsuario:          times 64 db 0
-.separador:            times 8 db 0
+.nomeUsuario: times 64 db 0
+.separador:    times 8 db 0
  
 ;;**************************
 
