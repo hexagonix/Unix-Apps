@@ -54,7 +54,7 @@ tamanhoLimiteBusca = 32768
 
 ;;************************************************************************************
 
-versaoLOGIN equ "2.9"
+versaoLOGIN equ "3.0"
 
 align 32
 
@@ -123,10 +123,10 @@ align 32
 
 usuarioSolicitado: times 17 db 0
 usuarioAnterior:   times 17 db 0
-escolhaTema:       times 7 db 0
+escolhaTema:       times 7  db 0
 
 codigoAnterior: dd 0
-errado: db 0
+errado:         db 0
 
 ;;************************************************************************************			
 
@@ -147,6 +147,8 @@ loginAndromeda: ;; Ponto de entrada
 	Hexagonix compararPalavrasString
 	
 	jc usoAplicativo    
+
+	call checarBaseDados
 
 ;; Para utilizar uma interface simples de login, no estilo Unix
 
@@ -189,7 +191,7 @@ match =SIM, VERBOSE
 
 	logSistema login.verboseLoginRecusado, 0, Log.Prioridades.p4
 
-}
+}	
 
 .continuar:
 
@@ -290,12 +292,11 @@ match =NAO, UNIX
 
 }
 
-
 .semUsuario:
 
 	cmp byte[parametros], 0
 	je terminar
-	
+
 .loginAceito:
 
 match =SIM, VERBOSE
@@ -1110,6 +1111,48 @@ verificarConsistencia:
 terminar:	
 
 	Hexagonix encerrarProcesso
+
+;;************************************************************************************
+
+loginPadrao:
+
+;; Se o arquivo de banco de dados de usuários não for encontrado, devemos
+;; iniciar um shell padrão do sistema, logado como root.
+
+;; Primeiro, logar como root
+
+	mov eax, 777 ;; Código de um usuário raiz
+
+	mov esi, login.usuarioROOT
+	
+	Hexagonix definirUsuario
+	
+	mov eax, 0
+	mov esi, shellPadrao
+
+	clc 
+
+	Hexagonix iniciarProcesso
+
+	je terminar
+
+;;************************************************************************************
+
+;; Primeiramente, devemos checar a base da dados de usuários. Se a base de
+;; dados não estiver disponível, o sistema deve ser logado com usuário root
+;; e o shell padrão deve ser iniciado.
+
+checarBaseDados: 
+
+	clc
+
+	mov esi, arquivo
+
+	Hexagonix arquivoExiste
+
+	jc loginPadrao 
+
+	ret
 
 ;;************************************************************************************
 
