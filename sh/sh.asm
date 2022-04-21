@@ -474,7 +474,7 @@ finalizarShell:
 ;;************************************************************************************
 
 ;; A versão do sh é independente da versão do restante do Sistema.
-;; Ela deve ser utilizada para identificar para qual versão do Andromeda® o sh foi
+;; Ela deve ser utilizada para identificar para qual versão do Hexagonix® o sh foi
 ;; desenvolvido.
             
 versaoSH equ "1.02"
@@ -491,7 +491,7 @@ sh:
 .usuarioNormal:        db "$ ", 0
 .usuarioRoot:          db "# ", 0
 .uso:                  db 10, 10, "Uso: sh", 10, 10
-                       db "Inicia um Shell Unix para o usuario atual.", 10, 10               
+                       db "Inicia um shell Unix para o usuario atual.", 10, 10               
                        db "sh versao ", versaoSH, 10, 10
                        db "Copyright (C) 2017-2022 Felipe Miguel Nery Lunkes", 10
                        db "Todos os direitos reservados.", 10, 0
