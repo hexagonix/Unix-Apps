@@ -33,7 +33,7 @@ use32
 include "../../../LibAPP/HAPP.s" ;; Aqui está uma estrutura para o cabeçalho HAPP
 
 ;; Instância | Estrutura | Arquitetura | Versão | Subversão | Entrada | Tipo  
-cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 9, 00, loginAndromeda, 01h
+cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 9, 00, loginHexagonix, 01h
 
 ;;************************************************************************************
                     
@@ -42,7 +42,6 @@ include "../../../LibAPP/Estelar/estelar.s"
 include "../../../LibAPP/Unix.s"
 include "../../../LibAPP/macros.s"
 include "../../../LibAPP/log.s"
-include "../../../LibAPP/verUtils.s"
 
 tamanhoLimiteBusca = 32768
 
@@ -54,9 +53,7 @@ tamanhoLimiteBusca = 32768
 
 ;;************************************************************************************
 
-versaoLOGIN equ "3.0"
-
-align 32
+versaoLOGIN equ "4.0"
 
 shellPadrao:       db "sh.app", 0       ;; Nome do arquivo que contêm o Shell padrão do Andromeda®
 vd0:               db "vd0", 0          ;; Dispositivo de saída padrão do Sistema
@@ -70,25 +67,11 @@ parametros:        db 0                 ;; Se o aplicativo recebeu algum parâme
 ponto:             db ".", 0            ;; Caractere de ponto
 posicaoBX:         dw 0                 ;; Marcação da posição de busca no conteúdo do arquivo
 
-align 8
-
 login:
 
-.versaoAndromeda:  db "Sistema Operacional Andromeda versao ", 0
 .semArquivoUnix:   db 10, 10, "O arquivo de configuracao do ambiente Unix de controle de contas nao foi encontrado.", 10, 0        
 .solicitarUsuario: db 10, "Realizar login para: ", 0
 .solicitarSenha:   db 10, "Digite sua senha UNIX: ", 0 
-.sobreAndromeda:   db 10, 10   
-                   db "        %#@$%&@$%&@$%$ tm          Sistema Operacional Andromeda(R)", 10
-                   db "        #$@$@$@#@#@#@$", 10
-                   db "        @#@$&    %#$#%", 10
-                   db "        @#$@$    #@#$@", 10
-                   db "        #@#$$    !@#@#     Copyright (C) 2016-2022 Felipe Miguel Nery Lunkes",10
-                   db "        @#@%!$&%$&$#@#              Todos os direitos reservados",10
-                   db "        !@$%#%&#&@&$%#", 10
-                   db "        @$#!%&@&@#&*@&", 10
-                   db "        $#$#%    &%$#@", 10
-                   db "        @#!$$    !#@#@", 10, 10, 0
 .uso:              db 10, 10, "Uso: login [usuario]", 10, 10
                    db "Realiza login em um usuario cadastrado.", 10, 10               
                    db "login versao ", versaoLOGIN, 10, 10
@@ -98,15 +81,7 @@ login:
 .parametroAjuda2:  db "--ajuda", 0 
 .usuarioROOT:      db "root", 0
 .dadosErrados:     db 10, "Falha na autenticacao.", 10, 0
-.colcheteEsquerdo: db " [", 0
-.colcheteDireito:  db "]", 0
-.temaClaro:        db "claro", 0
-.temaEscuro:       db "escuro", 0
-.semVersao:        db "[desconhecida]", 0
-.loginUnix:        db 10, "login versao ", versaoLOGIN, 10, 0
-
-match =SIM, VERBOSE
-{
+.logind:           db "logind.app", 0
 
 .verboseLogin:             db "login versao ", versaoLOGIN, ".", 0
 .verboseProcurarArquivo:   db "Procurando banco de dados de usuarios 'USUARIO.UNX' em /...", 0
@@ -117,20 +92,15 @@ match =SIM, VERBOSE
 .verboseLoginRecusado:     db "Tentativa de login impedida por falha na autenticação.", 0
 .verboseLogout:            db "Logout realizado com sucesso.", 0
 
-}
-
-align 32
-
 usuarioSolicitado: times 17 db 0
 usuarioAnterior:   times 17 db 0
-escolhaTema:       times 7  db 0
 
 codigoAnterior: dd 0
 errado:         db 0
 
 ;;************************************************************************************			
 
-loginAndromeda: ;; Ponto de entrada
+loginHexagonix: ;; Ponto de entrada
 	
 	mov [usuarioSolicitado], edi
 		
@@ -152,59 +122,29 @@ loginAndromeda: ;; Ponto de entrada
 
 ;; Para utilizar uma interface simples de login, no estilo Unix
 
-match =SIM, VERBOSE
-{
-
 	logSistema login.verboseLogin, 0, Log.Prioridades.p4
 
-}
-
-match =UNIX, TIPOLOGIN {
-
-	mov esi, login.loginUnix
-
-	imprimirString
-
-	jmp iniciarExecucao.modoUnix
-	
-}
-
 iniciarExecucao:
-  
-	call verificarTema
 
+match =Andromeda, TIPOLOGIN
+{
+	
 	Hexagonix limparTela
 
-	call exibirLogoSistema
-	
-	call limparVariaveisUsuario
+}
 
-.modoUnix:
+	call executarLogind
+
+	call limparVariaveisUsuario
 
 	clc
 	
 	cmp byte[errado], 1
 	jne .execucaoInicial
 	
-match =SIM, VERBOSE
-{
-
 	logSistema login.verboseLoginRecusado, 0, Log.Prioridades.p4
 
-}	
-
 .continuar:
-
-match =ANDROMEDA, TIPOLOGIN
-{
-
-	call verificarTema
-
-	Hexagonix limparTela
-
-	call exibirLogoSistema
-
-}
 
 	mov esi, login.dadosErrados
 	
@@ -214,12 +154,7 @@ match =ANDROMEDA, TIPOLOGIN
 	
 .execucaoInicial:
 
-match =SIM, VERBOSE
-{
-
 	logSistema login.verboseProcurarArquivo, 0, Log.Prioridades.p4
-
-}
 
 	call limparVariaveisUsuario
 
@@ -260,13 +195,8 @@ match =SIM, VERBOSE
 	Hexagonix compararPalavrasString
 	
 	jc .loginAceito
-	
-match =SIM, VERBOSE
-{
 
 	logSistema login.verboseLoginRecusado, 00h, Log.Prioridades.p4
-
-}
 
 match =SIM, UNIX 
 {
@@ -277,21 +207,7 @@ match =SIM, UNIX
 
 	mov byte[errado], 1
 
-match =SIM, UNIX 
-{
-
-	novaLinha
-
-	jmp iniciarExecucao.continuar
-
-}
-
-match =NAO, UNIX 
-{
-
 	jmp iniciarExecucao
-
-}
 
 .semUsuario:
 
@@ -300,12 +216,7 @@ match =NAO, UNIX
 
 .loginAceito:
 
-match =SIM, VERBOSE
-{
-
 	logSistema login.verboseLoginAceito, 0, Log.Prioridades.p4
-
-}
 
 	call registrarUsuario
 	
@@ -345,15 +256,8 @@ match =SIM, VERBOSE
 ;; Verificar a consistência da interface. Caso algum processo seja encerrado antes de retornar
 ;; as propriedades de tema ao padrão, retorne para as condições presentes nas configurações,
 ;; mantendo a consistência do Sistema
-
-	call verificarConsistencia
 	
-match =SIM, VERBOSE
-{
-
 	logSistema login.verboseLogout, 0, Log.Prioridades.p4
-
-}
 
 	jmp terminar
 
@@ -510,193 +414,10 @@ encontrarNomeUsuario:
 	
 	mov byte[errado], 1
 
-match =SIM, VERBOSE
-{
-
 	logSistema login.verboseLoginRecusado, 00h, Log.Prioridades.p4
 
-}
+	jmp loginHexagonix
 
-match =SIM, UNIX
-{
-
-	novaLinha
-
-	jmp iniciarExecucao.continuar
-
-}	
-
-match =NAO, UNIX
-{
-
-	jmp loginAndromeda
-	
-}
-
-.arquivoUsuarioAusente:
-
-	pop es
-	
-	popa
-	
-	mov esi, login.semArquivoUnix
-	
-	imprimirString
-	
-	jmp terminar
-
-;;************************************************************************************
-	
-verificarTema:
-
-	pusha
-	
-	push es
-
-	push ds
-	pop es
-	
-	mov esi, arquivo
-	mov edi, bufferArquivo
-	
-	Hexagonix abrir
-	
-	jc .arquivoUsuarioAusente
-	
-	mov si, bufferArquivo           ;; Aponta para o buffer com o conteúdo do arquivo
-	mov bx, 0FFFFh                  ;; Inicia na posição -1, para que se possa encontrar os delimitadores
-	
-.procurarEntreDelimitadores:
-
-	inc bx
-	
-	mov word[posicaoBX], bx
-	
-	cmp bx, tamanhoLimiteBusca
-	je .nomeTemaInvalido         ;; Caso nada seja encontrado até o tamanho limite, cancele a busca
-	
-	mov al, [ds:si+bx]
-	
-	cmp al, '<'
-	jne .procurarEntreDelimitadores ;; O limitador inicial foi encontrado
-	
-;; BX agora aponta para o primeiro caractere do nome de usuário resgatado do arquivo
-	
-	push ds
-	pop es
-	
-	mov di, escolhaTema             ;; O tema será copiado para ES:DI
-	
-	mov si, bufferArquivo
-	
-	add si, bx				        ;; Mover SI para aonde BX aponta
-	
-	mov bx, 0				        ;; Iniciar em 0
-	
-.obterTema:
-
-	inc bx
-	
-	cmp bx, 7				
-	je .nomeTemaInvalido            ;; Se nome de usuário maior que 15, o mesmo é inválido     
-	
-	mov al, [ds:si+bx]
-	
-	cmp al, '>'					    ;; Se encontrar outro delimitador, o nome de usuário foi carregado com sucesso
-	je .temaObtido
-	
-;; Se não estiver pronto, armazenar o caractere obtido
-
-	stosb
-	
-	jmp .obterTema
-
-.temaObtido:
-
-    mov edi, escolhaTema
-	mov esi, login.temaClaro
-	
-	Hexagonix compararPalavrasString
-	
-	jc .selecionarTemaClaro
-	
-	mov edi, escolhaTema
-	mov esi, login.temaEscuro
-	
-	Hexagonix compararPalavrasString
-	
-	jc .selecionarTemaEscuro
-
-	call limparVariavel
-	
-	mov word bx, [posicaoBX]
-	
-	mov si, bufferArquivo
-	
-	jmp .procurarEntreDelimitadores
-	
-.selecionarTemaClaro:
-	
-	pop es
-	
-	popa
-
-	mov esi, vd1         ;; Abrir o dispositivo de saída secundário em memória (Buffer) 
-	
-	Hexagonix abrir      ;; Abre o dispositivo
-	
-	mov eax, PRETO 
-	mov ebx, BRANCO_ANDROMEDA
-
-	Hexagonix definirCor
-
-	Hexagonix limparTela ;; Limpa seu conteúdo
-	
-	mov esi, vd0         ;; Reabre o dispositivo de saída padrão 
-	
-	Hexagonix abrir      ;; Abre o dispositivo
-
-	mov eax, PRETO 
-	mov ebx, BRANCO_ANDROMEDA
-
-	Hexagonix definirCor
-
-	Hexagonix limparTela ;; Limpa seu conteúdo
-
-	ret
-
-.selecionarTemaEscuro:
-
-	mov esi, vd1         ;; Abrir o dispositivo de saída secundário em memória (Buffer) 
-	
-	Hexagonix abrir      ;; Abre o dispositivo
-	
-	mov eax, BRANCO_ANDROMEDA 
-	mov ebx, PRETO
-
-	Hexagonix definirCor
-
-	Hexagonix limparTela ;; Limpa seu conteúdo
-	
-	mov esi, vd0         ;; Reabre o dispositivo de saída padrão 
-	
-	Hexagonix abrir      ;; Abre o dispositivo
-
-	mov eax, BRANCO_ANDROMEDA 
-	mov ebx, PRETO
-
-	Hexagonix definirCor
-
-	Hexagonix limparTela ;; Limpa seu conteúdo
-
-.nomeTemaInvalido:
-
-	pop es
-	
-	popa
-	
-	ret
-	
 .arquivoUsuarioAusente:
 
 	pop es
@@ -1052,58 +773,14 @@ usoAplicativo:
 
 ;;************************************************************************************
 
-exibirLogoSistema:
+executarLogind:
 
-	mov esi, login.sobreAndromeda
+	mov eax, 0			           ;; Não passar argumentos
+	mov esi, login.logind        ;; Nome do arquivo
 	
-	imprimirString
+	clc
 	
-	mov esi, login.versaoAndromeda
-
-	imprimirString
-
-	call obterVersaoDistribuicao
-
-	jc .erro 
-
-	mov esi, versaoObtida
-
-	imprimirString
-
-	mov esi, login.colcheteEsquerdo
-
-	imprimirString
-
-	mov esi, codigoObtido
-
-	imprimirString
-
-	mov esi, login.colcheteDireito
-
-	imprimirString
-
-.continuar:
-
-	novaLinha
-
-	ret
-
-.erro:
-
-	mov esi, login.semVersao
-
-	imprimirString
-
-	jmp .continuar
-
-;;************************************************************************************
-
-verificarConsistencia:
-
-	call verificarTema             ;; Caso algum processo seja finalizado após alterar
-	                               ;; o plano de fundo padrão
-
-	Hexagonix limparTela
+	Hexagonix iniciarProcesso      ;; Solicitar o carregamento do Shell do Andromeda®
 
 	ret
 
