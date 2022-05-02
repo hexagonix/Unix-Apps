@@ -39,7 +39,6 @@ cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 9, 00, iniciologind, 01h
                     
 include "../../../LibAPP/hexagon.s"
 include "../../../LibAPP/Estelar/estelar.s"
-include "../../../LibAPP/Unix.s"
 include "../../../LibAPP/macros.s"
 include "../../../LibAPP/log.s"
 include "../../../LibAPP/verUtils.s"
@@ -54,7 +53,7 @@ tamanhoLimiteBusca = 32768
 
 ;;************************************************************************************
 
-versaoLOGIND equ "1.0"
+versaoLOGIND equ "1.1"
 
 align 32
 
@@ -100,6 +99,7 @@ match =Andromeda, TIPOLOGIN
 .temaClaro:        db "claro", 0
 .temaEscuro:       db "escuro", 0
 .semVersao:        db "[desconhecida]", 0
+.verboseLogind:    db "logind versao ", versaoLOGIND, ".", 0
 
 align 32
 
@@ -108,7 +108,10 @@ escolhaTema:       times 7  db 0
 ;;************************************************************************************			
 
 iniciologind: ;; Ponto de entrada
-	
+
+;; O logind é um daemon que só deve ser utilizado durante a inicialização.
+;; Para isso, ele deve checar se o PID é 3 (init=1 e login=2).
+
 	Hexagonix obterPID
 	
 	cmp eax, 03h
@@ -116,12 +119,12 @@ iniciologind: ;; Ponto de entrada
 	
 	Hexagonix encerrarProcesso
 
-	call checarBaseDados
-
-;; Para utilizar uma interface simples de logind, no estilo Unix
-
 iniciarExecucao:
 
+	logSistema logind.verboseLogind, 0, Log.Prioridades.p4
+
+	call checarBaseDados
+	
 match =Andromeda, TIPOLOGIN
 {
 	 
@@ -135,7 +138,6 @@ match =Andromeda, TIPOLOGIN
 
 	jmp terminar
 
-	
 ;;************************************************************************************
 	
 verificarTema:
@@ -370,10 +372,6 @@ terminar:
 	Hexagonix encerrarProcesso
 
 ;;************************************************************************************
-
-;; Primeiramente, devemos checar a base da dados de usuários. Se a base de
-;; dados não estiver disponível, o sistema deve ser logado com usuário root
-;; e o shell padrão deve ser iniciado.
 
 checarBaseDados: 
 
