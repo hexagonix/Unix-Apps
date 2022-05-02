@@ -55,12 +55,12 @@ tamanhoLimiteBusca = 32768
 
 versaoLOGIN equ "4.0"
 
-shellPadrao:       db "sh.app", 0       ;; Nome do arquivo que contêm o Shell padrão do Andromeda®
+shellPadrao:       db "sh.app", 0       ;; Nome do arquivo que contêm o Shell padrão do Hexagonix®
 vd0:               db "vd0", 0          ;; Dispositivo de saída padrão do Sistema
 vd1:               db "vd1", 0	        ;; Dispositivo de saída secundário em memória (Buffer)
 arquivo:           db "usuario.unx", 0  ;; Nome do arquivo de gerenciamento de login
 tentarShellPadrao: db 0                 ;; Sinaliza a tentativa de se carregar o Shell padrão
-shellAndromeda:    times 11 db 0        ;; Armazena o nome do Shell à ser utilizado pelo Sistema
+shellHexagonix:    times 11 db 0        ;; Armazena o nome do Shell à ser utilizado pelo Sistema
 usuario:           times 15 db 0        ;; Nome de usuário obtido no arquivo
 senhaObtida:       times 64 db 0        ;; Senha obtida no arquivo
 parametros:        db 0                 ;; Se o aplicativo recebeu algum parâmetro
@@ -94,9 +94,8 @@ login:
 
 usuarioSolicitado: times 17 db 0
 usuarioAnterior:   times 17 db 0
-
-codigoAnterior: dd 0
-errado:         db 0
+codigoAnterior:             dd 0
+errado:                     db 0
 
 ;;************************************************************************************			
 
@@ -228,28 +227,28 @@ match =SIM, UNIX
 	
 	clc
 
-	mov esi, shellAndromeda
+	mov esi, shellHexagonix
 
 	Hexagonix arquivoExiste
 
 	jc .naoEncontrado
 
 	mov eax, 0			           ;; Não passar argumentos
-	mov esi, shellAndromeda        ;; Nome do arquivo
+	mov esi, shellHexagonix        ;; Nome do arquivo
 	
 	clc
 	
-	Hexagonix iniciarProcesso      ;; Solicitar o carregamento do Shell do Andromeda®
+	Hexagonix iniciarProcesso      ;; Solicitar o carregamento do Shell do Hexagonix®
 
 	jmp .shellFinalizado
 
-.tentarShellPadrao:                ;; Tentar carregar o Shell padrão do Andromeda®
+.tentarShellPadrao:                ;; Tentar carregar o Shell padrão do Hexagonix®
 
-   call obterShellPadrao           ;; Solicitar a configuração do nome do Shell padrão do Andromeda®
+   call obterShellPadrao           ;; Solicitar a configuração do nome do Shell padrão do Hexagonix®
 	
-   mov byte[tentarShellPadrao], 1  ;; Sinalizar a tentativa de carregamento do Shell padrão do Andromeda®
+   mov byte[tentarShellPadrao], 1  ;; Sinalizar a tentativa de carregamento do Shell padrão do Hexagonix®
 	
-   jmp .carregarShell              ;; Tentar carregar o Shell padrão do Andromeda®
+   jmp .carregarShell              ;; Tentar carregar o Shell padrão do Hexagonix®
 	
 .shellFinalizado:                  ;; Tentar carregar o Shell novamente
 
@@ -263,8 +262,8 @@ match =SIM, UNIX
 
 .naoEncontrado:                    ;; O Shell não pôde ser localizado
     
-   cmp byte[tentarShellPadrao], 0  ;; Verifica se já se tentou carregar o Shell padrão do Andromeda®
-   je .tentarShellPadrao           ;; Se não, tente carregar o Shell padrão do Andromeda®
+   cmp byte[tentarShellPadrao], 0  ;; Verifica se já se tentou carregar o Shell padrão do Hexagonix®
+   je .tentarShellPadrao           ;; Se não, tente carregar o Shell padrão do Hexagonix®
 
    jmp terminar                    ;; Se sim, o Shell padrão também não pode ser executado  
 
@@ -640,7 +639,7 @@ encontrarShell:
 	push ds
 	pop es
 	
-	mov di, shellAndromeda          ;; O nome do Shell será copiado para ES:DI - shellAndromeda
+	mov di, shellHexagonix          ;; O nome do Shell será copiado para ES:DI - shellHexagonix
 	
 	mov si, bufferArquivo
 	
@@ -706,7 +705,7 @@ obterShellPadrao:
 	
 	push eax
 	
-	mov edi, shellAndromeda
+	mov edi, shellHexagonix
 	mov esi, shellPadrao
 	
 	pop ecx
@@ -780,7 +779,7 @@ executarLogind:
 	
 	clc
 	
-	Hexagonix iniciarProcesso      ;; Solicitar o carregamento do Shell do Andromeda®
+	Hexagonix iniciarProcesso      ;; Solicitar o carregamento do Shell do Hexagonix®
 
 	ret
 
