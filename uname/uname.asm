@@ -36,9 +36,9 @@ include "../../../LibAPP/verUtils.s"
 	
 ;;************************************************************************************			
 
-align 32
+align 8
 
-versaoUNAME equ "2.0"
+versaoUNAME equ "2.1"
 
 uname:
 
@@ -97,7 +97,12 @@ uname:
 .naoSuportado:              db "Arquitetura nao identificada.", 0      
 .plataformaPC:              db "PC", 0  
 
+ponto: db ".", 0
+parametro: dd ?
+
 ;;************************************************************************************
+
+align 32
 
 inicioAPP: ;; Ponto de entrada do aplicativo
 
@@ -197,7 +202,7 @@ inicioAPP: ;; Ponto de entrada do aplicativo
 	Hexagonix compararPalavrasString
 	
 	jc exibirInfoSistemaOperacional
-	
+
 	jmp exibirNomeKernel
 
 ;;************************************************************************************
@@ -497,9 +502,5 @@ obterHostname:
 ;;                    Área de dados e variáveis do aplicativo
 ;;
 ;;************************************************************************************
-	
-ponto: db ".", 0
-
-parametro: dd ?
 
 enderecoCarregamento:
