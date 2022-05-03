@@ -77,7 +77,7 @@ inicioAPP:
 	Hexagonix arquivoExiste
 	
 	jnc destinoPresente
-
+ 
 ;; Agora vamos abrir o arquivo fonte para cópia
 	
 	mov esi, [arquivoEntrada]
@@ -87,10 +87,10 @@ inicioAPP:
 	
 	jc erroAoAbrir
 	
-	mov esi, bufferArquivo
+	mov esi, [arquivoEntrada]
 	
-	Hexagonix tamanhoString
-	
+	Hexagonix arquivoExiste
+
 ;; Salvar arquivo no disco
 
 	mov esi, [arquivoSaida]
@@ -231,7 +231,7 @@ usoAplicativo:
 ;;
 ;;************************************************************************************
 
-versaoCP equ "1.0"	
+versaoCP equ "2.0"	
 
 cp:
 	
