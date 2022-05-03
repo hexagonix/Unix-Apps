@@ -353,7 +353,6 @@ match =Andromeda, TIPOLOGIN
 
 	ret
 
-
 ;;************************************************************************************
 
 verificarConsistencia:
