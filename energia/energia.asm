@@ -274,9 +274,9 @@ terminar:
 ;;
 ;;************************************************************************************
 
-rotuloMENSAGEM equ "[ENERGIA]: "
+rotuloMENSAGEM equ "[Energia]: "
 
-versaoENERGIA  equ "0.8"
+versaoENERGIA  equ "1.0"
 
 energia:
 
