@@ -416,7 +416,13 @@ listar:
 .criarNovaLinha:
 
 	xor edx, edx
-	
+
+;; Correção para não adicionar linhas a mais
+
+	add ecx, 1
+
+;; Continuar
+
 	novaLinha
 	
 	jmp .loopArquivos
@@ -615,7 +621,7 @@ verificarArquivo:
 ;;
 ;;************************************************************************************
 
-versaoLS equ "1.9"
+versaoLS equ "2.0"
 
 ls:
 
@@ -629,9 +635,9 @@ ls:
 .extensaoCOW:      db ".COW", 0
 .extensaoMAN:      db ".MAN", 0
 .extensaoMOD:      db ".MOD", 0
-.erroLista:        db 10, 10, "Erro ao listar os arquivos presentes no disco.", 10, 0
+.erroLista:        db 10, 10, "Erro ao listar os arquivos presentes no volume.", 10, 0
 .uso:              db 10, 10, "Uso: ls", 10, 10
-                   db "Lista e exibe os arquivos presentes no disco atual, classificando-os por tipo.", 10, 10
+                   db "Lista e exibe os arquivos presentes no volume atual, classificando-os por tipo.", 10, 10
 				   db "Parametros disponiveis:", 10, 10
 				   db "-a - Lista todos os arquivos disponiveis no volume.", 10, 10
                    db "ls versao ", versaoLS, 10, 10
