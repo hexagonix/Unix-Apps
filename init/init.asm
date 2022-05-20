@@ -38,7 +38,6 @@ cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 9, 00, initAndromeda, 01h
 ;;************************************************************************************
 
 include "../../../LibAPP/hexagon.s"
-include "../../../LibAPP/Unix.s"
 include "../../../LibAPP/macros.s"
 include "../../../LibAPP/log.s"
 

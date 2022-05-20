@@ -32,7 +32,6 @@ cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 9, 00, inicioShell, 01h
 
 include "../../../LibAPP/hexagon.s"
 include "../../../LibAPP/erros.s"
-include "../../../LibAPP/Unix.s"
 
 ;;************************************************************************************
 
