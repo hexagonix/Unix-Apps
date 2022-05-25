@@ -57,10 +57,10 @@ versaoLOGIND equ "1.1"
 
 align 32
 
-arquivo:           db "usuario.unx", 0  ;; Nome do arquivo de gerenciamento de login
-vd0:               db "vd0", 0          ;; Dispositivo de saída padrão do Sistema
-vd1:               db "vd1", 0	        ;; Dispositivo de saída secundário em memória (Buffer)
-posicaoBX:         dw 0                 ;; Marcação da posição de busca no conteúdo do arquivo
+arquivo:    db "usuario.unx", 0 ;; Nome do arquivo de gerenciamento de login
+vd0:        db "vd0", 0         ;; Dispositivo de saída padrão do Sistema
+vd1:        db "vd1", 0	        ;; Dispositivo de saída secundário em memória (Buffer)
+posicaoBX:  dw 0                ;; Marcação da posição de busca no conteúdo do arquivo
 
 align 8
 
