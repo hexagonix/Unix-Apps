@@ -70,7 +70,6 @@ match =UNIX, TIPOLOGIN
 {
 
 .sobreSistema:     db 10, "Seja bem-vindo ao Hexagonix", 0
-.versaoSistema:    db  0
 
 }
 
@@ -308,13 +307,13 @@ exibirLogoSistema:
 
 	imprimirString
 
+match =Andromeda, TIPOLOGIN 
+{
+	
 	mov esi, logind.versaoSistema
 
 	imprimirString
 
-match =Andromeda, TIPOLOGIN 
-{
-	
 	call obterVersaoDistribuicao
 
 	jc .erro 
