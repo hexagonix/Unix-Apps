@@ -273,6 +273,8 @@ terminar:
 ;;
 ;;************************************************************************************
 
+align 128
+
 rotuloMENSAGEM equ "[Energia]: "
 
 versaoENERGIA  equ "1.0"

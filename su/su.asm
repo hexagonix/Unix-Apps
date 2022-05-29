@@ -670,7 +670,7 @@ terminar:
 ;;
 ;;************************************************************************************
 
-versaoSU equ "2.0-bug"
+versaoSU equ "2.1"
 
 shellPadrao:       db "ash.app", 0     ;; Nome do arquivo que contêm o Shell padrão do Andromeda®
 vd0:               db "vd0", 0         ;; Dispositivo de saída padrão do Sistema
@@ -686,6 +686,9 @@ posicaoBX:         dw 0
 
 su:
 
+.grandesPoderes:    db 10, 10, "Voce agora e um usuario administrativo. Isso significa que pode fazer alteracoes profundas no", 10
+                    db "Sistema, entao tome cuidado.", 10, 10
+                    db 'Lembre-se: "Grandes poderes vem com grandes responsabilidades"!', 0   
 .solicitarSenha:    db 10, "Digite sua senha UNIX: ", 0 
 .uso:               db 10, 10, "Uso: su [usuario]", 10, 10
                     db "Altera para um usuario cadastrado.", 10, 10               
@@ -693,10 +696,7 @@ su:
                     db "Copyright (C) 2017-2022 Felipe Miguel Nery Lunkes", 10
                     db "Todos os direitos reservados.", 0
 .semArquivoUnix:    db 10, "O arquivo de configuracao do ambiente Unix de controle de contas nao foi encontrado.", 10, 0 
-.semUsuario:        db 10, "O usuario solicitado nao foi encontrado: ", 0         
-.grandesPoderes:    db 10, 10, "Voce agora e um usuario administrativo. Isso significa que pode fazer alteracoes profundas no", 10
-                    db "Sistema, entao tome cuidado.", 10, 10
-                    db 'Lembre-se: "Grandes poderes vem com grandes responsabilidades"!', 0        
+.semUsuario:        db 10, "O usuario solicitado nao foi encontrado: ", 0              
 .parametroAjuda:    db "?", 0   
 .parametroAjuda2:   db "--ajuda", 0
 .usuarioROOT:       db "root", 0
