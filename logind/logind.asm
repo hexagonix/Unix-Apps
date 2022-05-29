@@ -55,14 +55,14 @@ tamanhoLimiteBusca = 32768
 
 versaoLOGIND equ "1.1"
 
-align 32
+align 4
 
 arquivo:    db "usuario.unx", 0 ;; Nome do arquivo de gerenciamento de login
 vd0:        db "vd0", 0         ;; Dispositivo de saída padrão do Sistema
 vd1:        db "vd1", 0	        ;; Dispositivo de saída secundário em memória (Buffer)
 posicaoBX:  dw 0                ;; Marcação da posição de busca no conteúdo do arquivo
 
-align 8
+align 32
 
 logind:
 
@@ -100,7 +100,7 @@ match =Andromeda, TIPOLOGIN
 .semVersao:        db "[desconhecida]", 0
 .verboseLogind:    db "logind versao ", versaoLOGIND, ".", 0
 
-align 32
+align 4
 
 escolhaTema:       times 7  db 0
 
