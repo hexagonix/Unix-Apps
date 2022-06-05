@@ -63,7 +63,7 @@ inicioAPP:
 
 realizarLimpeza:
 
-	mov esi, vd1         ;; Abrir o dispositivo de saída secundário em memória (Buffer) 
+	mov esi, vd1         ;; Abrir o primeiro console virtual
 	
 	Hexagonix abrir      ;; Abre o dispositivo
 	
@@ -71,7 +71,7 @@ realizarLimpeza:
 	
 	Hexagonix limparTela ;; Limpa seu conteúdo
 	
-	mov esi, vd0         ;; Reabre o dispositivo de saída padrão 
+	mov esi, vd0         ;; Reabre o console principal
 	
 	Hexagonix abrir      ;; Abre o dispositivo
 
@@ -115,17 +115,17 @@ versaoCLEAR equ "1.0"
 
 clear:
 
-.erro:            db 10, 10, "Erro abrindo um dispositivo de saida.", 10, 10, 0
+.erro:            db 10, 10, "Erro abrindo um console.", 10, 10, 0
 .uso:             db 10, 10, "Uso: clear", 10, 10
-                  db "Limpa o conteudo da saida padrao e vd1.", 10, 10
+                  db "Limpa o conteudo do console principal (vd0) e de consoles virtuais.", 10, 10
                   db "clear versao ", versaoCLEAR, 10, 10
                   db "Copyright (C) 2017-2021 Felipe Miguel Nery Lunkes", 10
                   db "Todos os direitos reservados.", 10, 0
 .parametroAjuda:  db "?", 0
 .parametroAjuda2: db "--ajuda", 0
        
-vd0:   db "vd0", 0 ;; Dispositivo de saída padrão do Sistema
-vd1:   db "vd1", 0 ;; Dispositivo de saída secundário em memória (Buffer)
+vd0:   db "vd0", 0 ;; Console principal
+vd1:   db "vd1", 0 ;; Primeiro console virtual
 
 parametro: dd ?
 
