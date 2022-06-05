@@ -30,7 +30,6 @@ cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 9, 00, inicioAPP, 01h
 
 ;;************************************************************************************
 
-
 include "../../../LibAPP/hexagon.s"
 include "../../../LibAPP/erros.s"
 
