@@ -411,7 +411,7 @@ versaoFILE equ "1.7"
 fileUnix:
 
 .uso:             db 10, 10, "Uso: file [arquivo]", 10, 10
-                  db "Recupera as informacoes do arquivo e envia para a saida padrao.", 10, 10
+                  db "Recupera as informacoes do arquivo e envia para o console principal.", 10, 10
                   db "file versao ", versaoFILE, 10, 10
                   db "Copyright (C) 2017-2022 Felipe Miguel Nery Lunkes", 10
                   db "Todos os direitos reservados.", 10, 0
