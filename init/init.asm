@@ -47,7 +47,7 @@ tamanhoLimiteBusca = 32768
 
 ;;************************************************************************************
 
-versaoINIT equ "1.4"
+versaoINIT equ "1.4.1"
 
 shellPadrao: db "sh.app", 0     ;; Nome do arquivo que contêm o shell padrão Unix
 vd0: db "vd0", 0                ;; Dispositivo de saída padrão do sistema
@@ -61,11 +61,12 @@ match =SIM, VERBOSE
 
 init:
 
-.verboseInit:              db "init versao ", versaoINIT, ".", 0
-.verboseProcurarArquivo:   db "Procurando arquivo de configuracao no volume...", 0
-.verboseArquivoEncontrado: db "Arquivo de configuracao encontrado.", 0
-.verboseArquivoAusente:    db "Arquivo de configuracao nao encontrado. O shell padrao sera executado (sh.app)", 0
-.verboseErro:              db "Um erro nao manipulavel foi encontrado.", 0
+.verboseInit:                   db "init versao ", versaoINIT, ".", 0
+.verboseProcurarArquivo:        db "Procurando arquivo de configuracao no volume...", 0
+.verboseArquivoEncontrado:      db "Arquivo de configuracao encontrado.", 0
+.verboseArquivoAusente:         db "Arquivo de configuracao nao encontrado. O shell padrao sera executado (sh.app)", 0
+.verboseErro:                   db "Um erro nao manipulavel foi encontrado.", 0
+.verboseRegistrandoComponentes: db "Registrando componentes do sistema...", 0
 
 } 
 
@@ -126,7 +127,14 @@ match =SIM, VERBOSE
 	call encontrarConfiguracaoInit          
 
 .carregarServico:
-	
+
+match =SIM, VERBOSE
+{
+
+	logSistema init.verboseRegistrandoComponentes, 0, Log.Prioridades.p5
+
+}
+
 	mov esi, servicoHexagonix
 	
 	Hexagonix arquivoExiste
