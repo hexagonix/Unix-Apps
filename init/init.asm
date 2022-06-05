@@ -33,7 +33,7 @@ use32
 include "../../../LibAPP/HAPP.s" ;; Aqui está uma estrutura para o cabeçalho HAPP
 
 ;; Instância | Estrutura | Arquitetura | Versão | Subversão | Entrada | Tipo  
-cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 9, 03, initHexagonix, 01h
+cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 9, 04, initHexagonix, 01h
 
 ;;************************************************************************************
 
@@ -47,28 +47,24 @@ tamanhoLimiteBusca = 32768
 
 ;;************************************************************************************
 
-versaoINIT equ "1.4.1"
+versaoINIT equ "1.4.3"
 
 shellPadrao: db "sh.app", 0     ;; Nome do arquivo que contêm o shell padrão Unix
-vd0: db "vd0", 0                ;; Dispositivo de saída padrão do sistema
-vd1: db "vd1", 0	            ;; Dispositivo de saída secundário em memória (buffer)
+vd0: db "vd0", 0                ;; Console principal
+vd1: db "vd1", 0	            ;; Primeiro console virtual
 arquivo: db "init.unx", 0       ;; Nome do arquivo de configuração do init
 tentarShellPadrao: db 0         ;; Sinaliza a tentativa de se carregar o shell padrão
-servicoHexagonix: times 11 db 0 ;; Armazena o nome do shell à ser utilizado pelo sistema
-
-match =SIM, VERBOSE
-{
+servicoHexagonix: times 12 db 0 ;; Armazena o nome do shell à ser utilizado pelo sistema
 
 init:
 
-.verboseInit:                   db "init versao ", versaoINIT, ".", 0
-.verboseProcurarArquivo:        db "Procurando arquivo de configuracao no volume...", 0
-.verboseArquivoEncontrado:      db "Arquivo de configuracao encontrado.", 0
-.verboseArquivoAusente:         db "Arquivo de configuracao nao encontrado. O shell padrao sera executado (sh.app)", 0
-.verboseErro:                   db "Um erro nao manipulavel foi encontrado.", 0
-.verboseRegistrandoComponentes: db "Registrando componentes do sistema...", 0
-
-} 
+.inicioInit:             db "init versao ", versaoINIT, ".", 0
+.procurarArquivo:        db "Procurando arquivo de configuracao no volume...", 0
+.arquivoEncontrado:      db "Arquivo de configuracao encontrado.", 0
+.arquivoAusente:         db "Arquivo de configuracao nao encontrado. O shell padrao sera executado (sh.app)", 0
+.erroGeral:              db "Um erro nao manipulavel foi encontrado.", 0
+.registrandoComponentes: db "Registrando componentes do sistema...", 0
+.configurarConsole:      db "Configurando consoles (vd0, vd1)...", 0
 
 ;;************************************************************************************			
 
@@ -87,10 +83,12 @@ initHexagonix: ;; Ponto de entrada do init
 	je .configurarTerminal ;; O PID é 1? Prosseguir
 	
 	Hexagonix encerrarProcesso ;; Não é? Finalizar agora
-	
+
 ;; Configura o terminal do Hexagonix
 
 .configurarTerminal:
+
+	logSistema init.inicioInit, 0, Log.Prioridades.p5
 
 ;; Agora, o buffer de memória do double buffering deve ser limpo. Isto evita que memória 
 ;; poluída seja utilizada como base para a exibição, quando um aplicativo é fechado de forma forçada.
@@ -103,13 +101,6 @@ initHexagonix: ;; Ponto de entrada do init
 
 iniciarExecucao:
 
-match =SIM, VERBOSE
-{
-
-	logSistema init.verboseInit, 0, Log.Prioridades.p5
-
-}
-
 	Hexagonix travar ;; Impede que o usuário mate o processo de login com uma tecla especial
 	
 ;; Agora o init irá verificar a existência do arquivo de configuração de inicialização.
@@ -117,23 +108,14 @@ match =SIM, VERBOSE
 ;; com o sistema, assim como declarações de configuração do Hexagonix. Caso este arquivo não seja
 ;; encontrado, o init irá carregar o shell padrão. O padrão é o utilitário de login do Hexagonix.
   
-match =SIM, VERBOSE
-{
-
-	logSistema init.verboseProcurarArquivo, 0, Log.Prioridades.p4
-
-}
+	logSistema init.procurarArquivo, 0, Log.Prioridades.p4
 
 	call encontrarConfiguracaoInit          
 
 .carregarServico:
 
-match =SIM, VERBOSE
-{
+	logSistema init.registrandoComponentes, 0, Log.Prioridades.p5
 
-	logSistema init.verboseRegistrandoComponentes, 0, Log.Prioridades.p5
-
-}
 
 	mov esi, servicoHexagonix
 	
@@ -177,13 +159,13 @@ match =SIM, VERBOSE
 
 limparTerminal:
 
-	mov esi, vd1         ;; Abrir o dispositivo de saída secundário em memória (buffer) 
+	logSistema init.configurarConsole, 0, Log.Prioridades.p5
+
+	mov esi, vd1         ;; Abrir o primeiro console virtual 
 	
 	Hexagonix abrir      ;; Abre o dispositivo
 	
-	;; Hexagonix limparTela ;; Limpa seu conteúdo
-	
-	mov esi, vd0         ;; Reabre o dispositivo de saída padrão 
+	mov esi, vd0         ;; Reabre o console padrão
 	
 	Hexagonix abrir      ;; Abre o dispositivo
 	
@@ -260,12 +242,7 @@ encontrarConfiguracaoInit:
 	
 	popa
 
-match =SIM, VERBOSE
-{
-
-	logSistema init.verboseArquivoEncontrado, 0, Log.Prioridades.p4
-
-}
+	logSistema init.arquivoEncontrado, 0, Log.Prioridades.p4
 
 	ret
 	
@@ -283,13 +260,9 @@ match =SIM, VERBOSE
 	pop es
 	
 	popa
-	
-match =SIM, VERBOSE
-{
 
-	logSistema init.verboseArquivoAusente, 0, Log.Prioridades.p4
+	logSistema init.arquivoAusente, 0, Log.Prioridades.p4
 
-}
 
 	jmp obterShellPadrao
 
