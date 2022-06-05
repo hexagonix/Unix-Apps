@@ -13,7 +13,7 @@
 ;;
 ;;************************************************************************************
 ;;                                                                                  
-;;               Gerenciador de Login do Sistema Operacional Hexagonix®                 
+;;                Daemon de login para Sistema Operacional Hexagonix®                 
 ;;                                                                   
 ;;                  Copyright © 2016-2022 Felipe Miguel Nery Lunkes                
 ;;                          Todos os direitos reservados.                    
@@ -33,7 +33,7 @@ use32
 include "../../../LibAPP/HAPP.s" ;; Aqui está uma estrutura para o cabeçalho HAPP
 
 ;; Instância | Estrutura | Arquitetura | Versão | Subversão | Entrada | Tipo  
-cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 9, 03, iniciologind, 01h
+cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 9, 04, iniciologind, 01h
 
 ;;************************************************************************************
                     
@@ -55,11 +55,9 @@ tamanhoLimiteBusca = 32768
 
 versaoLOGIND equ "1.1"
 
-align 4
-
 arquivo:    db "usuario.unx", 0 ;; Nome do arquivo de gerenciamento de login
-vd0:        db "vd0", 0         ;; Dispositivo de saída padrão do Sistema
-vd1:        db "vd1", 0	        ;; Dispositivo de saída secundário em memória (Buffer)
+vd0:        db "vd0", 0         ;; Console padrão
+vd1:        db "vd1", 0	        ;; Primeiro console virtual
 posicaoBX:  dw 0                ;; Marcação da posição de busca no conteúdo do arquivo
 
 align 32
@@ -231,7 +229,7 @@ verificarTema:
 	
 	popa
 
-	mov esi, vd1         ;; Abrir o dispositivo de saída secundário em memória (Buffer) 
+	mov esi, vd1         ;; Abrir primeiro console virtual 
 	
 	Hexagonix abrir      ;; Abre o dispositivo
 	
@@ -257,7 +255,7 @@ verificarTema:
 
 .selecionarTemaEscuro:
 
-	mov esi, vd1         ;; Abrir o dispositivo de saída secundário em memória (Buffer) 
+	mov esi, vd1         ;; Abrir primeiro console virtual 
 	
 	Hexagonix abrir      ;; Abre o dispositivo
 	
@@ -268,7 +266,7 @@ verificarTema:
 
 	Hexagonix limparTela ;; Limpa seu conteúdo
 	
-	mov esi, vd0         ;; Reabre o dispositivo de saída padrão 
+	mov esi, vd0         ;; Reabre o console padrão
 	
 	Hexagonix abrir      ;; Abre o dispositivo
 
