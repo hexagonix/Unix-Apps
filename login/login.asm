@@ -13,7 +13,7 @@
 ;;
 ;;************************************************************************************
 ;;                                                                                  
-;;               Gerenciador de Login do Sistema Operacional Hexagonix®                 
+;;             Utilitário Unix login para Sistema Operacional Hexagonix®                 
 ;;                                                                   
 ;;                  Copyright © 2016-2022 Felipe Miguel Nery Lunkes                
 ;;                          Todos os direitos reservados.                    
@@ -33,7 +33,7 @@ use32
 include "../../../LibAPP/HAPP.s" ;; Aqui está uma estrutura para o cabeçalho HAPP
 
 ;; Instância | Estrutura | Arquitetura | Versão | Subversão | Entrada | Tipo  
-cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 9, 00, loginHexagonix, 01h
+cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 9, 04, loginHexagonix, 01h
 
 ;;************************************************************************************
                     
@@ -64,8 +64,6 @@ loginHexagonix: ;; Ponto de entrada
 	jc usoAplicativo    
 
 	call checarBaseDados
-
-;; Para utilizar uma interface simples de login, no estilo Unix
 
 	logSistema login.verboseLogin, 0, Log.Prioridades.p4
 
@@ -177,46 +175,46 @@ match =SIM, UNIX
 	
 	clc
 	
-	Hexagonix iniciarProcesso      ;; Solicitar o carregamento do Shell do Hexagonix®
+	Hexagonix iniciarProcesso      ;; Solicitar o carregamento do shell do Hexagonix®
 
 	jmp .shellFinalizado
 
-.tentarShellPadrao:                ;; Tentar carregar o Shell padrão do Hexagonix®
+.tentarShellPadrao:                ;; Tentar carregar o shell padrão do Hexagonix®
 
-   call obterShellPadrao           ;; Solicitar a configuração do nome do Shell padrão do Hexagonix®
+   call obterShellPadrao           ;; Solicitar a configuração do nome do shell padrão do Hexagonix®
 	
-   mov byte[tentarShellPadrao], 1  ;; Sinalizar a tentativa de carregamento do Shell padrão do Hexagonix®
+   mov byte[tentarShellPadrao], 1  ;; Sinalizar a tentativa de carregamento do shell padrão do Hexagonix®
 	
-   jmp .carregarShell              ;; Tentar carregar o Shell padrão do Hexagonix®
+   jmp .carregarShell              ;; Tentar carregar o shell padrão do Hexagonix®
 	
-.shellFinalizado:                  ;; Tentar carregar o Shell novamente
+.shellFinalizado:                  ;; Tentar carregar o shell novamente
 
 ;; Verificar a consistência da interface. Caso algum processo seja encerrado antes de retornar
 ;; as propriedades de tema ao padrão, retorne para as condições presentes nas configurações,
-;; mantendo a consistência do Sistema
+;; mantendo a consistência do sistema
 	
 	logSistema login.verboseLogout, 0, Log.Prioridades.p4
 
 	jmp terminar
 
-.naoEncontrado:                    ;; O Shell não pôde ser localizado
+.naoEncontrado:                    ;; O shell não pôde ser localizado
     
-   cmp byte[tentarShellPadrao], 0  ;; Verifica se já se tentou carregar o Shell padrão do Hexagonix®
-   je .tentarShellPadrao           ;; Se não, tente carregar o Shell padrão do Hexagonix®
+   cmp byte[tentarShellPadrao], 0  ;; Verifica se já se tentou carregar o shell padrão do Hexagonix®
+   je .tentarShellPadrao           ;; Se não, tente carregar o shell padrão do Hexagonix®
 
-   jmp terminar                    ;; Se sim, o Shell padrão também não pode ser executado  
+   jmp terminar                    ;; Se sim, o shell padrão também não pode ser executado  
 
 ;;************************************************************************************
 
 limparTerminal:
 
-	mov esi, vd1         ;; Abrir o dispositivo de saída secundário em memória (Buffer) 
+	mov esi, vd1         ;; Abrir o primeiro console virtual
 	
 	Hexagonix abrir      ;; Abre o dispositivo
 	
 	Hexagonix limparTela ;; Limpa seu conteúdo
 	
-	mov esi, vd0         ;; Reabre o dispositivo de saída padrão 
+	mov esi, vd0         ;; Reabre o console padrão
 	
 	Hexagonix abrir      ;; Abre o dispositivo
 	
@@ -573,12 +571,12 @@ encontrarShell:
 	cmp al, '&'
 	jne .procurarEntreDelimitadores ;; O limitador inicial foi encontrado
 	
-;; BX agora aponta para o primeiro caractere do nome do Shell resgatado do arquivo
+;; BX agora aponta para o primeiro caractere do nome do shell resgatado do arquivo
 	
 	push ds
 	pop es
 	
-	mov di, shellHexagonix          ;; O nome do Shell será copiado para ES:DI - shellHexagonix
+	mov di, shellHexagonix          ;; O nome do shell será copiado para ES:DI - shellHexagonix
 	
 	mov si, bufferArquivo
 	
@@ -713,12 +711,12 @@ usoAplicativo:
 
 executarLogind:
 
-	mov eax, 0			           ;; Não passar argumentos
+	mov eax, 0			         ;; Não passar argumentos
 	mov esi, login.logind        ;; Nome do arquivo
 	
 	clc
 	
-	Hexagonix iniciarProcesso      ;; Solicitar o carregamento do Shell do Hexagonix®
+	Hexagonix iniciarProcesso      ;; Solicitar o carregamento do daemon de login
 
 	ret
 
@@ -782,12 +780,12 @@ checarBaseDados:
 
 versaoLOGIN equ "4.1"
 
-shellPadrao:       db "sh.app", 0       ;; Nome do arquivo que contêm o Shell padrão do Hexagonix®
-vd0:               db "vd0", 0          ;; Dispositivo de saída padrão do Sistema
-vd1:               db "vd1", 0	        ;; Dispositivo de saída secundário em memória (Buffer)
+shellPadrao:       db "sh.app", 0       ;; Nome do arquivo que contêm o shell padrão do Hexagonix®
+vd0:               db "vd0", 0          ;; Console padrão
+vd1:               db "vd1", 0	        ;; Primeiro console virtual
 arquivo:           db "usuario.unx", 0  ;; Nome do arquivo de gerenciamento de login
-tentarShellPadrao: db 0                 ;; Sinaliza a tentativa de se carregar o Shell padrão
-shellHexagonix:    times 11 db 0        ;; Armazena o nome do Shell à ser utilizado pelo Sistema
+tentarShellPadrao: db 0                 ;; Sinaliza a tentativa de se carregar o shell padrão
+shellHexagonix:    times 11 db 0        ;; Armazena o nome do shell à ser utilizado
 usuario:           times 15 db 0        ;; Nome de usuário obtido no arquivo
 senhaObtida:       times 64 db 0        ;; Senha obtida no arquivo
 parametros:        db 0                 ;; Se o aplicativo recebeu algum parâmetro
