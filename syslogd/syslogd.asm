@@ -53,7 +53,7 @@ syslogd:
                    db "Todos os direitos reservados.", 10, 0
 .parametroAjuda:   db "?", 0
 .parametroAjuda2:  db "--ajuda", 0
-.verboseIniciando: db "Iniciando syslogd versao ", versaoSYSLOGD, "...", 0
+.verboseIniciando: db "syslogd versao ", versaoSYSLOGD, ".", 0
 
 parametro: dd ? ;; Endereço do parâmetro
 
