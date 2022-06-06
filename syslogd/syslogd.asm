@@ -42,12 +42,12 @@ include "../../../LibAPP/log.s"
 ;;
 ;;************************************************************************************
 
-versaoSYSLOGD equ "0.1" 
+versaoSYSLOGD equ "0.2" 
 
 syslogd:
 
 .uso:              db 10, 10, "Uso: syslogd [mensagem]", 10, 10
-                   db "Envia uma mensagem de componentes do Hexagonix e de utilitarios para o log so sistema.", 10, 10
+                   db "Envia uma mensagem de componentes do Hexagonix e de utilitarios para o log do sistema.", 10, 10
                    db "syslogd versao ", versaoSYSLOGD, 10, 10
                    db "Copyright (C) 2022 Felipe Miguel Nery Lunkes", 10
                    db "Todos os direitos reservados.", 10, 0
@@ -75,7 +75,7 @@ inicioAPP:
     mov esi, [parametro]
 		
 	cmp byte[esi], 0
-	je usoAplicativo
+	je terminar
 	
 	mov edi, syslogd.parametroAjuda
 	mov esi, [parametro]
