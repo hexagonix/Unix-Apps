@@ -38,14 +38,14 @@ tamanhoLimiteBusca = 12288
 ;; arquivo por arquivo. O arquivo contém uma estrutura instanciável com definição de 
 ;; parâmetros no momento da instância, tornando o cabeçalho tão personalizável quanto antes.
 
-include "../../../lib/HAPP.s" ;; Aqui está uma estrutura para o cabeçalho HAPP
+include "HAPP.s" ;; Aqui está uma estrutura para o cabeçalho HAPP
 
 ;; Instância | Estrutura | Arquitetura | Versão | Subversão | Entrada | Tipo  
 cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 9, 00, suAndromeda, 01h
 
 ;;************************************************************************************
 
-include "../../../lib/hexagon.s"
+include "hexagon.s"
 
 ;;************************************************************************************			
 
