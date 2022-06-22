@@ -37,7 +37,7 @@ include "verUtils.s"
 
 align 4
 
-versaoUNAME equ "2.1"
+versaoUNAME equ "2.2"
 
 uname:
 
@@ -63,8 +63,8 @@ uname:
 .pontoVirgula:              db "; ", 0
 .nucleo:                    db " Kernel ", 0
 .versao:                    db " versao ", 0 
-.arquiteturai386:           db "i386", 0
-.arquiteturaamd64:          db "amd64", 0
+.arquiteturai386:           db " i386", 0
+.arquiteturaamd64:          db " amd64", 0
 .hexagonix:                 db "Hexagonix", 0
 .parametroAjuda:            db "?", 0  
 .parametroAjuda2:           db "--ajuda", 0
@@ -315,8 +315,14 @@ exibirTudo:
 	Hexagonix retornarVersao
 	
 	imprimirString
+
+;; Para ficar de acordo com o padrão do FreeBSD, a mensagem "versao" não é exibido
+
+	;; mov esi, uname.versao
 	
-	mov esi, uname.versao
+	;; imprimirString
+
+	mov esi, uname.espaco
 	
 	imprimirString
 	
@@ -330,10 +336,6 @@ exibirTudo:
 
 .i386:
 
-	mov al, " "
-
-	Hexagonix imprimirCaractere
-
 	mov esi, uname.arquiteturai386
 
 	imprimirString
@@ -341,10 +343,6 @@ exibirTudo:
 	jmp .continuar
 
 .amd64:
-
-	mov al, " "
-
-	Hexagonix imprimirCaractere
 
 	mov esi, uname.arquiteturaamd64
 
@@ -417,10 +415,15 @@ versaoHexagon:
 	
 	pop ecx
 	
+	cmp cl, 0
+	je .continuar
+
 	mov al, ch
 	
 	Hexagonix imprimirCaractere
-	
+
+.continuar:
+
 	ret
 
 ;;************************************************************************************
