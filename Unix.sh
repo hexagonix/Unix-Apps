@@ -19,10 +19,10 @@
 gerarBaseUnix(){
 
 echo
-echo "Gerando aplicativos base Unix do Hexagonix®... {"
+echo "Construindo aplicativos base Unix do Hexagonix®... {"
 echo
 
-echo "Gerando aplicativos base Unix do Hexagonix®... {" >> $LOG
+echo "Construindo aplicativos base Unix do Hexagonix®... {" >> $LOG
 echo >> $LOG
 	
 # Vamos agora automatizar a construção dos aplicativos base Unix
@@ -35,9 +35,9 @@ do
 	for h in *.asm
 	do
 
-	echo -n Gerando aplicativo base Unix do Hexagonix® $(basename $h .asm).app...
+	echo -n Construindo aplicativo base Unix do Hexagonix® $(basename $h .asm).app...
 	
-	echo Gerando aplicativo base Unix do Hexagonix® $(basename $h .asm).app... >> $LOG
+	echo Construindo aplicativo base Unix do Hexagonix® $(basename $h .asm).app... >> $LOG
 	
 	echo >> $LOG
 	
@@ -72,13 +72,9 @@ cd ..
 done
 
 echo
-echo "} Aplicativos base Unix gerados com sucesso."
+echo -e "} [\e[32mUtilitários Hexagonix construídos com sucesso\e[0m]."
 echo
 
-echo "} Aplicativos base Unix gerados com sucesso." >> $LOG
-echo >> $LOG
-echo "----------------------------------------------------------------------" >> $LOG
-echo >> $LOG
 
 }
 
