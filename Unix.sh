@@ -1,21 +1,17 @@
-#!/bin/sh
-#
-# Este arquivo deve estar em Apps/Unix para ser executado. Nese diretório deve
-# ser clonado o repositório Unix-Apps
+#!/bin/bash
+# Esse script deve ficar na raiz do projeto
 #
 #;;************************************************************************************
 #;;
 #;;    
-#;;        %#@@%&@@%&@@%@             Sistema Operacional Andromeda®
-#;;        #@@@@@@#@#@#@@
-#;;        @#@@%    %#@#%
-#;;        @#@@@    #@#@@
-#;;        #@#@@    !@#@#     Copyright © 2016-2021 Felipe Miguel Nery Lunkes
-#;;        @#@%!@&%@&@#@#             Todos os direitos reservados
-#;;        !@@%#%&#&@&@%#
-#;;        @@#!%&@&@#&*@&
-#;;        @#@#%    &%@#@
-#;;        @#!@@    !#@#@                    Script versão 0.8
+#;; ┌┐ ┌┐                                 Sistema Operacional Hexagonix®
+#;; ││ ││
+#;; │└─┘├──┬┐┌┬──┬──┬──┬─┐┌┬┐┌┐    Copyright © 2016-2022 Felipe Miguel Nery Lunkes
+#;; │┌─┐││─┼┼┼┤┌┐│┌┐│┌┐│┌┐┼┼┼┼┘          Todos os direitos reservados
+#;; ││ │││─┼┼┼┤┌┐│└┘│└┘││││├┼┼┐
+#;; └┘ └┴──┴┘└┴┘└┴─┐├──┴┘└┴┴┘└┘
+#;;              ┌─┘│          
+#;;              └──┘                             Versão 1.0
 #;;
 #;;
 #;;************************************************************************************
@@ -47,7 +43,7 @@ do
 	
 	fasm $h ../../`basename $h .asm`.app -d $BANDEIRAS >> $LOG || desmontar
 	
-	echo " [Ok]"
+	echo -e " [\e[32mOk\e[0m]"
 	
 	echo >> $LOG
 
@@ -63,7 +59,7 @@ do
 
 	cp cows/*.cow ../$DESTINO >> /dev/null
 
-	echo " [Ok]"
+	echo -e " [\e[32mOk\e[0m]"
 
 	fi
 
