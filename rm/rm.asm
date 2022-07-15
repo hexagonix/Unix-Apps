@@ -36,145 +36,145 @@ include "erros.s"
 ;;************************************************************************************
 
 inicioAPP:
-	
-	push ds
-	pop es			
-	
-	mov	[parametro], edi
-	
+    
+    push ds
+    pop es          
+    
+    mov [parametro], edi
+    
     mov esi, [parametro]
-		
-	cmp byte[esi], 0
-	je semParametro
-	
-	mov edi, rm.parametroAjuda
-	mov esi, [parametro]
-	
-	Hexagonix compararPalavrasString
-	
-	jc usoAplicativo
+        
+    cmp byte[esi], 0
+    je semParametro
+    
+    mov edi, rm.parametroAjuda
+    mov esi, [parametro]
+    
+    Hexagonix compararPalavrasString
+    
+    jc usoAplicativo
 
-	mov edi, rm.parametroAjuda2
-	mov esi, [parametro]
-	
-	Hexagonix compararPalavrasString
-	
-	jc usoAplicativo
-	
-	mov esi, [parametro]
-	
-	Hexagonix arquivoExiste
-	
-	jc .arquivoNaoEncontrado
-	
-	novaLinha
-	novaLinha
-	
-	mov esi, rm.confirmacao
-	
-	imprimirString
-	
+    mov edi, rm.parametroAjuda2
+    mov esi, [parametro]
+    
+    Hexagonix compararPalavrasString
+    
+    jc usoAplicativo
+    
+    mov esi, [parametro]
+    
+    Hexagonix arquivoExiste
+    
+    jc .arquivoNaoEncontrado
+    
+    novaLinha
+    novaLinha
+    
+    mov esi, rm.confirmacao
+    
+    imprimirString
+    
 .obterTeclas:
 
-	Hexagonix aguardarTeclado
-	
-	cmp al, 's'
-	je .deletar
-	
-	cmp al, 'S'
-	je .deletar
-	
-	cmp al, 'n'
-	je .abortar
-	
-	cmp al, 'N'
-	je .abortar
+    Hexagonix aguardarTeclado
+    
+    cmp al, 's'
+    je .deletar
+    
+    cmp al, 'S'
+    je .deletar
+    
+    cmp al, 'n'
+    je .abortar
+    
+    cmp al, 'N'
+    je .abortar
 
-	jmp .obterTeclas		
-	
-	
+    jmp .obterTeclas        
+    
+    
 .arquivoNaoEncontrado:
 
-	mov esi, rm.naoEncontrado
-	
-	imprimirString
-	
-	jmp terminar
+    mov esi, rm.naoEncontrado
+    
+    imprimirString
+    
+    jmp terminar
 
 .deletar:
 
-	Hexagonix imprimirCaractere
-	
-	mov esi, [parametro]
-	
-	Hexagonix deletarArquivo
-	
-	jc .erroDeletando
-	
-	mov esi, rm.deletado
-	
-	imprimirString
-	
-	jmp terminar
+    Hexagonix imprimirCaractere
+    
+    mov esi, [parametro]
+    
+    Hexagonix deletarArquivo
+    
+    jc .erroDeletando
+    
+    mov esi, rm.deletado
+    
+    imprimirString
+    
+    jmp terminar
 
 .abortar:
 
-	Hexagonix imprimirCaractere
-	
-	mov esi, rm.abortar
-	
-	imprimirString
-	
-	jmp terminar
-	
+    Hexagonix imprimirCaractere
+    
+    mov esi, rm.abortar
+    
+    imprimirString
+    
+    jmp terminar
+    
 .erroDeletando:
 
-	push eax
+    push eax
 
     mov esi, rm.erroDeletando
-	
-    imprimirString	
-	
-	pop eax
-	
-	cmp eax, IO.operacaoNegada
-	je .permissaoNegada
-	
-	jmp terminar
+    
+    imprimirString  
+    
+    pop eax
+    
+    cmp eax, IO.operacaoNegada
+    je .permissaoNegada
+    
+    jmp terminar
 
 .permissaoNegada:
 
-	mov esi, rm.permissaoNegada
-	
-	imprimirString
-	
-	jmp terminar
-	
+    mov esi, rm.permissaoNegada
+    
+    imprimirString
+    
+    jmp terminar
+    
 ;;************************************************************************************
 
 usoAplicativo:
 
-	mov esi, rm.uso
-	
-	imprimirString
-	
-	jmp terminar
+    mov esi, rm.uso
+    
+    imprimirString
+    
+    jmp terminar
 
 ;;************************************************************************************
 
 semParametro:
 
-	mov esi, rm.semParametro
-	
-	imprimirString
-	
-	jmp terminar
+    mov esi, rm.semParametro
+    
+    imprimirString
+    
+    jmp terminar
 
 ;;************************************************************************************
 
-terminar:	
+terminar:   
 
-	Hexagonix encerrarProcesso
+    Hexagonix encerrarProcesso
 
 ;;************************************************************************************
 
@@ -207,6 +207,6 @@ rm:
     
 parametro: dd ?
 
-regES:	dw 0
+regES:  dw 0
      
 bufferArquivo:

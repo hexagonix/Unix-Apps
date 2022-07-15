@@ -13,7 +13,7 @@
 ;;
 ;;************************************************************************************
 
-use32		
+use32       
 
 ;; Agora vamos criar um cabeçalho para a imagem HAPP final do aplicativo. Anteriormente,
 ;; o cabeçalho era criado em cada imagem e poderia diferir de uma para outra. Caso algum
@@ -32,8 +32,8 @@ cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, inicioAPP, 01h
 
 include "hexagon.s"
 include "verUtils.s"
-	
-;;************************************************************************************			
+    
+;;************************************************************************************          
 
 align 4
 
@@ -85,17 +85,17 @@ uname:
                             db "Parametros possiveis (em caso de falta de parametros, a opcao '-s' sera selecionada):", 10, 10
                             db " -a: Exibe todas as informacoes possiveis do Sistema, do Kernel e da maquina.", 10
                             db " -s: Nome do kernel em execucao.", 10
-							db " -n: Exibe o nome de host da maquina executando o Sistema.", 10
-						    db " -r: Lancamento do kernel em execucao.", 10
-						    db " -v: Versao do kernel em execucao.", 10
-						    db " -m: Tipo de maquina.", 10
-						    db " -p: Arquitetura do processador do sistema.", 10
-						    db " -i: Plataforma de hardware do sistema.", 10
-						    db " -o: Nome do sistema operacional em execucao.", 10, 10                                
+                            db " -n: Exibe o nome de host da maquina executando o Sistema.", 10
+                            db " -r: Lancamento do kernel em execucao.", 10
+                            db " -v: Versao do kernel em execucao.", 10
+                            db " -m: Tipo de maquina.", 10
+                            db " -p: Arquitetura do processador do sistema.", 10
+                            db " -i: Plataforma de hardware do sistema.", 10
+                            db " -o: Nome do sistema operacional em execucao.", 10, 10                                
                             db "uname versao ", versaoUNAME, 10, 10
                             db "Copyright (C) 2017-2022 Felipe Miguel Nery Lunkes", 10
                             db "Todos os direitos reservados.", 0
-							
+                            
 ponto: db ".", 0
 parametro: dd ?
 
@@ -105,147 +105,147 @@ align 32
 
 inicioAPP: ;; Ponto de entrada do aplicativo
 
-    mov	[parametro], edi
-	
-	mov edi, uname.parametroAjuda
-	mov esi, [parametro]
-	
-	Hexagonix compararPalavrasString
-	
-	jc usoAplicativo
+    mov [parametro], edi
+    
+    mov edi, uname.parametroAjuda
+    mov esi, [parametro]
+    
+    Hexagonix compararPalavrasString
+    
+    jc usoAplicativo
 
-	mov edi, uname.parametroAjuda2
-	mov esi, [parametro]
-	
-	Hexagonix compararPalavrasString
-	
-	jc usoAplicativo
+    mov edi, uname.parametroAjuda2
+    mov esi, [parametro]
+    
+    Hexagonix compararPalavrasString
+    
+    jc usoAplicativo
 
 ;; -a
 
-	mov edi, uname.parametroExibirTudo
-	mov esi, [parametro]
-	
-	Hexagonix compararPalavrasString
-	
-	jc exibirTudo
+    mov edi, uname.parametroExibirTudo
+    mov esi, [parametro]
+    
+    Hexagonix compararPalavrasString
+    
+    jc exibirTudo
 
 ;; -s
 
-	mov edi, uname.parametroExibirNomeKernel
-	mov esi, [parametro]
-	
-	Hexagonix compararPalavrasString
-	
-	jc exibirNomeKernel
+    mov edi, uname.parametroExibirNomeKernel
+    mov esi, [parametro]
+    
+    Hexagonix compararPalavrasString
+    
+    jc exibirNomeKernel
 
 ;; -n
 
-	mov edi, uname.parametroExibirHostname
-	mov esi, [parametro]
-	
-	Hexagonix compararPalavrasString
-	
-	jc exibirHostname
+    mov edi, uname.parametroExibirHostname
+    mov esi, [parametro]
+    
+    Hexagonix compararPalavrasString
+    
+    jc exibirHostname
 
 ;; -r
 
-	mov edi, uname.parametroExibirLancamento
-	mov esi, [parametro]
-	
-	Hexagonix compararPalavrasString
-	
-	jc exibirLancamento
+    mov edi, uname.parametroExibirLancamento
+    mov esi, [parametro]
+    
+    Hexagonix compararPalavrasString
+    
+    jc exibirLancamento
 
 ;; -m
 
-	mov edi, uname.parametroExibirTipo
-	mov esi, [parametro]
-	
-	Hexagonix compararPalavrasString
-	
-	jc exibirArquitetura
+    mov edi, uname.parametroExibirTipo
+    mov esi, [parametro]
+    
+    Hexagonix compararPalavrasString
+    
+    jc exibirArquitetura
 
 ;; -p
 
-	mov edi, uname.parametroExibirArch
-	mov esi, [parametro]
-	
-	Hexagonix compararPalavrasString
-	
-	jc exibirArquitetura
+    mov edi, uname.parametroExibirArch
+    mov esi, [parametro]
+    
+    Hexagonix compararPalavrasString
+    
+    jc exibirArquitetura
 
 ;; -i 
 
-	mov edi, uname.parametroExibirPlataforma
-	mov esi, [parametro]
-	
-	Hexagonix compararPalavrasString
-	
-	jc exibirPlataforma
+    mov edi, uname.parametroExibirPlataforma
+    mov esi, [parametro]
+    
+    Hexagonix compararPalavrasString
+    
+    jc exibirPlataforma
 
 ;; -v
 
-	mov edi, uname.parametroExibirVersao
-	mov esi, [parametro]
-	
-	Hexagonix compararPalavrasString
-	
-	jc exibirVersaoApenas
+    mov edi, uname.parametroExibirVersao
+    mov esi, [parametro]
+    
+    Hexagonix compararPalavrasString
+    
+    jc exibirVersaoApenas
 
 ;; -o
 
-	mov edi, uname.parametroExibirSO
-	mov esi, [parametro]
-	
-	Hexagonix compararPalavrasString
-	
-	jc exibirInfoSistemaOperacional
+    mov edi, uname.parametroExibirSO
+    mov esi, [parametro]
+    
+    Hexagonix compararPalavrasString
+    
+    jc exibirInfoSistemaOperacional
 
-	jmp exibirNomeKernel
+    jmp exibirNomeKernel
 
 ;;************************************************************************************
 
 exibirNomeKernel:
 
-	call espacoPadrao 
-	
-	Hexagonix retornarVersao
-	
-	imprimirString
+    call espacoPadrao 
+    
+    Hexagonix retornarVersao
+    
+    imprimirString
 
-	jmp terminar 
+    jmp terminar 
 
 ;;************************************************************************************
 
 exibirHostname:
 
-	call espacoPadrao
+    call espacoPadrao
 
-	call obterHostname
+    call obterHostname
 
-	jmp terminar 
+    jmp terminar 
 
 ;;************************************************************************************
 
 exibirLancamento:
 
-	call espacoPadrao
+    call espacoPadrao
 
-	call versaoHexagon
+    call versaoHexagon
 
-	jmp terminar 
+    jmp terminar 
 
 ;;************************************************************************************
 
 exibirArquitetura:
 
-	call espacoPadrao
+    call espacoPadrao
 
-	Hexagonix retornarVersao
+    Hexagonix retornarVersao
 
 ;; Em EDX temos a arquitetura
-	
+    
     cmp edx, 01
     je .i386
 
@@ -276,182 +276,182 @@ exibirArquitetura:
 
 .terminar:
 
-	jmp terminar
+    jmp terminar
 
 ;;************************************************************************************
 
 exibirPlataforma:
 
-	call espacoPadrao
+    call espacoPadrao
 
-	mov esi, uname.plataformaPC
+    mov esi, uname.plataformaPC
 
-	imprimirString
+    imprimirString
 
-	jmp terminar 
+    jmp terminar 
 
 ;;************************************************************************************
 
 exibirTudo:
 
-	call espacoPadrao 
-	
-	mov esi, uname.sistemaOperacional
+    call espacoPadrao 
+    
+    mov esi, uname.sistemaOperacional
 
-	imprimirString
+    imprimirString
 
-	mov esi, uname.espaco
-	
-	imprimirString
+    mov esi, uname.espaco
+    
+    imprimirString
 
-	call obterHostname
+    call obterHostname
 
 .continuarHost:
 
-	mov esi, uname.espaco
-	
-	imprimirString
-	
-	Hexagonix retornarVersao
-	
-	imprimirString
+    mov esi, uname.espaco
+    
+    imprimirString
+    
+    Hexagonix retornarVersao
+    
+    imprimirString
 
 ;; Para ficar de acordo com o padrão do FreeBSD, a mensagem "versao" não é exibido
 
-	;; mov esi, uname.versao
-	
-	;; imprimirString
+    ;; mov esi, uname.versao
+    
+    ;; imprimirString
 
-	mov esi, uname.espaco
-	
-	imprimirString
-	
-	call versaoHexagon
-	
-	cmp edx, 01h 
-	je .i386
+    mov esi, uname.espaco
+    
+    imprimirString
+    
+    call versaoHexagon
+    
+    cmp edx, 01h 
+    je .i386
 
-	cmp edx, 02h
-	je .amd64
+    cmp edx, 02h
+    je .amd64
 
 .i386:
 
-	mov esi, uname.arquiteturai386
+    mov esi, uname.arquiteturai386
 
-	imprimirString
+    imprimirString
 
-	jmp .continuar
+    jmp .continuar
 
 .amd64:
 
-	mov esi, uname.arquiteturaamd64
+    mov esi, uname.arquiteturaamd64
 
-	imprimirString
+    imprimirString
 
-	jmp .continuar
+    jmp .continuar
 
 .continuar:
-	
-	mov al, " "
+    
+    mov al, " "
 
-	Hexagonix imprimirCaractere
+    Hexagonix imprimirCaractere
 
-	mov esi, uname.hexagonix
-	
-	imprimirString
-	
-	jmp terminar
+    mov esi, uname.hexagonix
+    
+    imprimirString
+    
+    jmp terminar
 
 ;;************************************************************************************
 
 exibirInfoSistemaOperacional:
 
-	call espacoPadrao 
-	
-	mov esi, uname.sistemaOperacional
-	
-	imprimirString
-	
-	jmp terminar
-	
+    call espacoPadrao 
+    
+    mov esi, uname.sistemaOperacional
+    
+    imprimirString
+    
+    jmp terminar
+    
 ;;************************************************************************************
 
 exibirVersaoApenas:
 
-	call espacoPadrao 
-	
-	Hexagonix retornarVersao
-	
-	imprimirString
-	
-	mov esi, uname.espaco
+    call espacoPadrao 
+    
+    Hexagonix retornarVersao
+    
+    imprimirString
+    
+    mov esi, uname.espaco
 
-	imprimirString
+    imprimirString
 
-	call versaoHexagon
+    call versaoHexagon
 
-	jmp terminar
+    jmp terminar
 
 ;;************************************************************************************
-	
+    
 ;; Solicita a versão do Kernel, a decodifica e exibe para o usuário
- 	
+    
 versaoHexagon:
 
-	Hexagonix retornarVersao
-	
-	push ecx
-	push ebx
-	
-	imprimirInteiro
-	
-	mov esi, ponto
-	
-	imprimirString
-	
-	pop eax
-	
-	imprimirInteiro
-	
-	pop ecx
-	
-	cmp cl, 0
-	je .continuar
+    Hexagonix retornarVersao
+    
+    push ecx
+    push ebx
+    
+    imprimirInteiro
+    
+    mov esi, ponto
+    
+    imprimirString
+    
+    pop eax
+    
+    imprimirInteiro
+    
+    pop ecx
+    
+    cmp cl, 0
+    je .continuar
 
-	mov al, ch
-	
-	Hexagonix imprimirCaractere
+    mov al, ch
+    
+    Hexagonix imprimirCaractere
 
 .continuar:
 
-	ret
+    ret
 
 ;;************************************************************************************
 
 usoAplicativo:
 
-	mov esi, uname.uso
-	
-	imprimirString
-	
-	jmp terminar
+    mov esi, uname.uso
+    
+    imprimirString
+    
+    jmp terminar
 
-;;************************************************************************************	
+;;************************************************************************************  
 
-terminar:	
+terminar:   
 
-	novaLinha 
+    novaLinha 
 
-	Hexagonix encerrarProcesso
-	
+    Hexagonix encerrarProcesso
+    
 ;;*****************************************************************************
 
 espacoPadrao:
 
-	novaLinha
-	novaLinha
+    novaLinha
+    novaLinha
 
-	ret
+    ret
 
 ;;*****************************************************************************
 
@@ -459,45 +459,45 @@ obterHostname:
 
 ;; Vamos agora exibir o nome de host 
 
-	mov edi, enderecoCarregamento
-	mov esi, uname.arquivoUnix
-	
-	Hexagonix abrir
-	
-	jc .arquivoNaoEncontrado ;; Se não for encontrado, exibir o padrão
+    mov edi, enderecoCarregamento
+    mov esi, uname.arquivoUnix
+    
+    Hexagonix abrir
+    
+    jc .arquivoNaoEncontrado ;; Se não for encontrado, exibir o padrão
 
 ;; Se encontrado, exibir o nome de host definido 
 
-	clc 
+    clc 
 
-	mov esi, enderecoCarregamento
+    mov esi, enderecoCarregamento
 
-	Hexagonix tamanhoString
+    Hexagonix tamanhoString
 
-	mov edx, eax 
-	dec edx
+    mov edx, eax 
+    dec edx
 
-	mov al, 0
-	
-	Hexagonix inserirCaractere
+    mov al, 0
+    
+    Hexagonix inserirCaractere
 
-	mov esi, enderecoCarregamento
-	
-	imprimirString
+    mov esi, enderecoCarregamento
+    
+    imprimirString
 
-	jmp .retornar 
+    jmp .retornar 
 
 .arquivoNaoEncontrado:
 
-	stc 
+    stc 
 
-	mov esi, uname.maquina
-	
-	imprimirString
+    mov esi, uname.maquina
+    
+    imprimirString
 
 .retornar:
 
-	ret
+    ret
 
 ;;************************************************************************************
 ;;

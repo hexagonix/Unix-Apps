@@ -36,144 +36,144 @@ include "log.s"
 
 ;;************************************************************************************
 
-inicioAPP:	
+inicioAPP:  
 
-	push ds
-	pop es			
-	
-	mov	[parametro], edi ;; Salvar os parâmetros da linha de comando para uso futuro
-	
-	logSistema energia.Verbose.inicio, 00h, Log.Prioridades.p4
-	logSistema energia.Verbose.estado, 00h, Log.Prioridades.p4
+    push ds
+    pop es          
+    
+    mov [parametro], edi ;; Salvar os parâmetros da linha de comando para uso futuro
+    
+    logSistema energia.Verbose.inicio, 00h, Log.Prioridades.p4
+    logSistema energia.Verbose.estado, 00h, Log.Prioridades.p4
 
-	mov esi, [parametro]
-	
-	cmp byte[esi], 0
-	je faltaArgumento
+    mov esi, [parametro]
+    
+    cmp byte[esi], 0
+    je faltaArgumento
 
-	mov edi, energia.parametroAjuda
-	mov esi, [parametro]
-	
-	Hexagonix compararPalavrasString
-	
-	jc usoAplicativo
+    mov edi, energia.parametroAjuda
+    mov esi, [parametro]
+    
+    Hexagonix compararPalavrasString
+    
+    jc usoAplicativo
 
-	mov edi, energia.parametroAjuda2
-	mov esi, [parametro]
-	
-	Hexagonix compararPalavrasString
-	
-	jc usoAplicativo
+    mov edi, energia.parametroAjuda2
+    mov esi, [parametro]
+    
+    Hexagonix compararPalavrasString
+    
+    jc usoAplicativo
 
-	mov edi, energia.parametroDesligar
-	mov esi, [parametro]
-	
-	Hexagonix compararPalavrasString
-	
-	jc iniciarDesligamento
-	
-	mov edi, energia.parametroReiniciar
-	mov esi, [parametro]
-	
-	Hexagonix compararPalavrasString
-	
-	jc iniciarReinicio
+    mov edi, energia.parametroDesligar
+    mov esi, [parametro]
+    
+    Hexagonix compararPalavrasString
+    
+    jc iniciarDesligamento
+    
+    mov edi, energia.parametroReiniciar
+    mov esi, [parametro]
+    
+    Hexagonix compararPalavrasString
+    
+    jc iniciarReinicio
 
-	mov edi, energia.parDesligarSemEco
-	mov esi, [parametro]
-	
-	Hexagonix compararPalavrasString
-	
-	jc iniciarDesligamentoSemEco
+    mov edi, energia.parDesligarSemEco
+    mov esi, [parametro]
+    
+    Hexagonix compararPalavrasString
+    
+    jc iniciarDesligamentoSemEco
 
-	mov edi, energia.parReiniciarSemEco
-	mov esi, [parametro]
-	
-	Hexagonix compararPalavrasString
-	
-	jc iniciarReinicioSemEco
+    mov edi, energia.parReiniciarSemEco
+    mov esi, [parametro]
+    
+    Hexagonix compararPalavrasString
+    
+    jc iniciarReinicioSemEco
 
-	jmp usoAplicativo
+    jmp usoAplicativo
 
 ;;************************************************************************************
 
 iniciarDesligamento:
-	
-	novaLinha
-	
-	mov esi, energia.sistema
+    
+    novaLinha
+    
+    mov esi, energia.sistema
 
-	imprimirString
-	
-	jmp desligarHexagon
+    imprimirString
+    
+    jmp desligarHexagon
 
 ;;************************************************************************************
 
 iniciarDesligamentoSemEco:
 
-	logSistema energia.Verbose.parametroDesligar, 00h, Log.Prioridades.p4
+    logSistema energia.Verbose.parametroDesligar, 00h, Log.Prioridades.p4
 
-	call prepararSistemaSemEco
+    call prepararSistemaSemEco
 
-	logSistema energia.Verbose.parametroSolicitar, 00h, Log.Prioridades.p4
+    logSistema energia.Verbose.parametroSolicitar, 00h, Log.Prioridades.p4
 
-	Hexagonix desligarPC
+    Hexagonix desligarPC
 
-	jmp terminar
+    jmp terminar
 
 ;;************************************************************************************
 
 iniciarReinicioSemEco:
 
-	logSistema energia.Verbose.parametroReiniciar, 00h, Log.Prioridades.p4
+    logSistema energia.Verbose.parametroReiniciar, 00h, Log.Prioridades.p4
 
-	call prepararSistemaSemEco
+    call prepararSistemaSemEco
 
-	logSistema energia.Verbose.parametroSolicitar, 00h, Log.Prioridades.p4
+    logSistema energia.Verbose.parametroSolicitar, 00h, Log.Prioridades.p4
 
-	Hexagonix reiniciarPC
+    Hexagonix reiniciarPC
 
-	jmp terminar
+    jmp terminar
 
 ;;************************************************************************************
 
 iniciarReinicio:
 
-	novaLinha
-	
-	mov esi, energia.sistema
+    novaLinha
+    
+    mov esi, energia.sistema
 
-	imprimirString
-	
-	jmp reiniciarHexagon
+    imprimirString
+    
+    jmp reiniciarHexagon
 
 ;;************************************************************************************
-	
+    
 desligarHexagon:
 
-	logSistema energia.Verbose.parametroDesligar, 00h, Log.Prioridades.p4
+    logSistema energia.Verbose.parametroDesligar, 00h, Log.Prioridades.p4
 
-	call prepararSistema
+    call prepararSistema
 
-	logSistema energia.Verbose.parametroSolicitar, 00h, Log.Prioridades.p4
+    logSistema energia.Verbose.parametroSolicitar, 00h, Log.Prioridades.p4
 
-	Hexagonix desligarPC
+    Hexagonix desligarPC
 
-	jmp terminar
+    jmp terminar
 
 ;;************************************************************************************
 
 reiniciarHexagon:
 
-	logSistema energia.Verbose.parametroReiniciar, 00h, Log.Prioridades.p4
+    logSistema energia.Verbose.parametroReiniciar, 00h, Log.Prioridades.p4
 
-	call prepararSistema
+    call prepararSistema
 
-	logSistema energia.Verbose.parametroSolicitar, 00h, Log.Prioridades.p4
+    logSistema energia.Verbose.parametroSolicitar, 00h, Log.Prioridades.p4
 
-	Hexagonix reiniciarPC
+    Hexagonix reiniciarPC
 
-	jmp terminar
+    jmp terminar
 
 ;;************************************************************************************
 
@@ -181,91 +181,91 @@ prepararSistemaSemEco:
 
 ;; Qualquer ação que possa ser incluída aqui
 
-	ret
+    ret
 
 ;;************************************************************************************
 
 prepararSistema:
 
-	mov esi, energia.msgDesligamento
+    mov esi, energia.msgDesligamento
 
-	imprimirString
+    imprimirString
 
-	mov ecx, 500
-	
-	Hexagonix causarAtraso
-	
-	mov esi, energia.msgPronto
+    mov ecx, 500
+    
+    Hexagonix causarAtraso
+    
+    mov esi, energia.msgPronto
 
-	imprimirString
+    imprimirString
 
-	mov esi, energia.msgFinalizando
+    mov esi, energia.msgFinalizando
 
-	imprimirString
+    imprimirString
 
-	mov ecx, 500
-	
-	Hexagonix causarAtraso
-	
-	mov esi, energia.msgPronto
+    mov ecx, 500
+    
+    Hexagonix causarAtraso
+    
+    mov esi, energia.msgPronto
 
-	imprimirString
+    imprimirString
 
-	mov esi, energia.msgAndromeda
+    mov esi, energia.msgAndromeda
 
-	imprimirString
+    imprimirString
 
-	mov ecx, 500
-	
-	Hexagonix causarAtraso
-	
-	mov esi, energia.msgPronto
+    mov ecx, 500
+    
+    Hexagonix causarAtraso
+    
+    mov esi, energia.msgPronto
 
-	imprimirString
+    imprimirString
 
-	mov esi, energia.msgDiscos
+    mov esi, energia.msgDiscos
 
-	imprimirString
+    imprimirString
 
-	mov ecx, 500
-	
-	Hexagonix causarAtraso
-	
-	mov esi, energia.msgPronto
+    mov ecx, 500
+    
+    Hexagonix causarAtraso
+    
+    mov esi, energia.msgPronto
 
-	imprimirString
+    imprimirString
 
-	novaLinha
+    novaLinha
 
-	ret
+    ret
 
 ;;************************************************************************************
 
 usoAplicativo:
 
-	mov esi, energia.uso
-	
-	imprimirString
-	
-	jmp terminar
+    mov esi, energia.uso
+    
+    imprimirString
+    
+    jmp terminar
 
 ;;************************************************************************************
 
 faltaArgumento:
 
-	mov esi, energia.argumentos
-	
-	imprimirString
-	
-	jmp terminar
+    mov esi, energia.argumentos
+    
+    imprimirString
+    
+    jmp terminar
 
 ;;************************************************************************************
 
 terminar:
 
-	logSistema energia.Verbose.falhaSolicitacao, 00h, Log.Prioridades.p4
+    logSistema energia.Verbose.falhaSolicitacao, 00h, Log.Prioridades.p4
 
-	Hexagonix encerrarProcesso
+    Hexagonix encerrarProcesso
 
 ;;************************************************************************************
 ;;
@@ -304,7 +304,7 @@ energia:
                      db "-r - Prepara e reinicia o computador.", 10, 10                                    
                      db "energia versao ", versaoENERGIA, 10, 10
                      db "Copyright (C) 2022 Felipe Miguel Nery Lunkes", 10
-					 db "Todos os direitos reservados.", 10, 0
+                     db "Todos os direitos reservados.", 10, 0
 
 energia.Verbose:
 

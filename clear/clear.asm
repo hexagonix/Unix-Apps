@@ -36,72 +36,72 @@ include "hexagon.s"
 
 inicioAPP:
 
-	push ds
-	pop es			
-	
-	mov	[parametro], edi
-	
+    push ds
+    pop es          
+    
+    mov [parametro], edi
+    
     mov esi, [parametro]
-	
-	mov edi, clear.parametroAjuda
-	mov esi, [parametro]
-	
-	Hexagonix compararPalavrasString
-	
-	jc usoAplicativo
+    
+    mov edi, clear.parametroAjuda
+    mov esi, [parametro]
+    
+    Hexagonix compararPalavrasString
+    
+    jc usoAplicativo
 
-	mov edi, clear.parametroAjuda2
-	mov esi, [parametro]
-	
-	Hexagonix compararPalavrasString
-	
-	jc usoAplicativo
-	
-	jmp realizarLimpeza
+    mov edi, clear.parametroAjuda2
+    mov esi, [parametro]
+    
+    Hexagonix compararPalavrasString
+    
+    jc usoAplicativo
+    
+    jmp realizarLimpeza
 
 ;;************************************************************************************
 
 realizarLimpeza:
 
-	mov esi, vd1         ;; Abrir o primeiro console virtual
-	
-	Hexagonix abrir      ;; Abre o dispositivo
-	
-	jc .erro
-	
-	Hexagonix limparTela ;; Limpa seu conteúdo
-	
-	mov esi, vd0         ;; Reabre o console principal
-	
-	Hexagonix abrir      ;; Abre o dispositivo
+    mov esi, vd1         ;; Abrir o primeiro console virtual
+    
+    Hexagonix abrir      ;; Abre o dispositivo
+    
+    jc .erro
+    
+    Hexagonix limparTela ;; Limpa seu conteúdo
+    
+    mov esi, vd0         ;; Reabre o console principal
+    
+    Hexagonix abrir      ;; Abre o dispositivo
 
-	Hexagonix limparTela
-	
-	jmp terminar
-	
+    Hexagonix limparTela
+    
+    jmp terminar
+    
 .erro:
 
-	mov esi, clear.erro
-	
-	imprimirString
-	
-	jmp terminar
-	
+    mov esi, clear.erro
+    
+    imprimirString
+    
+    jmp terminar
+    
 ;;************************************************************************************
 
-terminar:	
+terminar:   
 
-	Hexagonix encerrarProcesso
+    Hexagonix encerrarProcesso
 
 ;;************************************************************************************
 
 usoAplicativo:
-	
-	mov esi, clear.uso
-	
-	imprimirString
-	
-	jmp terminar
+    
+    mov esi, clear.uso
+    
+    imprimirString
+    
+    jmp terminar
 
 ;;************************************************************************************
 

@@ -36,70 +36,70 @@ include "erros.s"
 ;;************************************************************************************
 
 inicioAPP:
-	
-	push ds
-	pop es			
-	
-	mov	[parametros], edi
-	
-	mov esi, edi
-	
-	cmp byte[esi], 0
-	je exibirMontagens
-	
-	call obterParametros
-	
-	jc	usoAplicativo
-	
-	mov edi, mount.parametroAjuda
-	mov esi, [parametros]
-	
-	Hexagonix compararPalavrasString
-	
-	jc usoAplicativo
+    
+    push ds
+    pop es          
+    
+    mov [parametros], edi
+    
+    mov esi, edi
+    
+    cmp byte[esi], 0
+    je exibirMontagens
+    
+    call obterParametros
+    
+    jc  usoAplicativo
+    
+    mov edi, mount.parametroAjuda
+    mov esi, [parametros]
+    
+    Hexagonix compararPalavrasString
+    
+    jc usoAplicativo
 
-	mov edi, mount.dispositivoPadrao
-	mov esi, [pontoMontagem]
+    mov edi, mount.dispositivoPadrao
+    mov esi, [pontoMontagem]
 
-	Hexagonix compararPalavrasString
-	
-	jc .realizarMontagem
-	
-	jmp erroPontoMontagem	
-	
+    Hexagonix compararPalavrasString
+    
+    jc .realizarMontagem
+    
+    jmp erroPontoMontagem   
+    
 .realizarMontagem:
-	
-	mov esi, mount.volume
-	
-	imprimirString
-	
-	mov esi, [volume]
-	
-	imprimirString
-	
-	mov esi, mount.pontoMontagem
-	
-	imprimirString
-	
-	mov esi, [pontoMontagem]
-	
-	imprimirString
-	
-	mov esi, mount.fecharColchete
-	
-	imprimirString
+    
+    mov esi, mount.volume
+    
+    imprimirString
+    
+    mov esi, [volume]
+    
+    imprimirString
+    
+    mov esi, mount.pontoMontagem
+    
+    imprimirString
+    
+    mov esi, [pontoMontagem]
+    
+    imprimirString
+    
+    mov esi, mount.fecharColchete
+    
+    imprimirString
 
-	mov esi, [volume]
-	
-	Hexagonix abrir
-	
-	jc erroAbertura
-	
-	mov esi, mount.montado
-	
-	imprimirString
-	
-	jmp terminar
+    mov esi, [volume]
+    
+    Hexagonix abrir
+    
+    jc erroAbertura
+    
+    mov esi, mount.montado
+    
+    imprimirString
+    
+    jmp terminar
 
 ;;************************************************************************************
 
@@ -108,126 +108,126 @@ exibirMontagens:
     mov esi, mount.volumeMontado
   
     imprimirString  
-	
-	Hexagonix obterDisco
-	
-	push eax
-	push edi
-	push esi
-	
-	pop esi
-	
-	imprimirString
-	
-	mov esi, mount.infoVolume
-	
-	imprimirString
-	
-	mov esi, mount.dispositivoPadrao
-	
-	imprimirString
-	
-	mov esi, mount.rotuloVolume
-	
-	imprimirString
-	
-	pop edi
-	
-	mov esi, edi
-	
-	Hexagonix cortarString
-	
-	imprimirString
-	
-	mov esi, mount.parenteses1
+    
+    Hexagonix obterDisco
+    
+    push eax
+    push edi
+    push esi
+    
+    pop esi
+    
+    imprimirString
+    
+    mov esi, mount.infoVolume
+    
+    imprimirString
+    
+    mov esi, mount.dispositivoPadrao
+    
+    imprimirString
+    
+    mov esi, mount.rotuloVolume
+    
+    imprimirString
+    
+    pop edi
+    
+    mov esi, edi
+    
+    Hexagonix cortarString
+    
+    imprimirString
+    
+    mov esi, mount.parenteses1
 
-	imprimirString
+    imprimirString
 
-	pop eax
+    pop eax
 
-	cmp ah, 01h
-	je .fat12
+    cmp ah, 01h
+    je .fat12
 
-	cmp ah, 04h
-	je .fat16_32
+    cmp ah, 04h
+    je .fat16_32
 
-	cmp ah, 06h
-	je .fat16
+    cmp ah, 06h
+    je .fat16
 
-	jmp terminar
+    jmp terminar
 
 .fat12:
 
-	mov esi, mount.FAT12
+    mov esi, mount.FAT12
 
-	imprimirString
+    imprimirString
 
-	mov esi, mount.parenteses2
+    mov esi, mount.parenteses2
 
-	imprimirString
+    imprimirString
 
-	jmp terminar
+    jmp terminar
 
 .fat16_32:
 
-	mov esi, mount.FAT16_32
+    mov esi, mount.FAT16_32
 
-	imprimirString
+    imprimirString
 
-	mov esi, mount.parenteses2
+    mov esi, mount.parenteses2
 
-	imprimirString
+    imprimirString
 
-	jmp terminar
+    jmp terminar
 
 .fat16:
 
-	mov esi, mount.FAT16
+    mov esi, mount.FAT16
 
-	imprimirString
+    imprimirString
 
-	mov esi, mount.parenteses2
+    mov esi, mount.parenteses2
 
-	imprimirString
+    imprimirString
 
-	jmp terminar
+    jmp terminar
 
 ;;************************************************************************************
 
 erroPontoMontagem:
 
-	mov esi, mount.erroPontoMontagem
-	
-	imprimirString
-	
-	jmp terminar
+    mov esi, mount.erroPontoMontagem
+    
+    imprimirString
+    
+    jmp terminar
 
 ;;************************************************************************************
 
 erroAbertura:
 
-	cmp eax, IO.operacaoNegada
-	je .operacaoNegada
+    cmp eax, IO.operacaoNegada
+    je .operacaoNegada
 
-	mov esi, mount.erroAbrindo
-	
-	imprimirString
+    mov esi, mount.erroAbrindo
+    
+    imprimirString
 
-	jmp terminar
+    jmp terminar
 
 .operacaoNegada:
 
-	mov esi, mount.operacaoNegada
+    mov esi, mount.operacaoNegada
 
-	imprimirString
+    imprimirString
 
-	jmp terminar
+    jmp terminar
 
 ;;************************************************************************************
 
-terminar:	
+terminar:   
 
-	Hexagonix encerrarProcesso
+    Hexagonix encerrarProcesso
 
 ;;************************************************************************************
 
@@ -236,33 +236,33 @@ terminar:
 
 obterParametros:
 
-	mov esi, [parametros]
-	mov [volume], esi
-		
-	cmp byte[esi], 0
-	je usoAplicativo
-	
-	mov al, ' '
-	
-	Hexagonix encontrarCaractere
-	
-	jc usoAplicativo
+    mov esi, [parametros]
+    mov [volume], esi
+        
+    cmp byte[esi], 0
+    je usoAplicativo
+    
+    mov al, ' '
+    
+    Hexagonix encontrarCaractere
+    
+    jc usoAplicativo
 
-	mov al, ' '
-	
-	call encontrarCaractereCP
-	
-	mov [pontoMontagem], esi
-	
-	jmp .pronto
-	
+    mov al, ' '
+    
+    call encontrarCaractereCP
+    
+    mov [pontoMontagem], esi
+    
+    jmp .pronto
+    
 .pronto:
 
-	clc
-	
-	ret
+    clc
+    
+    ret
 
-;;************************************************************************************	
+;;************************************************************************************  
 
 ;; Realiza a busca de um caractere específico na String fornecida
 ;;
@@ -277,30 +277,30 @@ obterParametros:
 
 encontrarCaractereCP:
 
-	lodsb
-	
-	cmp al, ' '
-	je .pronto
-	
-	jmp encontrarCaractereCP
-	
+    lodsb
+    
+    cmp al, ' '
+    je .pronto
+    
+    jmp encontrarCaractereCP
+    
 .pronto:
 
-	mov byte[esi-1], 0
-	
-	ret
+    mov byte[esi-1], 0
+    
+    ret
 
-;;************************************************************************************	
+;;************************************************************************************  
 
 usoAplicativo:
 
-	mov esi, mount.uso
-	
-	imprimirString
-	
-	jmp terminar
+    mov esi, mount.uso
+    
+    imprimirString
+    
+    jmp terminar
 
-;;************************************************************************************	
+;;************************************************************************************  
 
 ;;************************************************************************************
 ;;
@@ -332,8 +332,8 @@ mount:
 .rotuloVolume:      db " com o rotulo ", 0
 .operacaoNegada:    db "A montagem foi recusada pelo Sistema. Isso pode ser explicado devido ao fato do usuario atual", 10
                     db "nao possuir previlegios administrativos, nao sendo usuario raiz (root).", 10, 10
-					db "Apenas o usuario raiz (root) pode realizar montagens. Realize login neste usuario para realizar", 10
-					db "a montagem desejada.", 10, 0
+                    db "Apenas o usuario raiz (root) pode realizar montagens. Realize login neste usuario para realizar", 10
+                    db "a montagem desejada.", 10, 0
 .parenteses1:       db " (", 0
 .parenteses2:       db ")", 10, 0
 .FAT16:             db "FAT16B", 0
@@ -344,5 +344,5 @@ parametros:    dd 0
 volume:        dd ?
 pontoMontagem: dd ?
 
-regES:	dw 0
+regES:  dw 0
      

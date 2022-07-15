@@ -13,7 +13,7 @@
 ;;
 ;;************************************************************************************
 
-use32		
+use32       
 
 ;; Agora vamos criar um cabeçalho para a imagem HAPP final do aplicativo. Anteriormente,
 ;; o cabeçalho era criado em cada imagem e poderia diferir de uma para outra. Caso algum
@@ -32,97 +32,97 @@ cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, inicioAPP, 01h
 
 include "hexagon.s"
 
-;;************************************************************************************			
+;;************************************************************************************          
 
 inicioAPP: ;; Ponto de entrada do Gerenciador de Login do Andromeda®
 
-    mov	[linhaComando], edi
-	
-	mov edi, whoami.parametroAjuda
-	mov esi, [linhaComando]
-	
-	Hexagonix compararPalavrasString
-	
-	jc usoAplicativo
+    mov [linhaComando], edi
+    
+    mov edi, whoami.parametroAjuda
+    mov esi, [linhaComando]
+    
+    Hexagonix compararPalavrasString
+    
+    jc usoAplicativo
 
-	mov edi, whoami.parametroAjuda2
-	mov esi, [linhaComando]
-	
-	Hexagonix compararPalavrasString
-	
-	jc usoAplicativo
-		
-	mov edi, whoami.parametroTudo
-	mov esi, [linhaComando]
-	
-	Hexagonix compararPalavrasString
-	
-	jc usuarioEGrupo
-	
-	mov edi, whoami.parametroUsuario
-	mov esi, [linhaComando]
-	
-	Hexagonix compararPalavrasString
-	
-	jc exibirUsuario
+    mov edi, whoami.parametroAjuda2
+    mov esi, [linhaComando]
+    
+    Hexagonix compararPalavrasString
+    
+    jc usoAplicativo
+        
+    mov edi, whoami.parametroTudo
+    mov esi, [linhaComando]
+    
+    Hexagonix compararPalavrasString
+    
+    jc usuarioEGrupo
+    
+    mov edi, whoami.parametroUsuario
+    mov esi, [linhaComando]
+    
+    Hexagonix compararPalavrasString
+    
+    jc exibirUsuario
 
-	jmp exibirUsuario
-	
-;;************************************************************************************			
-	
+    jmp exibirUsuario
+    
+;;************************************************************************************          
+    
 exibirUsuario:
   
-	novaLinha
-	novaLinha
-	
-	Hexagonix obterUsuario
-	
-	imprimirString
-	
-	novaLinha
-	
-	jmp terminar
+    novaLinha
+    novaLinha
+    
+    Hexagonix obterUsuario
+    
+    imprimirString
+    
+    novaLinha
+    
+    jmp terminar
 
 ;;************************************************************************************
 
 usuarioEGrupo:
 
-	novaLinha
-	novaLinha
-	
-	Hexagonix obterUsuario
-	
-	push eax
-	
-	imprimirString
-	
-	mov esi, whoami.grupo
-	
-	imprimirString
-	
-	pop eax
-	
-	imprimirInteiro
-	
-	novaLinha
-	
-	jmp terminar
-	
-;;************************************************************************************		
+    novaLinha
+    novaLinha
+    
+    Hexagonix obterUsuario
+    
+    push eax
+    
+    imprimirString
+    
+    mov esi, whoami.grupo
+    
+    imprimirString
+    
+    pop eax
+    
+    imprimirInteiro
+    
+    novaLinha
+    
+    jmp terminar
+    
+;;************************************************************************************      
 
 usoAplicativo:
 
-	mov esi, whoami.uso
-	
-	imprimirString
-	
-	jmp terminar
-	
-;;************************************************************************************	
+    mov esi, whoami.uso
+    
+    imprimirString
+    
+    jmp terminar
+    
+;;************************************************************************************  
 
-terminar:	
+terminar:   
 
-	Hexagonix encerrarProcesso
+    Hexagonix encerrarProcesso
 
 ;;************************************************************************************
 
@@ -131,7 +131,7 @@ terminar:
 ;;                    Área de dados e variáveis do aplicativo
 ;;
 ;;************************************************************************************
-	
+    
 linhaComando: dd 0
 
 versaoWHOAMI equ "1.0"

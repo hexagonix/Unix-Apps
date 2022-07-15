@@ -48,7 +48,7 @@ fnt:
                   db "fnt versao ", versaoFNT, 10, 10
                   db "Copyright (C) 2022 Felipe Miguel Nery Lunkes", 10
                   db "Todos os direitos reservados.", 10, 0
-.nomeArquivo:     db 10, 10, "Nome do arquivo de fonte: ", 0	
+.nomeArquivo:     db 10, 10, "Nome do arquivo de fonte: ", 0    
 .nomeFonte:       db "Nome do arquivo: ", 0
 .sucesso:         db 10, 10, "Fonte alterada com sucesso.", 10, 10
                   db "Pressione qualquer tecla para continuar...", 10, 10, 0
@@ -76,180 +76,180 @@ fnt:
 
 parametro:        dd 0
 arquivoFonte:     dd ?
-regES:	          dw 0
+regES:            dw 0
 
 ;;************************************************************************************
 
 inicioAPP:
 
-	mov [regES], es
-	
-	push ds
-	pop es			
-	
-	mov	[parametro], edi
+    mov [regES], es
+    
+    push ds
+    pop es          
+    
+    mov [parametro], edi
 
-	mov esi, [parametro]
+    mov esi, [parametro]
 
-	cmp byte[esi], 0
-	je usoAplicativo
-	
-	mov edi, fnt.parametroAjuda
-	mov esi, [parametro]
-	
-	Hexagonix compararPalavrasString
-	
-	jc usoAplicativo
+    cmp byte[esi], 0
+    je usoAplicativo
+    
+    mov edi, fnt.parametroAjuda
+    mov esi, [parametro]
+    
+    Hexagonix compararPalavrasString
+    
+    jc usoAplicativo
 
-	mov edi, fnt.parametroAjuda2
-	mov esi, [parametro]
-	
-	Hexagonix compararPalavrasString
-	
-	jc usoAplicativo
-	
-	mov esi, fnt.nomeArquivo
-	
-	imprimirString
-	
-	mov esi, [parametro]
-	
-	imprimirString
-	
-	mov esi, [parametro]
-	
-	Hexagonix cortarString			;; Remover espaços em branco extras
-	
-	call validarFonte
+    mov edi, fnt.parametroAjuda2
+    mov esi, [parametro]
+    
+    Hexagonix compararPalavrasString
+    
+    jc usoAplicativo
+    
+    mov esi, fnt.nomeArquivo
+    
+    imprimirString
+    
+    mov esi, [parametro]
+    
+    imprimirString
+    
+    mov esi, [parametro]
+    
+    Hexagonix cortarString          ;; Remover espaços em branco extras
+    
+    call validarFonte
 
-	jc .erroFormato
+    jc .erroFormato
 
-	Hexagonix alterarFonte
-	
-	jc .erroTexto
-	
-	mov esi, fnt.sucessoTexto
-	
-	imprimirString
+    Hexagonix alterarFonte
+    
+    jc .erroTexto
+    
+    mov esi, fnt.sucessoTexto
+    
+    imprimirString
 
-	mov esi, fnt.introducaoTeste
+    mov esi, fnt.introducaoTeste
 
-	imprimirString
+    imprimirString
 
-	mov esi, fnt.testeFonte
+    mov esi, fnt.testeFonte
 
-	imprimirString
-	
-	mov ebx, 00h
-	
-	Hexagonix encerrarProcesso
-	
+    imprimirString
+    
+    mov ebx, 00h
+    
+    Hexagonix encerrarProcesso
+    
 .erroTexto:
 
-	mov esi, fnt.falhaTexto
-	
-	imprimirString
+    mov esi, fnt.falhaTexto
+    
+    imprimirString
 
-	jmp .erroFim
+    jmp .erroFim
 
 .erroFormato:
-	
-	mov esi, fnt.falhaFormatoT
-	
-	imprimirString
+    
+    mov esi, fnt.falhaFormatoT
+    
+    imprimirString
 
-	jmp .erroFim
+    jmp .erroFim
 
 .erroFim:
-	
-	mov ebx, 00h
-	
-	jmp terminar
-	
+    
+    mov ebx, 00h
+    
+    jmp terminar
+    
 ;;************************************************************************************
 
 terminar:
 
-	mov ebx, 00h
+    mov ebx, 00h
 
-	Hexagonix encerrarProcesso
-	
+    Hexagonix encerrarProcesso
+    
 ;;************************************************************************************
 
 usoAplicativo:
 
-	mov esi, fnt.uso
-	
-	imprimirString
-	
-	jmp terminar
+    mov esi, fnt.uso
+    
+    imprimirString
+    
+    jmp terminar
 
 ;;************************************************************************************
 
 validarFonte:
 
-	mov esi, [parametro]
-	mov edi, bufferArquivo
+    mov esi, [parametro]
+    mov edi, bufferArquivo
 
-	Hexagonix abrir
+    Hexagonix abrir
 
-	jc .erroSemFonte
+    jc .erroSemFonte
 
-	mov edi, bufferArquivo
+    mov edi, bufferArquivo
 
-	cmp byte[edi+0], "H"
-	jne .naoHFNT
+    cmp byte[edi+0], "H"
+    jne .naoHFNT
 
-	cmp byte[edi+1], "F"
-	jne .naoHFNT
+    cmp byte[edi+1], "F"
+    jne .naoHFNT
 
-	cmp byte[edi+2], "N"
-	jne .naoHFNT
+    cmp byte[edi+2], "N"
+    jne .naoHFNT
 
-	cmp byte[edi+3], "T"
-	jne .naoHFNT
+    cmp byte[edi+3], "T"
+    jne .naoHFNT
 
 .verificarTamanho:
 
-	Hexagonix arquivoExiste
+    Hexagonix arquivoExiste
 
 ;; Em EAX, o tamanho do arquivo. Ele não deve ser maior que 2000 bytes, o que poderia
 ;; sobrescrever dados na memória do Hexagon
 
-	mov ebx, 2000
+    mov ebx, 2000
 
-	cmp eax, ebx
-	jng .continuar
+    cmp eax, ebx
+    jng .continuar
 
-	jmp .tamanhoSuperior
+    jmp .tamanhoSuperior
 
 .continuar:
 
-	clc 
-	
-	ret
+    clc 
+    
+    ret
 
 .erroSemFonte:
-	
-	mov esi, fnt.falhaTexto
-	
-	imprimirString
+    
+    mov esi, fnt.falhaTexto
+    
+    imprimirString
 
-	jmp terminar
+    jmp terminar
 
 .naoHFNT:
 
-	stc
+    stc
 
-	ret
+    ret
 
 .tamanhoSuperior:
 
-	mov esi, fnt.tamanhoSuperior
-	
-	imprimirString
+    mov esi, fnt.tamanhoSuperior
+    
+    imprimirString
 
-	jmp terminar
+    jmp terminar
 
 ;;************************************************************************************
 

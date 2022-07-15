@@ -35,70 +35,70 @@ include "hexagon.s"
 ;;************************************************************************************
 
 inicioAPP:
-	
-	push ds
-	pop es			
-	
-	mov	[parametro], edi
-	
+    
+    push ds
+    pop es          
+    
+    mov [parametro], edi
+    
     mov esi, [parametro]
-		
-	cmp byte[esi], 0
-	je usoAplicativo
-	
-	mov edi, cat.parametroAjuda
-	mov esi, [parametro]
-	
-	Hexagonix compararPalavrasString
-	
-	jc usoAplicativo
+        
+    cmp byte[esi], 0
+    je usoAplicativo
+    
+    mov edi, cat.parametroAjuda
+    mov esi, [parametro]
+    
+    Hexagonix compararPalavrasString
+    
+    jc usoAplicativo
 
-	mov edi, cat.parametroAjuda2
-	mov esi, [parametro]
-	
-	Hexagonix compararPalavrasString
-	
-	jc usoAplicativo
-	
-	mov edi, bufferArquivo
-	mov esi, [parametro]
-	
-	Hexagonix abrir
-	
-	jc .arquivoNaoEncontrado
-	
-	novaLinha
-	novaLinha
-	
-	mov esi, bufferArquivo
-	
-	imprimirString
-	
-	jmp terminar
-	
+    mov edi, cat.parametroAjuda2
+    mov esi, [parametro]
+    
+    Hexagonix compararPalavrasString
+    
+    jc usoAplicativo
+    
+    mov edi, bufferArquivo
+    mov esi, [parametro]
+    
+    Hexagonix abrir
+    
+    jc .arquivoNaoEncontrado
+    
+    novaLinha
+    novaLinha
+    
+    mov esi, bufferArquivo
+    
+    imprimirString
+    
+    jmp terminar
+    
 .arquivoNaoEncontrado:
 
-	mov esi, cat.naoEncontrado
-	
-	imprimirString
-	
-	jmp terminar
+    mov esi, cat.naoEncontrado
+    
+    imprimirString
+    
+    jmp terminar
 
 ;;************************************************************************************
 
 usoAplicativo:
 
-	mov esi, cat.uso
-	
-	imprimirString
-	
-	jmp terminar
+    mov esi, cat.uso
+    
+    imprimirString
+    
+    jmp terminar
 
 ;;************************************************************************************
 
-terminar:	
+terminar:   
 
-	Hexagonix encerrarProcesso
+    Hexagonix encerrarProcesso
 
 ;;************************************************************************************
 
@@ -123,6 +123,6 @@ cat:
      
 parametro: dd ?
 
-regES:	dw 0
+regES:  dw 0
      
 bufferArquivo:

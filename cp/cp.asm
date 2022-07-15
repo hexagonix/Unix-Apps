@@ -35,121 +35,121 @@ include "hexagon.s"
 ;;************************************************************************************
 
 inicioAPP:
-	
-	push ds
-	pop es			
-	
-	mov	[parametros], edi
-	
-	call obterParametros
-	
-	jc	usoAplicativo
-	
-	push esi
-	push edi
-	
-	mov edi, cp.parametroAjuda
-	mov esi, [parametros]
-	
-	Hexagonix compararPalavrasString
-	
-	jc usoAplicativo
+    
+    push ds
+    pop es          
+    
+    mov [parametros], edi
+    
+    call obterParametros
+    
+    jc  usoAplicativo
+    
+    push esi
+    push edi
+    
+    mov edi, cp.parametroAjuda
+    mov esi, [parametros]
+    
+    Hexagonix compararPalavrasString
+    
+    jc usoAplicativo
 
-	mov edi, cp.parametroAjuda2
-	mov esi, [parametros]
-	
-	Hexagonix compararPalavrasString
-	
-	jc usoAplicativo
-	
-	pop edi
-	pop esi
-	
-	mov esi, [arquivoEntrada]
-	
-	Hexagonix arquivoExiste
-	
-	jc fonteNaoEncontrado
-	
-	mov esi, [arquivoSaida]
-	
-	Hexagonix arquivoExiste
-	
-	jnc destinoPresente
+    mov edi, cp.parametroAjuda2
+    mov esi, [parametros]
+    
+    Hexagonix compararPalavrasString
+    
+    jc usoAplicativo
+    
+    pop edi
+    pop esi
+    
+    mov esi, [arquivoEntrada]
+    
+    Hexagonix arquivoExiste
+    
+    jc fonteNaoEncontrado
+    
+    mov esi, [arquivoSaida]
+    
+    Hexagonix arquivoExiste
+    
+    jnc destinoPresente
  
 ;; Agora vamos abrir o arquivo fonte para cópia
-	
-	mov esi, [arquivoEntrada]
-	mov edi, bufferArquivo
-	
-	Hexagonix abrir
-	
-	jc erroAoAbrir
-	
-	mov esi, [arquivoEntrada]
-	
-	Hexagonix arquivoExiste
+    
+    mov esi, [arquivoEntrada]
+    mov edi, bufferArquivo
+    
+    Hexagonix abrir
+    
+    jc erroAoAbrir
+    
+    mov esi, [arquivoEntrada]
+    
+    Hexagonix arquivoExiste
 
 ;; Salvar arquivo no disco
 
-	mov esi, [arquivoSaida]
-	mov edi, bufferArquivo
-	
-	Hexagonix salvarArquivo
-	
-	jc erroAoSalvar
-	
-	mov esi, cp.copiaConcluida
-	
-	imprimirString
-	
-	jmp terminar
+    mov esi, [arquivoSaida]
+    mov edi, bufferArquivo
+    
+    Hexagonix salvarArquivo
+    
+    jc erroAoSalvar
+    
+    mov esi, cp.copiaConcluida
+    
+    imprimirString
+    
+    jmp terminar
 
 ;;************************************************************************************
 
 erroAoSalvar:
 
-	mov esi, cp.erroSalvando
-	
-	imprimirString
-	
-	jmp terminar
+    mov esi, cp.erroSalvando
+    
+    imprimirString
+    
+    jmp terminar
 
 ;;************************************************************************************
-	
+    
 erroAoAbrir:
 
-	mov esi, cp.erroAbrindo
-	
-	imprimirString
-	
-	jmp terminar
+    mov esi, cp.erroAbrindo
+    
+    imprimirString
+    
+    jmp terminar
 
 ;;************************************************************************************
 
 fonteNaoEncontrado:
 
-	mov esi, cp.fonteIndisponivel
-	
-	imprimirString
-	
-	jmp terminar
+    mov esi, cp.fonteIndisponivel
+    
+    imprimirString
+    
+    jmp terminar
 
 ;;************************************************************************************
-	
+    
 destinoPresente:
 
-	mov esi, cp.destinoExistente
-	
-	imprimirString
-	
-	jmp terminar
-	
+    mov esi, cp.destinoExistente
+    
+    imprimirString
+    
+    jmp terminar
+    
 ;;************************************************************************************
 
-terminar:	
+terminar:   
 
-	Hexagonix encerrarProcesso
+    Hexagonix encerrarProcesso
 
 ;;************************************************************************************
 
@@ -158,33 +158,33 @@ terminar:
 
 obterParametros:
 
-	mov esi, [parametros]
-	mov [arquivoEntrada], esi
-		
-	cmp byte[esi], 0
-	je usoAplicativo
-	
-	mov al, ' '
-	
-	Hexagonix encontrarCaractere
-	
-	jc usoAplicativo
+    mov esi, [parametros]
+    mov [arquivoEntrada], esi
+        
+    cmp byte[esi], 0
+    je usoAplicativo
+    
+    mov al, ' '
+    
+    Hexagonix encontrarCaractere
+    
+    jc usoAplicativo
 
-	mov al, ' '
-	
-	call encontrarCaractereCP
-	
-	mov [arquivoSaida], esi
-	
-	jmp .pronto
-	
+    mov al, ' '
+    
+    call encontrarCaractereCP
+    
+    mov [arquivoSaida], esi
+    
+    jmp .pronto
+    
 .pronto:
 
-	clc
-	
-	ret
+    clc
+    
+    ret
 
-;;************************************************************************************	
+;;************************************************************************************  
 
 ;; Realiza a busca de um caractere específico na String fornecida
 ;;
@@ -199,30 +199,30 @@ obterParametros:
 
 encontrarCaractereCP:
 
-	lodsb
-	
-	cmp al, ' '
-	je .pronto
-	
-	jmp encontrarCaractereCP
-	
+    lodsb
+    
+    cmp al, ' '
+    je .pronto
+    
+    jmp encontrarCaractereCP
+    
 .pronto:
 
-	mov byte[esi-1], 0
-	
-	ret
+    mov byte[esi-1], 0
+    
+    ret
 
-;;************************************************************************************	
+;;************************************************************************************  
 
 usoAplicativo:
 
-	mov esi, cp.uso
-	
-	imprimirString
-	
-	jmp terminar
+    mov esi, cp.uso
+    
+    imprimirString
+    
+    jmp terminar
 
-;;************************************************************************************	
+;;************************************************************************************  
 
 ;;************************************************************************************
 ;;
@@ -230,10 +230,10 @@ usoAplicativo:
 ;;
 ;;************************************************************************************
 
-versaoCP equ "2.0"	
+versaoCP equ "2.0"  
 
 cp:
-	
+    
 .naoEncontrado:     db 10, 10, "Arquivo nao encontrado. verifique a ortografia e tente novamente.", 10, 0
 .uso:               db 10, 10, "Uso: cp [arquivo de entrada] [arquivo de saida]", 10, 10
                     db "Realiza a copia de um arquivo fornecido em outro. Dois nomes de arquivo sao necessarios, sendo um", 10
@@ -259,6 +259,6 @@ parametros dd 0
 arquivoEntrada: dd ?
 arquivoSaida:   dd ?
 
-regES:	dw 0
+regES:  dw 0
      
 bufferArquivo:

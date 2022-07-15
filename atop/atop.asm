@@ -37,14 +37,14 @@ include "Estelar/estelar.s"
 
 inicioAPP: ;; Ponto de entrada do aplicativo
 
-    mov	[parametro], edi
-	
+    mov [parametro], edi
+    
 ;;************************************************************************************
 
-	Hexagonix obterCor
+    Hexagonix obterCor
 
-	mov dword[atop.corFonte], eax
-	mov dword[atop.corFundo], ebx
+    mov dword[atop.corFonte], eax
+    mov dword[atop.corFundo], ebx
 
 ;;************************************************************************************
 
@@ -67,138 +67,138 @@ verificarResolucao:
  
 .modoGrafico1:
 
-	mov dword[limiteExibicao], 5h ;; Podem ser exibidos 6 arquivos por linha (n+1)
-	
-	jmp continuarExecucao
-	
+    mov dword[limiteExibicao], 5h ;; Podem ser exibidos 6 arquivos por linha (n+1)
+    
+    jmp continuarExecucao
+    
 .modoGrafico2:
 
-	mov dword[limiteExibicao], 7h ;; Podem ser exibidos 8 arquivos por linha (n+1)
+    mov dword[limiteExibicao], 7h ;; Podem ser exibidos 8 arquivos por linha (n+1)
 
-	jmp continuarExecucao
+    jmp continuarExecucao
 
 continuarExecucao:
 
-	novaLinha
-	novaLinha
-	
-	mov edi, atop.parametroAjuda
-	mov esi, [parametro]
-	
-	Hexagonix compararPalavrasString
-	
-	jc usoAplicativo
+    novaLinha
+    novaLinha
+    
+    mov edi, atop.parametroAjuda
+    mov esi, [parametro]
+    
+    Hexagonix compararPalavrasString
+    
+    jc usoAplicativo
 
-	mov edi, atop.parametroAjuda2
-	mov esi, [parametro]
-	
-	Hexagonix compararPalavrasString
-	
-	jc usoAplicativo
-	
-	jmp exibirProcessos
+    mov edi, atop.parametroAjuda2
+    mov esi, [parametro]
+    
+    Hexagonix compararPalavrasString
+    
+    jc usoAplicativo
+    
+    jmp exibirProcessos
 
 exibirProcessos:
 
-	mov esi, atop.inicio
-	
-	imprimirString
-	
-	mov esi, atop.processosCarregados
-	
-	imprimirString
-	
-	Hexagonix obterProcessos
-	
-	mov [listaRemanescente], esi
-	mov dword[numeroPIDs], eax
-	
-	push eax
+    mov esi, atop.inicio
+    
+    imprimirString
+    
+    mov esi, atop.processosCarregados
+    
+    imprimirString
+    
+    Hexagonix obterProcessos
+    
+    mov [listaRemanescente], esi
+    mov dword[numeroPIDs], eax
+    
+    push eax
 
-	pop ebx
+    pop ebx
 
-	xor ecx, ecx
-	xor edx, edx
-	
-	push eax
-	
-	mov eax, VERMELHO
-	
-	call definirCorTexto
+    xor ecx, ecx
+    xor edx, edx
+    
+    push eax
+    
+    mov eax, VERMELHO
+    
+    call definirCorTexto
 
-	pop eax 
+    pop eax 
 
-	push eax 	
+    push eax    
 
-	mov edx, eax
-	
-	mov dword[numeroProcessos], 00h
+    mov edx, eax
+    
+    mov dword[numeroProcessos], 00h
 
 .loopProcessos:
 
-	push ds
-	pop es
+    push ds
+    pop es
 
-	call lerListaProcessos
+    call lerListaProcessos
 
-	mov esi, [arquivoAtual]
+    mov esi, [arquivoAtual]
 
-	imprimirString
+    imprimirString
 
-	mov ebx, [limiteExibicao]
-	
-	cmp dword[numeroProcessos], ebx
-	je .criarNovaLinha
+    mov ebx, [limiteExibicao]
+    
+    cmp dword[numeroProcessos], ebx
+    je .criarNovaLinha
 
-	cmp dword[numeroPIDs], 01h
-	je .continuar
+    cmp dword[numeroPIDs], 01h
+    je .continuar
 
-	inc dword[numeroProcessos]
-	dec dword[numeroPIDs]  
+    inc dword[numeroProcessos]
+    dec dword[numeroPIDs]  
 
-	call colocarEspaco
-	
-	jmp .loopProcessos
+    call colocarEspaco
+    
+    jmp .loopProcessos
 
 .criarNovaLinha:
 
-	mov dword[numeroProcessos], 00h
-	
-	novaLinha
-	
-	jmp .loopProcessos
+    mov dword[numeroProcessos], 00h
+    
+    novaLinha
+    
+    jmp .loopProcessos
 
 .continuar:
 
-	call definirCorPadrao
-	
-	novaLinha
-	
-	mov esi, atop.numeroProcessos
-	
-	imprimirString
-	
-	mov eax, VERMELHO
-	
-	call definirCorTexto
-	
-	pop eax
-	
-	imprimirInteiro
-	
-	call definirCorPadrao
-	
-	mov esi, atop.usoMem
+    call definirCorPadrao
+    
+    novaLinha
+    
+    mov esi, atop.numeroProcessos
+    
+    imprimirString
+    
+    mov eax, VERMELHO
+    
+    call definirCorTexto
+    
+    pop eax
+    
+    imprimirInteiro
+    
+    call definirCorPadrao
+    
+    mov esi, atop.usoMem
     
     imprimirString
     
     mov eax, VERDE_FLORESTA
-	
-	call definirCorTexto
-	
+    
+    call definirCorTexto
+    
     Hexagonix usoMemoria
-	
-	imprimirInteiro
+    
+    imprimirInteiro
     
     call definirCorPadrao
     
@@ -211,14 +211,14 @@ exibirProcessos:
     imprimirString
     
     mov eax, VERDE_FLORESTA
-	
-	call definirCorTexto
-	
+    
+    call definirCorTexto
+    
     Hexagonix usoMemoria
-	
-	mov eax, ecx
-	
-	imprimirInteiro
+    
+    mov eax, ecx
+    
+    imprimirInteiro
     
     call definirCorPadrao
     
@@ -226,25 +226,25 @@ exibirProcessos:
     
     imprimirString
     
-	jmp terminar
-	
+    jmp terminar
+    
 ;;************************************************************************************
-	
+    
 usoAplicativo:
 
-	mov esi, atop.uso
-	
-	imprimirString
-	
-	jmp terminar
+    mov esi, atop.uso
+    
+    imprimirString
+    
+    jmp terminar
 
-;;************************************************************************************	
+;;************************************************************************************  
 
-terminar:	
+terminar:   
 
-	novaLinha
-	
-	Hexagonix encerrarProcesso
+    novaLinha
+    
+    Hexagonix encerrarProcesso
 
 ;;************************************************************************************
 
@@ -256,65 +256,65 @@ terminar:
 
 definirCorTexto:
 
-	mov ebx, [atop.corFundo]
-	
-	Hexagonix definirCor
-	
-	ret
+    mov ebx, [atop.corFundo]
+    
+    Hexagonix definirCor
+    
+    ret
 
 ;;************************************************************************************
 
 definirCorPadrao:
 
-	mov eax, [atop.corFonte]
-	mov ebx, [atop.corFundo]
-	
-	Hexagonix definirCor
-	
-	ret
+    mov eax, [atop.corFonte]
+    mov ebx, [atop.corFundo]
+    
+    Hexagonix definirCor
+    
+    ret
 
 ;;************************************************************************************
 
 colocarEspaco:
 
-	push ecx
-	push ebx
-	push eax
-	
-	push ds
-	pop es
-	
-	mov esi, [arquivoAtual]
-	
-	Hexagonix tamanhoString
-	
-	mov ebx, 15
-	
-	sub ebx, eax
-	
-	mov ecx, ebx
+    push ecx
+    push ebx
+    push eax
+    
+    push ds
+    pop es
+    
+    mov esi, [arquivoAtual]
+    
+    Hexagonix tamanhoString
+    
+    mov ebx, 15
+    
+    sub ebx, eax
+    
+    mov ecx, ebx
 
 .loopEspaco:
 
-	mov al, ' '
-	
-	Hexagonix imprimirCaractere
-	
-	dec ecx
-	
-	cmp ecx, 0
-	je .terminado
-	
-	jmp .loopEspaco
-	
+    mov al, ' '
+    
+    Hexagonix imprimirCaractere
+    
+    dec ecx
+    
+    cmp ecx, 0
+    je .terminado
+    
+    jmp .loopEspaco
+    
 .terminado:
 
-	pop eax
-	pop ebx
-	pop ecx
-	
-	ret
-	
+    pop eax
+    pop ebx
+    pop ecx
+    
+    ret
+    
 ;;************************************************************************************
 
 ;; Obtem os parâmetros necessários para o funcionamento do programa, diretamente da linha
@@ -322,35 +322,35 @@ colocarEspaco:
 
 lerListaProcessos:
 
-	push ds
-	pop es
-	
-	mov esi, [listaRemanescente]
-	mov [arquivoAtual], esi
-	
-	mov al, ' '
-	
-	Hexagonix encontrarCaractere
-	
-	jc .pronto
+    push ds
+    pop es
+    
+    mov esi, [listaRemanescente]
+    mov [arquivoAtual], esi
+    
+    mov al, ' '
+    
+    Hexagonix encontrarCaractere
+    
+    jc .pronto
 
-	mov al, ' '
-	
-	call encontrarCaractereLista
-	
-	Hexagonix cortarString
+    mov al, ' '
+    
+    call encontrarCaractereLista
+    
+    Hexagonix cortarString
 
-	mov [listaRemanescente], esi
-	
-	jmp .pronto
-	
+    mov [listaRemanescente], esi
+    
+    jmp .pronto
+    
 .pronto:
 
-	clc
-	
-	ret
+    clc
+    
+    ret
 
-;;************************************************************************************	
+;;************************************************************************************  
 
 ;; Realiza a busca de um caractere específico na String fornecida
 ;;
@@ -365,18 +365,18 @@ lerListaProcessos:
 
 encontrarCaractereLista:
 
-	lodsb
-	
-	cmp al, ' '
-	je .pronto
-	
-	jmp encontrarCaractereLista
-	
+    lodsb
+    
+    cmp al, ' '
+    je .pronto
+    
+    jmp encontrarCaractereLista
+    
 .pronto:
 
-	mov byte[esi-1], 0
-	
-	ret
+    mov byte[esi-1], 0
+    
+    ret
 
 ;;************************************************************************************
 

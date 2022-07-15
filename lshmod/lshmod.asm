@@ -71,82 +71,82 @@ lshmod:
 
 parametro:            dd ?
 nomeArquivo: times 13 db 0
-regES:	              dw 0
+regES:                dw 0
 nomeModulo: times 8   db 0
 
 ;;************************************************************************************
 
 inicioAPP:
-	
-	push ds
-	pop es			
-	
-	mov	[parametro], edi
-	
+    
+    push ds
+    pop es          
+    
+    mov [parametro], edi
+    
     mov esi, [parametro]
-		
-	cmp byte[esi], 0
-	je usoAplicativo
-	
-	mov edi, lshmod.parametroAjuda
-	mov esi, [parametro]
-	
-	Hexagonix compararPalavrasString
-	
-	jc usoAplicativo
+        
+    cmp byte[esi], 0
+    je usoAplicativo
+    
+    mov edi, lshmod.parametroAjuda
+    mov esi, [parametro]
+    
+    Hexagonix compararPalavrasString
+    
+    jc usoAplicativo
 
-	mov edi, lshmod.parametroAjuda2
-	mov esi, [parametro]
-	
-	Hexagonix compararPalavrasString
-	
-	jc usoAplicativo
+    mov edi, lshmod.parametroAjuda2
+    mov esi, [parametro]
+    
+    Hexagonix compararPalavrasString
+    
+    jc usoAplicativo
 
-	mov esi, [parametro]
-	
-	Hexagonix cortarString
-	
-	Hexagonix tamanhoString
-	
-	cmp eax, 13
-	jl .obterInformacoes
-	
-	mov esi, lshmod.arquivoInvalido
-	
-	imprimirString
-	
-	jmp .fim
-	
+    mov esi, [parametro]
+    
+    Hexagonix cortarString
+    
+    Hexagonix tamanhoString
+    
+    cmp eax, 13
+    jl .obterInformacoes
+    
+    mov esi, lshmod.arquivoInvalido
+    
+    imprimirString
+    
+    jmp .fim
+    
 .obterInformacoes:
 
     Hexagonix arquivoExiste
 
     jc .semArquivo
     
-	push eax
-	push esi
+    push eax
+    push esi
 
     mov esi, lshmod.infoArquivo
-	
-	imprimirString
-	
-	pop esi
+    
+    imprimirString
+    
+    pop esi
 
-	call manterArquivo
+    call manterArquivo
 
-	imprimirString
+    imprimirString
 
     mov esi, lshmod.tamanhoArquivo
-	
-	imprimirString
-	
-	pop eax	
-	
-	imprimirInteiro
-	
-	mov esi, lshmod.bytes
-	
-	imprimirString
+    
+    imprimirString
+    
+    pop eax 
+    
+    imprimirInteiro
+    
+    mov esi, lshmod.bytes
+    
+    imprimirString
 
 ;; Primeiro vamos ver se se trata de uma imagem executável. Se sim, podemos pular todo o
 ;; restante do processamento. Isso garante que imagens executáveis sejam relatadas como
@@ -155,7 +155,7 @@ inicioAPP:
 ;; de ser chamadas por outro processo no âmbito de sua execução podem apresentar outra extensão.
 ;; O próprio Hexagon® é uma imagem HAPP mas apresenta extensão .SIS
 
-	call verificarArquivoHBootMod
+    call verificarArquivoHBootMod
 
 ;; Se não for uma imagem executável, tentar identificar pela extensão, sem verificar o conteúdo
 ;; do arquivo
@@ -168,43 +168,43 @@ inicioAPP:
    
     imprimirString
 
-    jmp .fim	
-	
+    jmp .fim    
+    
 .fim:
-	
-	novaLinha
+    
+    novaLinha
 
-	jmp terminar
+    jmp terminar
 
 ;;************************************************************************************
 
 verificarArquivoHBootMod:
 
-	mov esi, nomeArquivo
-	mov edi, bufferArquivo
+    mov esi, nomeArquivo
+    mov edi, bufferArquivo
 
-	Hexagonix abrir
+    Hexagonix abrir
 
-	jc inicioAPP.semArquivo
+    jc inicioAPP.semArquivo
 
-	mov edi, bufferArquivo
+    mov edi, bufferArquivo
 
-	cmp byte[edi+0], "H"
-	jne .naoHBootMod
+    cmp byte[edi+0], "H"
+    jne .naoHBootMod
 
-	cmp byte[edi+1], "B"
-	jne .naoHBootMod
+    cmp byte[edi+1], "B"
+    jne .naoHBootMod
 
-	cmp byte[edi+2], "O"
-	jne .naoHBootMod
+    cmp byte[edi+2], "O"
+    jne .naoHBootMod
 
-	cmp byte[edi+3], "O"
-	jne .naoHBootMod
+    cmp byte[edi+3], "O"
+    jne .naoHBootMod
 
-	cmp byte[edi+4], "T"
-	jne .naoHBootMod
+    cmp byte[edi+4], "T"
+    jne .naoHBootMod
 
-	mov dh, byte[edi+5]
+    mov dh, byte[edi+5]
     mov byte[lshmod.arquitetura], dh
 
     mov dh, byte[edi+6]
@@ -213,17 +213,17 @@ verificarArquivoHBootMod:
     mov dh, byte[edi+7]
     mov byte[lshmod.subverMod], dh
 
-	mov esi, dword[edi+8]
-	mov dword[nomeModulo+0], esi
+    mov esi, dword[edi+8]
+    mov dword[nomeModulo+0], esi
 
-	mov esi, dword[edi+12]
-	mov dword[nomeModulo+4], esi
+    mov esi, dword[edi+12]
+    mov dword[nomeModulo+4], esi
 
-	mov dword[nomeModulo+8], 0
+    mov dword[nomeModulo+8], 0
 
-	mov esi, nomeModulo
+    mov esi, nomeModulo
 
-	Hexagonix cortarString
+    Hexagonix cortarString
 
     mov esi, lshmod.cabecalho
     
@@ -268,9 +268,9 @@ verificarArquivoHBootMod:
 
 .continuar:
 
-	mov esi, lshmod.ponto
+    mov esi, lshmod.ponto
 
-	imprimirString
+    imprimirString
 
     mov esi, lshmod.verModulo
 
@@ -290,27 +290,27 @@ verificarArquivoHBootMod:
 
     imprimirInteiro
 
-	mov esi, lshmod.ponto
+    mov esi, lshmod.ponto
 
-	imprimirString
+    imprimirString
 
-	mov esi, lshmod.entradaCodigo
+    mov esi, lshmod.entradaCodigo
 
-   	imprimirString
+    imprimirString
 
-	mov esi, nomeModulo
-	
-   	imprimirString
+    mov esi, nomeModulo
+    
+    imprimirString
 
-   	mov esi, lshmod.ponto
+    mov esi, lshmod.ponto
 
-   	imprimirString
+    imprimirString
 
     ret
 
 .naoHBootMod:
 
-	mov esi, lshmod.imagemInvalida
+    mov esi, lshmod.imagemInvalida
 
     imprimirString
 
@@ -320,40 +320,40 @@ verificarArquivoHBootMod:
 
 usoAplicativo:
 
-	mov esi, lshmod.uso
-	
-	imprimirString
-	
-	jmp terminar
+    mov esi, lshmod.uso
+    
+    imprimirString
+    
+    jmp terminar
 
 ;;************************************************************************************
 
 manterArquivo:
 
-	push esi
-	push eax
+    push esi
+    push eax
 
-	Hexagonix cortarString
+    Hexagonix cortarString
 
-	Hexagonix tamanhoString
+    Hexagonix tamanhoString
 
-	mov ecx, eax
+    mov ecx, eax
 
-	mov edi, nomeArquivo
+    mov edi, nomeArquivo
 
-	rep movsb		;; Copiar (ECX) caracteres de ESI para EDI
-	
-	pop eax
+    rep movsb       ;; Copiar (ECX) caracteres de ESI para EDI
+    
+    pop eax
 
-	pop esi
+    pop esi
 
-	ret
+    ret
 
 ;;************************************************************************************
 
-terminar:	
+terminar:   
 
-	Hexagonix encerrarProcesso
+    Hexagonix encerrarProcesso
 
 ;;************************************************************************************
 

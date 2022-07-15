@@ -37,27 +37,27 @@ include "hexagon.s"
 inicioAPP:
 
     push ds
-	pop es			
-	
-	mov	[parametro], edi
-	
+    pop es          
+    
+    mov [parametro], edi
+    
     mov esi, [parametro]
-	
-	mov edi, date.parametroAjuda
-	mov esi, [parametro]
-	
-	Hexagonix compararPalavrasString
-	
-	jc usoAplicativo
+    
+    mov edi, date.parametroAjuda
+    mov esi, [parametro]
+    
+    Hexagonix compararPalavrasString
+    
+    jc usoAplicativo
 
     mov edi, date.parametroAjuda2
-	mov esi, [parametro]
-	
-	Hexagonix compararPalavrasString
-	
-	jc usoAplicativo
-	
-	novaLinha
+    mov esi, [parametro]
+    
+    Hexagonix compararPalavrasString
+    
+    jc usoAplicativo
+    
+    novaLinha
     novaLinha
 
     call processarBCD ;; Fazer a conversão de BCD para caractere imrprimível
@@ -306,7 +306,7 @@ processarBCD:
 ;; imprimível 
 
 BCDParaASCII:
-	
+    
     mov ah, al
     and ax, 0xF00F ;; Mascarar bits
     shr ah, 4      ;; Deslocar para direita AH para obter BCD desempacotado
@@ -318,18 +318,18 @@ BCDParaASCII:
 ;;************************************************************************************
 
 usoAplicativo:
-	
-	mov esi, date.uso
-	
-	imprimirString
-	
-	jmp terminar
+    
+    mov esi, date.uso
+    
+    imprimirString
+    
+    jmp terminar
 
 ;;************************************************************************************
 
-terminar:	
+terminar:   
 
-	Hexagonix encerrarProcesso
+    Hexagonix encerrarProcesso
 
 ;;************************************************************************************
 

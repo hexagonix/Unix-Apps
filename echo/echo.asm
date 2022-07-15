@@ -35,57 +35,57 @@ include "hexagon.s"
 ;;************************************************************************************
 
 inicioAPP:
-	
-	push ds
-	pop es			
-	
-	mov	[parametro], edi
-	
+    
+    push ds
+    pop es          
+    
+    mov [parametro], edi
+    
     mov esi, [parametro]
-		
-	cmp byte[esi], 0
-	je usoAplicativo
-	
-	mov edi, echo.parametroAjuda
-	mov esi, [parametro]
-	
-	Hexagonix compararPalavrasString
-	
-	jc usoAplicativo
+        
+    cmp byte[esi], 0
+    je usoAplicativo
+    
+    mov edi, echo.parametroAjuda
+    mov esi, [parametro]
+    
+    Hexagonix compararPalavrasString
+    
+    jc usoAplicativo
 
-	mov edi, echo.parametroAjuda2
-	mov esi, [parametro]
-	
-	Hexagonix compararPalavrasString
-	
-	jc usoAplicativo
-	
-	novaLinha
-	novaLinha
-	
-	mov esi, [parametro]
-	
-	imprimirString
-	
-	novaLinha
-	
-	jmp terminar
+    mov edi, echo.parametroAjuda2
+    mov esi, [parametro]
+    
+    Hexagonix compararPalavrasString
+    
+    jc usoAplicativo
+    
+    novaLinha
+    novaLinha
+    
+    mov esi, [parametro]
+    
+    imprimirString
+    
+    novaLinha
+    
+    jmp terminar
 
 ;;************************************************************************************
 
 usoAplicativo:
 
-	mov esi, echo.uso
-	
-	imprimirString
-	
-	jmp terminar
+    mov esi, echo.uso
+    
+    imprimirString
+    
+    jmp terminar
 
 ;;************************************************************************************
 
-terminar:	
+terminar:   
 
-	Hexagonix encerrarProcesso
+    Hexagonix encerrarProcesso
 
 ;;************************************************************************************
 
