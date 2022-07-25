@@ -53,7 +53,7 @@ tamanhoLimiteBusca = 32768
 
 ;;************************************************************************************
 
-versaoLOGIND equ "1.1"
+versaoLOGIND equ "1.2"
 
 arquivo:    db "usuario.unx", 0 ;; Nome do arquivo de gerenciamento de login
 vd0:        db "vd0", 0         ;; Console padrão
@@ -67,7 +67,7 @@ logind:
 match =UNIX, TIPOLOGIN
 {
 
-.sobreSistema:     db 10, "Seja bem-vindo ao Hexagonix", 0
+.sobreSistema:     db 10, "Seja bem-vindo ao Hexagonix (vd0)", 0
 
 }
 
