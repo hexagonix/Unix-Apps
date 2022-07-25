@@ -65,51 +65,51 @@ parametro: dd ? ;; Endereço do parâmetro
 
 inicioAPP:
 
-	push ds
-	pop es			
-	
-	mov	[parametro], edi
-	
+    push ds
+    pop es          
+    
+    mov [parametro], edi
+    
     logSistema syslogd.verboseIniciando, 0, Log.Prioridades.p4
 
     mov esi, [parametro]
-		
-	cmp byte[esi], 0
-	je terminar
-	
-	mov edi, syslogd.parametroAjuda
-	mov esi, [parametro]
-	
-	Hexagonix compararPalavrasString
-	
-	jc usoAplicativo
+        
+    cmp byte[esi], 0
+    je terminar
+    
+    mov edi, syslogd.parametroAjuda
+    mov esi, [parametro]
+    
+    Hexagonix compararPalavrasString
+    
+    jc usoAplicativo
 
-	mov edi, syslogd.parametroAjuda2
-	mov esi, [parametro]
-	
-	Hexagonix compararPalavrasString
-	
-	jc usoAplicativo
-	
+    mov edi, syslogd.parametroAjuda2
+    mov esi, [parametro]
+    
+    Hexagonix compararPalavrasString
+    
+    jc usoAplicativo
+    
     logSistema [parametro], 0, Log.Prioridades.p4
 
-	jmp terminar
+    jmp terminar
 
 ;;************************************************************************************
 
 usoAplicativo:
 
-	mov esi, syslogd.uso
-	
-	imprimirString
-	
-	jmp terminar
+    mov esi, syslogd.uso
+    
+    imprimirString
+    
+    jmp terminar
 
 ;;************************************************************************************
 
-terminar:	
+terminar:   
 
-	Hexagonix encerrarProcesso
+    Hexagonix encerrarProcesso
 
 ;;************************************************************************************
 

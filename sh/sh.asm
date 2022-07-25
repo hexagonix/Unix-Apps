@@ -35,335 +35,335 @@ include "erros.s"
 
 ;;************************************************************************************
 
-inicioShell:	
+inicioShell:    
 
-    mov	[linhaComando], edi
-	
-	mov edi, sh.parametroAjuda
-	mov esi, [linhaComando]
-	
-	Hexagonix compararPalavrasString
-	
-	jc usoAplicativo
-	
-	mov edi, sh.parametroAjuda2
-	mov esi, [linhaComando]
-	
-	Hexagonix compararPalavrasString
-	
-	jc usoAplicativo
-		
-	mov esi, [linhaComando]
-	    	
-	cmp byte[esi], 0
-	je .iniciar
+    mov [linhaComando], edi
+    
+    mov edi, sh.parametroAjuda
+    mov esi, [linhaComando]
+    
+    Hexagonix compararPalavrasString
+    
+    jc usoAplicativo
+    
+    mov edi, sh.parametroAjuda2
+    mov esi, [linhaComando]
+    
+    Hexagonix compararPalavrasString
+    
+    jc usoAplicativo
+        
+    mov esi, [linhaComando]
+            
+    cmp byte[esi], 0
+    je .iniciar
 
 .iniciar:
 
 ;; Iniciar a configuração do terminal
-	
-	novaLinha
-	
-	Hexagonix obterInfoTela
+    
+    novaLinha
+    
+    Hexagonix obterInfoTela
 
-	mov byte[maxColunas], bl
-	mov byte[maxLinhas], bh
+    mov byte[maxColunas], bl
+    mov byte[maxLinhas], bh
 
-	Hexagonix obterCursor
-	
-	dec dh
-	
-	Hexagonix definirCursor
-	
-	novaLinha
-	
+    Hexagonix obterCursor
+    
+    dec dh
+    
+    Hexagonix definirCursor
+    
+    novaLinha
+    
 .iniciarSessao:
 
-	Hexagonix obterUsuario
-	
-	push eax
-	
-	push es
-	
-	push ds
-	pop es
-	
-	push esi
-	
-	Hexagonix tamanhoString
-	
-	pop esi
-	
-	push eax
-	
-	mov edi, sh.nomeUsuario
-	
-	pop ecx
-	
-	rep movsb
-	
-	pop es	
-	
-	pop eax
-	
-	cmp eax, 555
-	je .usuarioNormal
-	
-	cmp eax, 777
-	je .usuarioRoot
-	
+    Hexagonix obterUsuario
+    
+    push eax
+    
+    push es
+    
+    push ds
+    pop es
+    
+    push esi
+    
+    Hexagonix tamanhoString
+    
+    pop esi
+    
+    push eax
+    
+    mov edi, sh.nomeUsuario
+    
+    pop ecx
+    
+    rep movsb
+    
+    pop es  
+    
+    pop eax
+    
+    cmp eax, 555
+    je .usuarioNormal
+    
+    cmp eax, 777
+    je .usuarioRoot
+    
 .usuarioNormal:
 
-	push es
-	
-	push ds
-	pop es
-	
-	mov esi, sh.usuarioNormal
-	
-	Hexagonix tamanhoString
-	
-	push eax
-	
-	mov edi, sh.separador
-	mov esi, sh.usuarioNormal
-	
-	pop ecx
-	
-	rep movsb
-	
-	pop es	
-	
-	jmp .finalizarPrompt
+    push es
+    
+    push ds
+    pop es
+    
+    mov esi, sh.usuarioNormal
+    
+    Hexagonix tamanhoString
+    
+    push eax
+    
+    mov edi, sh.separador
+    mov esi, sh.usuarioNormal
+    
+    pop ecx
+    
+    rep movsb
+    
+    pop es  
+    
+    jmp .finalizarPrompt
 
 .usuarioRoot:
 
-	push es
-	
-	push ds
-	pop es
-	
-	mov esi, sh.usuarioRoot
-	
-	Hexagonix tamanhoString
-	
-	push eax
-	
-	mov edi, sh.separador
-	mov esi, sh.usuarioRoot
-	
-	pop ecx
-	
-	rep movsb
-	
-	pop es	
-	
-	jmp .finalizarPrompt
+    push es
+    
+    push ds
+    pop es
+    
+    mov esi, sh.usuarioRoot
+    
+    Hexagonix tamanhoString
+    
+    push eax
+    
+    mov edi, sh.separador
+    mov esi, sh.usuarioRoot
+    
+    pop ecx
+    
+    rep movsb
+    
+    pop es  
+    
+    jmp .finalizarPrompt
 
 ;;************************************************************************************
 
 .finalizarPrompt:
 
-	mov esi, sh.separador
-	
-	Hexagonix tamanhoString
-	
-	inc eax
-	
-	mov byte[sh.separador+eax], 0
-	
+    mov esi, sh.separador
+    
+    Hexagonix tamanhoString
+    
+    inc eax
+    
+    mov byte[sh.separador+eax], 0
+    
 ;;************************************************************************************
 
-.obterComando:	
+.obterComando:  
 
-	novaLinha
+    novaLinha
    
-	Hexagonix obterCursor
-	
-	Hexagonix definirCursor
-	
-	mov esi, sh.nomeUsuario
-	
-	imprimirString
-	
-	mov esi, sh.prompt
-	
-	imprimirString
-	
-	mov esi, sh.separador
-	
-	imprimirString
-	
-	mov al, byte[maxColunas]		 ;; Máximo de caracteres para obter
+    Hexagonix obterCursor
+    
+    Hexagonix definirCursor
+    
+    mov esi, sh.nomeUsuario
+    
+    imprimirString
+    
+    mov esi, sh.prompt
+    
+    imprimirString
+    
+    mov esi, sh.separador
+    
+    imprimirString
+    
+    mov al, byte[maxColunas]         ;; Máximo de caracteres para obter
 
-	sub al, 20
-	
-	Hexagonix obterString
-	
-	Hexagonix cortarString			 ;; Remover espaços em branco extras
-		
-	cmp byte[esi], 0		         ;; Nenhum comando inserido
-	je .obterComando
-	
+    sub al, 20
+    
+    Hexagonix obterString
+    
+    Hexagonix cortarString           ;; Remover espaços em branco extras
+        
+    cmp byte[esi], 0                 ;; Nenhum comando inserido
+    je .obterComando
+    
 ;; Comparar com comandos internos disponíveis
 
-	;; Comando SAIR
-	
-	mov edi, comandos.sair		
-	
-	Hexagonix compararPalavrasString
+    ;; Comando SAIR
+    
+    mov edi, comandos.sair      
+    
+    Hexagonix compararPalavrasString
 
-	jc finalizarShell
+    jc finalizarShell
 
 ;;************************************************************************************
 
 ;; Tentar carregar um programa
-	
-	call obterArgumentos		      ;; Separar comando e argumentos
-	
-	push esi
-	push edi
-	
-	Hexagonix tamanhoString
-	
-	add esi, eax
+    
+    call obterArgumentos              ;; Separar comando e argumentos
+    
+    push esi
+    push edi
+    
+    Hexagonix tamanhoString
+    
+    add esi, eax
 
-	sub esi, 4
-	
-	mov edi, sh.extensaoProgramas
-	
-	Hexagonix compararPalavrasString  ;; Checar por extensão .APP
-	
-	jc .carregarPrograma
-	
-	pop edi
-	pop esi
-	
+    sub esi, 4
+    
+    mov edi, sh.extensaoProgramas
+    
+    Hexagonix compararPalavrasString  ;; Checar por extensão .APP
+    
+    jc .carregarPrograma
+    
+    pop edi
+    pop esi
+    
 .semExtensao:
-		
+        
 ;; Tentar adicionar extensão
 
-	Hexagonix tamanhoString
-	
-	mov ebx, eax
+    Hexagonix tamanhoString
+    
+    mov ebx, eax
 
-	mov al, byte[sh.extensaoProgramas+0]
-	
-	mov byte[esi+ebx+0], al
-	
-	mov al, byte[sh.extensaoProgramas+1]
-	
-	mov byte[esi+ebx+1], al
-	
-	mov al, byte[sh.extensaoProgramas+2]
-	
-	mov byte[esi+ebx+2], al
-	
-	mov al, byte[sh.extensaoProgramas+3]
-	
-	mov byte[esi+ebx+3], al
-	
-	mov byte[esi+ebx+4], 0		;; Fim da string
-	
-	push esi
-	push edi
-	
-	jmp .carregarPrograma
-	
+    mov al, byte[sh.extensaoProgramas+0]
+    
+    mov byte[esi+ebx+0], al
+    
+    mov al, byte[sh.extensaoProgramas+1]
+    
+    mov byte[esi+ebx+1], al
+    
+    mov al, byte[sh.extensaoProgramas+2]
+    
+    mov byte[esi+ebx+2], al
+    
+    mov al, byte[sh.extensaoProgramas+3]
+    
+    mov byte[esi+ebx+3], al
+    
+    mov byte[esi+ebx+4], 0      ;; Fim da string
+    
+    push esi
+    push edi
+    
+    jmp .carregarPrograma
+    
 .falhaExecutando:
 
 ;; Agora o erro enviado pelo Sistema será analisado, para que o Shell conheça
 ;; sua natureza
 
-	cmp eax, Hexagon.limiteProcessos ;; Limite de processos em execução atingido
-	je .limiteAtingido               ;; Se sim, exibir a mensagem apropriada
-	
-	cmp eax, Hexagon.imagemInvalida
-	je .imagemHAPPInvalida
+    cmp eax, Hexagon.limiteProcessos ;; Limite de processos em execução atingido
+    je .limiteAtingido               ;; Se sim, exibir a mensagem apropriada
+    
+    cmp eax, Hexagon.imagemInvalida
+    je .imagemHAPPInvalida
 
-	Hexagonix obterCursor
-	
-	mov dl, byte[maxColunas]    ;; Máximo de caracteres para obter
+    Hexagonix obterCursor
+    
+    mov dl, byte[maxColunas]    ;; Máximo de caracteres para obter
 
-	sub dl, 17
-	
-	Hexagonix definirCursor
-	
-	push esi
-	
-	novaLinha
-	novaLinha
-	
-	pop esi
-	
-	imprimirString
-	
-	mov esi, sh.comandoNaoEncontrado
-	
-	imprimirString
-	
-	jmp .obterComando	
-	
+    sub dl, 17
+    
+    Hexagonix definirCursor
+    
+    push esi
+    
+    novaLinha
+    novaLinha
+    
+    pop esi
+    
+    imprimirString
+    
+    mov esi, sh.comandoNaoEncontrado
+    
+    imprimirString
+    
+    jmp .obterComando   
+    
 .limiteAtingido:
 
-	Hexagonix obterCursor
-	
-	mov dl, byte[maxColunas]    ;; Máximo de caracteres para obter
+    Hexagonix obterCursor
+    
+    mov dl, byte[maxColunas]    ;; Máximo de caracteres para obter
 
-	sub dl, 17
-	
-	Hexagonix definirCursor
-	
-	mov esi, sh.limiteProcessos
-	
-	imprimirString
-	
-	jmp .obterComando	
+    sub dl, 17
+    
+    Hexagonix definirCursor
+    
+    mov esi, sh.limiteProcessos
+    
+    imprimirString
+    
+    jmp .obterComando   
 
 .imagemHAPPInvalida:
 
-	push esi
+    push esi
 
-	Hexagonix obterCursor
-	
-	mov dl, byte[maxColunas]    ;; Máximo de caracteres para obter
+    Hexagonix obterCursor
+    
+    mov dl, byte[maxColunas]    ;; Máximo de caracteres para obter
 
-	sub dl, 17
-	
-	Hexagonix definirCursor
-	
-	novaLinha
-	novaLinha
-	
-	pop esi
-	
-	imprimirString
+    sub dl, 17
+    
+    Hexagonix definirCursor
+    
+    novaLinha
+    novaLinha
+    
+    pop esi
+    
+    imprimirString
 
-	mov esi, sh.imagemInvalida
-	
-	imprimirString
-	
-	jmp .obterComando	
+    mov esi, sh.imagemInvalida
+    
+    imprimirString
+    
+    jmp .obterComando   
 
 .carregarPrograma:
-	
-	pop edi
+    
+    pop edi
 
-	mov esi, edi
-	
-	Hexagonix cortarString
-	
-	pop esi
-	
-	mov eax, edi
-	
-	stc
-	
-	Hexagonix iniciarProcesso
-	
-	jc .falhaExecutando
-	
-	jmp .obterComando
+    mov esi, edi
+    
+    Hexagonix cortarString
+    
+    pop esi
+    
+    mov eax, edi
+    
+    stc
+    
+    Hexagonix iniciarProcesso
+    
+    jc .falhaExecutando
+    
+    jmp .obterComando
 
 ;;************************************************************************************
 
@@ -389,80 +389,80 @@ inicioShell:
 
 obterArgumentos:
 
-	push esi
-	
+    push esi
+    
 .loop:
 
-	lodsb			;; mov AL, byte[ESI] & inc ESI
-	
-	cmp al, 0
-	je .naoencontrado
-	
-	cmp al, ' '
-	je .espacoEncontrado
-	
-	jmp .loop
-	
+    lodsb           ;; mov AL, byte[ESI] & inc ESI
+    
+    cmp al, 0
+    je .naoencontrado
+    
+    cmp al, ' '
+    je .espacoEncontrado
+    
+    jmp .loop
+    
 .naoencontrado:
 
-	pop esi
-	
-	mov edi, 0
-	
-	stc
-	
-	jmp .fim
+    pop esi
+    
+    mov edi, 0
+    
+    stc
+    
+    jmp .fim
 
 .espacoEncontrado:
 
-	mov byte[esi-1], 0
-	mov ebx, esi
-	
-	Hexagonix tamanhoString
-	
-	mov ecx, eax
-	
-	inc ecx			;; Incluindo o último caractere (NULL)
-	
-	push es
-	
-	push ds
-	pop es
-	
-	mov esi, ebx
-	mov edi, bufferArquivo
-	
-	rep movsb		;; Copiar (ECX) caracteres da string de ESI para EDI
-	
-	pop es
-	
-	mov edi, bufferArquivo
-	
-	pop esi
-	
-	clc
-	
+    mov byte[esi-1], 0
+    mov ebx, esi
+    
+    Hexagonix tamanhoString
+    
+    mov ecx, eax
+    
+    inc ecx         ;; Incluindo o último caractere (NULL)
+    
+    push es
+    
+    push ds
+    pop es
+    
+    mov esi, ebx
+    mov edi, bufferArquivo
+    
+    rep movsb       ;; Copiar (ECX) caracteres da string de ESI para EDI
+    
+    pop es
+    
+    mov edi, bufferArquivo
+    
+    pop esi
+    
+    clc
+    
 .fim:
 
-	ret
-	
+    ret
+    
 ;;************************************************************************************
 
 usoAplicativo:
 
-	mov esi, sh.uso
-	
-	imprimirString
-	
-	jmp finalizarShell	
+    mov esi, sh.uso
+    
+    imprimirString
+    
+    jmp finalizarShell  
 
 ;;************************************************************************************
 
 finalizarShell:
-	
-	mov ebx, 00h
-	
-	Hexagonix encerrarProcesso
+    
+    mov ebx, 00h
+    
+    Hexagonix encerrarProcesso
 
 ;;************************************************************************************
 
@@ -481,11 +481,11 @@ versaoSH equ "1.02"
 sh:
 
 .prompt:               db "@Hexagonix", 0
-.extensaoProgramas:    db ".app", 0	;; Extensão de aplicativos (executáveis Hexagon®)
+.extensaoProgramas:    db ".app", 0 ;; Extensão de aplicativos (executáveis Hexagon®)
 .comandoNaoEncontrado: db ": comando nao encontrado.", 10, 0
 .imagemInvalida:       db ": nao e possivel carregar a imagem. Formato executavel nao suportado.", 10, 0
 .limiteProcessos:      db 10, 10, "Nao existe memoria disponivel para executar o aplicativo solicitado.", 10
-                       db "Tente primeiramente finalizar aplicativos ou suas instancias, e tente novamente.", 10, 0		             
+                       db "Tente primeiramente finalizar aplicativos ou suas instancias, e tente novamente.", 10, 0                  
 .ponto:                db ".", 0
 .usuarioNormal:        db "$ ", 0
 .usuarioRoot:          db "# ", 0
@@ -509,7 +509,7 @@ maxColunas:   db 0 ;; Total de colunas disponíveis no vídeo na resolução atu
 maxLinhas:    db 0 ;; Total de linhas disponíveis no vídeo na resolução atual
 
 linhaComando: dd 0
-		           
+                   
 ;;************************************************************************************
 
 bufferArquivo:  ;; Endereço para carregamento de arquivos

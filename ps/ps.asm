@@ -13,7 +13,7 @@
 ;;
 ;;************************************************************************************
 
-use32		
+use32       
 
 ;; Agora vamos criar um cabeçalho para a imagem HAPP final do aplicativo. Anteriormente,
 ;; o cabeçalho era criado em cada imagem e poderia diferir de uma para outra. Caso algum
@@ -37,49 +37,49 @@ include "hexagon.s"
 
 inicioAPP: ;; Ponto de entrada do aplicativo
 
-    mov	[parametro], edi
-	
-	novaLinha
-	novaLinha
-	
-	mov edi, ps.parametroAjuda
-	mov esi, [parametro]
-	
-	Hexagonix compararPalavrasString
-	
-	jc usoAplicativo
+    mov [parametro], edi
+    
+    novaLinha
+    novaLinha
+    
+    mov edi, ps.parametroAjuda
+    mov esi, [parametro]
+    
+    Hexagonix compararPalavrasString
+    
+    jc usoAplicativo
 
-	mov edi, ps.parametroAjuda2
-	mov esi, [parametro]
-	
-	Hexagonix compararPalavrasString
-	
-	jc usoAplicativo
-	
-	mov edi, ps.parametroPID
-	mov esi, [parametro]
-	
-	Hexagonix compararPalavrasString
-	
-	jc parametroPID
-	
-	mov edi, ps.parametroMemoria
-	mov esi, [parametro]
-	
-	Hexagonix compararPalavrasString
-	
-	jc parametroMemoria
-	
-	mov edi, ps.parametroOutros
-	mov esi, [parametro]
-	
-	Hexagonix compararPalavrasString
-	
-	jc parametroOutrosProcessos
-	
-	jmp parametroMemoria
+    mov edi, ps.parametroAjuda2
+    mov esi, [parametro]
+    
+    Hexagonix compararPalavrasString
+    
+    jc usoAplicativo
+    
+    mov edi, ps.parametroPID
+    mov esi, [parametro]
+    
+    Hexagonix compararPalavrasString
+    
+    jc parametroPID
+    
+    mov edi, ps.parametroMemoria
+    mov esi, [parametro]
+    
+    Hexagonix compararPalavrasString
+    
+    jc parametroMemoria
+    
+    mov edi, ps.parametroOutros
+    mov esi, [parametro]
+    
+    Hexagonix compararPalavrasString
+    
+    jc parametroOutrosProcessos
+    
+    jmp parametroMemoria
 
-;;************************************************************************************			
+;;************************************************************************************          
 
 parametroPID:
     
@@ -100,27 +100,27 @@ parametroPID:
     
     jmp parametroMemoria.linha
 
-;;************************************************************************************			
+;;************************************************************************************          
 
 parametroMemoria:
 
 .linha:
-	
+    
     mov esi, ps.usoMem
     
     imprimirString
     
     Hexagonix usoMemoria
-	
-	imprimirInteiro
+    
+    imprimirInteiro
     
     mov esi, ps.kbytes
     
     imprimirString
     
     novaLinha
-	
-	Hexagonix encerrarProcesso
+    
+    Hexagonix encerrarProcesso
     
     jmp terminar
 
@@ -128,41 +128,41 @@ parametroMemoria:
 
 parametroOutrosProcessos:
 
-	Hexagonix obterPID
-	
-	push eax
-	
-	mov esi, ps.numeroProcessos
-	
-	imprimirString
-	
-	pop eax
-	
-	imprimirInteiro
-	
-	mov esi, ps.processos
-	
-	imprimirString
-	
-	jmp terminar
-	
+    Hexagonix obterPID
+    
+    push eax
+    
+    mov esi, ps.numeroProcessos
+    
+    imprimirString
+    
+    pop eax
+    
+    imprimirInteiro
+    
+    mov esi, ps.processos
+    
+    imprimirString
+    
+    jmp terminar
+    
 ;;************************************************************************************
-	
+    
 usoAplicativo:
 
-	mov esi, ps.uso
-	
-	imprimirString
-	
-	jmp terminar
+    mov esi, ps.uso
+    
+    imprimirString
+    
+    jmp terminar
 
-;;************************************************************************************	
+;;************************************************************************************  
 
-terminar:	
+terminar:   
 
-	novaLinha
-	
-	Hexagonix encerrarProcesso
+    novaLinha
+    
+    Hexagonix encerrarProcesso
 
 ;;************************************************************************************
 

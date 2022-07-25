@@ -37,85 +37,85 @@ include "Estelar/estelar.s"
 
 inicioAPP: ;; Ponto de entrada do aplicativo
 
-    mov	[parametro], edi
-	
+    mov [parametro], edi
+    
 ;;************************************************************************************
 
-	Hexagonix obterCor
+    Hexagonix obterCor
 
-	mov dword[top.corFonte], eax
-	mov dword[top.corFundo], ebx
+    mov dword[top.corFonte], eax
+    mov dword[top.corFundo], ebx
 
 ;;************************************************************************************
 
-	novaLinha
-	novaLinha
-	
-	mov edi, top.parametroAjuda
-	mov esi, [parametro]
-	
-	Hexagonix compararPalavrasString
-	
-	jc usoAplicativo
+    novaLinha
+    novaLinha
+    
+    mov edi, top.parametroAjuda
+    mov esi, [parametro]
+    
+    Hexagonix compararPalavrasString
+    
+    jc usoAplicativo
 
-	mov edi, top.parametroAjuda2
-	mov esi, [parametro]
-	
-	Hexagonix compararPalavrasString
-	
-	jc usoAplicativo
-	
-	jmp exibirProcessos
+    mov edi, top.parametroAjuda2
+    mov esi, [parametro]
+    
+    Hexagonix compararPalavrasString
+    
+    jc usoAplicativo
+    
+    jmp exibirProcessos
 
 exibirProcessos:
 
-	mov esi, top.inicio
-	
-	imprimirString
-	
-	mov esi, top.processosCarregados
-	
-	imprimirString
-	
-	Hexagonix obterProcessos
-	
-	push eax
-	
-	mov eax, VERMELHO
-	
-	call definirCorTexto
-	
-	imprimirString
-	
-	call definirCorPadrao
-	
-	novaLinha
-	
-	mov esi, top.numeroProcessos
-	
-	imprimirString
-	
-	mov eax, VERMELHO
-	
-	call definirCorTexto
-	
-	pop eax
-	
-	imprimirInteiro
-	
-	call definirCorPadrao
-	
-	mov esi, top.usoMem
+    mov esi, top.inicio
+    
+    imprimirString
+    
+    mov esi, top.processosCarregados
+    
+    imprimirString
+    
+    Hexagonix obterProcessos
+    
+    push eax
+    
+    mov eax, VERMELHO
+    
+    call definirCorTexto
+    
+    imprimirString
+    
+    call definirCorPadrao
+    
+    novaLinha
+    
+    mov esi, top.numeroProcessos
+    
+    imprimirString
+    
+    mov eax, VERMELHO
+    
+    call definirCorTexto
+    
+    pop eax
+    
+    imprimirInteiro
+    
+    call definirCorPadrao
+    
+    mov esi, top.usoMem
     
     imprimirString
     
     mov eax, VERDE_FLORESTA
-	
-	call definirCorTexto
-	
+    
+    call definirCorTexto
+    
     Hexagonix usoMemoria
-	
-	imprimirInteiro
+    
+    imprimirInteiro
     
     call definirCorPadrao
     
@@ -128,14 +128,14 @@ exibirProcessos:
     imprimirString
     
     mov eax, VERDE_FLORESTA
-	
-	call definirCorTexto
-	
+    
+    call definirCorTexto
+    
     Hexagonix usoMemoria
-	
-	mov eax, ecx
-	
-	imprimirInteiro
+    
+    mov eax, ecx
+    
+    imprimirInteiro
     
     call definirCorPadrao
     
@@ -143,25 +143,25 @@ exibirProcessos:
     
     imprimirString
     
-	jmp terminar
-	
+    jmp terminar
+    
 ;;************************************************************************************
-	
+    
 usoAplicativo:
 
-	mov esi, top.uso
-	
-	imprimirString
-	
-	jmp terminar
+    mov esi, top.uso
+    
+    imprimirString
+    
+    jmp terminar
 
-;;************************************************************************************	
+;;************************************************************************************  
 
-terminar:	
+terminar:   
 
-	novaLinha
-	
-	Hexagonix encerrarProcesso
+    novaLinha
+    
+    Hexagonix encerrarProcesso
 
 ;;************************************************************************************
 
@@ -173,22 +173,22 @@ terminar:
 
 definirCorTexto:
 
-	mov ebx, [top.corFundo]
-	
-	Hexagonix definirCor
-	
-	ret
+    mov ebx, [top.corFundo]
+    
+    Hexagonix definirCor
+    
+    ret
 
 ;;************************************************************************************
 
 definirCorPadrao:
 
-	mov eax, [top.corFonte]
-	mov ebx, [top.corFundo]
-	
-	Hexagonix definirCor
-	
-	ret
+    mov eax, [top.corFonte]
+    mov ebx, [top.corFundo]
+    
+    Hexagonix definirCor
+    
+    ret
 
 ;;************************************************************************************
 

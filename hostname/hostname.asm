@@ -37,81 +37,81 @@ include "hexagon.s"
 inicioAPP:
 
     push ds
-	pop es			
-	
-	mov	[parametro], edi
-	
+    pop es          
+    
+    mov [parametro], edi
+    
     mov esi, [parametro]
-		
-	cmp byte[esi], 0
-	jne usoAplicativo
-	
-	mov edi, hostname.parametroAjuda
-	mov esi, [parametro]
-	
-	Hexagonix compararPalavrasString
-	
-	jc usoAplicativo
+        
+    cmp byte[esi], 0
+    jne usoAplicativo
+    
+    mov edi, hostname.parametroAjuda
+    mov esi, [parametro]
+    
+    Hexagonix compararPalavrasString
+    
+    jc usoAplicativo
 
-	mov edi, hostname.parametroAjuda2
-	mov esi, [parametro]
-	
-	Hexagonix compararPalavrasString
-	
-	jc usoAplicativo
-	
-	mov edi, bufferArquivo
-	mov esi, hostname.arquivoUnix
-	
-	Hexagonix abrir
-	
-	jc .arquivoNaoEncontrado
-	
-	novaLinha
-	novaLinha
-	
-	mov esi, bufferArquivo
+    mov edi, hostname.parametroAjuda2
+    mov esi, [parametro]
+    
+    Hexagonix compararPalavrasString
+    
+    jc usoAplicativo
+    
+    mov edi, bufferArquivo
+    mov esi, hostname.arquivoUnix
+    
+    Hexagonix abrir
+    
+    jc .arquivoNaoEncontrado
+    
+    novaLinha
+    novaLinha
+    
+    mov esi, bufferArquivo
 
-	Hexagonix tamanhoString
+    Hexagonix tamanhoString
 
-	mov edx, eax 
-	dec edx
+    mov edx, eax 
+    dec edx
 
-	mov al, 0
-	
-	Hexagonix inserirCaractere
+    mov al, 0
+    
+    Hexagonix inserirCaractere
 
-	mov esi, bufferArquivo
-	
-	imprimirString
-	
-	novaLinha
+    mov esi, bufferArquivo
+    
+    imprimirString
+    
+    novaLinha
 
-	jmp terminar
-	
+    jmp terminar
+    
 .arquivoNaoEncontrado:
 
-	mov esi, hostname.naoEncontrado
-	
-	imprimirString
-	
-	jmp terminar
+    mov esi, hostname.naoEncontrado
+    
+    imprimirString
+    
+    jmp terminar
 
 ;;************************************************************************************
 
 usoAplicativo:
 
-	mov esi, hostname.uso
-	
-	imprimirString
-	
-	jmp terminar
+    mov esi, hostname.uso
+    
+    imprimirString
+    
+    jmp terminar
 
 ;;************************************************************************************
 
-terminar:	
+terminar:   
 
-	Hexagonix encerrarProcesso
+    Hexagonix encerrarProcesso
 
 ;;************************************************************************************
 
@@ -137,7 +137,7 @@ hostname:
      
 parametro: dd ?
 
-regES:	dw 0
+regES:  dw 0
      
 bufferArquivo:
 

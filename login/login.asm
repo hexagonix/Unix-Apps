@@ -20,7 +20,7 @@
 ;;                                                                   
 ;;************************************************************************************
 
-use32		
+use32       
 
 ;; Agora vamos criar um cabeçalho para a imagem HAPP final do aplicativo. Anteriormente,
 ;; o cabeçalho era criado em cada imagem e poderia diferir de uma para outra. Caso algum
@@ -42,160 +42,160 @@ include "macros.s"
 include "log.s"
 
 tamanhoLimiteBusca = 32768
-	
+    
 ;;************************************************************************************
 
 loginHexagonix: ;; Ponto de entrada
-	
-	mov [usuarioSolicitado], edi
-		
-	mov edi, login.parametroAjuda
-	mov esi, [usuarioSolicitado]
-	
-	Hexagonix compararPalavrasString
-	
-	jc usoAplicativo 
+    
+    mov [usuarioSolicitado], edi
+        
+    mov edi, login.parametroAjuda
+    mov esi, [usuarioSolicitado]
+    
+    Hexagonix compararPalavrasString
+    
+    jc usoAplicativo 
 
-	mov edi, login.parametroAjuda2
-	mov esi, [usuarioSolicitado]
-	
-	Hexagonix compararPalavrasString
-	
-	jc usoAplicativo    
+    mov edi, login.parametroAjuda2
+    mov esi, [usuarioSolicitado]
+    
+    Hexagonix compararPalavrasString
+    
+    jc usoAplicativo    
 
-	call checarBaseDados
+    call checarBaseDados
 
-	logSistema login.verboseLogin, 0, Log.Prioridades.p4
+    logSistema login.verboseLogin, 0, Log.Prioridades.p4
 
 iniciarExecucao:
 
-	call executarLogind
+    call executarLogind
 
-	call limparVariaveisUsuario
+    call limparVariaveisUsuario
 
-	clc
-	
-	cmp byte[errado], 1
-	jne .execucaoInicial
-	
-	logSistema login.verboseLoginRecusado, 0, Log.Prioridades.p4
+    clc
+    
+    cmp byte[errado], 1
+    jne .execucaoInicial
+    
+    logSistema login.verboseLoginRecusado, 0, Log.Prioridades.p4
 
 .continuar:
 
-	mov esi, login.dadosErrados
-	
-	imprimirString
-	
-	mov byte[errado], 0
-	
+    mov esi, login.dadosErrados
+    
+    imprimirString
+    
+    mov byte[errado], 0
+    
 .execucaoInicial:
 
-	logSistema login.verboseProcurarArquivo, 0, Log.Prioridades.p4
+    logSistema login.verboseProcurarArquivo, 0, Log.Prioridades.p4
 
-	call limparVariaveisUsuario
+    call limparVariaveisUsuario
 
-	mov esi, login.solicitarUsuario
-	
-	imprimirString
-	
-	mov eax, 15
-	
-	mov ebx, 01h
-	
-	Hexagonix obterString
-	
-	Hexagonix cortarString
-	
-	mov [usuarioSolicitado], esi
-	
-	call encontrarNomeUsuario 
-	
-	jc .semUsuario
-	
-	call encontrarSenhaUsuario 
-	
-	mov esi, login.solicitarSenha
-	
-	imprimirString
-	
-	mov eax, 64
-	
-	mov ebx, 1234h                  ;; Não queremos eco na senha! 
-	
-	Hexagonix obterString
-	
-	Hexagonix cortarString
-	
-	mov edi, senhaObtida
-	
-	Hexagonix compararPalavrasString
-	
-	jc .loginAceito
+    mov esi, login.solicitarUsuario
+    
+    imprimirString
+    
+    mov eax, 15
+    
+    mov ebx, 01h
+    
+    Hexagonix obterString
+    
+    Hexagonix cortarString
+    
+    mov [usuarioSolicitado], esi
+    
+    call encontrarNomeUsuario 
+    
+    jc .semUsuario
+    
+    call encontrarSenhaUsuario 
+    
+    mov esi, login.solicitarSenha
+    
+    imprimirString
+    
+    mov eax, 64
+    
+    mov ebx, 1234h                  ;; Não queremos eco na senha! 
+    
+    Hexagonix obterString
+    
+    Hexagonix cortarString
+    
+    mov edi, senhaObtida
+    
+    Hexagonix compararPalavrasString
+    
+    jc .loginAceito
 
-	logSistema login.verboseLoginRecusado, 00h, Log.Prioridades.p4
+    logSistema login.verboseLoginRecusado, 00h, Log.Prioridades.p4
 
 match =SIM, UNIX 
 {
 
-	novaLinha
+    novaLinha
 
 }
 
-	mov byte[errado], 1
+    mov byte[errado], 1
 
-	jmp iniciarExecucao
+    jmp iniciarExecucao
 
 .semUsuario:
 
-	cmp byte[parametros], 0
-	je terminar
+    cmp byte[parametros], 0
+    je terminar
 
 .loginAceito:
 
-	logSistema login.verboseLoginAceito, 0, Log.Prioridades.p4
+    logSistema login.verboseLoginAceito, 0, Log.Prioridades.p4
 
-	call registrarUsuario
-	
-	call encontrarShell
-	
-	Hexagonix destravar
-	
+    call registrarUsuario
+    
+    call encontrarShell
+    
+    Hexagonix destravar
+    
 .carregarShell:
-	
-	clc
+    
+    clc
 
-	mov esi, shellHexagonix
+    mov esi, shellHexagonix
 
-	Hexagonix arquivoExiste
+    Hexagonix arquivoExiste
 
-	jc .naoEncontrado
+    jc .naoEncontrado
 
-	mov eax, 0			           ;; Não passar argumentos
-	mov esi, shellHexagonix        ;; Nome do arquivo
-	
-	clc
-	
-	Hexagonix iniciarProcesso      ;; Solicitar o carregamento do shell do Hexagonix®
+    mov eax, 0                     ;; Não passar argumentos
+    mov esi, shellHexagonix        ;; Nome do arquivo
+    
+    clc
+    
+    Hexagonix iniciarProcesso      ;; Solicitar o carregamento do shell do Hexagonix®
 
-	jmp .shellFinalizado
+    jmp .shellFinalizado
 
 .tentarShellPadrao:                ;; Tentar carregar o shell padrão do Hexagonix®
 
    call obterShellPadrao           ;; Solicitar a configuração do nome do shell padrão do Hexagonix®
-	
+    
    mov byte[tentarShellPadrao], 1  ;; Sinalizar a tentativa de carregamento do shell padrão do Hexagonix®
-	
+    
    jmp .carregarShell              ;; Tentar carregar o shell padrão do Hexagonix®
-	
+    
 .shellFinalizado:                  ;; Tentar carregar o shell novamente
 
 ;; Verificar a consistência da interface. Caso algum processo seja encerrado antes de retornar
 ;; as propriedades de tema ao padrão, retorne para as condições presentes nas configurações,
 ;; mantendo a consistência do sistema
-	
-	logSistema login.verboseLogout, 0, Log.Prioridades.p4
+    
+    logSistema login.verboseLogout, 0, Log.Prioridades.p4
 
-	jmp terminar
+    jmp terminar
 
 .naoEncontrado:                    ;; O shell não pôde ser localizado
     
@@ -208,523 +208,523 @@ match =SIM, UNIX
 
 limparTerminal:
 
-	mov esi, vd1         ;; Abrir o primeiro console virtual
-	
-	Hexagonix abrir      ;; Abre o dispositivo
-	
-	Hexagonix limparTela ;; Limpa seu conteúdo
-	
-	mov esi, vd0         ;; Reabre o console padrão
-	
-	Hexagonix abrir      ;; Abre o dispositivo
-	
-	ret
-	
+    mov esi, vd1         ;; Abrir o primeiro console virtual
+    
+    Hexagonix abrir      ;; Abre o dispositivo
+    
+    Hexagonix limparTela ;; Limpa seu conteúdo
+    
+    mov esi, vd0         ;; Reabre o console padrão
+    
+    Hexagonix abrir      ;; Abre o dispositivo
+    
+    ret
+    
 ;;************************************************************************************
 
 registrarUsuario:
-	
-	clc
-	
-	mov esi, login.usuarioROOT
-	mov edi, usuario
-	
-	Hexagonix compararPalavrasString
-	
-	jc .root
-	
-	mov eax, 555 ;; Código de um usuário comum
-	
-	jmp .registrar
-	
+    
+    clc
+    
+    mov esi, login.usuarioROOT
+    mov edi, usuario
+    
+    Hexagonix compararPalavrasString
+    
+    jc .root
+    
+    mov eax, 555 ;; Código de um usuário comum
+    
+    jmp .registrar
+    
 .root:
-	
-	mov eax, 777 ;; Código de um usuário raiz
+    
+    mov eax, 777 ;; Código de um usuário raiz
 
 .registrar:
-	
-	mov esi, usuario
-	
-	Hexagonix definirUsuario
-	
-	ret
-	
+    
+    mov esi, usuario
+    
+    Hexagonix definirUsuario
+    
+    ret
+    
 ;;************************************************************************************
-	
+    
 encontrarNomeUsuario:
 
-	pusha
-	
-	push es
+    pusha
+    
+    push es
 
-	push ds
-	pop es
-	
-	mov esi, arquivo
-	mov edi, bufferArquivo
-	
-	Hexagonix abrir
-	
-	jc .arquivoUsuarioAusente
-	
-	mov si, bufferArquivo           ;; Aponta para o buffer com o conteúdo do arquivo
-	mov bx, 0FFFFh                  ;; Inicia na posição -1, para que se possa encontrar os delimitadores
-	
+    push ds
+    pop es
+    
+    mov esi, arquivo
+    mov edi, bufferArquivo
+    
+    Hexagonix abrir
+    
+    jc .arquivoUsuarioAusente
+    
+    mov si, bufferArquivo           ;; Aponta para o buffer com o conteúdo do arquivo
+    mov bx, 0FFFFh                  ;; Inicia na posição -1, para que se possa encontrar os delimitadores
+    
 .procurarEntreDelimitadores:
 
-	inc bx
-	
-	mov word[posicaoBX], bx
-	
-	cmp bx, tamanhoLimiteBusca
-	je .nomeUsuarioInvalido         ;; Caso nada seja encontrado até o tamanho limite, cancele a busca
-	
-	mov al, [ds:si+bx]
-	
-	cmp al, '@'
-	jne .procurarEntreDelimitadores ;; O limitador inicial foi encontrado
-	
+    inc bx
+    
+    mov word[posicaoBX], bx
+    
+    cmp bx, tamanhoLimiteBusca
+    je .nomeUsuarioInvalido         ;; Caso nada seja encontrado até o tamanho limite, cancele a busca
+    
+    mov al, [ds:si+bx]
+    
+    cmp al, '@'
+    jne .procurarEntreDelimitadores ;; O limitador inicial foi encontrado
+    
 ;; BX agora aponta para o primeiro caractere do nome de usuário resgatado do arquivo
-	
-	push ds
-	pop es
-	
-	mov di, usuario                 ;; O nome do usuário será copiado para ES:DI
-	
-	mov si, bufferArquivo
-	
-	add si, bx				        ;; Mover SI para aonde BX aponta
-	
-	mov bx, 0				        ;; Iniciar em 0
-	
+    
+    push ds
+    pop es
+    
+    mov di, usuario                 ;; O nome do usuário será copiado para ES:DI
+    
+    mov si, bufferArquivo
+    
+    add si, bx                      ;; Mover SI para aonde BX aponta
+    
+    mov bx, 0                       ;; Iniciar em 0
+    
 .obterNomeUsuario:
 
-	inc bx
-	
-	cmp bx, 17				
-	je .nomeUsuarioInvalido         ;; Se nome de usuário maior que 15, o mesmo é inválido     
-	
-	mov al, [ds:si+bx]
-	
-	cmp al, '|'					    ;; Se encontrar outro delimitador, o nome de usuário foi carregado com sucesso
-	je .nomeUsuarioObtido
-	
+    inc bx
+    
+    cmp bx, 17              
+    je .nomeUsuarioInvalido         ;; Se nome de usuário maior que 15, o mesmo é inválido     
+    
+    mov al, [ds:si+bx]
+    
+    cmp al, '|'                     ;; Se encontrar outro delimitador, o nome de usuário foi carregado com sucesso
+    je .nomeUsuarioObtido
+    
 ;; Se não estiver pronto, armazenar o caractere obtido
 
-	stosb
-	
-	jmp .obterNomeUsuario
+    stosb
+    
+    jmp .obterNomeUsuario
 
 .nomeUsuarioObtido:
 
     mov edi, usuario
-	mov esi, [usuarioSolicitado]
-	
-	Hexagonix compararPalavrasString
-	
-	jc .obtido
-	
-	call limparVariavel
-	
-	mov word bx, [posicaoBX]
-	
-	mov si, bufferArquivo
-	
-	jmp .procurarEntreDelimitadores
-	
+    mov esi, [usuarioSolicitado]
+    
+    Hexagonix compararPalavrasString
+    
+    jc .obtido
+    
+    call limparVariavel
+    
+    mov word bx, [posicaoBX]
+    
+    mov si, bufferArquivo
+    
+    jmp .procurarEntreDelimitadores
+    
 .obtido:
-	
-	pop es
-	
-	popa
-	
-	clc
+    
+    pop es
+    
+    popa
+    
+    clc
 
-	ret
-	
+    ret
+    
 .nomeUsuarioInvalido:
 
-	pop es
-	
-	popa
-	
-	mov byte[errado], 1
+    pop es
+    
+    popa
+    
+    mov byte[errado], 1
 
-	logSistema login.verboseLoginRecusado, 00h, Log.Prioridades.p4
+    logSistema login.verboseLoginRecusado, 00h, Log.Prioridades.p4
 
-	jmp loginHexagonix
+    jmp loginHexagonix
 
 .arquivoUsuarioAusente:
 
-	pop es
-	
-	popa
-	
-	mov esi, login.semArquivoUnix
-	
-	imprimirString
-	
-	jmp terminar
+    pop es
+    
+    popa
+    
+    mov esi, login.semArquivoUnix
+    
+    imprimirString
+    
+    jmp terminar
 
 ;;************************************************************************************
 
 limparVariavel:
 
-	push es
-	
-	push ds
-	pop es
-	
-	mov esi, usuario
-	
-	Hexagonix tamanhoString
-	
-	push eax
-	
-	mov esi, 0
-	
-	mov edi, usuario
-	
-	pop ecx
-	
-	rep movsb
-	
-	pop es
-	
-	ret		
-	
+    push es
+    
+    push ds
+    pop es
+    
+    mov esi, usuario
+    
+    Hexagonix tamanhoString
+    
+    push eax
+    
+    mov esi, 0
+    
+    mov edi, usuario
+    
+    pop ecx
+    
+    rep movsb
+    
+    pop es
+    
+    ret     
+    
 ;;************************************************************************************
 
 limparVariaveisUsuario:
 
-	push es
-	
-	push ds
-	pop es
-	
-	mov esi, usuario
-	
-	Hexagonix tamanhoString
-	
-	push eax
-	
-	mov esi, 0
-	
-	mov edi, usuario
-	
-	pop ecx
-	
-	rep movsb
+    push es
+    
+    push ds
+    pop es
+    
+    mov esi, usuario
+    
+    Hexagonix tamanhoString
+    
+    push eax
+    
+    mov esi, 0
+    
+    mov edi, usuario
+    
+    pop ecx
+    
+    rep movsb
 
-	mov esi, usuarioSolicitado
-	
-	Hexagonix tamanhoString
-	
-	push eax
-	
-	mov esi, 0
-	
-	mov edi, senhaObtida
-	
-	pop ecx
-	
-	rep movsb
-	
-	pop es
-	
-	ret		
-	
+    mov esi, usuarioSolicitado
+    
+    Hexagonix tamanhoString
+    
+    push eax
+    
+    mov esi, 0
+    
+    mov edi, senhaObtida
+    
+    pop ecx
+    
+    rep movsb
+    
+    pop es
+    
+    ret     
+    
 ;;************************************************************************************
-	
+    
 encontrarSenhaUsuario:
 
-	pusha
-	
-	push es
+    pusha
+    
+    push es
 
-	push ds
-	pop es
-	
-	mov esi, arquivo
-	mov edi, bufferArquivo
-	
-	Hexagonix abrir
-	
-	jc .arquivoUsuarioAusente
-	
-	mov si, bufferArquivo           ;; Aponta para o buffer com o conteúdo do arquivo
-	mov bx, word [posicaoBX]        ;; Continua de onde a opção anterior parou
-	
-	dec bx
-	
+    push ds
+    pop es
+    
+    mov esi, arquivo
+    mov edi, bufferArquivo
+    
+    Hexagonix abrir
+    
+    jc .arquivoUsuarioAusente
+    
+    mov si, bufferArquivo           ;; Aponta para o buffer com o conteúdo do arquivo
+    mov bx, word [posicaoBX]        ;; Continua de onde a opção anterior parou
+    
+    dec bx
+    
 .procurarEntreDelimitadores:
 
-	inc bx
-	
-	mov word[posicaoBX], bx
-	
-	cmp bx, tamanhoLimiteBusca
-	
-	je .senhaUsuarioInvalida        ;; Caso nada seja encontrado até o tamanho limite, cancele a busca
-	
-	mov al, [ds:si+bx]
-	
-	cmp al, '|'
-	jne .procurarEntreDelimitadores ;; O limitador inicial foi encontrado
-	
+    inc bx
+    
+    mov word[posicaoBX], bx
+    
+    cmp bx, tamanhoLimiteBusca
+    
+    je .senhaUsuarioInvalida        ;; Caso nada seja encontrado até o tamanho limite, cancele a busca
+    
+    mov al, [ds:si+bx]
+    
+    cmp al, '|'
+    jne .procurarEntreDelimitadores ;; O limitador inicial foi encontrado
+    
 ;; BX agora aponta para o primeiro caractere da senha recuperada do arquivo
-	
-	push ds
-	pop es
-	
-	mov di, senhaObtida             ;; A senha será copiada para ES:DI
-	
-	mov si, bufferArquivo
-	
-	add si, bx				        ;; Mover SI para onde BX aponta
-	
-	mov bx, 0				        ;; Iniciar em 0
-	
+    
+    push ds
+    pop es
+    
+    mov di, senhaObtida             ;; A senha será copiada para ES:DI
+    
+    mov si, bufferArquivo
+    
+    add si, bx                      ;; Mover SI para onde BX aponta
+    
+    mov bx, 0                       ;; Iniciar em 0
+    
 .obterSenhaUsuario:
 
-	inc bx
-	
-	cmp bx, 66				
-	je .senhaUsuarioInvalida        ;; Se senha maior que 66, a mesma é inválida    
-	
-	mov al, [ds:si+bx]
-	
-	cmp al, '&'					    ;; Se encontrar outro delimitador, a senha foi carregada com sucesso
-	je .senhaUsuarioObtida
-	
+    inc bx
+    
+    cmp bx, 66              
+    je .senhaUsuarioInvalida        ;; Se senha maior que 66, a mesma é inválida    
+    
+    mov al, [ds:si+bx]
+    
+    cmp al, '&'                     ;; Se encontrar outro delimitador, a senha foi carregada com sucesso
+    je .senhaUsuarioObtida
+    
 ;; Se não estiver pronto, armazenar o caractere obtido
 
-	stosb
-	
-	jmp .obterSenhaUsuario
+    stosb
+    
+    jmp .obterSenhaUsuario
 
 .senhaUsuarioObtida:
 
-	pop es
-	
-	popa
+    pop es
+    
+    popa
 
-	ret
-	
+    ret
+    
 .senhaUsuarioInvalida:
 
-	pop es
-	
-	popa
-	
-	stc
-	
-	ret
+    pop es
+    
+    popa
+    
+    stc
+    
+    ret
 
 .arquivoUsuarioAusente:
 
-	pop es
-	
-	popa
-	
-	mov esi, login.semArquivoUnix
-	
-	imprimirString
-	
-	jmp terminar
+    pop es
+    
+    popa
+    
+    mov esi, login.semArquivoUnix
+    
+    imprimirString
+    
+    jmp terminar
 
 ;;************************************************************************************
  
 encontrarShell:
 
-	pusha
-	
-	push es
+    pusha
+    
+    push es
 
-	push ds
-	pop es
-	
-	mov esi, arquivo
-	mov edi, bufferArquivo
-	
-	Hexagonix abrir
-	
-	jc .arquivoConfiguracaoAusente
-	
-	mov si, bufferArquivo           ;; Aponta para o buffer com o conteúdo do arquivo
-	mov bx, word [posicaoBX]        ;; Continua de onde a opção anterior parou
-	
-	dec bx
-	
+    push ds
+    pop es
+    
+    mov esi, arquivo
+    mov edi, bufferArquivo
+    
+    Hexagonix abrir
+    
+    jc .arquivoConfiguracaoAusente
+    
+    mov si, bufferArquivo           ;; Aponta para o buffer com o conteúdo do arquivo
+    mov bx, word [posicaoBX]        ;; Continua de onde a opção anterior parou
+    
+    dec bx
+    
 .procurarEntreDelimitadores:
 
-	inc bx
-	
-	mov word[posicaoBX], bx
-	
-	cmp bx, tamanhoLimiteBusca
-	
-	je .arquivoConfiguracaoAusente  ;; Caso nada seja encontrado até o tamanho limite, cancele a busca
-	
-	mov al, [ds:si+bx]
-	
-	cmp al, '&'
-	jne .procurarEntreDelimitadores ;; O limitador inicial foi encontrado
-	
+    inc bx
+    
+    mov word[posicaoBX], bx
+    
+    cmp bx, tamanhoLimiteBusca
+    
+    je .arquivoConfiguracaoAusente  ;; Caso nada seja encontrado até o tamanho limite, cancele a busca
+    
+    mov al, [ds:si+bx]
+    
+    cmp al, '&'
+    jne .procurarEntreDelimitadores ;; O limitador inicial foi encontrado
+    
 ;; BX agora aponta para o primeiro caractere do nome do shell resgatado do arquivo
-	
-	push ds
-	pop es
-	
-	mov di, shellHexagonix          ;; O nome do shell será copiado para ES:DI - shellHexagonix
-	
-	mov si, bufferArquivo
-	
-	add si, bx				        ;; Mover SI para aonde BX aponta
-	
-	mov bx, 0				        ;; Iniciar em 0
-	
+    
+    push ds
+    pop es
+    
+    mov di, shellHexagonix          ;; O nome do shell será copiado para ES:DI - shellHexagonix
+    
+    mov si, bufferArquivo
+    
+    add si, bx                      ;; Mover SI para aonde BX aponta
+    
+    mov bx, 0                       ;; Iniciar em 0
+    
 .obterNomeShell:
 
-	inc bx
-	
-	cmp bx, 13				
-	je .nomeShellInvalido           ;; Se nome de arquivo maior que 11, o nome é inválido     
-	
-	mov al, [ds:si+bx]
-	
-	cmp al, '#'					    ;; Se encontrar outro delimitador, o nome foi carregado com sucesso
-	je .nomeShellObtido
-	
+    inc bx
+    
+    cmp bx, 13              
+    je .nomeShellInvalido           ;; Se nome de arquivo maior que 11, o nome é inválido     
+    
+    mov al, [ds:si+bx]
+    
+    cmp al, '#'                     ;; Se encontrar outro delimitador, o nome foi carregado com sucesso
+    je .nomeShellObtido
+    
 ;; Se não estiver pronto, armazenar o caractere obtido
 
-	stosb
-	
-	jmp .obterNomeShell
+    stosb
+    
+    jmp .obterNomeShell
 
 .nomeShellObtido:
 
-	pop es
-	
-	popa
+    pop es
+    
+    popa
 
-	ret
-	
+    ret
+    
 .nomeShellInvalido:
 
-	pop es
-	
-	popa
-	
-	jmp obterShellPadrao
+    pop es
+    
+    popa
+    
+    jmp obterShellPadrao
 
-	
+    
 .arquivoConfiguracaoAusente:
 
-	pop es
-	
-	popa
-	
-	jmp obterShellPadrao
+    pop es
+    
+    popa
+    
+    jmp obterShellPadrao
 
 ;;************************************************************************************
-	
+    
 obterShellPadrao:
 
-	push es
-	
-	push ds
-	pop es
-	
-	mov esi, shellPadrao
-	
-	Hexagonix tamanhoString
-	
-	push eax
-	
-	mov edi, shellHexagonix
-	mov esi, shellPadrao
-	
-	pop ecx
-	
-	rep movsb
-	
-	pop es
-	
-	ret						
+    push es
+    
+    push ds
+    pop es
+    
+    mov esi, shellPadrao
+    
+    Hexagonix tamanhoString
+    
+    push eax
+    
+    mov edi, shellHexagonix
+    mov esi, shellPadrao
+    
+    pop ecx
+    
+    rep movsb
+    
+    pop es
+    
+    ret                     
 
 ;;************************************************************************************
 
 salvarUsuarioAtual:
 
-	push es
-	
-	push ds
-	pop es
-	
-	Hexagonix obterUsuario
-	
-	push esi
-	
-	Hexagonix tamanhoString
-	
-	pop esi
-	
-	push eax
-	
-	mov edi, usuarioAnterior
-	
-	pop ecx
-	
-	rep movsb
-	
-	pop es
-	
-	Hexagonix obterUsuario
-	
-	mov [codigoAnterior], eax
-	
-	ret			
+    push es
+    
+    push ds
+    pop es
+    
+    Hexagonix obterUsuario
+    
+    push esi
+    
+    Hexagonix tamanhoString
+    
+    pop esi
+    
+    push eax
+    
+    mov edi, usuarioAnterior
+    
+    pop ecx
+    
+    rep movsb
+    
+    pop es
+    
+    Hexagonix obterUsuario
+    
+    mov [codigoAnterior], eax
+    
+    ret         
 
 ;;************************************************************************************
 
 restaurarUsuario:
 
-	mov esi, usuarioAnterior
-	mov eax, [codigoAnterior]
-	
-	Hexagonix definirUsuario
-	
-	ret
+    mov esi, usuarioAnterior
+    mov eax, [codigoAnterior]
+    
+    Hexagonix definirUsuario
+    
+    ret
 
 ;;************************************************************************************
-	
+    
 usoAplicativo:
 
-	mov esi, login.uso
-	
-	imprimirString
-	
-	jmp terminar
+    mov esi, login.uso
+    
+    imprimirString
+    
+    jmp terminar
 
 ;;************************************************************************************
 
 executarLogind:
 
-	mov eax, 0			         ;; Não passar argumentos
-	mov esi, login.logind        ;; Nome do arquivo
-	
-	clc
-	
-	Hexagonix iniciarProcesso      ;; Solicitar o carregamento do daemon de login
+    mov eax, 0                   ;; Não passar argumentos
+    mov esi, login.logind        ;; Nome do arquivo
+    
+    clc
+    
+    Hexagonix iniciarProcesso      ;; Solicitar o carregamento do daemon de login
 
-	ret
+    ret
 
 ;;************************************************************************************
 
-terminar:	
+terminar:   
 
-	Hexagonix encerrarProcesso
+    Hexagonix encerrarProcesso
 
 ;;************************************************************************************
 
@@ -735,20 +735,20 @@ loginPadrao:
 
 ;; Primeiro, logar como root
 
-	mov eax, 777 ;; Código de um usuário raiz
+    mov eax, 777 ;; Código de um usuário raiz
 
-	mov esi, login.usuarioROOT
-	
-	Hexagonix definirUsuario
-	
-	mov eax, 0
-	mov esi, shellPadrao
+    mov esi, login.usuarioROOT
+    
+    Hexagonix definirUsuario
+    
+    mov eax, 0
+    mov esi, shellPadrao
 
-	clc 
+    clc 
 
-	Hexagonix iniciarProcesso
+    Hexagonix iniciarProcesso
 
-	je terminar
+    je terminar
 
 ;;************************************************************************************
 
@@ -758,15 +758,15 @@ loginPadrao:
 
 checarBaseDados: 
 
-	clc
+    clc
 
-	mov esi, arquivo
+    mov esi, arquivo
 
-	Hexagonix arquivoExiste
+    Hexagonix arquivoExiste
 
-	jc loginPadrao 
+    jc loginPadrao 
 
-	ret
+    ret
 
 ;;************************************************************************************
 
@@ -782,7 +782,7 @@ versaoLOGIN equ "4.1"
 
 shellPadrao:       db "sh.app", 0       ;; Nome do arquivo que contêm o shell padrão do Hexagonix®
 vd0:               db "vd0", 0          ;; Console padrão
-vd1:               db "vd1", 0	        ;; Primeiro console virtual
+vd1:               db "vd1", 0          ;; Primeiro console virtual
 arquivo:           db "usuario.unx", 0  ;; Nome do arquivo de gerenciamento de login
 tentarShellPadrao: db 0                 ;; Sinaliza a tentativa de se carregar o shell padrão
 shellHexagonix:    times 11 db 0        ;; Armazena o nome do shell à ser utilizado
@@ -822,7 +822,7 @@ usuarioAnterior:   times 17 db 0
 codigoAnterior:             dd 0
 errado:                     db 0
 
-;;************************************************************************************		
+;;************************************************************************************      
 
 enderecoCarregamento:
 

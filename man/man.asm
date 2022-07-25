@@ -60,48 +60,48 @@ man:
 
 inicioAPP:
 
-    mov	[utilitario], edi
+    mov [utilitario], edi
 
-	cmp byte[edi], 0
-	je usoAplicativo
+    cmp byte[edi], 0
+    je usoAplicativo
 
-	mov edi, man.parametroAjuda
-	mov esi, [utilitario]
-	
-	Hexagonix compararPalavrasString
-	
-	jc usoAplicativo
+    mov edi, man.parametroAjuda
+    mov esi, [utilitario]
+    
+    Hexagonix compararPalavrasString
+    
+    jc usoAplicativo
 
     mov edi, man.parametroAjuda2
-	mov esi, [utilitario]
-	
-	Hexagonix compararPalavrasString
-	
-	jc usoAplicativo
+    mov esi, [utilitario]
+    
+    Hexagonix compararPalavrasString
+    
+    jc usoAplicativo
 
-	mov esi, [utilitario]
+    mov esi, [utilitario]
 
     Hexagonix tamanhoString
 
-	mov ebx, eax
+    mov ebx, eax
 
-	mov al, byte[man.extensaoManual+0]
-	
-	mov byte[esi+ebx+0], al
-	
-	mov al, byte[man.extensaoManual+1]
-	
-	mov byte[esi+ebx+1], al
-	
-	mov al, byte[man.extensaoManual+2]
-	
-	mov byte[esi+ebx+2], al
-	
-	mov al, byte[man.extensaoManual+3]
-	
-	mov byte[esi+ebx+3], al
-	
-	mov byte[esi+ebx+4], 0		;; Fim da string
+    mov al, byte[man.extensaoManual+0]
+    
+    mov byte[esi+ebx+0], al
+    
+    mov al, byte[man.extensaoManual+1]
+    
+    mov byte[esi+ebx+1], al
+    
+    mov al, byte[man.extensaoManual+2]
+    
+    mov byte[esi+ebx+2], al
+    
+    mov al, byte[man.extensaoManual+3]
+    
+    mov byte[esi+ebx+3], al
+    
+    mov byte[esi+ebx+4], 0      ;; Fim da string
 
     push esi
 
@@ -112,20 +112,20 @@ inicioAPP:
     mov edi, bufferArquivo
 
     pop esi
-	
-	Hexagonix abrir
-	
-	jc manualNaoEncontrado
+    
+    Hexagonix abrir
+    
+    jc manualNaoEncontrado
 
 ;; Preparação do ambiente
 
     Hexagonix limparTela
 
     call montarInterface
-	
-	mov esi, bufferArquivo
-	
-	imprimirString
+    
+    mov esi, bufferArquivo
+    
+    imprimirString
 
     novaLinha
 
@@ -139,20 +139,20 @@ montarInterface:
 
     imprimirString
 
-	mov ecx, 22
+    mov ecx, 22
 
 .loopEspaco:
 
-	mov al, ' '
-	
-	Hexagonix imprimirCaractere
-	
-	dec ecx
-	
-	cmp ecx, 0
-	je .terminado
-	
-	jmp .loopEspaco
+    mov al, ' '
+    
+    Hexagonix imprimirCaractere
+    
+    dec ecx
+    
+    cmp ecx, 0
+    je .terminado
+    
+    jmp .loopEspaco
 
 .terminado:
 
@@ -186,18 +186,18 @@ manualNaoEncontrado:
 
 usoAplicativo:
 
-	mov esi, man.uso
-	
-	imprimirString
-	
-	jmp terminar
+    mov esi, man.uso
+    
+    imprimirString
+    
+    jmp terminar
 
 ;;************************************************************************************
 
-terminar:	
+terminar:   
 
-	Hexagonix encerrarProcesso
-	
+    Hexagonix encerrarProcesso
+    
 ;;*****************************************************************************
 
 utilitario: dd ?

@@ -37,46 +37,46 @@ include "hexagon.s"
 inicioAPP:
 
     push ds
-	pop es			
-	
-	mov	[parametro], edi
-	
+    pop es          
+    
+    mov [parametro], edi
+    
     mov esi, [parametro]
-	
-	mov edi, free.parametroAjuda
-	mov esi, [parametro]
-	
-	Hexagonix compararPalavrasString
-	
-	jc usoAplicativo
+    
+    mov edi, free.parametroAjuda
+    mov esi, [parametro]
+    
+    Hexagonix compararPalavrasString
+    
+    jc usoAplicativo
 
     mov edi, free.parametroAjuda2
-	mov esi, [parametro]
-	
-	Hexagonix compararPalavrasString
-	
-	jc usoAplicativo
-	
-	novaLinha
-	novaLinha
+    mov esi, [parametro]
+    
+    Hexagonix compararPalavrasString
+    
+    jc usoAplicativo
+    
+    novaLinha
+    novaLinha
 
     mov esi, free.memoria
 
     imprimirString
-	
-	Hexagonix usoMemoria
-	
-	mov eax, ecx
-	
-	imprimirInteiro
+    
+    Hexagonix usoMemoria
+    
+    mov eax, ecx
+    
+    imprimirInteiro
 
     mov esi, free.megabytes
 
     imprimirString
 
     Hexagonix usoMemoria
-	
-	imprimirInteiro
+    
+    imprimirInteiro
 
     mov esi, free.kbytes
 
@@ -109,17 +109,17 @@ inicioAPP:
 
 usoAplicativo:
 
-	mov esi, free.uso
-	
-	imprimirString
-	
-	jmp terminar
+    mov esi, free.uso
+    
+    imprimirString
+    
+    jmp terminar
 
 ;;************************************************************************************
 
-terminar:	
+terminar:   
 
-	Hexagonix encerrarProcesso
+    Hexagonix encerrarProcesso
 
 ;;************************************************************************************
 
@@ -141,4 +141,4 @@ free:
      
 parametro: dd ?
 
-regES:	   dw 0
+regES:     dw 0

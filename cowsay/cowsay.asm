@@ -35,27 +35,27 @@ include "hexagon.s"
 ;;************************************************************************************
 
 inicioAPP:
-	
-	push ds
-	pop es			
-	
-	mov	[parametro], edi
-	
+    
+    push ds
+    pop es          
+    
+    mov [parametro], edi
+    
     call obterParametros
 
     mov edi, cowsay.parametroAjuda
-	mov esi, [parametro]
-	
-	Hexagonix compararPalavrasString
-	
-	jc usoAplicativo
+    mov esi, [parametro]
+    
+    Hexagonix compararPalavrasString
+    
+    jc usoAplicativo
 
     mov edi, cowsay.parametroAjuda2
-	mov esi, [parametro]
-	
-	Hexagonix compararPalavrasString
-	
-	jc usoAplicativo
+    mov esi, [parametro]
+    
+    Hexagonix compararPalavrasString
+    
+    jc usoAplicativo
 
     novaLinha
 
@@ -166,26 +166,26 @@ inicioAPP:
     mov esi, [perfilVaquinha]
 
     Hexagonix tamanhoString
-	
-	mov ebx, eax
+    
+    mov ebx, eax
 
-	mov al, byte[cowsay.extensaoCOW+0]
-	
-	mov byte[esi+ebx+0], al
-	
-	mov al, byte[cowsay.extensaoCOW+1]
-	
-	mov byte[esi+ebx+1], al
-	
-	mov al, byte[cowsay.extensaoCOW+2]
-	
-	mov byte[esi+ebx+2], al
-	
-	mov al, byte[cowsay.extensaoCOW+3]
-	
-	mov byte[esi+ebx+3], al
-	
-	mov byte[esi+ebx+4], 0		;; Fim da string, será cortada aqui e nada após será relevante
+    mov al, byte[cowsay.extensaoCOW+0]
+    
+    mov byte[esi+ebx+0], al
+    
+    mov al, byte[cowsay.extensaoCOW+1]
+    
+    mov byte[esi+ebx+1], al
+    
+    mov al, byte[cowsay.extensaoCOW+2]
+    
+    mov byte[esi+ebx+2], al
+    
+    mov al, byte[cowsay.extensaoCOW+3]
+    
+    mov byte[esi+ebx+3], al
+    
+    mov byte[esi+ebx+4], 0      ;; Fim da string, será cortada aqui e nada após será relevante
 
     push esi
 
@@ -223,11 +223,11 @@ inicioAPP:
 
 obterParametros:
 
-	mov esi, [parametro]
-	mov [perfilVaquinha], esi
-		
-	cmp byte[esi], 0
-	je usoAplicativo
+    mov esi, [parametro]
+    mov [perfilVaquinha], esi
+        
+    cmp byte[esi], 0
+    je usoAplicativo
 
 ;; Então vamos lá. Algumas coisas serão feitas aqui para verificar parâmetros, como alteração
 ;; do personagem a ser exibido e os parâmetros a serem impressos na saída padrão
@@ -252,11 +252,11 @@ obterParametros:
 ;; Tudo bem, não temos uma frase. Temos mais de um parâmetro, o que poderia identificar uma única
 ;; palavra após o parâmetro de personagem? Se o usuário não inseriu o '"', assim será interpretado.
 
-	mov al, ' ' ;; Vamos pesquisar se existe um espaço, que seria a indicação de duas ou mais palavras
-	
-	Hexagonix encontrarCaractere ;; Solicitar o serviço de busca de caractere
-	
-	jc .adicionarMensagem ;; Não temos mais de uma palavra, o que indica que não há troca de personagem
+    mov al, ' ' ;; Vamos pesquisar se existe um espaço, que seria a indicação de duas ou mais palavras
+    
+    Hexagonix encontrarCaractere ;; Solicitar o serviço de busca de caractere
+    
+    jc .adicionarMensagem ;; Não temos mais de uma palavra, o que indica que não há troca de personagem
 
 ;; Até agora já validamos frases e palavras individuais, sem a necessidade de carregamento de um
 ;; personagem diretamente do disco. Se chegamos até aqui, isso quer dizer que existe mais de uma
@@ -264,11 +264,11 @@ obterParametros:
 ;; deve-se separar o primeiro parâmetro, que corresponde ao personagem, do restante da string, que
 ;; é o que será exibido ao usuário
 
-	mov al, ' ' ;; Vamos procurar a posição em que ocorre a separação dos parâmetros
-	
-	call encontrarCaractereCowsay ;; Essa função é do aplicativo, não da API do Sistema
-	
-	mov [mensagemUsuario], esi ;; A string devidamente cortada e separada. O corte de nome de arquivo
+    mov al, ' ' ;; Vamos procurar a posição em que ocorre a separação dos parâmetros
+    
+    call encontrarCaractereCowsay ;; Essa função é do aplicativo, não da API do Sistema
+    
+    mov [mensagemUsuario], esi ;; A string devidamente cortada e separada. O corte de nome de arquivo
                                ;; será feito mais adiante.
     jmp .pronto                 
 
@@ -278,9 +278,9 @@ obterParametros:
 
     mov byte[arquivoExterno], 01h ;; Marcar que um personagem externo deve ser carregado
 
-	clc
-	
-	ret
+    clc
+    
+    ret
 
 ;; Bom, temos uma frase. Temos que remover os caracteres '"' da string a ser impressa.
 ;; Vamos lá!
@@ -330,7 +330,7 @@ obterParametros:
 
     ret
 
-;;************************************************************************************	
+;;************************************************************************************  
 
 ;; Realiza a busca de um caractere específico na String fornecida
 ;;
@@ -345,34 +345,34 @@ obterParametros:
 
 encontrarCaractereCowsay:
 
-	lodsb
-	
-	cmp al, ' '
-	je .pronto
-	
-	jmp encontrarCaractereCowsay
-	
+    lodsb
+    
+    cmp al, ' '
+    je .pronto
+    
+    jmp encontrarCaractereCowsay
+    
 .pronto:
 
-	mov byte[esi-1], 0
-	
-	ret
+    mov byte[esi-1], 0
+    
+    ret
 
-;;************************************************************************************	
+;;************************************************************************************  
 
 usoAplicativo:
 
-	mov esi, cowsay.uso
-	
-	imprimirString
-	
-	jmp terminar
+    mov esi, cowsay.uso
+    
+    imprimirString
+    
+    jmp terminar
 
 ;;************************************************************************************
 
-terminar:	
+terminar:   
 
-	Hexagonix encerrarProcesso
+    Hexagonix encerrarProcesso
 
 ;;************************************************************************************
 
@@ -409,6 +409,6 @@ arquivoExterno:   db 0
 
 tamanhoMensagem:  dd 0
 
-regES:	          dw 0
+regES:            dw 0
      
 bufferArquivo:

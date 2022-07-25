@@ -35,76 +35,76 @@ include "hexagon.s"
 ;;************************************************************************************
 
 inicioAPP:
-	
-	push ds
-	pop es			
-	
-	mov	[parametro], edi
-	
+    
+    push ds
+    pop es          
+    
+    mov [parametro], edi
+    
     mov esi, [parametro]
-		
-	cmp byte[esi], 0
-	je usoAplicativo
-	
-	mov edi, lshapp.parametroAjuda
-	mov esi, [parametro]
-	
-	Hexagonix compararPalavrasString
-	
-	jc usoAplicativo
+        
+    cmp byte[esi], 0
+    je usoAplicativo
+    
+    mov edi, lshapp.parametroAjuda
+    mov esi, [parametro]
+    
+    Hexagonix compararPalavrasString
+    
+    jc usoAplicativo
 
-	mov edi, lshapp.parametroAjuda2
-	mov esi, [parametro]
-	
-	Hexagonix compararPalavrasString
-	
-	jc usoAplicativo
+    mov edi, lshapp.parametroAjuda2
+    mov esi, [parametro]
+    
+    Hexagonix compararPalavrasString
+    
+    jc usoAplicativo
 
-	mov esi, [parametro]
-	
-	Hexagonix cortarString
-	
-	Hexagonix tamanhoString
-	
-	cmp eax, 13
-	jl .obterInformacoes
-	
-	mov esi, lshapp.arquivoInvalido
-	
-	imprimirString
-	
-	jmp .fim
-	
+    mov esi, [parametro]
+    
+    Hexagonix cortarString
+    
+    Hexagonix tamanhoString
+    
+    cmp eax, 13
+    jl .obterInformacoes
+    
+    mov esi, lshapp.arquivoInvalido
+    
+    imprimirString
+    
+    jmp .fim
+    
 .obterInformacoes:
 
     Hexagonix arquivoExiste
 
     jc .semArquivo
     
-	push eax
-	push esi
+    push eax
+    push esi
 
     mov esi, lshapp.infoArquivo
-	
-	imprimirString
-	
-	pop esi
+    
+    imprimirString
+    
+    pop esi
 
-	call manterArquivo
+    call manterArquivo
 
-	imprimirString
+    imprimirString
 
     mov esi, lshapp.tamanhoArquivo
-	
-	imprimirString
-	
-	pop eax	
-	
-	imprimirInteiro
-	
-	mov esi, lshapp.bytes
-	
-	imprimirString
+    
+    imprimirString
+    
+    pop eax 
+    
+    imprimirInteiro
+    
+    mov esi, lshapp.bytes
+    
+    imprimirString
 
 ;; Primeiro vamos ver se se trata de uma imagem executável. Se sim, podemos pular todo o
 ;; restante do processamento. Isso garante que imagens executáveis sejam relatadas como
@@ -113,7 +113,7 @@ inicioAPP:
 ;; de ser chamadas por outro processo no âmbito de sua execução podem apresentar outra extensão.
 ;; O próprio Hexagon® é uma imagem HAPP mas apresenta extensão .SIS
 
-	call verificarArquivoHAPP 
+    call verificarArquivoHAPP 
 
 ;; Se não for uma imagem executável, tentar identificar pela extensão, sem verificar o conteúdo
 ;; do arquivo
@@ -126,38 +126,38 @@ inicioAPP:
    
     imprimirString
 
-    jmp .fim	
-	
+    jmp .fim    
+    
 .fim:
-	
-	jmp terminar
+    
+    jmp terminar
 
 ;;************************************************************************************
 
 verificarArquivoHAPP:
 
-	mov esi, nomeArquivo
-	mov edi, bufferArquivo
+    mov esi, nomeArquivo
+    mov edi, bufferArquivo
 
-	Hexagonix abrir
+    Hexagonix abrir
 
-	jc inicioAPP.semArquivo
+    jc inicioAPP.semArquivo
 
-	mov edi, bufferArquivo
+    mov edi, bufferArquivo
 
-	cmp byte[edi+0], "H"
-	jne .naoHAPP
+    cmp byte[edi+0], "H"
+    jne .naoHAPP
 
-	cmp byte[edi+1], "A"
-	jne .naoHAPP
+    cmp byte[edi+1], "A"
+    jne .naoHAPP
 
-	cmp byte[edi+2], "P"
-	jne .naoHAPP
+    cmp byte[edi+2], "P"
+    jne .naoHAPP
 
-	cmp byte[edi+3], "P"
-	jne .naoHAPP
+    cmp byte[edi+3], "P"
+    jne .naoHAPP
 
-	mov dh, byte[edi+4]
+    mov dh, byte[edi+4]
     mov byte[lshapp.arquitetura], dh
 
     mov dh, byte[edi+5]
@@ -169,8 +169,8 @@ verificarArquivoHAPP:
     mov eax, dword[edi+7]
     mov dword[lshapp.pontoEntrada], eax
 
-	mov ah, byte[edi+11]
-	mov byte[lshapp.especieImagem], ah
+    mov ah, byte[edi+11]
+    mov byte[lshapp.especieImagem], ah
 
     mov esi, lshapp.cabecalho
     
@@ -215,9 +215,9 @@ verificarArquivoHAPP:
 
 .continuar:
 
-	mov esi, lshapp.campoArquitetura
+    mov esi, lshapp.campoArquitetura
 
-	imprimirString
+    imprimirString
 
     mov esi, lshapp.verHexagon
 
@@ -237,83 +237,83 @@ verificarArquivoHAPP:
 
     imprimirInteiro
 
-	mov esi, lshapp.camposVersaoHexagon
+    mov esi, lshapp.camposVersaoHexagon
 
-	imprimirString
+    imprimirString
 
-	mov esi, lshapp.entradaCodigo
+    mov esi, lshapp.entradaCodigo
 
-   	imprimirString
+    imprimirString
 
-	mov eax, dword[lshapp.pontoEntrada]
-	
-   	imprimirHexadecimal
+    mov eax, dword[lshapp.pontoEntrada]
+    
+    imprimirHexadecimal
 
-   	mov esi, lshapp.campoEntrada
+    mov esi, lshapp.campoEntrada
 
-   	imprimirString
+    imprimirString
 
-   	mov esi, lshapp.tipoImagem
+    mov esi, lshapp.tipoImagem
 
-	imprimirString
+    imprimirString
 
-	;; mov dh, byte[lshapp.especieImagem]
+    ;; mov dh, byte[lshapp.especieImagem]
     ;; movzx eax, dh
 
-	;; imprimirInteiro
+    ;; imprimirInteiro
 
-	cmp byte[lshapp.especieImagem], 01h
-	je .HAPPExec
+    cmp byte[lshapp.especieImagem], 01h
+    je .HAPPExec
 
-	cmp byte[lshapp.especieImagem], 02h
-	je .HAPPLibS
+    cmp byte[lshapp.especieImagem], 02h
+    je .HAPPLibS
 
-	cmp byte[lshapp.especieImagem], 03h
-	je .HAPPLibD
+    cmp byte[lshapp.especieImagem], 03h
+    je .HAPPLibD
 
-	mov esi, lshapp.HAPPDesconhecido
+    mov esi, lshapp.HAPPDesconhecido
 
-	imprimirString
+    imprimirString
 
-	jmp .tipoHAPPListado
+    jmp .tipoHAPPListado
 
 .HAPPExec:
 
-	mov esi, lshapp.HAPPExec
+    mov esi, lshapp.HAPPExec
 
-	imprimirString
+    imprimirString
 
-	jmp .tipoHAPPListado
+    jmp .tipoHAPPListado
 
 .HAPPLibS:
 
-	mov esi, lshapp.HAPPLibS
+    mov esi, lshapp.HAPPLibS
 
-	imprimirString
+    imprimirString
 
-	jmp .tipoHAPPListado
+    jmp .tipoHAPPListado
 
 .HAPPLibD:
 
-	mov esi, lshapp.HAPPLibD
+    mov esi, lshapp.HAPPLibD
 
-	imprimirString
+    imprimirString
 
-	jmp .tipoHAPPListado
+    jmp .tipoHAPPListado
 
 .tipoHAPPListado:
 
-	mov esi, lshapp.campoImagem
+    mov esi, lshapp.campoImagem
 
-	imprimirString
+    imprimirString
 
-	novaLinha
+    novaLinha
 
     ret
 
 .naoHAPP:
 
-	mov esi, lshapp.imagemInvalida
+    mov esi, lshapp.imagemInvalida
 
     imprimirString
 
@@ -323,40 +323,40 @@ verificarArquivoHAPP:
 
 usoAplicativo:
 
-	mov esi, lshapp.uso
-	
-	imprimirString
-	
-	jmp terminar
+    mov esi, lshapp.uso
+    
+    imprimirString
+    
+    jmp terminar
 
 ;;************************************************************************************
 
 manterArquivo:
 
-	push esi
-	push eax
+    push esi
+    push eax
 
-	Hexagonix cortarString
+    Hexagonix cortarString
 
-	Hexagonix tamanhoString
+    Hexagonix tamanhoString
 
-	mov ecx, eax
+    mov ecx, eax
 
-	mov edi, nomeArquivo
+    mov edi, nomeArquivo
 
-	rep movsb		;; Copiar (ECX) caracteres de ESI para EDI
-	
-	pop eax
+    rep movsb       ;; Copiar (ECX) caracteres de ESI para EDI
+    
+    pop eax
 
-	pop esi
+    pop esi
 
-	ret
+    ret
 
 ;;************************************************************************************
 
-terminar:	
+terminar:   
 
-	Hexagonix encerrarProcesso
+    Hexagonix encerrarProcesso
 
 ;;************************************************************************************
 
@@ -414,7 +414,7 @@ lshapp:
 
 parametro:            dd ?
 nomeArquivo: times 13 db 0
-regES:	              dw 0
+regES:                dw 0
 
 ;;************************************************************************************
 

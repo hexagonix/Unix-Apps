@@ -35,76 +35,76 @@ include "hexagon.s"
 ;;************************************************************************************
 
 inicioAPP:
-	
-	push ds
-	pop es			
-	
-	mov	[parametro], edi
-	
+    
+    push ds
+    pop es          
+    
+    mov [parametro], edi
+    
     mov esi, [parametro]
-		
-	cmp byte[esi], 0
-	je usoAplicativo
-	
-	mov edi, fileUnix.parametroAjuda
-	mov esi, [parametro]
-	
-	Hexagonix compararPalavrasString
-	
-	jc usoAplicativo
+        
+    cmp byte[esi], 0
+    je usoAplicativo
+    
+    mov edi, fileUnix.parametroAjuda
+    mov esi, [parametro]
+    
+    Hexagonix compararPalavrasString
+    
+    jc usoAplicativo
 
-	mov edi, fileUnix.parametroAjuda2
-	mov esi, [parametro]
-	
-	Hexagonix compararPalavrasString
-	
-	jc usoAplicativo
-	
-	mov esi, [parametro]
-	
-	Hexagonix cortarString
-	
-	Hexagonix tamanhoString
-	
-	cmp eax, 13
-	jl .obterInformacoes
-	
-	mov esi, fileUnix.arquivoInvalido
-	
-	imprimirString
-	
-	jmp .fim
-	
+    mov edi, fileUnix.parametroAjuda2
+    mov esi, [parametro]
+    
+    Hexagonix compararPalavrasString
+    
+    jc usoAplicativo
+    
+    mov esi, [parametro]
+    
+    Hexagonix cortarString
+    
+    Hexagonix tamanhoString
+    
+    cmp eax, 13
+    jl .obterInformacoes
+    
+    mov esi, fileUnix.arquivoInvalido
+    
+    imprimirString
+    
+    jmp .fim
+    
 .obterInformacoes:
 
     Hexagonix arquivoExiste
 
     jc .semArquivo
     
-	push eax
-	push esi
+    push eax
+    push esi
 
     mov esi, fileUnix.infoArquivo
-	
-	imprimirString
-	
-	pop esi
+    
+    imprimirString
+    
+    pop esi
 
-	call manterArquivo
+    call manterArquivo
 
-	imprimirString
+    imprimirString
 
     mov esi, fileUnix.tamanhoArquivo
-	
-	imprimirString
-	
-	pop eax	
-	
-	imprimirInteiro
-	
-	mov esi, fileUnix.bytes
-	
-	imprimirString
+    
+    imprimirString
+    
+    pop eax 
+    
+    imprimirInteiro
+    
+    mov esi, fileUnix.bytes
+    
+    imprimirString
 
 ;; Primeiro vamos ver se se trata de uma imagem executável. Se sim, podemos pular todo o
 ;; restante do processamento. Isso garante que imagens executáveis sejam relatadas como
@@ -113,174 +113,174 @@ inicioAPP:
 ;; de ser chamadas por outro processo no âmbito de sua execução podem apresentar outra extensão.
 ;; O próprio Hexagon® é uma imagem HAPP mas apresenta extensão .SIS
 
-	call verificarArquivoHAPP 
-	
-	call verificarArquivoHBoot
+    call verificarArquivoHAPP 
+    
+    call verificarArquivoHBoot
 
 ;; Se não for uma imagem executável, tentar identificar pela extensão, sem verificar o conteúdo
 ;; do arquivo
 
 .continuar:
 
-	mov esi, nomeArquivo
+    mov esi, nomeArquivo
 
-	Hexagonix stringParaMaiusculo    ;; Iremos checar com base na extensão em maiúsculo
-	
-	Hexagonix tamanhoString
+    Hexagonix stringParaMaiusculo    ;; Iremos checar com base na extensão em maiúsculo
+    
+    Hexagonix tamanhoString
 
-	add esi, eax                     ;; Adicionar o tamanho do nome
+    add esi, eax                     ;; Adicionar o tamanho do nome
 
-	sub esi, 4                       ;; Subtrair 4 para manter apenas a extensão
+    sub esi, 4                       ;; Subtrair 4 para manter apenas a extensão
 
-	mov edi, fileUnix.extensaoUNX
-	
-	Hexagonix compararPalavrasString  ;; Checar por extensão .UNX
-	
-	jc .arquivoUNX
+    mov edi, fileUnix.extensaoUNX
+    
+    Hexagonix compararPalavrasString  ;; Checar por extensão .UNX
+    
+    jc .arquivoUNX
 
-	mov edi, fileUnix.extensaoSIS
-	
-	Hexagonix compararPalavrasString  ;; Checar por extensão .SIS
-	
-	jc .arquivoSIS
+    mov edi, fileUnix.extensaoSIS
+    
+    Hexagonix compararPalavrasString  ;; Checar por extensão .SIS
+    
+    jc .arquivoSIS
 
-	mov edi, fileUnix.extensaoTXT
-	
-	Hexagonix compararPalavrasString  ;; Checar por extensão .TXT
-	
-	jc .arquivoTXT
+    mov edi, fileUnix.extensaoTXT
+    
+    Hexagonix compararPalavrasString  ;; Checar por extensão .TXT
+    
+    jc .arquivoTXT
 
-	mov edi, fileUnix.extensaoASM
-	
-	Hexagonix compararPalavrasString  ;; Checar por extensão .ASM
-	
-	jc .arquivoASM
+    mov edi, fileUnix.extensaoASM
+    
+    Hexagonix compararPalavrasString  ;; Checar por extensão .ASM
+    
+    jc .arquivoASM
 
-	mov edi, fileUnix.extensaoCOW
-	
-	Hexagonix compararPalavrasString  ;; Checar por extensão .COW
-	
-	jc .arquivoCOW
+    mov edi, fileUnix.extensaoCOW
+    
+    Hexagonix compararPalavrasString  ;; Checar por extensão .COW
+    
+    jc .arquivoCOW
 
-	mov edi, fileUnix.extensaoMAN
-	
-	Hexagonix compararPalavrasString  ;; Checar por extensão .MAN
-	
-	jc .arquivoMAN
+    mov edi, fileUnix.extensaoMAN
+    
+    Hexagonix compararPalavrasString  ;; Checar por extensão .MAN
+    
+    jc .arquivoMAN
 
-	mov edi, fileUnix.extensaoFNT
-	
-	Hexagonix compararPalavrasString  ;; Checar por extensão .FNT
-	
-	jc .arquivoFNT
+    mov edi, fileUnix.extensaoFNT
+    
+    Hexagonix compararPalavrasString  ;; Checar por extensão .FNT
+    
+    jc .arquivoFNT
 
-	mov edi, fileUnix.extensaoCAN
-	
-	Hexagonix compararPalavrasString  ;; Checar por extensão .CAN
-	
-	jc .arquivoCAN
+    mov edi, fileUnix.extensaoCAN
+    
+    Hexagonix compararPalavrasString  ;; Checar por extensão .CAN
+    
+    jc .arquivoCAN
 
 ;; Checar agora com duas letras de extensão
 
 ;; Checar agora com uma única letra de extensão
 
-	add esi, 2 ;; Adicionar 2 (seria uma remoção de 2) para manter apenas a extensão
+    add esi, 2 ;; Adicionar 2 (seria uma remoção de 2) para manter apenas a extensão
 
-	mov edi, fileUnix.extensaoS
-	
-	Hexagonix compararPalavrasString  ;; Checar por extensão .S
-	
-	jc .arquivoS
+    mov edi, fileUnix.extensaoS
+    
+    Hexagonix compararPalavrasString  ;; Checar por extensão .S
+    
+    jc .arquivoS
 
-	jmp .fim
+    jmp .fim
 
 .aplicativo:
 
-	mov esi, fileUnix.appValido
+    mov esi, fileUnix.appValido
 
-	imprimirString
+    imprimirString
 
-	jmp .fim
+    jmp .fim
 
 .arquivoHBoot:
 
-	mov esi, fileUnix.arquivoHBoot
+    mov esi, fileUnix.arquivoHBoot
 
-	imprimirString
+    imprimirString
 
-	jmp .fim
+    jmp .fim
 
 .arquivoUNX:
 
-	mov esi, fileUnix.arquivoUnix
+    mov esi, fileUnix.arquivoUnix
 
-	imprimirString
+    imprimirString
 
-	jmp .fim
+    jmp .fim
 
 .arquivoTXT:
 
-	mov esi, fileUnix.arquivoTXT
+    mov esi, fileUnix.arquivoTXT
 
-	imprimirString
+    imprimirString
 
-	jmp .fim
+    jmp .fim
 
 .arquivoFNT:
 
-	mov esi, fileUnix.arquivoFNT
+    mov esi, fileUnix.arquivoFNT
 
-	imprimirString
+    imprimirString
 
-	jmp .fim
+    jmp .fim
 
 .arquivoCAN:
 
-	mov esi, fileUnix.arquivoCAN
+    mov esi, fileUnix.arquivoCAN
 
-	imprimirString
+    imprimirString
 
-	jmp .fim
+    jmp .fim
 
 .arquivoCOW:
 
-	mov esi, fileUnix.arquivoCOW
+    mov esi, fileUnix.arquivoCOW
 
-	imprimirString
+    imprimirString
 
-	jmp .fim
+    jmp .fim
 
 .arquivoMAN:
 
-	mov esi, fileUnix.arquivoMAN
+    mov esi, fileUnix.arquivoMAN
 
-	imprimirString
+    imprimirString
 
-	jmp .fim
+    jmp .fim
 
 .arquivoSIS:
 
-	mov esi, fileUnix.arquivoSIS
+    mov esi, fileUnix.arquivoSIS
 
-	imprimirString
+    imprimirString
 
-	jmp .fim
+    jmp .fim
 
 .arquivoASM:
 
-	mov esi, fileUnix.arquivoASM
+    mov esi, fileUnix.arquivoASM
 
-	imprimirString
+    imprimirString
 
-	jmp .fim
+    jmp .fim
 
 .arquivoS:
 
-	mov esi, fileUnix.arquivoLibASM
+    mov esi, fileUnix.arquivoLibASM
 
-	imprimirString
+    imprimirString
 
-	jmp .fim
+    jmp .fim
 
 .semArquivo:
 
@@ -288,115 +288,115 @@ inicioAPP:
    
     imprimirString
 
-    jmp .fim	
-	
+    jmp .fim    
+    
 .fim:
-	
-	jmp terminar
+    
+    jmp terminar
 
 ;;************************************************************************************
 
 verificarArquivoHAPP:
 
-	mov esi, nomeArquivo
-	mov edi, bufferArquivo
+    mov esi, nomeArquivo
+    mov edi, bufferArquivo
 
-	Hexagonix abrir
+    Hexagonix abrir
 
-	jc inicioAPP.semArquivo
+    jc inicioAPP.semArquivo
 
-	mov edi, bufferArquivo
+    mov edi, bufferArquivo
 
-	cmp byte[edi+0], "H"
-	jne .naoHAPP
+    cmp byte[edi+0], "H"
+    jne .naoHAPP
 
-	cmp byte[edi+1], "A"
-	jne .naoHAPP
+    cmp byte[edi+1], "A"
+    jne .naoHAPP
 
-	cmp byte[edi+2], "P"
-	jne .naoHAPP
+    cmp byte[edi+2], "P"
+    jne .naoHAPP
 
-	cmp byte[edi+3], "P"
-	jne .naoHAPP
+    cmp byte[edi+3], "P"
+    jne .naoHAPP
 
-	jmp inicioAPP.aplicativo
+    jmp inicioAPP.aplicativo
 
 .naoHAPP:
 
-	ret
+    ret
 
 ;;************************************************************************************
 
 verificarArquivoHBoot:
 
-	mov esi, nomeArquivo
-	mov edi, bufferArquivo
+    mov esi, nomeArquivo
+    mov edi, bufferArquivo
 
-	Hexagonix abrir
+    Hexagonix abrir
 
-	jc inicioAPP.semArquivo
+    jc inicioAPP.semArquivo
 
-	mov edi, bufferArquivo
+    mov edi, bufferArquivo
 
-	cmp byte[edi+0], "H"
-	jne .naoHBoot
+    cmp byte[edi+0], "H"
+    jne .naoHBoot
 
-	cmp byte[edi+1], "B"
-	jne .naoHBoot
+    cmp byte[edi+1], "B"
+    jne .naoHBoot
 
-	cmp byte[edi+2], "O"
-	jne .naoHBoot
+    cmp byte[edi+2], "O"
+    jne .naoHBoot
 
-	cmp byte[edi+3], "O"
-	jne .naoHBoot
+    cmp byte[edi+3], "O"
+    jne .naoHBoot
 
-	cmp byte[edi+4], "T"
-	jne .naoHBoot
+    cmp byte[edi+4], "T"
+    jne .naoHBoot
 
-	jmp inicioAPP.arquivoHBoot
+    jmp inicioAPP.arquivoHBoot
 
 .naoHBoot:
 
-	ret
+    ret
 
 ;;************************************************************************************
 
 usoAplicativo:
 
-	mov esi, fileUnix.uso
-	
-	imprimirString
-	
-	jmp terminar
+    mov esi, fileUnix.uso
+    
+    imprimirString
+    
+    jmp terminar
 
 ;;************************************************************************************
 
 manterArquivo:
 
-	push esi
-	push eax
+    push esi
+    push eax
 
-	Hexagonix cortarString
+    Hexagonix cortarString
 
-	Hexagonix tamanhoString
+    Hexagonix tamanhoString
 
-	mov ecx, eax
+    mov ecx, eax
 
-	mov edi, nomeArquivo
+    mov edi, nomeArquivo
 
-	rep movsb		;; Copiar (ECX) caracteres de ESI para EDI
-	
-	pop eax
+    rep movsb       ;; Copiar (ECX) caracteres de ESI para EDI
+    
+    pop eax
 
-	pop esi
+    pop esi
 
-	ret
+    ret
 
 ;;************************************************************************************
 
-terminar:	
+terminar:   
 
-	Hexagonix encerrarProcesso
+    Hexagonix encerrarProcesso
 
 ;;************************************************************************************
 
@@ -405,7 +405,7 @@ terminar:
 ;;                    Área de dados e variáveis do aplicativo
 ;;
 ;;************************************************************************************
-	
+    
 versaoFILE equ "1.7"
 
 fileUnix:
@@ -450,6 +450,6 @@ parametro: dd ?
 
 nomeArquivo: times 13 db 0
 
-regES:	   dw 0
+regES:     dw 0
 
 bufferArquivo:

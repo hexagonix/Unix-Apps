@@ -20,7 +20,7 @@
 ;;                                                                   
 ;;************************************************************************************
 
-use32		
+use32       
 
 ;; Agora vamos criar um cabeçalho para a imagem HAPP final do aplicativo. Anteriormente,
 ;; o cabeçalho era criado em cada imagem e poderia diferir de uma para outra. Caso algum
@@ -53,11 +53,11 @@ tamanhoLimiteBusca = 32768
 
 ;;************************************************************************************
 
-versaoLOGIND equ "1.1"
+versaoLOGIND equ "1.2"
 
 arquivo:    db "usuario.unx", 0 ;; Nome do arquivo de gerenciamento de login
 vd0:        db "vd0", 0         ;; Console padrão
-vd1:        db "vd1", 0	        ;; Primeiro console virtual
+vd1:        db "vd1", 0         ;; Primeiro console virtual
 posicaoBX:  dw 0                ;; Marcação da posição de busca no conteúdo do arquivo
 
 align 32
@@ -67,7 +67,7 @@ logind:
 match =UNIX, TIPOLOGIN
 {
 
-.sobreSistema:     db 10, "Seja bem-vindo ao Hexagonix", 0
+.sobreSistema:     db 10, "Seja bem-vindo ao Hexagonix (vd0)", 0
 
 }
 
@@ -102,282 +102,282 @@ align 4
 
 escolhaTema:       times 7  db 0
 
-;;************************************************************************************			
+;;************************************************************************************          
 
 iniciologind: ;; Ponto de entrada
 
 ;; O logind é um daemon que só deve ser utilizado durante a inicialização.
 ;; Para isso, ele deve checar se o PID é 3 (init=1 e login=2).
 
-	Hexagonix obterPID
-	
-	cmp eax, 03h
-	je iniciarExecucao
-	
-	Hexagonix encerrarProcesso
+    Hexagonix obterPID
+    
+    cmp eax, 03h
+    je iniciarExecucao
+    
+    Hexagonix encerrarProcesso
 
 iniciarExecucao:
 
-	logSistema logind.verboseLogind, 0, Log.Prioridades.p4
+    logSistema logind.verboseLogind, 0, Log.Prioridades.p4
 
-	call checarBaseDados
-	
+    call checarBaseDados
+    
 match =Andromeda, TIPOLOGIN
 {
-	 
-	call verificarTema
+     
+    call verificarTema
 
-	Hexagonix limparTela
+    Hexagonix limparTela
 
 } 
 
-	call exibirLogoSistema
+    call exibirLogoSistema
 
-	jmp terminar
+    jmp terminar
 
 ;;************************************************************************************
-	
+    
 verificarTema:
 
-	pusha
-	
-	push es
+    pusha
+    
+    push es
 
-	push ds
-	pop es
-	
-	mov esi, arquivo
-	mov edi, bufferArquivo
-	
-	Hexagonix abrir
-	
-	jc .arquivoUsuarioAusente
-	
-	mov si, bufferArquivo           ;; Aponta para o buffer com o conteúdo do arquivo
-	mov bx, 0FFFFh                  ;; Inicia na posição -1, para que se possa encontrar os delimitadores
-	
+    push ds
+    pop es
+    
+    mov esi, arquivo
+    mov edi, bufferArquivo
+    
+    Hexagonix abrir
+    
+    jc .arquivoUsuarioAusente
+    
+    mov si, bufferArquivo           ;; Aponta para o buffer com o conteúdo do arquivo
+    mov bx, 0FFFFh                  ;; Inicia na posição -1, para que se possa encontrar os delimitadores
+    
 .procurarEntreDelimitadores:
 
-	inc bx
-	
-	mov word[posicaoBX], bx
-	
-	cmp bx, tamanhoLimiteBusca
-	je .nomeTemaInvalido         ;; Caso nada seja encontrado até o tamanho limite, cancele a busca
-	
-	mov al, [ds:si+bx]
-	
-	cmp al, '<'
-	jne .procurarEntreDelimitadores ;; O limitador inicial foi encontrado
-	
+    inc bx
+    
+    mov word[posicaoBX], bx
+    
+    cmp bx, tamanhoLimiteBusca
+    je .nomeTemaInvalido         ;; Caso nada seja encontrado até o tamanho limite, cancele a busca
+    
+    mov al, [ds:si+bx]
+    
+    cmp al, '<'
+    jne .procurarEntreDelimitadores ;; O limitador inicial foi encontrado
+    
 ;; BX agora aponta para o primeiro caractere do nome de usuário resgatado do arquivo
-	
-	push ds
-	pop es
-	
-	mov di, escolhaTema             ;; O tema será copiado para ES:DI
-	
-	mov si, bufferArquivo
-	
-	add si, bx				        ;; Mover SI para aonde BX aponta
-	
-	mov bx, 0				        ;; Iniciar em 0
-	
+    
+    push ds
+    pop es
+    
+    mov di, escolhaTema             ;; O tema será copiado para ES:DI
+    
+    mov si, bufferArquivo
+    
+    add si, bx                      ;; Mover SI para aonde BX aponta
+    
+    mov bx, 0                       ;; Iniciar em 0
+    
 .obterTema:
 
-	inc bx
-	
-	cmp bx, 7				
-	je .nomeTemaInvalido            ;; Se nome de usuário maior que 15, o mesmo é inválido     
-	
-	mov al, [ds:si+bx]
-	
-	cmp al, '>'					    ;; Se encontrar outro delimitador, o nome de usuário foi carregado com sucesso
-	je .temaObtido
-	
+    inc bx
+    
+    cmp bx, 7               
+    je .nomeTemaInvalido            ;; Se nome de usuário maior que 15, o mesmo é inválido     
+    
+    mov al, [ds:si+bx]
+    
+    cmp al, '>'                     ;; Se encontrar outro delimitador, o nome de usuário foi carregado com sucesso
+    je .temaObtido
+    
 ;; Se não estiver pronto, armazenar o caractere obtido
 
-	stosb
-	
-	jmp .obterTema
+    stosb
+    
+    jmp .obterTema
 
 .temaObtido:
 
     mov edi, escolhaTema
-	mov esi, logind.temaClaro
-	
-	Hexagonix compararPalavrasString
-	
-	jc .selecionarTemaClaro
-	
-	mov edi, escolhaTema
-	mov esi, logind.temaEscuro
-	
-	Hexagonix compararPalavrasString
-	
-	jc .selecionarTemaEscuro
-	
-	mov word bx, [posicaoBX]
-	
-	mov si, bufferArquivo
-	
-	jmp .procurarEntreDelimitadores
-	
+    mov esi, logind.temaClaro
+    
+    Hexagonix compararPalavrasString
+    
+    jc .selecionarTemaClaro
+    
+    mov edi, escolhaTema
+    mov esi, logind.temaEscuro
+    
+    Hexagonix compararPalavrasString
+    
+    jc .selecionarTemaEscuro
+    
+    mov word bx, [posicaoBX]
+    
+    mov si, bufferArquivo
+    
+    jmp .procurarEntreDelimitadores
+    
 .selecionarTemaClaro:
-	
-	pop es
-	
-	popa
+    
+    pop es
+    
+    popa
 
-	mov esi, vd1         ;; Abrir primeiro console virtual 
-	
-	Hexagonix abrir      ;; Abre o dispositivo
-	
-	mov eax, PRETO 
-	mov ebx, BRANCO_ANDROMEDA
+    mov esi, vd1         ;; Abrir primeiro console virtual 
+    
+    Hexagonix abrir      ;; Abre o dispositivo
+    
+    mov eax, PRETO 
+    mov ebx, BRANCO_ANDROMEDA
 
-	Hexagonix definirCor
+    Hexagonix definirCor
 
-	Hexagonix limparTela ;; Limpa seu conteúdo
-	
-	mov esi, vd0         ;; Reabre o dispositivo de saída padrão 
-	
-	Hexagonix abrir      ;; Abre o dispositivo
+    Hexagonix limparTela ;; Limpa seu conteúdo
+    
+    mov esi, vd0         ;; Reabre o dispositivo de saída padrão 
+    
+    Hexagonix abrir      ;; Abre o dispositivo
 
-	mov eax, PRETO 
-	mov ebx, BRANCO_ANDROMEDA
+    mov eax, PRETO 
+    mov ebx, BRANCO_ANDROMEDA
 
-	Hexagonix definirCor
+    Hexagonix definirCor
 
-	Hexagonix limparTela ;; Limpa seu conteúdo
+    Hexagonix limparTela ;; Limpa seu conteúdo
 
-	ret
+    ret
 
 .selecionarTemaEscuro:
 
-	mov esi, vd1         ;; Abrir primeiro console virtual 
-	
-	Hexagonix abrir      ;; Abre o dispositivo
-	
-	mov eax, BRANCO_ANDROMEDA 
-	mov ebx, PRETO
+    mov esi, vd1         ;; Abrir primeiro console virtual 
+    
+    Hexagonix abrir      ;; Abre o dispositivo
+    
+    mov eax, BRANCO_ANDROMEDA 
+    mov ebx, PRETO
 
-	Hexagonix definirCor
+    Hexagonix definirCor
 
-	Hexagonix limparTela ;; Limpa seu conteúdo
-	
-	mov esi, vd0         ;; Reabre o console padrão
-	
-	Hexagonix abrir      ;; Abre o dispositivo
+    Hexagonix limparTela ;; Limpa seu conteúdo
+    
+    mov esi, vd0         ;; Reabre o console padrão
+    
+    Hexagonix abrir      ;; Abre o dispositivo
 
-	mov eax, BRANCO_ANDROMEDA 
-	mov ebx, PRETO
+    mov eax, BRANCO_ANDROMEDA 
+    mov ebx, PRETO
 
-	Hexagonix definirCor
+    Hexagonix definirCor
 
-	Hexagonix limparTela ;; Limpa seu conteúdo
+    Hexagonix limparTela ;; Limpa seu conteúdo
 
 .nomeTemaInvalido:
 
-	pop es
-	
-	popa
-	
-	ret
-	
+    pop es
+    
+    popa
+    
+    ret
+    
 .arquivoUsuarioAusente:
 
-	pop es
-	
-	popa
-	
-	mov esi, logind.semArquivoUnix
-	
-	imprimirString
-	
-	jmp terminar
+    pop es
+    
+    popa
+    
+    mov esi, logind.semArquivoUnix
+    
+    imprimirString
+    
+    jmp terminar
 
 ;;************************************************************************************
 
 exibirLogoSistema:
 
-	mov esi, logind.sobreSistema
+    mov esi, logind.sobreSistema
 
-	imprimirString
+    imprimirString
 
 match =Andromeda, TIPOLOGIN 
 {
-	
-	mov esi, logind.versaoSistema
+    
+    mov esi, logind.versaoSistema
 
-	imprimirString
+    imprimirString
 
-	call obterVersaoDistribuicao
+    call obterVersaoDistribuicao
 
-	jc .erro 
+    jc .erro 
 
-	mov esi, versaoObtida
+    mov esi, versaoObtida
 
-	imprimirString
+    imprimirString
 
-	mov esi, logind.colcheteEsquerdo
+    mov esi, logind.colcheteEsquerdo
 
-	imprimirString
+    imprimirString
 
-	mov esi, codigoObtido
+    mov esi, codigoObtido
 
-	imprimirString
+    imprimirString
 
-	mov esi, logind.colcheteDireito
+    mov esi, logind.colcheteDireito
 
-	imprimirString
+    imprimirString
 
-	jmp .continuar 
+    jmp .continuar 
 
 .erro:
 
-	mov esi, logind.semVersao
+    mov esi, logind.semVersao
 
-	imprimirString
+    imprimirString
 
-	jmp .continuar
+    jmp .continuar
 
 } 
 
 .continuar:
 
-	novaLinha
+    novaLinha
 
-	ret
+    ret
 
 ;;************************************************************************************
 
 verificarConsistencia:
 
-	call verificarTema             ;; Caso algum processo seja finalizado após alterar
-	                               ;; o plano de fundo padrão
+    call verificarTema             ;; Caso algum processo seja finalizado após alterar
+                                   ;; o plano de fundo padrão
 
-	Hexagonix limparTela
+    Hexagonix limparTela
 
-	ret
+    ret
 
 ;;************************************************************************************
 
-terminar:	
+terminar:   
 
-	Hexagonix encerrarProcesso
+    Hexagonix encerrarProcesso
 
 ;;************************************************************************************
 
 checarBaseDados: 
 
-	clc
+    clc
 
-	mov esi, arquivo
+    mov esi, arquivo
 
-	Hexagonix arquivoExiste
+    Hexagonix arquivoExiste
 
-	ret
+    ret
 
 ;;************************************************************************************
 

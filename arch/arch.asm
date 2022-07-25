@@ -37,28 +37,28 @@ include "hexagon.s"
 inicioAPP:
 
     push ds
-	pop es			
-	
-	mov	[parametro], edi
-	
+    pop es          
+    
+    mov [parametro], edi
+    
     mov esi, [parametro]
-		
-	cmp byte[esi], 0
-	jne usoAplicativo
-	
-	mov edi, arch.parametroAjuda
-	mov esi, [parametro]
-	
-	Hexagonix compararPalavrasString
-	
-	jc usoAplicativo
+        
+    cmp byte[esi], 0
+    jne usoAplicativo
+    
+    mov edi, arch.parametroAjuda
+    mov esi, [parametro]
+    
+    Hexagonix compararPalavrasString
+    
+    jc usoAplicativo
 
-	mov edi, arch.parametroAjuda2
-	mov esi, [parametro]
-	
-	Hexagonix compararPalavrasString
-	
-	jc usoAplicativo
+    mov edi, arch.parametroAjuda2
+    mov esi, [parametro]
+    
+    Hexagonix compararPalavrasString
+    
+    jc usoAplicativo
 
 .solicitarHexagon:
 
@@ -68,7 +68,7 @@ inicioAPP:
     Hexagonix retornarVersao
 
 ;; Em EDX temos a arquitetura
-	
+    
     cmp edx, 01
     je .i386
 
@@ -103,23 +103,23 @@ inicioAPP:
 
 .terminar:
 
-	jmp terminar
-	
+    jmp terminar
+    
 ;;************************************************************************************
 
 usoAplicativo:
 
-	mov esi, arch.uso
-	
-	imprimirString
-	
-	jmp terminar
+    mov esi, arch.uso
+    
+    imprimirString
+    
+    jmp terminar
 
 ;;************************************************************************************
 
-terminar:	
+terminar:   
 
-	Hexagonix encerrarProcesso
+    Hexagonix encerrarProcesso
 
 ;;************************************************************************************
 
@@ -147,4 +147,4 @@ arch:
      
 parametro: dd ?
 
-regES:	dw 0
+regES:  dw 0
