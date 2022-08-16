@@ -37,7 +37,7 @@ include "verUtils.s"
 
 align 4
 
-versaoUNAME equ "2.2"
+versaoUNAME equ "2.4"
 
 uname:
 
@@ -62,6 +62,8 @@ uname:
 .colcheteDireito:           db "]", 0
 .pontoVirgula:              db "; ", 0
 .nucleo:                    db " Kernel ", 0
+.buildHexagon:              db "(build ", 0
+.fecharParenteses:          db ")", 0
 .versao:                    db " versao ", 0 
 .arquiteturai386:           db " i386", 0
 .arquiteturaamd64:          db " amd64", 0
@@ -415,7 +417,7 @@ versaoHexagon:
     
     pop ecx
     
-    cmp cl, 0
+    cmp ch, 0
     je .continuar
 
     mov al, ch
@@ -423,6 +425,24 @@ versaoHexagon:
     Hexagonix imprimirCaractere
 
 .continuar:
+
+    mov esi, uname.espaco
+
+    imprimirString
+
+    mov esi, uname.buildHexagon
+
+    imprimirString
+
+    Hexagonix retornarVersao
+    
+    mov esi, edi 
+
+    imprimirString
+
+    mov esi, uname.fecharParenteses
+
+    imprimirString
 
     ret
 
