@@ -31,6 +31,7 @@ cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, inicioAPP, 01h
 ;;************************************************************************************
 
 include "hexagon.s"
+include "macros.s"
 include "verUtils.s"
     
 ;;************************************************************************************          
@@ -95,7 +96,7 @@ uname:
                             db " -i: Plataforma de hardware do sistema.", 10
                             db " -o: Nome do sistema operacional em execucao.", 10, 10                                
                             db "uname versao ", versaoUNAME, 10, 10
-                            db "Copyright (C) 2017-2022 Felipe Miguel Nery Lunkes", 10
+                            db "Copyright (C) 2017-", __stringano, " Felipe Miguel Nery Lunkes", 10
                             db "Todos os direitos reservados.", 0
                             
 ponto: db ".", 0

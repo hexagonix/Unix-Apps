@@ -46,7 +46,7 @@ fnt:
 .uso:             db 10, 10, "Uso: fnt [arquivo de fonte]", 10, 10
                   db "Solicita a alteracao da fonte grafica do sistema.", 10, 10
                   db "fnt versao ", versaoFNT, 10, 10
-                  db "Copyright (C) 2022 Felipe Miguel Nery Lunkes", 10
+                  db "Copyright (C) 2022-", __stringano, " Felipe Miguel Nery Lunkes", 10
                   db "Todos os direitos reservados.", 10, 0
 .nomeArquivo:     db 10, 10, "Nome do arquivo de fonte: ", 0    
 .nomeFonte:       db "Nome do arquivo: ", 0

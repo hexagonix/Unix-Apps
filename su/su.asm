@@ -46,6 +46,7 @@ cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, suAndromeda, 01h
 ;;************************************************************************************
 
 include "hexagon.s"
+include "macros.s"
 
 ;;************************************************************************************          
 
@@ -693,7 +694,7 @@ su:
 .uso:               db 10, 10, "Uso: su [usuario]", 10, 10
                     db "Altera para um usuario cadastrado.", 10, 10               
                     db "su versao ", versaoSU, 10, 10
-                    db "Copyright (C) 2017-2022 Felipe Miguel Nery Lunkes", 10
+                    db "Copyright (C) 2017-", __stringano, " Felipe Miguel Nery Lunkes", 10
                     db "Todos os direitos reservados.", 0
 .semArquivoUnix:    db 10, "O arquivo de configuracao do ambiente Unix de controle de contas nao foi encontrado.", 10, 0 
 .semUsuario:        db 10, "O usuario solicitado nao foi encontrado: ", 0              

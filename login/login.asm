@@ -800,7 +800,7 @@ login:
 .uso:              db 10, 10, "Uso: login [usuario]", 10, 10
                    db "Realiza login em um usuario cadastrado.", 10, 10               
                    db "login versao ", versaoLOGIN, 10, 10
-                   db "Copyright (C) 2017-2022 Felipe Miguel Nery Lunkes", 10
+                   db "Copyright (C) 2017-", __stringano, " Felipe Miguel Nery Lunkes", 10
                    db "Todos os direitos reservados.", 10, 0
 .parametroAjuda:   db "?", 0  
 .parametroAjuda2:  db "--ajuda", 0 
