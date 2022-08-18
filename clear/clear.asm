@@ -31,6 +31,7 @@ cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, inicioAPP, 01h
 ;;************************************************************************************
 
 include "hexagon.s"
+include "macros.s"
 
 ;;************************************************************************************
 
@@ -119,7 +120,7 @@ clear:
 .uso:             db 10, 10, "Uso: clear", 10, 10
                   db "Limpa o conteudo do console principal (vd0) e de consoles virtuais.", 10, 10
                   db "clear versao ", versaoCLEAR, 10, 10
-                  db "Copyright (C) 2017-2021 Felipe Miguel Nery Lunkes", 10
+                  db "Copyright (C) 2017-", __stringano, " Felipe Miguel Nery Lunkes", 10
                   db "Todos os direitos reservados.", 10, 0
 .parametroAjuda:  db "?", 0
 .parametroAjuda2: db "--ajuda", 0

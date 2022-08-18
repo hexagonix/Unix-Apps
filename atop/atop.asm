@@ -31,6 +31,7 @@ cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, inicioAPP, 01h
 ;;************************************************************************************
 
 include "hexagon.s"
+include "macros.s"
 include "Estelar/estelar.s"
 
 ;;************************************************************************************
@@ -397,7 +398,7 @@ atop:
                       db "Exibe os processos carregados na pilha de execucao do Hexagonix(R).", 10, 10 
                       db "Processos do Kernel sao filtrados e nao exibidos nesta lista.", 10, 10            
                       db "atop versao ", versaoATOP, 10, 10
-                      db "Copyright (C) 2020-2022 Felipe Miguel Nery Lunkes", 10
+                      db "Copyright (C) 2020-", __stringano, " Felipe Miguel Nery Lunkes", 10
                       db "Todos os direitos reservados.", 0
 .parametroAjuda:      db "?", 0  
 .parametroAjuda2:     db "--ajuda", 0

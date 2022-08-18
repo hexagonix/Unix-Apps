@@ -32,6 +32,7 @@ cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, inicioAPP, 01h
 ;;************************************************************************************
 
 include "hexagon.s"
+include "macros.s"
 
 ;;************************************************************************************
 
@@ -182,7 +183,7 @@ ps:
                    db "-v - Exibe apenas o uso de memoria dos processos em execucao.", 10, 10  
                    db "-o - Exibe o numero de processos na fila de execucao.", 10, 10            
                    db "ps versao ", versaoPS, 10, 10
-                   db "Copyright (C) 2017-2022 Felipe Miguel Nery Lunkes", 10
+                   db "Copyright (C) 2017-", __stringano, " Felipe Miguel Nery Lunkes", 10
                    db "Todos os direitos reservados.", 0
 .parametroAjuda:   db "?", 0  
 .parametroAjuda2:  db "--ajuda", 0

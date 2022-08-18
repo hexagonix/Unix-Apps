@@ -303,7 +303,7 @@ energia:
                      db "-d - Prepara e inicia o desligamento do computador.", 10
                      db "-r - Prepara e reinicia o computador.", 10, 10                                    
                      db "energia versao ", versaoENERGIA, 10, 10
-                     db "Copyright (C) 2022 Felipe Miguel Nery Lunkes", 10
+                     db "Copyright (C) 2022-", __stringano, " Felipe Miguel Nery Lunkes", 10
                      db "Todos os direitos reservados.", 10, 0
 
 energia.Verbose:

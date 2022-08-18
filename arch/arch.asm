@@ -31,6 +31,7 @@ cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, inicioAPP, 01h
 ;;************************************************************************************
 
 include "hexagon.s"
+include "macros.s"
 
 ;;************************************************************************************
 
@@ -137,7 +138,7 @@ arch:
                   db "Este utilitario nao aceita argumentos.", 10, 10
                   db "Exibe a arquitetura deste sistema e dispositivo.", 10, 10
                   db "arch versao ", versaoARCH, 10, 10
-                  db "Copyright (C) 2021-2022 Felipe Miguel Nery Lunkes", 10
+                  db "Copyright (C) 2021-", __stringano, " Felipe Miguel Nery Lunkes", 10
                   db "Todos os direitos reservados.", 10, 0
 .naoSuportado:    db 10, 10, "Arquitetura nao identificada.", 10, 0
 .i386:            db "i386", 0

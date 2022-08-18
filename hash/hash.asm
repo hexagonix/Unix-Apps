@@ -32,6 +32,7 @@ cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, inicioShell, 01h
 
 include "hexagon.s"
 include "erros.s"
+include "macros.s"
 
 ;;************************************************************************************
 
@@ -449,7 +450,7 @@ hash:
 .uso:                  db 10, 10, "Uso: hash", 10, 10
                        db "Inicia um hashell Unix para o usuario atual.", 10, 10               
                        db "hash versao ", versaoHASH, 10, 10
-                       db "Copyright (C) 2020-2022 Felipe Miguel Nery Lunkes", 10
+                       db "Copyright (C) 2020-", __stringano, " Felipe Miguel Nery Lunkes", 10
                        db "Todos os direitos reservados.", 10, 0
 .parametroAjuda:       db "?", 0   
 .parametroAjuda2:      db "--ajuda", 0   

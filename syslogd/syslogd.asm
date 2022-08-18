@@ -49,7 +49,7 @@ syslogd:
 .uso:              db 10, 10, "Uso: syslogd [mensagem]", 10, 10
                    db "Envia uma mensagem de componentes do Hexagonix e de utilitarios para o log do sistema.", 10, 10
                    db "syslogd versao ", versaoSYSLOGD, 10, 10
-                   db "Copyright (C) 2022 Felipe Miguel Nery Lunkes", 10
+                   db "Copyright (C) 2022-", __stringano, " Felipe Miguel Nery Lunkes", 10
                    db "Todos os direitos reservados.", 10, 0
 .parametroAjuda:   db "?", 0
 .parametroAjuda2:  db "--ajuda", 0

@@ -31,6 +31,7 @@ cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, inicioAPP, 01h
 ;;************************************************************************************
 
 include "hexagon.s"
+include "macros.s"
 include "Unix.s"
 
 ;;************************************************************************************
@@ -49,7 +50,7 @@ man:
                   db "Versao CoreUtils: ", versaoCoreUtils, 10
                   db "Versao UnixUtils: ", versaoUnixUtils, 10, 10                        
                   db "man versao ", versaoMAN, 10, 10
-                  db "Copyright (C) 2018-2022 Felipe Miguel Nery Lunkes", 10
+                  db "Copyright (C) 2018-", __stringano, " Felipe Miguel Nery Lunkes", 10
                   db "Todos os direitos reservados.", 10, 0
 .aguardar:        db "Pressione <q> para sair.", 0
 .naoEncontrado:   db ": manual nao encontrado para este utilitario.", 10, 0

@@ -31,6 +31,7 @@ cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, inicioAPP, 01h
 ;;************************************************************************************
 
 include "hexagon.s"
+include "macros.s"
 
 ;;************************************************************************************          
 
@@ -144,7 +145,7 @@ whoami:
                    db "-t - Exibe todas as informacoes possiveis do usuario atualmente logado", 10
                    db "-u - Exibe apenas o nome do usuario logado", 10, 10             
                    db "whoami versao ", versaoWHOAMI, 10, 10
-                   db "Copyright (C) 2017-2022 Felipe Miguel Nery Lunkes", 10
+                   db "Copyright (C) 2017-", __stringano, " Felipe Miguel Nery Lunkes", 10
                    db "Todos os direitos reservados.", 10, 0
 .parametroAjuda:   db "?", 0  
 .parametroAjuda2:  db "--ajuda", 0 
