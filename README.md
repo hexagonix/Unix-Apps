@@ -1,13 +1,25 @@
+<p align="center">
+<img src="https://github.com/hexagonix/Doc/blob/main/Img/Hexagonix.png" width="150" height="150">
+</p>
+
+<div align="center">
+
+![](https://img.shields.io/github/license/hexagonix/Unix-Apps.svg)
+![](https://img.shields.io/github/stars/hexagonix/Unix-Apps.svg)
+![](https://img.shields.io/github/issues/hexagonix/Unix-Apps.svg)
+![](https://img.shields.io/github/issues-closed/hexagonix/Unix-Apps.svg)
+![](https://img.shields.io/github/issues-pr/hexagonix/Unix-Apps.svg)
+![](https://img.shields.io/github/issues-pr-closed/hexagonix/Unix-Apps.svg)
+![](https://img.shields.io/github/downloads/hexagonix/Unix-Apps/total.svg)
+![](https://img.shields.io/github/release/hexagonix/Unix-Apps.svg)
+
+</div>
+
+<hr>
+
 # Aplicativos e utilitários do Hexagonix
 
 Este repositório contém os aplicativos e utilitários padrão do Hexagonix.
-
-## Aviso de direitos autorais
-
-* Sistema Operacional Hexagonix e Sistema Operacional Andromeda. Copyright © 2016-2022 Felipe Miguel Nery Lunkes. Todos os direitos reservados.
-* Kernel Hexagon. Copyright © 2016-2022 Felipe Miguel Nery Lunkes. Todos os direitos reservados.
-* Gerenciador de Boot Saturno. Copyright © 2016-2022 Felipe Miguel Nery Lunkes. Todos os direitos reservados.
-* Hexagon Boot (HBoot). Copyright © 2020-2022 Felipe Miguel Nery Lunkes. Todos os direitos reservados.
 
 ## Utilitários incluidos
 
@@ -46,4 +58,8 @@ Outros utilitários são exclusivos do Hexagonix. São eles:
 
 Este repositório deve ser clonado na pasta Unix, dentro do diretório Apps, disponível no diretório raiz de construção.
 
+<!--
+
 Versão deste arquivo: 1.0
+
+-->
