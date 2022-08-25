@@ -54,10 +54,6 @@ Outros utilitários são exclusivos do Hexagonix. São eles:
 * log (obter logs do Hexagon, obsoleto)
 * lshapp (lê e exibe informações de imagens HAPP)
 
-# Informação de localização na árvore de construção do Hexagonix/Andromeda:
-
-Este repositório deve ser clonado na pasta Unix, dentro do diretório Apps, disponível no diretório raiz de construção.
-
 <!--
 
 Versão deste arquivo: 1.0
