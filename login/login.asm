@@ -815,7 +815,7 @@ login:
 .parametroAjuda2:  db "--ajuda", 0 
 .usuarioROOT:      db "root", 0
 .dadosErrados:     db 10, "Falha na autenticacao.", 10, 0
-.logind:           db "logind.app", 0
+.logind:           db "logind", 0
 
 .verboseLogin:             db "login versao ", versaoLOGIN, ".", 0
 .verboseProcurarArquivo:   db "Procurando banco de dados de usuarios em /...", 0
