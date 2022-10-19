@@ -84,18 +84,18 @@ match =Andromeda, TIPOLOGIN
 {
 
 .sobreSistema:     db 10, 10   
-                   db "        %#@$%&@$%&@$%$ tm          Sistema Operacional Andromeda(R)", 10
-                   db "        #$@$@$@#@#@#@$", 10
-                   db "        @#@$&    %#$#%", 10
+                   db "        %#@$%    &@$%$ tm          Sistema Operacional Hexagonix(R)", 10
+                   db "        #$@$@    #@#@$", 10
+                   db "        @#@$%    %#$#%", 10
                    db "        @#$@$    #@#$@", 10
-                   db "        #@#$$    !@#@#     Copyright (C) 2016-", __stringano, " Felipe Miguel Nery Lunkes",10
-                   db "        @#@%!$&%$&$#@#              Todos os direitos reservados",10
-                   db "        !@$%#%&#&@&$%#", 10
-                   db "        @$#!%&@&@#&*@&", 10
+                   db "        #@#$$#$#%!@#@#     Copyright (C) 2016-", __stringano, " Felipe Miguel Nery Lunkes",10
+                   db "        @#@%!@&$#&$#@#              Todos os direitos reservados",10
+                   db "        !@$%#    @&$%#", 10
+                   db "        @$#!%    #&*@&", 10
                    db "        $#$#%    &%$#@", 10
                    db "        @#!$$    !#@#@", 10, 10, 0
 
-.versaoSistema:    db "Sistema Operacional Andromeda versao ", 0
+.versaoSistema:    db "Sistema Operacional Hexagonix versao ", 0
 
 } 
 
