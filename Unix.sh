@@ -41,7 +41,7 @@ do
 	
 	echo >> $LOG
 	
-	fasm $h ../../`basename $h .asm`.app -d $BANDEIRAS >> $LOG || desmontar
+	fasm $h ../../../Andromeda/bin/`basename $h .asm` -d $BANDEIRAS >> $LOG || desmontar
 	
 	echo -e " [\e[32mOk\e[0m]"
 	

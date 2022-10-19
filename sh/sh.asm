@@ -232,50 +232,6 @@ inicioShell:
     push esi
     push edi
     
-    Hexagonix tamanhoString
-    
-    add esi, eax
-
-    sub esi, 4
-    
-    mov edi, sh.extensaoProgramas
-    
-    Hexagonix compararPalavrasString  ;; Checar por extensão .APP
-    
-    jc .carregarPrograma
-    
-    pop edi
-    pop esi
-    
-.semExtensao:
-        
-;; Tentar adicionar extensão
-
-    Hexagonix tamanhoString
-    
-    mov ebx, eax
-
-    mov al, byte[sh.extensaoProgramas+0]
-    
-    mov byte[esi+ebx+0], al
-    
-    mov al, byte[sh.extensaoProgramas+1]
-    
-    mov byte[esi+ebx+1], al
-    
-    mov al, byte[sh.extensaoProgramas+2]
-    
-    mov byte[esi+ebx+2], al
-    
-    mov al, byte[sh.extensaoProgramas+3]
-    
-    mov byte[esi+ebx+3], al
-    
-    mov byte[esi+ebx+4], 0      ;; Fim da string
-    
-    push esi
-    push edi
-    
     jmp .carregarPrograma
     
 .falhaExecutando:

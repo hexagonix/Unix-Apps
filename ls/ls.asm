@@ -398,9 +398,17 @@ listar:
     
     pop esi
     
+    mov eax, VERDE_FLORESTA
+    
+    call definirCorArquivo
+
     mov esi, [arquivoAtual]
     
     imprimirString
+    
+    call definirCorPadrao
+    
+    jmp .continuar
 
 .continuar:
     
