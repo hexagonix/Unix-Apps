@@ -73,32 +73,19 @@ align 32
 
 logind:
 
-match =UNIX, TIPOLOGIN
-{
-
-.sobreSistema:     db 10, "Seja bem-vindo ao Hexagonix (vd0)", 0
-
-}
-
-match =Andromeda, TIPOLOGIN
-{
-
 .sobreSistema:     db 10, 10   
-                   db "        %#@$%&@$%&@$%$ tm          Sistema Operacional Andromeda(R)", 10
-                   db "        #$@$@$@#@#@#@$", 10
-                   db "        @#@$&    %#$#%", 10
+                   db "        %#@$%    &@$%$ tm          Sistema Operacional Hexagonix(R)", 10
+                   db "        #$@$@    #@#@$", 10
+                   db "        @#@$%    %#$#%", 10
                    db "        @#$@$    #@#$@", 10
-                   db "        #@#$$    !@#@#     Copyright (C) 2016-", __stringano, " Felipe Miguel Nery Lunkes",10
-                   db "        @#@%!$&%$&$#@#              Todos os direitos reservados",10
-                   db "        !@$%#%&#&@&$%#", 10
-                   db "        @$#!%&@&@#&*@&", 10
+                   db "        #@#$$#$#%!@#@#     Copyright (C) 2016-", __stringano, " Felipe Miguel Nery Lunkes",10
+                   db "        @#@%!@&$#&$#@#              Todos os direitos reservados",10
+                   db "        !@$%#    @&$%#", 10
+                   db "        @$#!%    #&*@&", 10
                    db "        $#$#%    &%$#@", 10
                    db "        @#!$$    !#@#@", 10, 10, 0
-
-.versaoSistema:    db "Sistema Operacional Andromeda versao ", 0
-
-} 
-
+.versaoSistema:    db "Sistema Operacional Hexagonix versao ", 0
+.tty0:             db 10, "Seja bem-vindo ao Hexagonix (vd0)", 0
 .semArquivoUnix:   db 10, 10, "O arquivo de configuracao do ambiente Unix de controle de contas nao foi encontrado.", 10, 0        
 .colcheteEsquerdo: db " [", 0
 .colcheteDireito:  db "]", 0
@@ -140,7 +127,7 @@ match =Andromeda, TIPOLOGIN
 
 } 
 
-    call exibirLogoSistema
+    call exibirInfoSistema
 
     jmp terminar
 
@@ -308,7 +295,7 @@ verificarTema:
 
 ;;************************************************************************************
 
-exibirLogoSistema:
+exibirInfoSistema:
 
     mov esi, logind.sobreSistema
 
@@ -357,6 +344,12 @@ match =Andromeda, TIPOLOGIN
 
     novaLinha
 
+    mov esi, logind.tty0
+
+    imprimirString
+
+    novaLinha
+    
     ret
 
 ;;************************************************************************************
