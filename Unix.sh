@@ -35,9 +35,9 @@ do
 	for h in *.asm
 	do
 
-	echo -en "Construindo aplicativo base Unix do Hexagonix® \e[1;94m$(basename $h .asm).app\e[0m..."
+	echo -en "Construindo utilitário Unix do Hexagonix® \e[1;94m$(basename $h .asm)\e[0m..."
 	
-	echo Construindo aplicativo base Unix do Hexagonix® $(basename $h .asm).app... >> $LOG
+	echo Construindo aplicativo Unix do Hexagonix® $(basename $h .asm)... >> $LOG
 	
 	echo >> $LOG
 	
@@ -55,7 +55,7 @@ do
 
 	if [ -e cows ] ; then
 
-	echo -n "Copiando arquivos adicionais do pacote" $i 
+	echo -n " > Copiando arquivos adicionais do pacote" $i 
 
 	cp cows/*.cow ../$DESTINO >> /dev/null
 
@@ -92,8 +92,6 @@ desmontar()
 {
 
 cd ..
-
-rm -r *.app
 
 cd ..
 
