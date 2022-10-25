@@ -104,9 +104,9 @@ uname:
                             db " -o: Nome do sistema operacional em execucao.", 10, 10                                
                             db "uname versao ", versaoUNAME, 10, 10
                             db "Copyright (C) 2017-", __stringano, " Felipe Miguel Nery Lunkes", 10
-                            db "Todos os direitos reservados.", 0
-                            
-ponto: db ".", 0
+                            db "Todos os direitos reservados.", 0                     
+ponto:                      db ".", 0
+
 parametro: dd ?
 
 ;;************************************************************************************
@@ -428,6 +428,14 @@ versaoHexagon:
     cmp ch, 0
     je .continuar
 
+    push ecx
+
+    mov esi, ponto
+    
+    imprimirString
+    
+    pop ecx 
+    
     mov al, ch
     
     Hexagonix imprimirCaractere
