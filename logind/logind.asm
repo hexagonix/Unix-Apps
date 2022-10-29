@@ -73,6 +73,9 @@ align 32
 
 logind:
 
+match =Moderno, TIPOLOGIN
+{
+
 .sobreSistema:     db 10, 10   
                    db "        %#@$%    &@$%$ tm          Sistema Operacional Hexagonix(R)", 10
                    db "        #$@$@    #@#@$", 10
@@ -83,8 +86,18 @@ logind:
                    db "        !@$%#    @&$%#", 10
                    db "        @$#!%    #&*@&", 10
                    db "        $#$#%    &%$#@", 10
-                   db "        @#!$$    !#@#@", 10, 10, 0
-.versaoSistema:    db "Sistema Operacional Hexagonix versao ", 0
+                   db "        @#!$$    !#@#@", 10, 0
+
+}
+
+match =Hexagonix, TIPOLOGIN
+{
+
+.sobreSistema:     db 10, "Sistema Operacional Hexagonix.", 10
+                   db "Copyright (C) 2014-2022 Felipe Miguel Nery Lunkes. Todos os direitos reservados.", 10, 0
+}
+
+.versaoSistema:    db 10, "Sistema Operacional Hexagonix versao ", 0
 .tty0:             db 10, "Seja bem-vindo ao Hexagonix (vd0)", 0
 .semArquivoUnix:   db 10, 10, "O arquivo de configuracao do ambiente Unix de controle de contas nao foi encontrado.", 10, 0        
 .colcheteEsquerdo: db " [", 0
@@ -118,7 +131,7 @@ iniciarExecucao:
 
     call checarBaseDados
     
-match =Andromeda, TIPOLOGIN
+match =Moderno, TIPOLOGIN
 {
      
     call verificarTema
@@ -300,9 +313,6 @@ exibirInfoSistema:
     mov esi, logind.sobreSistema
 
     imprimirString
-
-match =Andromeda, TIPOLOGIN 
-{
     
     mov esi, logind.versaoSistema
 
@@ -337,8 +347,6 @@ match =Andromeda, TIPOLOGIN
     imprimirString
 
     jmp .continuar
-
-} 
 
 .continuar:
 
