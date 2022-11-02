@@ -15,13 +15,27 @@
 
 </div>
 
-<hr>
+<!-- Vai funcionar como <hr> -->
+
+<img src="https://github.com/hexagonix/Doc/blob/main/Img/hr.png" width="100%" height="2px" />
+
+# Apps Unix-like do Hexagonix/Hexagonix Unix-like apps
+
+<details title="Português (Brasil)" align='left'>
+<br>
+<summary align='left'>🇧🇷 Português (Brasil)</summary>
 
 # Aplicativos e utilitários do Hexagonix
 
+<div align="justify">
+
 Este repositório contém os aplicativos e utilitários padrão do Hexagonix.
 
+</div>
+
 ## Utilitários incluidos
+
+<div align="justify">
 
 Diversos utilitários no padrão Unix estão incluidos até o momento. São eles:
 
@@ -53,6 +67,61 @@ Outros utilitários são exclusivos do Hexagonix. São eles:
 * hash (shell alternativo)
 * log (obter logs do Hexagon, obsoleto)
 * lshapp (lê e exibe informações de imagens HAPP)
+
+</div>
+
+</details>
+
+<details title="English" align='left'>
+<br>
+<summary align='left'>🇬🇧 English</summary>
+
+# Hexagonix apps and utilities
+
+<div align="justify">
+
+This repository contains the standard Hexagonix applications and utilities.
+
+</div>
+
+## Utilities included
+
+<div align="justify">
+
+Several Unix-standard utilities are included so far. Are they:
+
+* cat
+* clear
+* cowsay
+* cp
+* gives you
+* echo
+* filet
+* free
+* init
+* Login
+* ls
+* man
+* mount
+* ps
+* rm
+* sh
+* your
+* top
+* uname
+* whoami
+
+Other utilities are exclusive to Hexagonix. Are they:
+
+* atop (alternate version of top)
+* energy (energy state control)
+* hash (alternate shell)
+* log (get logs from Hexagon, deprecated)
+* lshapp (reads and displays information from HAPP images)
+
+</div>
+
+</details>
 
 <!--
 
