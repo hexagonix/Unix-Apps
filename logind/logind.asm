@@ -91,7 +91,7 @@ tamanhoLimiteBusca = 32768
 
 ;;************************************************************************************
 
-versaoLOGIND equ "1.3"
+versaoLOGIND equ "1.3.1"
 
 arquivo:    db "usuario.unx", 0 ;; Nome do arquivo de configuração de login
 vd0:        db "vd0", 0         ;; Console padrão
@@ -122,11 +122,11 @@ match =Moderno, TIPOLOGIN
 match =Hexagonix, TIPOLOGIN
 {
 
-.sobreSistema:     db 10, "Sistema Operacional Hexagonix.", 10
-                   db "Copyright (C) 2016-2022 Felipe Miguel Nery Lunkes. Todos os direitos reservados.", 10, 0
+.sobreSistema:     db 0
+
 }
 
-.versaoSistema:    db 10, "Sistema Operacional Hexagonix versao ", 0
+.versaoSistema:    db 10, "Hexagonix versao ", 0
 .tty0:             db 10, "Seja bem-vindo ao Hexagonix (vd0)", 0
 .semArquivoUnix:   db 10, 10, "O arquivo de configuracao do ambiente Unix de controle de contas nao foi encontrado.", 10, 0        
 .colcheteEsquerdo: db " [", 0
