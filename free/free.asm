@@ -160,16 +160,16 @@ terminar:
 
 ;;************************************************************************************
 
-versaoFREE equ "0.1"
+versaoFREE equ "0.2"
 
 free:
 
 .uso:             db 10, 10, "Uso: free", 10, 10
-                  db "Exibe informacoes sobre uso da memoria do sistema instalada.", 10, 10
+                  db "Exibe informacoes sobre uso da memoria do sistema.", 10, 10
                   db "free versao ", versaoFREE, 10, 10
                   db "Copyright (C) 2020-", __stringano, " Felipe Miguel Nery Lunkes", 10
                   db "Todos os direitos reservados.", 10, 0
-.memoria:         db "Memoria instalada | Memoria utilizada | Memoria reservada para o Hexagon", 10, 0
+.memoria:         db "Memoria instalada | Memoria utilizada | Memoria reservada", 10, 0
 .kbytes:          db " bytes           ", 0
 .megabytes:       db " megabytes        ", 0
 .reservado:       db "16", 0

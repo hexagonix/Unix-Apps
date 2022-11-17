@@ -278,12 +278,12 @@ cp:
                     db "cp versao ", versaoCP, 10, 10
                     db "Copyright (C) 2017-", __stringano, " Felipe Miguel Nery Lunkes", 10
                     db "Todos os direitos reservados.", 10, 0
-.fonteIndisponivel: db 10, 10, "O arquivo fonte fornecido nao pode ser encontrado neste disco.", 10, 0                              
+.fonteIndisponivel: db 10, 10, "O arquivo fonte fornecido nao pode ser encontrado neste volume.", 10, 0                              
 .destinoExistente:  db 10, 10, "Ja existe um arquivo com o nome fornecido para o destino. Por favor, remova o arquivo com o mesmo", 10
                     db "nome do destino e tente novamente.", 10, 0
 .erroAbrindo:       db 10, 10, "Um erro ocorreu ao tentar abrir o arquivo de origem da copia.", 10
                     db "Tente novamente. Se o erro persistir, reinicie o computador.", 10, 0
-.erroSalvando:      db 10, 10, "Um erro ocorreu ao solicitar o salvamento do arquivo de destino no disco.", 10
+.erroSalvando:      db 10, 10, "Um erro ocorreu ao solicitar o salvamento do arquivo de destino no volume.", 10
                     db "Isso pode ter ocorrido devido a uma protecao de escrita, remocao da unidade", 10
                     db "de armazenamento ou devido ao fato do Sistema estar ocupado. Tente novamente", 10
                     db "mais tarde.", 10, 0

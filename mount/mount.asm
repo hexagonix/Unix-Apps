@@ -355,7 +355,7 @@ mount:
 .montado:           db "Sucesso na montagem.", 10, 0
 .uso:               db 10, 10, "Uso: mount [volume] [ponto de montagem]", 10, 10
                     db "Realiza a montagem de um volume em um ponto de montagem do sistema de arquivos.", 10, 10
-                    db "Caso nenhum parametro seja fornecido, quaisquer montagens realizadas serao exibidas.", 10, 10
+                    db "Caso nenhum parametro seja fornecido, as montagens realizadas serao exibidas.", 10, 10
                     db "mount versao ", versaoMOUNT, 10, 10
                     db "Copyright (C) 2017-", __stringano, " Felipe Miguel Nery Lunkes", 10
                     db "Todos os direitos reservados.", 10, 0
@@ -367,7 +367,7 @@ mount:
 .volumeMontado:     db 10, 10, "Volume ", 0
 .infoVolume:        db " montado em ", 0
 .rotuloVolume:      db " com o rotulo ", 0
-.operacaoNegada:    db "A montagem foi recusada pelo Sistema. Isso pode ser explicado devido ao fato do usuario atual", 10
+.operacaoNegada:    db "A montagem foi recusada pelo sistema. Isso pode ser explicado devido ao fato do usuario atual", 10
                     db "nao possuir previlegios administrativos, nao sendo usuario raiz (root).", 10, 10
                     db "Apenas o usuario raiz (root) pode realizar montagens. Realize login neste usuario para realizar", 10
                     db "a montagem desejada.", 10, 0

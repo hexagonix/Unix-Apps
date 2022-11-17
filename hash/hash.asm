@@ -484,7 +484,7 @@ hash:
 .usuarioNormal:        db "$ ", 0
 .usuarioRoot:          db "# ", 0
 .uso:                  db 10, 10, "Uso: hash", 10, 10
-                       db "Inicia um hashell Unix para o usuario atual.", 10, 10               
+                       db "Inicia um shell Unix para o usuario atual.", 10, 10               
                        db "hash versao ", versaoHASH, 10, 10
                        db "Copyright (C) 2020-", __stringano, " Felipe Miguel Nery Lunkes", 10
                        db "Todos os direitos reservados.", 10, 0

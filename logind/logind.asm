@@ -91,7 +91,7 @@ tamanhoLimiteBusca = 32768
 
 ;;************************************************************************************
 
-versaoLOGIND equ "1.2"
+versaoLOGIND equ "1.3"
 
 arquivo:    db "usuario.unx", 0 ;; Nome do arquivo de configuração de login
 vd0:        db "vd0", 0         ;; Console padrão
@@ -123,7 +123,7 @@ match =Hexagonix, TIPOLOGIN
 {
 
 .sobreSistema:     db 10, "Sistema Operacional Hexagonix.", 10
-                   db "Copyright (C) 2014-2022 Felipe Miguel Nery Lunkes. Todos os direitos reservados.", 10, 0
+                   db "Copyright (C) 2016-2022 Felipe Miguel Nery Lunkes. Todos os direitos reservados.", 10, 0
 }
 
 .versaoSistema:    db 10, "Sistema Operacional Hexagonix versao ", 0
@@ -355,6 +355,9 @@ exibirInfoSistema:
 
     imprimirString
 
+match =Moderno, TIPOLOGIN
+{
+
     mov esi, logind.colcheteEsquerdo
 
     imprimirString
@@ -366,6 +369,8 @@ exibirInfoSistema:
     mov esi, logind.colcheteDireito
 
     imprimirString
+
+}
 
     jmp .continuar 
 

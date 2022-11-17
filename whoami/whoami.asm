@@ -176,7 +176,7 @@ versaoWHOAMI equ "1.0"
 whoami:
 
 .uso:              db 10, 10, "Uso: whoami", 10, 10
-                   db "Exibe o nome do usuario atualmente logado no Sistema.", 10, 10     
+                   db "Exibe o nome do usuario atualmente logado no sistema.", 10, 10     
                    db "Parametros possiveis (em caso de falta de parametros, a opcao '-u' sera selecionada):", 10, 10
                    db "-t - Exibe todas as informacoes possiveis do usuario atualmente logado", 10
                    db "-u - Exibe apenas o nome do usuario logado", 10, 10             

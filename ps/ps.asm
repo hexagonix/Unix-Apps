@@ -213,9 +213,9 @@ ps:
 .usoMem:           db "Uso de memoria: ", 0
 .kbytes:           db " bytes utilizados por processos em execucao.", 0
 .uso:              db "Uso: ps [parametro]", 10, 10
-                   db "Exibe informacoes de processos e uso de memoria e recursos do Sistema.", 10, 10 
+                   db "Exibe informacoes de processos e uso de memoria e recursos do sistema.", 10, 10 
                    db "Parametros possiveis (em caso de falta de parametros, a opcao '-v' sera selecionada):", 10, 10
-                   db "-t - Exibe todas as informacoes possiveis de processos e recursos do Sistema.", 10
+                   db "-t - Exibe todas as informacoes possiveis de processos e recursos do sistema.", 10
                    db "-v - Exibe apenas o uso de memoria dos processos em execucao.", 10, 10  
                    db "-o - Exibe o numero de processos na fila de execucao.", 10, 10            
                    db "ps versao ", versaoPS, 10, 10
