@@ -120,11 +120,11 @@ uname:
 .naoSuportado:              db "Arquitetura nao identificada.", 0      
 .plataformaPC:              db "PC", 0  
 .uso:                       db 10, 10, "Uso: uname [parametro]", 10, 10
-                            db "Exibe informacoes do Sistema.", 10, 10 
+                            db "Exibe informacoes do sistema.", 10, 10 
                             db "Parametros possiveis (em caso de falta de parametros, a opcao '-s' sera selecionada):", 10, 10
-                            db " -a: Exibe todas as informacoes possiveis do Sistema, do Kernel e da maquina.", 10
+                            db " -a: Exibe todas as informacoes possiveis do sistema, do Kernel e da maquina.", 10
                             db " -s: Nome do kernel em execucao.", 10
-                            db " -n: Exibe o nome de host da maquina executando o Sistema.", 10
+                            db " -n: Exibe o nome de host da maquina executando o sistema.", 10
                             db " -r: Lancamento do kernel em execucao.", 10
                             db " -v: Versao do kernel em execucao.", 10
                             db " -m: Tipo de maquina.", 10

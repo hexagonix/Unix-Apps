@@ -474,7 +474,6 @@ versaoSH equ "1.02"
 sh:
 
 .prompt:               db "@Hexagonix", 0
-.extensaoProgramas:    db ".app", 0 ;; Extensão de aplicativos (executáveis Hexagon®)
 .comandoNaoEncontrado: db ": comando nao encontrado.", 10, 0
 .imagemInvalida:       db ": nao e possivel carregar a imagem. Formato executavel nao suportado.", 10, 0
 .limiteProcessos:      db 10, 10, "Nao existe memoria disponivel para executar o aplicativo solicitado.", 10

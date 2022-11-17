@@ -726,7 +726,7 @@ posicaoBX:         dw 0
 su:
 
 .grandesPoderes:    db 10, 10, "Voce agora e um usuario administrativo. Isso significa que pode fazer alteracoes profundas no", 10
-                    db "Sistema, entao tome cuidado.", 10, 10
+                    db "sistema, entao tome cuidado.", 10, 10
                     db 'Lembre-se: "Grandes poderes vem com grandes responsabilidades"!', 0   
 .solicitarSenha:    db 10, "Digite sua senha UNIX: ", 0 
 .uso:               db 10, 10, "Uso: su [usuario]", 10, 10

@@ -412,7 +412,7 @@ versaoLSHAPP equ "1.9.1"
 lshapp:
 
 .uso:                 db 10, 10, "Uso: lshapp [arquivo]", 10, 10
-                      db "Recupera as informacoes de uma imagem HAPP.", 10, 10
+                      db "Recupera e exibe as informacoes de uma imagem HAPP.", 10, 10
                       db "lshapp versao ", versaoLSHAPP, 10, 10
                       db "Copyright (C) 2020-", __stringano, " Felipe Miguel Nery Lunkes", 10
                       db "Todos os direitos reservados.", 10, 0

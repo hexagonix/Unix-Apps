@@ -235,7 +235,7 @@ versaoTOP equ "1.1"
 
 top:
 
-.inicio:              db "Visualizador de processos do Sistema Operacional Hexagonix(R)", 10, 10, 0   
+.inicio:              db "Visualizador de processos do Hexagonix(R)", 10, 10, 0   
 .pid:                 db "PID deste processo: ", 0
 .usoMem:              db 10, 10, "Uso de memoria: ", 0
 .memTotal:            db 10, "Total de memoria instalada identificada: ", 0
@@ -244,7 +244,7 @@ top:
 .mbytes:              db " megabytes.", 0
 .uso:                 db "Uso: top", 10, 10
                       db "Exibe os processos carregados na pilha de execucao do Hexagonix(R).", 10, 10 
-                      db "Processos do Kernel sao filtrados e nao exibidos nesta lista.", 10, 10            
+                      db "Processos do kernel sao filtrados e nao exibidos nesta lista.", 10, 10            
                       db "top versao ", versaoTOP, 10, 10
                       db "Copyright (C) 2017-", __stringano, " Felipe Miguel Nery Lunkes", 10
                       db "Todos os direitos reservados.", 0

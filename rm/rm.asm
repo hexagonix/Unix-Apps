@@ -227,13 +227,13 @@ rm:
 
 .naoEncontrado:   db 10, 10, "Arquivo nao encontrado. Verifique a ortografia e tente novamente.", 10, 0
 .uso:             db 10, 10, "Uso: rm [arquivo]", 10, 10
-                  db "Solicita a exclusao de um arquivo no disco atual.", 10, 10
+                  db "Solicita a exclusao de um arquivo no volume atual.", 10, 10
                   db "rm versao ", versaoRM, 10, 10
                   db "Copyright (C) 2017-", __stringano, " Felipe Miguel Nery Lunkes", 10
                   db "Todos os direitos reservados.", 10, 0
 .confirmacao:     db "Voce tem certeza que deseja excluir este arquivo (s/N)? ", 0
-.deletado:        db 10, 10, "O arquivo solicitado foi deletado com sucesso.", 10, 0
-.erroDeletando:   db 10, 10, "Um erro ocorreu durante a solicitacao. Nenhum arquivo foi deletado.", 10, 10, 0  
+.deletado:        db 10, 10, "O arquivo solicitado foi removido com sucesso.", 10, 0
+.erroDeletando:   db 10, 10, "Um erro ocorreu durante a solicitacao. Nenhum arquivo foi removido.", 10, 10, 0  
 .abortar:         db 10, 10, "A operacao foi abortada pelo usuario.", 10, 0  
 .parametroAjuda:  db "?", 0  
 .parametroAjuda2: db "--ajuda", 0    

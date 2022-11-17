@@ -423,7 +423,7 @@ versaoATOP equ "1.0-beta"
 
 atop:
 
-.inicio:              db "Visualizador de processos do Sistema Operacional Hexagonix(R)", 10, 10, 0   
+.inicio:              db "Visualizador de processos do Hexagonix(R)", 10, 10, 0   
 .pid:                 db "PID deste processo: ", 0
 .usoMem:              db 10, 10, "Uso de memoria: ", 0
 .memTotal:            db 10, "Total de memoria instalada identificada: ", 0
@@ -431,8 +431,8 @@ atop:
 .kbytes:              db " kbytes.", 0
 .mbytes:              db " megabytes.", 0
 .uso:                 db "Uso: atop", 10, 10
-                      db "Exibe os processos carregados na pilha de execucao do Hexagonix(R).", 10, 10 
-                      db "Processos do Kernel sao filtrados e nao exibidos nesta lista.", 10, 10            
+                      db "Exibe os processos carregados no sistema.", 10, 10 
+                      db "Processos do kernel sao filtrados e nao exibidos nesta lista.", 10, 10            
                       db "atop versao ", versaoATOP, 10, 10
                       db "Copyright (C) 2020-", __stringano, " Felipe Miguel Nery Lunkes", 10
                       db "Todos os direitos reservados.", 0

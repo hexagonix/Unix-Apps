@@ -468,7 +468,7 @@ fileUnix:
 .arquivoCOW:      db 10, "Este parece ser um arquivo de banco de dados do utilitario Unix cowsay.", 10, 0
 .arquivoTXT:      db 10, "Este parece ser um arquivo de texto UTF-8.", 10, 0
 .arquivoFNT:      db 10, "Este parece ser um arquivo de fonte de exibicao do Hexagon(R).", 10, 0
-.arquivoCAN:      db 10, "Este parece ser um arquivo de plug-in do Configuracoes do Andromeda(R).", 10, 0
+.arquivoCAN:      db 10, "Este parece ser um arquivo de plug-in do config do Hexagonix(R).", 10, 0
 .parametroAjuda:  db "?", 0
 .parametroAjuda2: db "--ajuda", 0
 .extensaoSIS:     db ".SIS", 0
