@@ -80,8 +80,8 @@ inicioAPP: ;; Ponto de entrada do aplicativo
 
     Hexagonix obterCor
 
-    mov dword[atop.corFonte], eax
-    mov dword[atop.corFundo], ebx
+    mov dword[htop.corFonte], eax
+    mov dword[htop.corFundo], ebx
 
 ;;************************************************************************************
 
@@ -119,14 +119,14 @@ continuarExecucao:
     novaLinha
     novaLinha
     
-    mov edi, atop.parametroAjuda
+    mov edi, htop.parametroAjuda
     mov esi, [parametro]
     
     Hexagonix compararPalavrasString
     
     jc usoAplicativo
 
-    mov edi, atop.parametroAjuda2
+    mov edi, htop.parametroAjuda2
     mov esi, [parametro]
     
     Hexagonix compararPalavrasString
@@ -137,95 +137,13 @@ continuarExecucao:
 
 exibirProcessos:
 
-    mov esi, atop.inicio
+    mov esi, htop.inicio
     
     imprimirString
     
-    mov esi, atop.processosCarregados
+     call definirCorPadrao
     
-    imprimirString
-    
-    Hexagonix obterProcessos
-    
-    mov [listaRemanescente], esi
-    mov dword[numeroPIDs], eax
-    
-    push eax
-
-    pop ebx
-
-    xor ecx, ecx
-    xor edx, edx
-    
-    push eax
-    
-    mov eax, VERMELHO
-    
-    call definirCorTexto
-
-    pop eax 
-
-    push eax    
-
-    mov edx, eax
-    
-    mov dword[numeroProcessos], 00h
-
-.loopProcessos:
-
-    push ds
-    pop es
-
-    call lerListaProcessos
-
-    mov esi, [arquivoAtual]
-
-    imprimirString
-
-    mov ebx, [limiteExibicao]
-    
-    cmp dword[numeroProcessos], ebx
-    je .criarNovaLinha
-
-    cmp dword[numeroPIDs], 01h
-    je .continuar
-
-    inc dword[numeroProcessos]
-    dec dword[numeroPIDs]  
-
-    call colocarEspaco
-    
-    jmp .loopProcessos
-
-.criarNovaLinha:
-
-    mov dword[numeroProcessos], 00h
-    
-    novaLinha
-    
-    jmp .loopProcessos
-
-.continuar:
-
-    call definirCorPadrao
-    
-    novaLinha
-    
-    mov esi, atop.numeroProcessos
-    
-    imprimirString
-    
-    mov eax, VERMELHO
-    
-    call definirCorTexto
-    
-    pop eax
-    
-    imprimirInteiro
-    
-    call definirCorPadrao
-    
-    mov esi, atop.usoMem
+    mov esi, htop.usoMem
     
     imprimirString
     
@@ -239,11 +157,11 @@ exibirProcessos:
     
     call definirCorPadrao
     
-    mov esi, atop.bytes
+    mov esi, htop.bytes
     
     imprimirString
     
-    mov esi, atop.memTotal
+    mov esi, htop.memTotal
     
     imprimirString
     
@@ -259,9 +177,69 @@ exibirProcessos:
     
     call definirCorPadrao
     
-    mov esi, atop.mbytes
+    mov esi, htop.mbytes
     
     imprimirString
+
+    novaLinha
+
+    Hexagonix obterProcessos
+    
+    mov [listaRemanescente], esi
+    mov dword[numeroPIDs], eax
+    
+    push eax
+
+    pop ebx
+
+    xor ecx, ecx
+    xor edx, edx
+
+    push eax    
+
+    mov edx, eax
+    
+    mov dword[numeroProcessos], 00h
+
+    mov esi, htop.cabecalho
+
+    imprimirString
+
+    inc dword[PIDs]
+
+.loopProcessos:
+
+    push ds
+    pop es
+
+    call lerListaProcessos
+
+    mov esi, [arquivoAtual]
+
+    imprimirString
+
+    call colocarEspaco
+
+    mov eax, [PIDs]
+
+    imprimirInteiro
+
+    mov al, 10
+
+    Hexagonix imprimirCaractere
+
+    cmp dword[numeroPIDs], 01h
+    je .continuar
+
+    inc dword[numeroProcessos]
+    inc dword[PIDs]
+    dec dword[numeroPIDs]  
+
+    jmp .loopProcessos
+
+.continuar:
+
+    call definirCorPadrao
     
     jmp terminar
     
@@ -269,7 +247,7 @@ exibirProcessos:
     
 usoAplicativo:
 
-    mov esi, atop.uso
+    mov esi, htop.uso
     
     imprimirString
     
@@ -278,8 +256,6 @@ usoAplicativo:
 ;;************************************************************************************  
 
 terminar:   
-
-    novaLinha
     
     Hexagonix encerrarProcesso
 
@@ -293,7 +269,7 @@ terminar:
 
 definirCorTexto:
 
-    mov ebx, [atop.corFundo]
+    mov ebx, [htop.corFundo]
     
     Hexagonix definirCor
     
@@ -303,8 +279,8 @@ definirCorTexto:
 
 definirCorPadrao:
 
-    mov eax, [atop.corFonte]
-    mov ebx, [atop.corFundo]
+    mov eax, [htop.corFonte]
+    mov ebx, [htop.corFundo]
     
     Hexagonix definirCor
     
@@ -325,7 +301,7 @@ colocarEspaco:
     
     Hexagonix tamanhoString
     
-    mov ebx, 15
+    mov ebx, 17
     
     sub ebx, eax
     
@@ -349,7 +325,7 @@ colocarEspaco:
     pop eax
     pop ebx
     pop ecx
-    
+
     ret
     
 ;;************************************************************************************
@@ -419,33 +395,32 @@ encontrarCaractereLista:
 
 parametro: dd ?
 
-versaoATOP equ "1.0-beta"
+VERSAOHTOP equ "1.1"
 
-atop:
+htop:
 
 .inicio:              db "Visualizador de processos do Hexagonix(R)", 10, 10, 0   
 .pid:                 db "PID deste processo: ", 0
-.usoMem:              db 10, 10, "Uso de memoria: ", 0
+.usoMem:              db "Uso de memoria: ", 0
 .memTotal:            db 10, "Total de memoria instalada identificada: ", 0
 .bytes:               db " bytes utilizados pelos processos em execucao.", 0
 .kbytes:              db " kbytes.", 0
 .mbytes:              db " megabytes.", 0
-.uso:                 db "Uso: atop", 10, 10
+.cabecalho:           db 10, "Processo       | PID", 10, 10, 0
+.uso:                 db "Uso: htop", 10, 10
                       db "Exibe os processos carregados no sistema.", 10, 10 
                       db "Processos do kernel sao filtrados e nao exibidos nesta lista.", 10, 10            
-                      db "atop versao ", versaoATOP, 10, 10
+                      db "htop versao ", VERSAOHTOP, 10, 10
                       db "Copyright (C) 2020-", __stringano, " Felipe Miguel Nery Lunkes", 10
                       db "Todos os direitos reservados.", 0
 .parametroAjuda:      db "?", 0  
 .parametroAjuda2:     db "--ajuda", 0
-.processos:           db " processos em execucao.", 0
-.processosCarregados: db "Processos em execucao: ", 10, 10, 0
-.numeroProcessos:     db 10, "Numero de processos (PIDs) em execucao: ", 0 
 .corFonte:            dd 0
 .corFundo:            dd 0
 
 listaRemanescente: dd ?
 limiteExibicao:    dd 0
 numeroProcessos:   dd 0
+PIDs:              dd 0
 numeroPIDs:        dd 0
 arquivoAtual:      dd ' '
