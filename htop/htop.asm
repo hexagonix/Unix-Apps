@@ -80,8 +80,8 @@ inicioAPP: ;; Ponto de entrada do aplicativo
 
     Hexagonix obterCor
 
-    mov dword[atop.corFonte], eax
-    mov dword[atop.corFundo], ebx
+    mov dword[htop.corFonte], eax
+    mov dword[htop.corFundo], ebx
 
 ;;************************************************************************************
 
@@ -119,14 +119,14 @@ continuarExecucao:
     novaLinha
     novaLinha
     
-    mov edi, atop.parametroAjuda
+    mov edi, htop.parametroAjuda
     mov esi, [parametro]
     
     Hexagonix compararPalavrasString
     
     jc usoAplicativo
 
-    mov edi, atop.parametroAjuda2
+    mov edi, htop.parametroAjuda2
     mov esi, [parametro]
     
     Hexagonix compararPalavrasString
@@ -137,10 +137,52 @@ continuarExecucao:
 
 exibirProcessos:
 
-    mov esi, atop.inicio
+    mov esi, htop.inicio
     
     imprimirString
     
+     call definirCorPadrao
+    
+    mov esi, htop.usoMem
+    
+    imprimirString
+    
+    mov eax, VERDE_FLORESTA
+    
+    call definirCorTexto
+    
+    Hexagonix usoMemoria
+    
+    imprimirInteiro
+    
+    call definirCorPadrao
+    
+    mov esi, htop.bytes
+    
+    imprimirString
+    
+    mov esi, htop.memTotal
+    
+    imprimirString
+    
+    mov eax, VERDE_FLORESTA
+    
+    call definirCorTexto
+    
+    Hexagonix usoMemoria
+    
+    mov eax, ecx
+    
+    imprimirInteiro
+    
+    call definirCorPadrao
+    
+    mov esi, htop.mbytes
+    
+    imprimirString
+
+    novaLinha
+
     Hexagonix obterProcessos
     
     mov [listaRemanescente], esi
@@ -159,7 +201,7 @@ exibirProcessos:
     
     mov dword[numeroProcessos], 00h
 
-    mov esi, atop.cabecalho
+    mov esi, htop.cabecalho
 
     imprimirString
 
@@ -195,71 +237,9 @@ exibirProcessos:
 
     jmp .loopProcessos
 
-.criarNovaLinha:
-
-    mov dword[numeroProcessos], 00h
-    
-    novaLinha
-    
-    jmp .loopProcessos
-
 .continuar:
 
     call definirCorPadrao
-    
-    novaLinha
-    
-    mov esi, atop.numeroProcessos
-    
-    imprimirString
-    
-    mov eax, VERMELHO
-    
-    call definirCorTexto
-    
-    pop eax
-    
-    imprimirInteiro
-    
-    call definirCorPadrao
-    
-    mov esi, atop.usoMem
-    
-    imprimirString
-    
-    mov eax, VERDE_FLORESTA
-    
-    call definirCorTexto
-    
-    Hexagonix usoMemoria
-    
-    imprimirInteiro
-    
-    call definirCorPadrao
-    
-    mov esi, atop.bytes
-    
-    imprimirString
-    
-    mov esi, atop.memTotal
-    
-    imprimirString
-    
-    mov eax, VERDE_FLORESTA
-    
-    call definirCorTexto
-    
-    Hexagonix usoMemoria
-    
-    mov eax, ecx
-    
-    imprimirInteiro
-    
-    call definirCorPadrao
-    
-    mov esi, atop.mbytes
-    
-    imprimirString
     
     jmp terminar
     
@@ -267,7 +247,7 @@ exibirProcessos:
     
 usoAplicativo:
 
-    mov esi, atop.uso
+    mov esi, htop.uso
     
     imprimirString
     
@@ -276,8 +256,6 @@ usoAplicativo:
 ;;************************************************************************************  
 
 terminar:   
-
-    novaLinha
     
     Hexagonix encerrarProcesso
 
@@ -291,7 +269,7 @@ terminar:
 
 definirCorTexto:
 
-    mov ebx, [atop.corFundo]
+    mov ebx, [htop.corFundo]
     
     Hexagonix definirCor
     
@@ -301,8 +279,8 @@ definirCorTexto:
 
 definirCorPadrao:
 
-    mov eax, [atop.corFonte]
-    mov ebx, [atop.corFundo]
+    mov eax, [htop.corFonte]
+    mov ebx, [htop.corFundo]
     
     Hexagonix definirCor
     
@@ -417,29 +395,26 @@ encontrarCaractereLista:
 
 parametro: dd ?
 
-versaoATOP equ "1.1"
+VERSAOHTOP equ "1.1"
 
-atop:
+htop:
 
 .inicio:              db "Visualizador de processos do Hexagonix(R)", 10, 10, 0   
 .pid:                 db "PID deste processo: ", 0
-.usoMem:              db 10, 10, "Uso de memoria: ", 0
+.usoMem:              db "Uso de memoria: ", 0
 .memTotal:            db 10, "Total de memoria instalada identificada: ", 0
 .bytes:               db " bytes utilizados pelos processos em execucao.", 0
 .kbytes:              db " kbytes.", 0
 .mbytes:              db " megabytes.", 0
-.cabecalho:           db "Processo       | PID", 10, 10, 0
-.uso:                 db "Uso: atop", 10, 10
+.cabecalho:           db 10, "Processo       | PID", 10, 10, 0
+.uso:                 db "Uso: htop", 10, 10
                       db "Exibe os processos carregados no sistema.", 10, 10 
                       db "Processos do kernel sao filtrados e nao exibidos nesta lista.", 10, 10            
-                      db "atop versao ", versaoATOP, 10, 10
+                      db "htop versao ", VERSAOHTOP, 10, 10
                       db "Copyright (C) 2020-", __stringano, " Felipe Miguel Nery Lunkes", 10
                       db "Todos os direitos reservados.", 0
 .parametroAjuda:      db "?", 0  
 .parametroAjuda2:     db "--ajuda", 0
-.processos:           db " processos em execucao.", 0
-.processosCarregados: db "Processos em execucao: ", 10, 10, 0
-.numeroProcessos:     db "Numero de processos (PIDs) em execucao: ", 0 
 .corFonte:            dd 0
 .corFundo:            dd 0
 
