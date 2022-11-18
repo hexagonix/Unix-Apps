@@ -141,10 +141,6 @@ exibirProcessos:
     
     imprimirString
     
-    mov esi, atop.processosCarregados
-    
-    imprimirString
-    
     Hexagonix obterProcessos
     
     mov [listaRemanescente], esi
@@ -156,20 +152,18 @@ exibirProcessos:
 
     xor ecx, ecx
     xor edx, edx
-    
-    push eax
-    
-    mov eax, VERMELHO
-    
-    call definirCorTexto
-
-    pop eax 
 
     push eax    
 
     mov edx, eax
     
     mov dword[numeroProcessos], 00h
+
+    mov esi, atop.cabecalho
+
+    imprimirString
+
+    inc dword[PIDs]
 
 .loopProcessos:
 
@@ -182,19 +176,23 @@ exibirProcessos:
 
     imprimirString
 
-    mov ebx, [limiteExibicao]
-    
-    cmp dword[numeroProcessos], ebx
-    je .criarNovaLinha
+    call colocarEspaco
+
+    mov eax, [PIDs]
+
+    imprimirInteiro
+
+    mov al, 10
+
+    Hexagonix imprimirCaractere
 
     cmp dword[numeroPIDs], 01h
     je .continuar
 
     inc dword[numeroProcessos]
+    inc dword[PIDs]
     dec dword[numeroPIDs]  
 
-    call colocarEspaco
-    
     jmp .loopProcessos
 
 .criarNovaLinha:
@@ -325,7 +323,7 @@ colocarEspaco:
     
     Hexagonix tamanhoString
     
-    mov ebx, 15
+    mov ebx, 17
     
     sub ebx, eax
     
@@ -349,7 +347,7 @@ colocarEspaco:
     pop eax
     pop ebx
     pop ecx
-    
+
     ret
     
 ;;************************************************************************************
@@ -419,7 +417,7 @@ encontrarCaractereLista:
 
 parametro: dd ?
 
-versaoATOP equ "1.0-beta"
+versaoATOP equ "1.1"
 
 atop:
 
@@ -430,6 +428,7 @@ atop:
 .bytes:               db " bytes utilizados pelos processos em execucao.", 0
 .kbytes:              db " kbytes.", 0
 .mbytes:              db " megabytes.", 0
+.cabecalho:           db "Processo       | PID", 10, 10, 0
 .uso:                 db "Uso: atop", 10, 10
                       db "Exibe os processos carregados no sistema.", 10, 10 
                       db "Processos do kernel sao filtrados e nao exibidos nesta lista.", 10, 10            
@@ -440,12 +439,13 @@ atop:
 .parametroAjuda2:     db "--ajuda", 0
 .processos:           db " processos em execucao.", 0
 .processosCarregados: db "Processos em execucao: ", 10, 10, 0
-.numeroProcessos:     db 10, "Numero de processos (PIDs) em execucao: ", 0 
+.numeroProcessos:     db "Numero de processos (PIDs) em execucao: ", 0 
 .corFonte:            dd 0
 .corFundo:            dd 0
 
 listaRemanescente: dd ?
 limiteExibicao:    dd 0
 numeroProcessos:   dd 0
+PIDs:              dd 0
 numeroPIDs:        dd 0
 arquivoAtual:      dd ' '
