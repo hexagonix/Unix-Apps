@@ -127,7 +127,7 @@ match =Hexagonix, TIPOLOGIN
 }
 
 .versaoSistema:    db 10, "Hexagonix versao ", 0
-.tty0:             db 10, "Seja bem-vindo ao Hexagonix (vd0)", 0
+.console:          db " (vd0)", 0
 .semArquivoUnix:   db 10, 10, "O arquivo de configuracao do ambiente Unix de controle de contas nao foi encontrado.", 10, 0        
 .colcheteEsquerdo: db " [", 0
 .colcheteDireito:  db "]", 0
@@ -384,9 +384,7 @@ match =Moderno, TIPOLOGIN
 
 .continuar:
 
-    novaLinha
-
-    mov esi, logind.tty0
+    mov esi, logind.console
 
     imprimirString
 
