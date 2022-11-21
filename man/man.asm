@@ -74,6 +74,9 @@ include "Unix.s"
 
 versaoMAN equ "2.1.1"
 
+versaoCoreUtils equ "H2-dev-4.1" 
+versaoUnixUtils equ "H2-dev-5.0"
+
 align 32
 
 man:
