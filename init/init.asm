@@ -85,7 +85,7 @@ tamanhoLimiteBusca = 32768
 
 ;;************************************************************************************
 
-versaoINIT equ "1.4.3"
+versaoINIT equ "2.0"
 
 shellPadrao: db "sh.app", 0     ;; Nome do arquivo que contêm o shell padrão Unix
 vd0: db "vd0", 0                ;; Console principal
@@ -93,6 +93,7 @@ vd1: db "vd1", 0                ;; Primeiro console virtual
 arquivo: db "init.unx", 0       ;; Nome do arquivo de configuração do init
 tentarShellPadrao: db 0         ;; Sinaliza a tentativa de se carregar o shell padrão
 servicoHexagonix: times 12 db 0 ;; Armazena o nome do shell à ser utilizado pelo sistema
+posicaoBX: dw 0                 ;; Marcação da posição de busca no conteúdo do arquivo
 
 init:
 
@@ -101,7 +102,7 @@ init:
 .arquivoEncontrado:      db "Arquivo de configuracao encontrado.", 0
 .arquivoAusente:         db "Arquivo de configuracao nao encontrado. O shell padrao sera executado (sh.app)", 0
 .erroGeral:              db "Um erro nao manipulavel foi encontrado.", 0
-.registrandoComponentes: db "Registrando componentes do sistema...", 0
+.registrandoComponentes: db "Iniciando servico...", 0
 .configurarConsole:      db "Configurando consoles (vd0, vd1)...", 0
 
 ;;************************************************************************************          
@@ -148,18 +149,19 @@ iniciarExecucao:
   
     logSistema init.procurarArquivo, 0, Log.Prioridades.p4
 
+    mov word[posicaoBX], 0FFFFh ;; Inicia na posição -1, para que se possa encontrar os delimitadores
+
     call encontrarConfiguracaoInit          
 
 .carregarServico:
 
     logSistema init.registrandoComponentes, 0, Log.Prioridades.p5
 
-
     mov esi, servicoHexagonix
     
     Hexagonix arquivoExiste
     
-    jc .tentarShellPadrao
+    jc .proximoServico
 
     mov eax, 0                     ;; Não passar argumentos
     mov esi, servicoHexagonix      ;; Nome do arquivo
@@ -168,7 +170,15 @@ iniciarExecucao:
     
     Hexagonix iniciarProcesso      ;; Solicitar o carregamento do primeiro serviço
  
-    jnc .servicoFinalizado
+    jnc .proximoServico
+
+.proximoServico:
+
+    clc 
+
+    call encontrarConfiguracaoInit
+
+    jmp .carregarServico
 
 .naoEncontrado:                    ;; O serviço não pôde ser localizado
     
@@ -186,12 +196,6 @@ iniciarExecucao:
     Hexagonix destravar            ;; O shell pode ser terminado utilizando uma tecla especial
     
     jmp .carregarServico           ;; Tentar carregar o shell padrão do Hexagonix
-    
-.servicoFinalizado:                ;; Tentar carregar o serviço novamente
-
-    call limparTerminal
-    
-    jmp .carregarServico
     
 ;;************************************************************************************
 
@@ -228,15 +232,18 @@ encontrarConfiguracaoInit:
     jc .arquivoConfiguracaoAusente
     
     mov si, bufferArquivo           ;; Aponta para o buffer com o conteúdo do arquivo
-    mov bx, 0FFFFh                  ;; Inicia na posição -1, para que se possa encontrar os delimitadores
+    mov bx, word[posicaoBX]         
     
+    jmp .procurarEntreDelimitadores
+
 .procurarEntreDelimitadores:
 
     inc bx
     
+    mov word[posicaoBX], bx
+
     cmp bx, tamanhoLimiteBusca
-    
-    je .arquivoConfiguracaoAusente  ;; Caso nada seja encontrado até o tamanho limite, cancele a busca
+    je iniciarExecucao.tentarShellPadrao  ;; Caso nada seja encontrado até o tamanho limite, cancele a busca
     
     mov al, [ds:si+bx]
     
@@ -300,7 +307,6 @@ encontrarConfiguracaoInit:
     popa
 
     logSistema init.arquivoAusente, 0, Log.Prioridades.p4
-
 
     jmp obterShellPadrao
 
