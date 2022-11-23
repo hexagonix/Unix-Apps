@@ -590,7 +590,7 @@ encontrarShell:
     jc .arquivoConfiguracaoAusente
     
     mov si, bufferArquivo           ;; Aponta para o buffer com o conteúdo do arquivo
-    mov bx, word [posicaoBX]        ;; Continua de onde a opção anterior parou
+    mov bx, word[posicaoBX]        ;; Continua de onde a opção anterior parou
     
     dec bx
     
