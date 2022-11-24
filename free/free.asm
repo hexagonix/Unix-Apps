@@ -177,5 +177,4 @@ free:
 .parametroAjuda2: db "--ajuda", 0
      
 parametro: dd ?
-
 regES:     dw 0

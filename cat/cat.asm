@@ -159,7 +159,6 @@ cat:
 .parametroAjuda2: db "--ajuda", 0
      
 parametro: dd ?
-
-regES:  dw 0
+regES:     dw 0
      
 bufferArquivo:

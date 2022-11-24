@@ -243,7 +243,6 @@ rm:
                   db "Para tanto, realize o login em um destes usuarios com poderes administrativos.", 10, 0                 
     
 parametro: dd ?
-
-regES:  dw 0
+regES:     dw 0
      
 bufferArquivo:

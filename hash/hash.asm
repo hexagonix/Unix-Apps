@@ -466,10 +466,8 @@ finalizarhashell:
 ;;************************************************************************************
 
 ;; A versão do hash é independente da versão do restante do Sistema.
-;; Ela deve ser utilizada para identificar para qual versão do Andromeda® o hash foi
+;; Ela deve ser utilizada para identificar para qual versão do Hexagonix® o hash foi
 ;; desenvolvido.
-                    
-;;**************************
 
 versaoHASH equ "1.0"
 
@@ -499,9 +497,10 @@ comandos:
 
 .sair: db "sair",0
 
+;;**************************
+
 maxColunas:   db 0 ;; Total de colunas disponíveis no vídeo na resolução atual
 maxLinhas:    db 0 ;; Total de linhas disponíveis no vídeo na resolução atual
-
 linhaComando: dd 0
                    
 ;;************************************************************************************

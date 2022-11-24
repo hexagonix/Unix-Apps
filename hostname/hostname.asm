@@ -173,8 +173,7 @@ hostname:
 .arquivoUnix:     db "host.unx", 0
      
 parametro: dd ?
-
-regES:  dw 0
+regES:     dw 0
      
 bufferArquivo:
 

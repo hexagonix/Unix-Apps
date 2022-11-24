@@ -161,8 +161,8 @@ clear:
 .parametroAjuda:  db "?", 0
 .parametroAjuda2: db "--ajuda", 0
        
-vd0:   db "vd0", 0 ;; Console principal
-vd1:   db "vd1", 0 ;; Primeiro console virtual
+vd0: db "vd0", 0 ;; Console principal
+vd1: db "vd1", 0 ;; Primeiro console virtual
 
 parametro: dd ?
 
