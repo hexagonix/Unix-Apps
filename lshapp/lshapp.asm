@@ -442,7 +442,6 @@ lshapp:
 .parametroAjuda:      db "?", 0
 .parametroAjuda2:     db "--ajuda", 0
 .ponto:               db ".", 0
-
 .pontoEntrada:        dd 0
 .arquitetura:         db 0
 .versaoMinima:        db 0

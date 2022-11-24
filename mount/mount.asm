@@ -380,6 +380,5 @@ mount:
 parametros:    dd 0     
 volume:        dd ?
 pontoMontagem: dd ?
-
-regES:  dw 0
+regES:         dw 0
      

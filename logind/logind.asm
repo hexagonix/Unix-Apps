@@ -138,7 +138,7 @@ match =Hexagonix, TIPOLOGIN
 
 align 4
 
-escolhaTema:       times 7  db 0
+escolhaTema: times 7  db 0
 
 ;;************************************************************************************          
 

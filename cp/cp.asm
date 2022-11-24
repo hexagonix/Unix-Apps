@@ -291,11 +291,9 @@ cp:
  .parametroAjuda:   db "?", 0
  .parametroAjuda2:  db "--ajuda", 0
                
-parametros dd 0     
-
+parametros:     dd 0     
 arquivoEntrada: dd ?
 arquivoSaida:   dd ?
-
-regES:  dw 0
+regES:          dw 0
      
 bufferArquivo:

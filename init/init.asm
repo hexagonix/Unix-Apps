@@ -81,19 +81,17 @@ include "log.s"
 
 ;;************************************************************************************
 
-tamanhoLimiteBusca = 32768
-
-;;************************************************************************************
-
 versaoINIT equ "2.0"
 
-shellPadrao: db "sh.app", 0     ;; Nome do arquivo que contêm o shell padrão Unix
-vd0: db "vd0", 0                ;; Console principal
-vd1: db "vd1", 0                ;; Primeiro console virtual
-arquivo: db "init.unx", 0       ;; Nome do arquivo de configuração do init
-tentarShellPadrao: db 0         ;; Sinaliza a tentativa de se carregar o shell padrão
-servicoHexagonix: times 12 db 0 ;; Armazena o nome do shell à ser utilizado pelo sistema
-posicaoBX: dw 0                 ;; Marcação da posição de busca no conteúdo do arquivo
+tamanhoLimiteBusca = 32768
+
+shellPadrao:               db "sh.app", 0   ;; Nome do arquivo que contêm o shell padrão Unix
+vd0:                       db "vd0", 0      ;; Console principal
+vd1:                       db "vd1", 0      ;; Primeiro console virtual
+arquivo:                   db "init.unx", 0 ;; Nome do arquivo de configuração do init
+tentarShellPadrao:         db 0             ;; Sinaliza a tentativa de se carregar o shell padrão
+servicoHexagonix: times 12 db 0             ;; Armazena o nome do shell à ser utilizado pelo sistema
+posicaoBX:                 dw 0             ;; Marcação da posição de busca no conteúdo do arquivo
 
 init:
 

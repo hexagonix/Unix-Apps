@@ -483,10 +483,8 @@ fileUnix:
 .extensaoCAN:     db ".CAN", 0
 .extensaoS:       db ".S", 0
 
-parametro: dd ?
-
+parametro:            dd ?
+regES:                dw 0
 nomeArquivo: times 13 db 0
-
-regES:     dw 0
 
 bufferArquivo:

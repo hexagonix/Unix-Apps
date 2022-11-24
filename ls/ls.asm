@@ -704,6 +704,7 @@ ls:
 .corOCL:           dd 0
 .corCOW:           dd 0
 .corMAN:           dd 0
+
 parametro:         dd ?
 listaRemanescente: dd ?
 limiteExibicao:    dd 0

@@ -742,10 +742,8 @@ su:
 .falhaAutenticacao: db 10, 10, "su: Falha na autenticacao.", 0
 
 usuarioSolicitado:  times 17 db 0
-
 usuarioAnterior:    times 17 db 0
-
-codigoAnterior:     dd 0
+codigoAnterior:              dd 0
 
 ;;************************************************************************************
 

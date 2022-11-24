@@ -497,9 +497,10 @@ comandos:
 
 .sair: db "sair",0
 
+;;**************************
+
 maxColunas:   db 0 ;; Total de colunas disponíveis no vídeo na resolução atual
 maxLinhas:    db 0 ;; Total de linhas disponíveis no vídeo na resolução atual
-
 linhaComando: dd 0
                    
 ;;************************************************************************************

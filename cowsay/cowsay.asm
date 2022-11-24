@@ -443,9 +443,7 @@ parametro:        dd ?
 perfilVaquinha:   dd ?
 mensagemUsuario:  dd ?
 arquivoExterno:   db 0
-
 tamanhoMensagem:  dd 0
-
 regES:            dw 0
      
 bufferArquivo:
