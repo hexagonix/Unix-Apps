@@ -85,7 +85,7 @@ versaoINIT equ "2.0"
 
 tamanhoLimiteBusca = 32768
 
-shellPadrao:               db "sh.app", 0   ;; Nome do arquivo que contêm o shell padrão Unix
+shellPadrao:               db "sh", 0       ;; Nome do arquivo que contêm o shell padrão Unix
 vd0:                       db "vd0", 0      ;; Console principal
 vd1:                       db "vd1", 0      ;; Primeiro console virtual
 arquivo:                   db "init.unx", 0 ;; Nome do arquivo de configuração do init
@@ -98,7 +98,7 @@ init:
 .inicioInit:             db "init versao ", versaoINIT, ".", 0
 .procurarArquivo:        db "Procurando arquivo de configuracao no volume...", 0
 .arquivoEncontrado:      db "Arquivo de configuracao encontrado.", 0
-.arquivoAusente:         db "Arquivo de configuracao nao encontrado. O shell padrao sera executado (sh.app)", 0
+.arquivoAusente:         db "Arquivo de configuracao nao encontrado. O shell padrao sera executado (sh)", 0
 .erroGeral:              db "Um erro nao manipulavel foi encontrado.", 0
 .registrandoComponentes: db "Iniciando servico...", 0
 .configurarConsole:      db "Configurando consoles (vd0, vd1)...", 0
