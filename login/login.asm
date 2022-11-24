@@ -818,7 +818,7 @@ checarBaseDados:
 
 versaoLOGIN equ "4.1"
 
-shellPadrao:       db "sh.app", 0       ;; Nome do arquivo que contêm o shell padrão do Hexagonix®
+shellPadrao:       db "sh", 0           ;; Nome do arquivo que contêm o shell padrão do Hexagonix®
 vd0:               db "vd0", 0          ;; Console padrão
 vd1:               db "vd1", 0          ;; Primeiro console virtual
 arquivo:           db "usuario.unx", 0  ;; Nome do arquivo de gerenciamento de login
