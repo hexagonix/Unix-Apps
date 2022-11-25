@@ -83,39 +83,6 @@ inicioAPP: ;; Ponto de entrada do aplicativo
     mov dword[htop.corFonte], eax
     mov dword[htop.corFundo], ebx
 
-;;************************************************************************************
-
-;; A resolução em uso será verificada, para que o aplicativo se adapte ao tamanho da saída e à quantidade de informações 
-;; que podem ser exibidas por linha. Desta forma, ele pode exibir um número menor de arquivos com menor resolução e um 
-;; número maior por linha caso a resolução permita.
-
-verificarResolucao:
-
-    Hexagonix obterResolucao
-    
-    cmp eax, 1
-    je .modoGrafico1
-
-    cmp eax, 2
-    je .modoGrafico2
-
-;; Podem ser exibidos (n+1) arquivos, visto que o contador inicia a contagem de zero. Utilizar essa informação
-;; para implementações futuras no aplicativo.
- 
-.modoGrafico1:
-
-    mov dword[limiteExibicao], 5h ;; Podem ser exibidos 6 arquivos por linha (n+1)
-    
-    jmp continuarExecucao
-    
-.modoGrafico2:
-
-    mov dword[limiteExibicao], 7h ;; Podem ser exibidos 8 arquivos por linha (n+1)
-
-    jmp continuarExecucao
-
-continuarExecucao:
-
     novaLinha
     novaLinha
     
@@ -141,7 +108,7 @@ exibirProcessos:
     
     imprimirString
     
-     call definirCorPadrao
+    call definirCorPadrao
     
     mov esi, htop.usoMem
     
@@ -251,6 +218,8 @@ usoAplicativo:
     
     imprimirString
     
+    novaLinha
+
     jmp terminar
 
 ;;************************************************************************************  
@@ -395,7 +364,7 @@ encontrarCaractereLista:
 
 parametro: dd ?
 
-VERSAOHTOP equ "1.1"
+VERSAOHTOP equ "1.2"
 
 htop:
 
