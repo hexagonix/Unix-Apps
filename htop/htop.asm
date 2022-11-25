@@ -364,7 +364,7 @@ encontrarCaractereLista:
 
 parametro: dd ?
 
-VERSAOHTOP equ "1.2"
+VERSAOHTOP equ "1.2.1"
 
 htop:
 
@@ -375,7 +375,8 @@ htop:
 .bytes:               db " bytes utilizados pelos processos em execucao.", 0
 .kbytes:              db " kbytes.", 0
 .mbytes:              db " megabytes.", 0
-.cabecalho:           db 10, "Processo       | PID", 10, 10, 0
+.cabecalho:           db 10, "Processo       | PID", 10
+                      db "---------------|----", 10, 10, 0
 .uso:                 db "Uso: htop", 10, 10
                       db "Exibe os processos carregados no sistema.", 10, 10 
                       db "Processos do kernel sao filtrados e nao exibidos nesta lista.", 10, 10            
