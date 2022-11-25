@@ -71,7 +71,7 @@ include "macros.s"
 
 ;;************************************************************************************          
 
-inicioAPP: ;; Ponto de entrada do Gerenciador de Login do Andromeda®
+inicioAPP: 
 
     mov [linhaComando], edi
     

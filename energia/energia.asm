@@ -247,7 +247,7 @@ prepararSistema:
 
     imprimirString
 
-    mov esi, energia.msgAndromeda
+    mov esi, energia.msgHexagonix
 
     imprimirString
 
@@ -321,7 +321,7 @@ energia:
 .parReiniciarSemEco: db "-re", 0
 .msgDesligamento:    db 10, 10, "!> Preparando para desligar seu computador... ", 0
 .msgFinalizando:     db 10, 10, "#> Finalizando todos os processos ainda em execucao...  ", 0
-.msgAndromeda:       db 10, 10, "#> Finalizando o Sistema Operacional Hexagonix(R)...    ", 0
+.msgHexagonix:       db 10, 10, "#> Finalizando o Sistema Operacional Hexagonix(R)...    ", 0
 .msgDiscos:          db 10, 10, "#> Finalizando os discos e desligando seu computador... ", 0
 .msgPronto:          db "[Concluido]", 0
 .msgFalha:           db "[Falha]", 0
