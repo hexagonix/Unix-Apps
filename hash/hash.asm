@@ -265,7 +265,7 @@ inicioShell:
     
 .falhaExecutando:
 
-;; Agora o erro enviado pelo Sistema será analisado, para que o Shell conheça
+;; Agora o erro enviado pelo sistema será analisado, para que o Shell conheça
 ;; sua natureza
 
     cmp eax, Hexagon.limiteProcessos ;; Limite de processos em execução atingido
@@ -362,9 +362,9 @@ inicioShell:
 
 ;;************************************************************************************
 ;;
-;; Fim dos comandos internos do shell Unix do Andromeda®
+;; Fim dos comandos internos do shell Unix do Hexagonix®
 ;;
-;; Funções úteis para o manipulação de dados no hashell Unix do Andromeda® 
+;; Funções úteis para o manipulação de dados no hashell Unix do Hexagonix® 
 ;;
 ;;************************************************************************************
 
@@ -465,7 +465,7 @@ finalizarhashell:
 ;;
 ;;************************************************************************************
 
-;; A versão do hash é independente da versão do restante do Sistema.
+;; A versão do hash é independente da versão do restante do sistema.
 ;; Ela deve ser utilizada para identificar para qual versão do Hexagonix® o hash foi
 ;; desenvolvido.
 
@@ -488,8 +488,8 @@ hash:
                        db "Todos os direitos reservados.", 10, 0
 .parametroAjuda:       db "?", 0   
 .parametroAjuda2:      db "--ajuda", 0   
-.nomeUsuario:          times 64 db 0
-.separador:            times 8 db 0
+.nomeUsuario: times 64 db 0
+.separador:    times 8 db 0
  
 ;;**************************
 

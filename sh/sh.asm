@@ -362,9 +362,9 @@ inicioShell:
 
 ;;************************************************************************************
 ;;
-;; Fim dos comandos internos do Shell Unix do Andromeda®
+;; Fim dos comandos internos do Shell Unix do Hexagonix®
 ;;
-;; Funções úteis para o manipulação de dados no Shell Unix do Andromeda® 
+;; Funções úteis para o manipulação de dados no Shell Unix do Hexagonix® 
 ;;
 ;;************************************************************************************
 

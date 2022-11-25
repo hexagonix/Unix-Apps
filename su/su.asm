@@ -79,7 +79,7 @@ tamanhoLimiteBusca = 12288
 include "HAPP.s" ;; Aqui está uma estrutura para o cabeçalho HAPP
 
 ;; Instância | Estrutura | Arquitetura | Versão | Subversão | Entrada | Tipo  
-cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, suAndromeda, 01h
+cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, suHexagonix, 01h
 
 ;;************************************************************************************
 
@@ -88,7 +88,7 @@ include "macros.s"
 
 ;;************************************************************************************          
 
-suAndromeda: ;; Ponto de entrada
+suHexagonix: ;; Ponto de entrada
     
     mov [usuarioSolicitado], edi
         
@@ -171,30 +171,30 @@ iniciarExecucao:
 .carregarShell:
     
     mov eax, 0                     ;; Não passar argumentos
-    mov esi, shellAndromeda        ;; Nome do arquivo
+    mov esi, shellHexagonix        ;; Nome do arquivo
     
     stc
     
-    Hexagonix iniciarProcesso      ;; Solicitar o carregamento do Shell do Andromeda®
+    Hexagonix iniciarProcesso      ;; Solicitar o carregamento do shell do Hexagonix®
  
     jnc .shellFinalizado
 
-.naoEncontrado:                    ;; O Shell não pôde ser localizado
+.naoEncontrado:                    ;; O shell não pôde ser localizado
     
-   cmp byte[tentarShellPadrao], 0  ;; Verifica se já se tentou carregar o Shell padrão do Andromeda®
-   je .tentarShellPadrao           ;; Se não, tente carregar o Shell padrão do Andromeda®
+   cmp byte[tentarShellPadrao], 0  ;; Verifica se já se tentou carregar o shell padrão do Hexagonix®
+   je .tentarShellPadrao           ;; Se não, tente carregar o shell padrão do Hexagonix®
     
-   Hexagonix encerrarProcesso      ;; Se sim, o Shell padrão também não pode ser executado  
+   Hexagonix encerrarProcesso      ;; Se sim, o shell padrão também não pode ser executado  
 
-.tentarShellPadrao:                ;; Tentar carregar o Shell padrão do Andromeda®
+.tentarShellPadrao:                ;; Tentar carregar o shell padrão do Hexagonix®
 
-   call obterShellPadrao           ;; Solicitar a configuração do nome do Shell padrão do Andromeda®
+   call obterShellPadrao           ;; Solicitar a configuração do nome do shell padrão do Hexagonix®
     
-   mov byte[tentarShellPadrao], 1  ;; Sinalizar a tentativa de carregamento do Shell padrão do Andromeda®
+   mov byte[tentarShellPadrao], 1  ;; Sinalizar a tentativa de carregamento do shell padrão do Hexagonix®
     
-   jmp .carregarShell              ;; Tentar carregar o Shell padrão do Andromeda®
+   jmp .carregarShell              ;; Tentar carregar o shell padrão do Hexagonix®
     
-.shellFinalizado:                  ;; Tentar carregar o Shell novamente
+.shellFinalizado:                  ;; Tentar carregar o shell novamente
     
     call restaurarUsuario          ;; Restaura o usuário da sessão anterior
     
@@ -545,12 +545,12 @@ encontrarShell:
     cmp al, '&'
     jne .procurarEntreDelimitadores ;; O limitador inicial foi encontrado
     
-;; BX agora aponta para o primeira caractere do nome do Shell resgatado do arquivo
+;; BX agora aponta para o primeira caractere do nome do shell resgatado do arquivo
     
     push ds
     pop es
     
-    mov di, shellAndromeda          ;; O nome do Shell será copiado para ES:DI - shellAndromeda
+    mov di, shellHexagonix          ;; O nome do shell será copiado para ES:DI - shellHexagonix
     
     mov si, bufferArquivo
     
@@ -616,7 +616,7 @@ obterShellPadrao:
     
     push eax
     
-    mov edi, shellAndromeda
+    mov edi, shellHexagonix
     mov esi, shellPadrao
     
     pop ecx
@@ -711,12 +711,12 @@ terminar:
 
 versaoSU equ "2.1"
 
-shellPadrao:       db "ash.app", 0     ;; Nome do arquivo que contêm o Shell padrão do Andromeda®
-vd0:               db "vd0", 0         ;; Dispositivo de saída padrão do Sistema
-vd1:               db "vd1", 0         ;; Dispositivo de saída secundário em memória (Buffer)
+shellPadrao:       db "sh", 0          ;; Nome do arquivo que contêm o shell padrão do Hexagonix®
+vd0:               db "vd0", 0         ;; Console principal
+vd1:               db "vd1", 0         ;; Console secundário
 arquivo:           db "usuario.unx", 0 ;; Nome do arquivo de gerenciamento de login
-tentarShellPadrao: db 0                ;; Sinaliza a tentativa de se carregar o Shell padrão
-shellAndromeda:    times 11 db 0       ;; Armazena o nome do Shell à ser utilizado pelo Sistema
+tentarShellPadrao: db 0                ;; Sinaliza a tentativa de se carregar o shell padrão
+shellHexagonix:    times 11 db 0       ;; Armazena o nome do shell à ser utilizado pelo sistema
 usuario:           times 15 db 0       ;; Nome de usuário obtido no arquivo
 senhaObtida:       times 64 db 0       ;; Senha obtida no arquivo
 parametros:        db 0                ;; Se o aplicativo recebeu algum parâmetro

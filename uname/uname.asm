@@ -78,7 +78,7 @@ versaoUNAME equ "2.4"
 
 uname:
 
-;; Parâmetros (novos) POSIX.2 e compatível com o uname do Linux:
+;; Parâmetros (novos) POSIX.2 e compatível com o uname do BSD:
 ;;
 ;; -a: tudo
 ;; -s: nome do kernel
@@ -433,7 +433,7 @@ exibirVersaoApenas:
 
 ;;************************************************************************************
     
-;; Solicita a versão do Kernel, a decodifica e exibe para o usuário
+;; Solicita a versão do kernel, a decodifica e exibe para o usuário
     
 versaoHexagon:
 
