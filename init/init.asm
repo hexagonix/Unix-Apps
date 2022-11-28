@@ -81,7 +81,7 @@ include "log.s"
 
 ;;************************************************************************************
 
-versaoINIT equ "2.0"
+versaoINIT equ "2.1"
 
 tamanhoLimiteBusca = 32768
 
@@ -245,7 +245,7 @@ encontrarConfiguracaoInit:
     
     mov al, [ds:si+bx]
     
-    cmp al, '['
+    cmp al, ':'
     jne .procurarEntreDelimitadores ;; O limitador inicial foi encontrado
     
 ;; BX agora aponta para o primeira caractere do nome do shell resgatado do arquivo
@@ -261,7 +261,7 @@ encontrarConfiguracaoInit:
     
     mov bx, 0                       ;; Iniciar em 0
     
-.obterNomeShell:
+.obterNomeServico:
 
     inc bx
     
@@ -270,14 +270,26 @@ encontrarConfiguracaoInit:
     
     mov al, [ds:si+bx]
     
-    cmp al, ']'                     ;; Se encontrar outro delimitador, o nome foi carregado com sucesso
+;; Agora vamos procurar os limitadores finais do nome de um serviço, que podem ser:
+;;
+;; EOL - nova linha (10)
+;; Espaço - um espaço após o último caractere
+;; # - Se usado após o último caractere do nome do serviço, marcar como comentário
+
+    cmp al, 10                     ;; Se encontrar outro delimitador, o nome foi carregado com sucesso
+    je .nomeShellObtido
+
+    cmp al, ' '                     ;; Se encontrar outro delimitador, o nome foi carregado com sucesso
+    je .nomeShellObtido
+
+    cmp al, '#'                     ;; Se encontrar outro delimitador, o nome foi carregado com sucesso
     je .nomeShellObtido
     
 ;; Se não estiver pronto, armazenar o caractere obtido
 
     stosb
     
-    jmp .obterNomeShell
+    jmp .obterNomeServico
 
 .nomeShellObtido:
 
