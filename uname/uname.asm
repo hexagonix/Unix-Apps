@@ -101,12 +101,12 @@ uname:
 .nucleo:                    db " Kernel ", 0
 .buildHexagon:              db "(build ", 0
 .fecharParenteses:          db ")", 0
-.versao:                    db " versao ", 0 
+.versao:                    db " version ", 0 
 .arquiteturai386:           db " i386", 0
 .arquiteturaamd64:          db " amd64", 0
 .hexagonix:                 db "Hexagonix", 0
 .parametroAjuda:            db "?", 0  
-.parametroAjuda2:           db "--ajuda", 0
+.parametroAjuda2:           db "--help", 0
 .parametroExibirTudo:       db "-a", 0
 .parametroExibirNomeKernel: db "-s", 0
 .parametroExibirHostname:   db "-n", 0
@@ -117,23 +117,23 @@ uname:
 .parametroExibirVersao:     db "-v", 0   
 .parametroExibirSO:         db "-o", 0   
 .arquivoUnix:               db "host.unx", 0
-.naoSuportado:              db "Arquitetura nao identificada.", 0      
+.naoSuportado:              db "Unknown architecture.", 0      
 .plataformaPC:              db "PC", 0  
-.uso:                       db 10, 10, "Uso: uname [parametro]", 10, 10
-                            db "Exibe informacoes do sistema.", 10, 10 
-                            db "Parametros possiveis (em caso de falta de parametros, a opcao '-s' sera selecionada):", 10, 10
-                            db " -a: Exibe todas as informacoes possiveis do sistema, do Kernel e da maquina.", 10
-                            db " -s: Nome do kernel em execucao.", 10
-                            db " -n: Exibe o nome de host da maquina executando o sistema.", 10
-                            db " -r: Lancamento do kernel em execucao.", 10
-                            db " -v: Versao do kernel em execucao.", 10
-                            db " -m: Tipo de maquina.", 10
-                            db " -p: Arquitetura do processador do sistema.", 10
-                            db " -i: Plataforma de hardware do sistema.", 10
-                            db " -o: Nome do sistema operacional em execucao.", 10, 10                                
-                            db "uname versao ", versaoUNAME, 10, 10
+.uso:                       db 10, 10, "Usage: uname [parameter]", 10, 10
+                            db "Displays system information.", 10, 10
+                            db "Possible parameters (in case of missing parameters, the '-s' option will be selected):", 10, 10
+                            db " -a: Displays all possible system, kernel and machine information.", 10
+                            db " -s: Running kernel name.", 10
+                            db " -n: Display the hostname of the machine running the system.", 10
+                            db " -r: Release of the running kernel.", 10
+                            db " -v: Running kernel version.", 10
+                            db " -m: Machine type.", 10
+                            db " -p: System processor architecture.", 10
+                            db " -i: System hardware platform.", 10
+                            db " -o: Name of running operating system.", 10, 10
+                            db "uname version ", versaoUNAME, 10, 10
                             db "Copyright (C) 2017-", __stringano, " Felipe Miguel Nery Lunkes", 10
-                            db "Todos os direitos reservados.", 0                     
+                            db "All rights reserved.", 0                     
 ponto:                      db ".", 0
 
 parametro: dd ?

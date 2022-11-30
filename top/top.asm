@@ -235,23 +235,23 @@ versaoTOP equ "1.1"
 
 top:
 
-.inicio:              db "Visualizador de processos do Hexagonix(R)", 10, 10, 0   
-.pid:                 db "PID deste processo: ", 0
-.usoMem:              db 10, 10, "Uso de memoria: ", 0
-.memTotal:            db 10, "Total de memoria instalada identificada: ", 0
-.bytes:               db " bytes utilizados pelos processos em execucao.", 0
+.inicio:              db "Hexagonix(R) process viewer", 10, 10, 0   
+.pid:                 db "PID of this process: ", 0
+.usoMem:              db 10, 10, "Memory usage: ", 0
+.memTotal:            db 10, "Total installed memory identified: ", 0
+.bytes:               db " bytes used by running processes.", 0
 .kbytes:              db " kbytes.", 0
 .mbytes:              db " megabytes.", 0
-.uso:                 db "Uso: top", 10, 10
-                      db "Exibe os processos carregados na pilha de execucao do Hexagonix(R).", 10, 10 
-                      db "Processos do kernel sao filtrados e nao exibidos nesta lista.", 10, 10            
-                      db "top versao ", versaoTOP, 10, 10
+.uso:                 db "Usage: top", 10, 10
+                      db "Displays the processes loaded in the Hexagonix(R) execution stack.", 10, 10
+                      db "Kernel processes are filtered and not displayed in this list.", 10, 10
+                      db "top version ", versaoTOP, 10, 10
                       db "Copyright (C) 2017-", __stringano, " Felipe Miguel Nery Lunkes", 10
-                      db "Todos os direitos reservados.", 0
+                      db "All rights reserved.", 0
 .parametroAjuda:      db "?", 0  
-.parametroAjuda2:     db "--ajuda", 0
-.processos:           db " processos na pilha de execucao.", 0
-.processosCarregados: db "Processos presentes na pilha de execucao do Sistema: ", 10, 10, 0
-.numeroProcessos:     db 10, "Numero de processos presentes na pilha de execucao: ", 0 
+.parametroAjuda2:     db "--help", 0
+.processos:           db " processes on the execution stack.", 0
+.processosCarregados: db "Processes present in the system execution stack: ", 10, 10, 0
+.numeroProcessos:     db 10, "Number of processes present in the execution stack: ", 0 
 .corFonte:            dd 0
 .corFundo:            dd 0

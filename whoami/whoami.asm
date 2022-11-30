@@ -175,16 +175,16 @@ versaoWHOAMI equ "1.0"
 
 whoami:
 
-.uso:              db 10, 10, "Uso: whoami", 10, 10
-                   db "Exibe o nome do usuario atualmente logado no sistema.", 10, 10     
-                   db "Parametros possiveis (em caso de falta de parametros, a opcao '-u' sera selecionada):", 10, 10
-                   db "-t - Exibe todas as informacoes possiveis do usuario atualmente logado", 10
-                   db "-u - Exibe apenas o nome do usuario logado", 10, 10             
-                   db "whoami versao ", versaoWHOAMI, 10, 10
+.uso:              db 10, 10, "Usage: whoami", 10, 10
+                   db "Displays the name of the user currently logged into the system.", 10, 10
+                   db "Possible parameters (in case of missing parameters, the '-u' option will be selected):", 10, 10
+                   db "-t - Displays all possible information of the currently logged in user", 10
+                   db "-u - Display only the name of the logged in user", 10, 10
+                   db "whoami version ", versaoWHOAMI, 10, 10
                    db "Copyright (C) 2017-", __stringano, " Felipe Miguel Nery Lunkes", 10
-                   db "Todos os direitos reservados.", 10, 0
+                   db "All rights reserved.", 10, 0
 .parametroAjuda:   db "?", 0  
-.parametroAjuda2:  db "--ajuda", 0 
+.parametroAjuda2:  db "--help", 0 
 .parametroTudo:    db "-t", 0
 .parametroUsuario: db "-u", 0
-.grupo:            db ", do grupo ", 0              
+.grupo:            db ", of the group ", 0              
