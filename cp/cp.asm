@@ -271,25 +271,25 @@ versaoCP equ "2.0"
 
 cp:
     
-.naoEncontrado:     db 10, 10, "Arquivo nao encontrado. verifique a ortografia e tente novamente.", 10, 0
-.uso:               db 10, 10, "Uso: cp [arquivo de entrada] [arquivo de saida]", 10, 10
-                    db "Realiza a copia de um arquivo fornecido em outro. Dois nomes de arquivo sao necessarios, sendo um", 10
-                    db "de entrada e outro de saida.", 10, 10
-                    db "cp versao ", versaoCP, 10, 10
+.naoEncontrado:     db 10, 10, "File not found. Please check file name and try again.", 10, 0
+.uso:              db 10, 10, "Usage: cp [input file] [output file]", 10, 10
+                    db "Performs a copy of a given file into another. Two file names are required, one being", 10
+                    db "for input and another for output.", 10, 10
+                    db "cp version ", versaoCP, 10, 10
                     db "Copyright (C) 2017-", __stringano, " Felipe Miguel Nery Lunkes", 10
-                    db "Todos os direitos reservados.", 10, 0
-.fonteIndisponivel: db 10, 10, "O arquivo fonte fornecido nao pode ser encontrado neste volume.", 10, 0                              
-.destinoExistente:  db 10, 10, "Ja existe um arquivo com o nome fornecido para o destino. Por favor, remova o arquivo com o mesmo", 10
-                    db "nome do destino e tente novamente.", 10, 0
-.erroAbrindo:       db 10, 10, "Um erro ocorreu ao tentar abrir o arquivo de origem da copia.", 10
-                    db "Tente novamente. Se o erro persistir, reinicie o computador.", 10, 0
-.erroSalvando:      db 10, 10, "Um erro ocorreu ao solicitar o salvamento do arquivo de destino no volume.", 10
-                    db "Isso pode ter ocorrido devido a uma protecao de escrita, remocao da unidade", 10
-                    db "de armazenamento ou devido ao fato do Sistema estar ocupado. Tente novamente", 10
-                    db "mais tarde.", 10, 0
-.copiaConcluida:    db 10, 10, "O arquivo foi copiado com sucesso.", 10, 0
+                    db "All rights reserved.", 10, 0
+.fonteIndisponivel: db 10, 10, "The provided source file cannot be found on this volume.", 10, 0                              
+.destinoExistente:  db 10, 10, "A file with the given name already exists for the destination. Please remove the file with the same", 10
+                    db "destination name and try again.", 10, 0
+.erroAbrindo:       db 10, 10, "An error occurred while trying to open the copy source file.", 10
+                    db "Try again. If the error persists, restart your computer.", 10, 0
+.erroSalvando:      db 10, 10, "An error occurred while requesting to save the target file to the volume.", 10
+                    db "This could be due to write protection, drive removal", 10
+                    db "out of storage or because the system is busy. Please try again", 10
+                    db "later.", 10, 0
+.copiaConcluida:    db 10, 10, "The file has been successfully copied.", 10, 0
  .parametroAjuda:   db "?", 0
- .parametroAjuda2:  db "--ajuda", 0
+ .parametroAjuda2:  db "--help", 0
                
 parametros:     dd 0     
 arquivoEntrada: dd ?

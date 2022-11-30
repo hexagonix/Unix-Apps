@@ -417,16 +417,16 @@ versaoCOWSAY equ "2.0"
 
 cowsay:
 
-.uso:             db 10, 10, "Uso: cowsay [perfil] [mensagem]", 10, 10
-                  db "Exibe de forma divertida uma mensagem para o usuario.", 10, 10
-                  db "Voce pode alterar o perfil de animal ou entidade que exibe a mensagem.", 10
-                  db "Essa alteracao deve ser solicitada ANTES da mensagem.", 10
-                  db 'Em caso de frase, o caractere " deve constar antes e depois da frase.', 10, 10
-                  db "cowsay versao ", versaoCOWSAY, 10, 10
+.uso:             db 10, 10, "Usage: cowsay [profile] [message]", 10, 10
+                  db "Amusedly display a message to the user.", 10, 10
+                  db "You can change the animal or entity profile that displays the message.", 10
+                  db "This change must be requested BEFORE the message.", 10
+                  db 'In the case of a sentence, the character " must appear before and after the sentence.', 10, 10
+                  db "cowsay version ", versaoCOWSAY, 10, 10
                   db "Copyright (C) 2020-", __stringano, " Felipe Miguel Nery Lunkes", 10
-                  db "Todos os direitos reservados.", 10, 0
+                  db "All rights reserved.", 10, 0
 .parametroAjuda:  db "?", 0
-.parametroAjuda2: db "--ajuda", 0
+.parametroAjuda2: db "--help", 0
 .espaco:          db " ", 0
 .barra:           db "|", 0
 .linhaSuperior:   db "_", 0

@@ -152,14 +152,14 @@ versaoCLEAR equ "1.0"
 
 clear:
 
-.erro:            db 10, 10, "Erro abrindo um console.", 10, 10, 0
-.uso:             db 10, 10, "Uso: clear", 10, 10
-                  db "Limpa o conteudo do console principal (vd0) e de consoles virtuais.", 10, 10
-                  db "clear versao ", versaoCLEAR, 10, 10
+.erro:            db 10, 10, "Error opening a console.", 10, 10, 0
+.uso:             db 10, 10, "Usage: clear", 10, 10
+                  db "Clears the contents of the main console (vd0) and virtual consoles.", 10, 10
+                  db "clear version ", versaoCLEAR, 10, 10
                   db "Copyright (C) 2017-", __stringano, " Felipe Miguel Nery Lunkes", 10
-                  db "Todos os direitos reservados.", 10, 0
+                  db "All rights reserved.", 10, 0
 .parametroAjuda:  db "?", 0
-.parametroAjuda2: db "--ajuda", 0
+.parametroAjuda2: db "--help", 0
        
 vd0: db "vd0", 0 ;; Console principal
 vd1: db "vd1", 0 ;; Primeiro console virtual

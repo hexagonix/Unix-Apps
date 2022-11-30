@@ -319,34 +319,34 @@ energia:
 .parDesligarSemEco:  db "-de", 0
 .parametroReiniciar: db "-r", 0
 .parReiniciarSemEco: db "-re", 0
-.msgDesligamento:    db 10, 10, "!> Preparando para desligar seu computador... ", 0
-.msgFinalizando:     db 10, 10, "#> Finalizando todos os processos ainda em execucao...  ", 0
-.msgHexagonix:       db 10, 10, "#> Finalizando o Sistema Operacional Hexagonix(R)...    ", 0
-.msgDiscos:          db 10, 10, "#> Finalizando os discos e desligando seu computador... ", 0
-.msgPronto:          db "[Concluido]", 0
-.msgFalha:           db "[Falha]", 0
+.msgDesligamento:    db 10, 10, "!> Preparing to shut down your computer... ", 0
+.msgFinalizando:     db 10, 10, "#> Terminating all processes still running...  ", 0
+.msgHexagonix:       db 10, 10, "#> Shutting down the Hexagonix(R) Operating System...    ", 0
+.msgDiscos:          db 10, 10, "#> Stoping disks and shutting down your computer... ", 0
+.msgPronto:          db "[Ok]", 0
+.msgFalha:           db "[Fail]", 0
 .parametroAjuda:     db "?", 0  
-.parametroAjuda2:    db "--ajuda", 0
-.sistema:            db 10, "Sistema Operacional Hexagonix(R)", 10, 10
+.parametroAjuda2:    db "--help", 0
+.sistema:            db 10, "Hexagonix(R) Operating System", 10, 10
                      db "Copyright (C) 2016-2022 Felipe Miguel Nery Lunkes", 10
-                     db "Todos os direitos reservados.", 10, 0
-.argumentos:         db 10, 10, "Um argumento e necessario para controlar o estado deste dispositivo.", 10, 0
-.uso:                db 10, 10, "Uso: energia [argumento]", 10, 10
-                     db "Controla o estado do computador.", 10, 10 
-                     db "Argumentos possiveis:", 10, 10
-                     db "-d - Prepara e inicia o desligamento do computador.", 10
-                     db "-r - Prepara e reinicia o computador.", 10, 10                                    
-                     db "energia versao ", versaoENERGIA, 10, 10
+                     db "All rights reserved.", 10, 0
+.argumentos:         db 10, 10, "An argument is required to control the state of this device.", 10, 0
+.uso:                db 10, 10, "Usage: energia [argument]", 10, 10
+                     db "Controls the state of the computer.", 10, 10
+                     db "Possible arguments:", 10, 10
+                     db "-d - Prepares and initiates computer shutdown.", 10
+                     db "-r - Prepare and restart the computer.", 10, 10
+                     db "energy version ", versaoENERGIA, 10, 10
                      db "Copyright (C) 2022-", __stringano, " Felipe Miguel Nery Lunkes", 10
-                     db "Todos os direitos reservados.", 10, 0
+                     db "All rights reserved.", 10, 0
 
 energia.Verbose:
 
-.inicio:             db rotuloMENSAGEM, "iniciando o gerenciamento de energia (versao ", versaoENERGIA, ")...", 0
-.estado:             db rotuloMENSAGEM, "obtendo o estado do dispositivo...", 0
-.parametroDesligar:  db rotuloMENSAGEM, "recebida solicitacao de desligamento.", 0
-.parametroReiniciar: db rotuloMENSAGEM, "recebida solicitacao de reinicializacao.", 0
-.parametroSolicitar: db rotuloMENSAGEM, "enviando sinal para processos e solicitacao ao Hexagon...", 0
-.falhaSolicitacao:   db rotuloMENSAGEM, "falha ao processar a solicitacao ou falha na requisicao pelo Hexagon.", 0
+.inicio:             db rotuloMENSAGEM, "starting power management (version ", versaoENERGIA, ")...", 0
+.estado:             db rotuloMENSAGEM, "getting device state...", 0
+.parametroDesligar:  db rotuloMENSAGEM, "received shutdown request.", 0
+.parametroReiniciar: db rotuloMENSAGEM, "reboot request received.", 0
+.parametroSolicitar: db rotuloMENSAGEM, "sending signal to processes and request to Hexagon...", 0
+.falhaSolicitacao:   db rotuloMENSAGEM, "failed to process the request or request failed by Hexagon.", 0
 
 parametro: dd ?

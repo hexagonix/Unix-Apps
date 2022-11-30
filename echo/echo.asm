@@ -136,13 +136,13 @@ versaoECHO equ "1.0"
 
 echo:
 
-.uso:             db 10, 10, "Uso: echo [mensagem]", 10, 10
-                  db "Envia o conteudo de uma mensagem para o console principal.", 10, 10
-                  db "echo versao ", versaoECHO, 10, 10
+.uso:             db 10, 10, "Usage: echo [message]", 10, 10
+                  db "Send the contents of a message to the main console.", 10, 10
+                  db "echo version ", versaoECHO, 10, 10
                   db "Copyright (C) 2017-", __stringano, " Felipe Miguel Nery Lunkes", 10
-                  db "Todos os direitos reservados.", 10, 0
+                  db "All rights reserved.", 10, 0
 .parametroAjuda:  db "?", 0
-.parametroAjuda2: db "--ajuda", 0
+.parametroAjuda2: db "--help", 0
      
 parametro: dd ?
 regES:     dw 0
