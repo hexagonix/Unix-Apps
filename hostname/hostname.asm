@@ -162,14 +162,14 @@ versaoHOSTNAME equ "1.0"
 
 hostname:
 
-.naoEncontrado:   db 10, 10, "Arquivo de host nao encontrado. Verifique se ele foi definido.", 10, 0
-.uso:             db 10, 10, "Uso: hostname", 10, 10
-                  db "Exibe o nome de host definido para este dispositivo.", 10, 10
-                  db "hostname versao ", versaoHOSTNAME, 10, 10
+.naoEncontrado:   db 10, 10, "Host file not found. Check that it has been set.", 10, 0
+.uso:             db 10, 10, "Usage: hostname", 10, 10
+                  db "Displays the hostname defined for this device.", 10, 10
+                  db "hostname version ", versaoHOSTNAME, 10, 10
                   db "Copyright (C) 2021-", __stringano, " Felipe Miguel Nery Lunkes", 10
-                  db "Todos os direitos reservados.", 10, 0
+                  db "All rights reserved.", 10, 0
 .parametroAjuda:  db "?", 0
-.parametroAjuda2: db "--ajuda", 0
+.parametroAjuda2: db "--help", 0
 .arquivoUnix:     db "host.unx", 0
      
 parametro: dd ?

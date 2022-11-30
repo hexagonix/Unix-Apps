@@ -225,22 +225,22 @@ versaoRM equ "1.0"
 
 rm:
 
-.naoEncontrado:   db 10, 10, "Arquivo nao encontrado. Verifique a ortografia e tente novamente.", 10, 0
-.uso:             db 10, 10, "Uso: rm [arquivo]", 10, 10
-                  db "Solicita a exclusao de um arquivo no volume atual.", 10, 10
-                  db "rm versao ", versaoRM, 10, 10
+.naoEncontrado:   db 10, 10, "File not found.", 10, 0
+.uso:             db 10, 10, "Usage: rm [file]", 10, 10
+                  db "Requests to delete a file on the current volume.", 10, 10
+                  db "rm version ", versaoRM, 10, 10
                   db "Copyright (C) 2017-", __stringano, " Felipe Miguel Nery Lunkes", 10
-                  db "Todos os direitos reservados.", 10, 0
-.confirmacao:     db "Voce tem certeza que deseja excluir este arquivo (s/N)? ", 0
-.deletado:        db 10, 10, "O arquivo solicitado foi removido com sucesso.", 10, 0
-.erroDeletando:   db 10, 10, "Um erro ocorreu durante a solicitacao. Nenhum arquivo foi removido.", 10, 10, 0  
-.abortar:         db 10, 10, "A operacao foi abortada pelo usuario.", 10, 0  
+                  db "All rights reserved.", 10, 0
+.confirmacao:     db "Are you sure you want to delete this file (s/N)? ", 0
+.deletado:        db 10, 10, "The requested file was successfully removed.", 10, 0
+.erroDeletando:   db 10, 10, "An error occurred during the request. No files were removed.", 10, 10, 0  
+.abortar:         db 10, 10, "The operation was aborted by the user.", 10, 0  
 .parametroAjuda:  db "?", 0  
-.parametroAjuda2: db "--ajuda", 0    
-.semParametro:    db 10, 10, "Um nome de arquivo necessario esta ausente.", 10
-                  db "Utilize 'rm ?' para ajuda com este utilitario.", 10, 0  
-.permissaoNegada: db "Apenas um usuario administrativo pode concluir essa acao.", 10
-                  db "Para tanto, realize o login em um destes usuarios com poderes administrativos.", 10, 0                 
+.parametroAjuda2: db "--help", 0    
+.semParametro:    db 10, 10, "A required file name is missing.", 10
+                  db "Use 'rm ?' for help with this utility.", 10, 0
+.permissaoNegada: db "Only an administrative user can complete this action.", 10
+                  db "To do so, login to one of these users with administrative privileges.", 10, 0                 
     
 parametro: dd ?
 regES:     dw 0

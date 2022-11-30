@@ -209,23 +209,23 @@ parametro: dd ?
 
 ps:
     
-.pid:              db "PID deste processo: ", 0
-.usoMem:           db "Uso de memoria: ", 0
-.kbytes:           db " bytes utilizados por processos em execucao.", 0
-.uso:              db "Uso: ps [parametro]", 10, 10
-                   db "Exibe informacoes de processos e uso de memoria e recursos do sistema.", 10, 10 
-                   db "Parametros possiveis (em caso de falta de parametros, a opcao '-v' sera selecionada):", 10, 10
-                   db "-t - Exibe todas as informacoes possiveis de processos e recursos do sistema.", 10
-                   db "-v - Exibe apenas o uso de memoria dos processos em execucao.", 10, 10  
-                   db "-o - Exibe o numero de processos na fila de execucao.", 10, 10            
-                   db "ps versao ", versaoPS, 10, 10
+.pid:              db "PID of this process: ", 0
+.usoMem:           db "Memory usage: ", 0
+.kbytes:           db " bytes used by running processes.", 0
+.uso:              db "Usage: ps [parameter]", 10, 10
+                   db "Displays process information and usage of memory and system resources.", 10, 10
+                   db "Possible parameters (in case of missing parameters, the '-v' option will be selected):", 10, 10
+                   db "-t - Displays all possible process and system resource information.", 10
+                   db "-v - Display only memory usage of running processes.", 10, 10
+                   db "-o - Displays the number of processes in the execution queue.", 10, 10
+                   db "ps version ", versaoPS, 10, 10
                    db "Copyright (C) 2017-", __stringano, " Felipe Miguel Nery Lunkes", 10
-                   db "Todos os direitos reservados.", 0
+                   db "All rights reserved.", 0
 .parametroAjuda:   db "?", 0  
-.parametroAjuda2:  db "--ajuda", 0
+.parametroAjuda2:  db "--help", 0
 .parametroPID:     db "-t", 0
 .parametroOutros:  db "-o", 0
 .parametroMemoria: db "-v", 0     
-.numeroProcessos:  db "Existem atualmente ", 0
-.processos:        db " processos na pilha de execucao do Hexagonix(R).", 0
+.numeroProcessos:  db "There are currently ", 0
+.processos:        db " processes in the Hexagonix(R) runtime stack.", 0
     

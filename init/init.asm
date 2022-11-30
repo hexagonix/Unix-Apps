@@ -95,13 +95,13 @@ posicaoBX:                 dw 0             ;; Marcação da posição de busca 
 
 init:
 
-.inicioInit:             db "init versao ", versaoINIT, ".", 0
-.procurarArquivo:        db "Procurando arquivo de configuracao no volume...", 0
-.arquivoEncontrado:      db "Arquivo de configuracao encontrado.", 0
-.arquivoAusente:         db "Arquivo de configuracao nao encontrado. O shell padrao sera executado (sh)", 0
-.erroGeral:              db "Um erro nao manipulavel foi encontrado.", 0
-.registrandoComponentes: db "Iniciando servico...", 0
-.configurarConsole:      db "Configurando consoles (vd0, vd1)...", 0
+.inicioInit:             db "init version ", versaoINIT, ".", 0
+.procurarArquivo:        db "Looking for configuration file on volume...", 0
+.arquivoEncontrado:      db "Found config file.", 0
+.arquivoAusente:         db "Configuration file not found. The default shell will be executed (sh).", 0
+.erroGeral:              db "An unhandled error was encountered.", 0
+.registrandoComponentes: db "Starting service...", 0
+.configurarConsole:      db "Configuring consoles (vd0, vd1)...", 0
 
 ;;************************************************************************************          
 

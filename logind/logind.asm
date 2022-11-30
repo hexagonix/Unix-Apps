@@ -106,12 +106,12 @@ match =Moderno, TIPOLOGIN
 {
 
 .sobreSistema:     db 10, 10   
-                   db "        %#@$%    &@$%$ tm          Sistema Operacional Hexagonix(R)", 10
+                   db "        %#@$%    &@$%$ tm          Hexagonix(R) Operating System", 10
                    db "        #$@$@    #@#@$", 10
                    db "        @#@$%    %#$#%", 10
                    db "        @#$@$    #@#$@", 10
                    db "        #@#$$#$#%!@#@#     Copyright (C) 2016-", __stringano, " Felipe Miguel Nery Lunkes",10
-                   db "        @#@%!@&$#&$#@#              Todos os direitos reservados",10
+                   db "        @#@%!@&$#&$#@#                  All rights reserved.",10
                    db "        !@$%#    @&$%#", 10
                    db "        @$#!%    #&*@&", 10
                    db "        $#$#%    &%$#@", 10
@@ -126,15 +126,15 @@ match =Hexagonix, TIPOLOGIN
 
 }
 
-.versaoSistema:    db 10, "Hexagonix versao ", 0
+.versaoSistema:    db 10, "Hexagonix version ", 0
 .console:          db " (vd0)", 0
-.semArquivoUnix:   db 10, 10, "O arquivo de configuracao do ambiente Unix de controle de contas nao foi encontrado.", 10, 0        
+.semArquivoUnix:   db 10, 10, "The configuration file of the Unix account control environment not found.", 10, 0        
 .colcheteEsquerdo: db " [", 0
 .colcheteDireito:  db "]", 0
 .temaClaro:        db "claro", 0
 .temaEscuro:       db "escuro", 0
 .semVersao:        db "[desconhecida]", 0
-.verboseLogind:    db "logind versao ", versaoLOGIND, ".", 0
+.verboseLogind:    db "logind version ", versaoLOGIND, ".", 0
 
 align 4
 

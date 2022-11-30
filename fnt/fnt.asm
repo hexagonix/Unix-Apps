@@ -79,24 +79,24 @@ versaoFNT equ "0.1"
 
 fnt:
 
-.uso:             db 10, 10, "Uso: fnt [arquivo de fonte]", 10, 10
-                  db "Solicita a alteracao da fonte grafica do sistema.", 10, 10
-                  db "fnt versao ", versaoFNT, 10, 10
+.uso:             db 10, 10, "Usage: fnt [font file]", 10, 10   
+                 db "Asks to change the system graphics font.", 10, 10
+                  db "fnt version ", versaoFNT, 10, 10
                   db "Copyright (C) 2022-", __stringano, " Felipe Miguel Nery Lunkes", 10
-                  db "Todos os direitos reservados.", 10, 0
-.nomeArquivo:     db 10, 10, "Nome do arquivo de fonte: ", 0    
-.nomeFonte:       db "Nome do arquivo: ", 0
-.sucesso:         db 10, 10, "Fonte alterada com sucesso.", 10, 10
-                  db "Pressione qualquer tecla para continuar...", 10, 10, 0
-.falha:           db 10, 10, "O arquivo nao pode ser localizado.", 10, 10
-                  db 10, 10, "Pressione qualquer tecla para continuar...", 10, 10, 0
-.falhaFormato:    db 10, 10, "O arquivo fornecido nao contem uma fonte no formato Hexagon(R).", 10, 10
-                  db "Pressione qualquer tecla para continuar...", 10, 10, 0
-.falhaFormatoT:   db 10, 10, "O arquivo fornecido nao contem uma fonte no formato Hexagon(R).", 10, 0
-.sucessoTexto:    db 10, 10, "Fonte alterada com sucesso.", 10, 0
-.falhaTexto:      db 10, 10, "O arquivo nao pode ser localizado.", 10, 0
-.introducaoTeste: db 10, "Pre-visualizacao da fonte e dos caracteres: ", 0
-.testeFonte:      db 10, 10, "Sistema Operacional Hexagonix(R)", 10, 10
+                  db "All rights reserved.", 10, 0
+.nomeArquivo:     db 10, 10, "Font file name: ", 0    
+.nomeFonte:       db "File name: ", 0
+.sucesso:         db 10, 10, "Font changed successfully.", 10, 10
+                  db "Press any key to continue...", 10, 10, 0
+.falha:           db 10, 10, "The file cannot be found.", 10, 10
+                  db 10, 10, "Press any key to continue...", 10, 10, 0
+.falhaFormato:    db 10, 10, "The provided file does not contain a font in Hexagon(R) format.", 10, 10
+                  db "Press any key to continue...", 10, 10, 0
+.falhaFormatoT:   db 10, 10, "The file provided does not contain a font in Hexagon(R) format.", 10, 0
+.sucessoTexto:    db 10, 10, "Font changed successfully.", 10, 0
+.falhaTexto:      db 10, 10, "The file cannot be located.", 10, 0
+.introducaoTeste: db 10, "Font and characters preview: ", 0
+.testeFonte:      db 10, 10, "Hexagonix(R) Operating System", 10, 10
                   db "1234567890-=", 10
                   db "!@#$%^&*()_+", 10
                   db "QWERTYUIOP{}", 10
@@ -105,10 +105,10 @@ fnt:
                   db "asdfghjkl;'\", 10
                   db "ZXCVBNM<>?", 10
                   db "zxcvbnm,./", 10, 10
-                  db "Sistema Operacional Hexagonix(R)", 10, 0
-.tamanhoSuperior: db 10, 10, "Este arquivo de fonte excede o tamanho maximo de 2 Kb.", 10, 0
+                  db "Hexagonix(R) Operating System", 10, 0
+.tamanhoSuperior: db 10, 10, "This font file exceeds the maximum size of 2 Kb.", 10, 0
 .parametroAjuda:  db "?", 0
-.parametroAjuda2: db "--ajuda", 0
+.parametroAjuda2: db "--help", 0
 
 parametro:        dd 0
 arquivoFonte:     dd ?

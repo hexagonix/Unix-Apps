@@ -364,27 +364,27 @@ encontrarCaractereLista:
 
 parametro: dd ?
 
-VERSAOHTOP equ "1.2.1"
+versaoHTOP equ "1.2.1"
 
 htop:
 
-.inicio:              db "Visualizador de processos do Hexagonix(R)", 10, 10, 0   
-.pid:                 db "PID deste processo: ", 0
-.usoMem:              db "Uso de memoria: ", 0
-.memTotal:            db 10, "Total de memoria instalada identificada: ", 0
-.bytes:               db " bytes utilizados pelos processos em execucao.", 0
+.inicio:              db "Hexagonix(R) process viewer", 10, 10, 0   
+.pid:                 db "PID of this process: ", 0
+.usoMem:              db "Memory usage: ", 0
+.memTotal:            db 10, "Total installed memory identified: ", 0
+.bytes:               db " bytes used by running processes.", 0
 .kbytes:              db " kbytes.", 0
 .mbytes:              db " megabytes.", 0
-.cabecalho:           db 10, "Processo       | PID", 10
+.cabecalho:           db 10, "Process        | PID", 10
                       db "---------------|----", 10, 10, 0
-.uso:                 db "Uso: htop", 10, 10
-                      db "Exibe os processos carregados no sistema.", 10, 10 
-                      db "Processos do kernel sao filtrados e nao exibidos nesta lista.", 10, 10            
-                      db "htop versao ", VERSAOHTOP, 10, 10
+.uso:                 db "Usage: htop", 10, 10
+                      db "Displays processes loaded on the system.", 10, 10
+                      db "Kernel processes are filtered and not displayed in this list.", 10, 10
+                      db "htop version ", versaoHTOP, 10, 10
                       db "Copyright (C) 2020-", __stringano, " Felipe Miguel Nery Lunkes", 10
-                      db "Todos os direitos reservados.", 0
+                      db "All rights reserved.", 0
 .parametroAjuda:      db "?", 0  
-.parametroAjuda2:     db "--ajuda", 0
+.parametroAjuda2:     db "--help", 0
 .corFonte:            dd 0
 .corFundo:            dd 0
 
