@@ -149,14 +149,14 @@ versaoCAT equ "1.0 "
 
 cat:
 
-.naoEncontrado:   db 10, 10, "Arquivo nao encontrado. Verifique a ortografia e tente novamente.", 10, 0
-.uso:             db 10, 10, "Uso: cat [arquivo]", 10, 10
-                  db "Envia o conteudo de um arquivo para o console principal.", 10, 10
-                  db "cat versao ", versaoCAT, 10, 10
+.naoEncontrado:   db 10, 10, "File not found. Check the file name and try again.", 10, 0
+.uso:             db 10, 10, "Usage: cat [file]", 10, 10
+                  db "Send the contents of a file to the main console.", 10, 10
+                  db "cat version ", versaoCAT, 10, 10
                   db "Copyright (C) 2017-", __stringano, " Felipe Miguel Nery Lunkes", 10
-                  db "Todos os direitos reservados.", 10, 0
+                  db "All rights reserved.", 10, 0
 .parametroAjuda:  db "?", 0
-.parametroAjuda2: db "--ajuda", 0
+.parametroAjuda2: db "--help", 0
      
 parametro: dd ?
 regES:     dw 0

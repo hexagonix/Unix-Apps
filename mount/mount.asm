@@ -349,28 +349,28 @@ versaoMOUNT equ "2.1"
 
 mount:
 
-.volume:            db 10, 10, "Montando [", 0
+.volume:            db 10, 10, "Mounting [", 0
 .fecharColchete:    db "]...", 10, 10, 0
-.pontoMontagem:     db "] em [", 0
-.montado:           db "Sucesso na montagem.", 10, 0
-.uso:               db 10, 10, "Uso: mount [volume] [ponto de montagem]", 10, 10
-                    db "Realiza a montagem de um volume em um ponto de montagem do sistema de arquivos.", 10, 10
-                    db "Caso nenhum parametro seja fornecido, as montagens realizadas serao exibidas.", 10, 10
-                    db "mount versao ", versaoMOUNT, 10, 10
+.pontoMontagem:     db "] on [", 0
+.montado:           db "Success mouting the volume.", 10, 0
+.uso:               db 10, 10, "Usage: mount [volume] [mount point]", 10, 10
+                    db "Performs mounting a volume to a file system mount point.", 10, 10
+                    db "If no parameter is provided, the mounting points will be displayed.", 10, 10
+                    db "mount version ", versaoMOUNT, 10, 10
                     db "Copyright (C) 2017-", __stringano, " Felipe Miguel Nery Lunkes", 10
-                    db "Todos os direitos reservados.", 10, 0
-.erroAbrindo:       db "Erro ao montar o volume no ponto de montagem especificado.", 10
-                    db "Tente informar um nome valido ou referencia de um volume conectado.", 10, 0
+                    db "All rights reserved.", 10, 0
+.erroAbrindo:       db "Error mounting volume at specified mount point.", 10
+                    db "Try to enter a valid name or reference of an attached volume.", 10, 0
 .parametroAjuda:    db "?", 0
 .dispositivoPadrao: db "/", 0
-.erroPontoMontagem: db 10, 10, "Infome um ponto de montagem valido para este volume e sistema de arquivos.", 10, 0
+.erroPontoMontagem: db 10, 10, "Please enter a valid mount point for this volume and file system.", 10, 0
 .volumeMontado:     db 10, 10, "Volume ", 0
-.infoVolume:        db " montado em ", 0
-.rotuloVolume:      db " com o rotulo ", 0
-.operacaoNegada:    db "A montagem foi recusada pelo sistema. Isso pode ser explicado devido ao fato do usuario atual", 10
-                    db "nao possuir previlegios administrativos, nao sendo usuario raiz (root).", 10, 10
-                    db "Apenas o usuario raiz (root) pode realizar montagens. Realize login neste usuario para realizar", 10
-                    db "a montagem desejada.", 10, 0
+.infoVolume:        db " mounted on ", 0
+.rotuloVolume:      db " with the label ", 0
+.operacaoNegada:    db "The mount was refused by the system. This may be explained due to the fact that the current user", 10
+                    db "does not have administrative privileges, not being a root user (root).", 10, 10
+                    db "Only the root user (root) can perform mounts. Login in this user to perform", 10
+                    db "the desired mount.", 10, 0
 .parenteses1:       db " (", 0
 .parenteses2:       db ")", 10, 0
 .FAT16:             db "FAT16B", 0

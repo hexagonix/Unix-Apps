@@ -474,20 +474,20 @@ versaoHASH equ "1.0"
 hash:
 
 .prompt:               db "@Hexagonix", 0
-.comandoNaoEncontrado: db ": arquivo nao encontrado.", 10, 0
-.imagemInvalida:       db ": nao e possivel carregar a imagem. Formato executavel nao suportado.", 10, 0
-.limiteProcessos:      db 10, 10, "Nao existe memoria disponivel para executar o aplicativo solicitado.", 10
-                       db "Tente primeiramente finalizar aplicativos ou suas instancias, e tente novamente.", 10, 0                  
+.comandoNaoEncontrado: db ": file not found.", 10, 0
+.imagemInvalida:       db ": unable to load image. Unsupported executable format.", 10, 0
+.limiteProcessos:      db 10, 10, "There is not enough memory available to run the requested application.", 10
+                       db "Try to terminate applications or their instances first, and try again.", 10, 0                  
 .ponto:                db ".", 0
 .usuarioNormal:        db "$ ", 0
 .usuarioRoot:          db "# ", 0
-.uso:                  db 10, 10, "Uso: hash", 10, 10
-                       db "Inicia um shell Unix para o usuario atual.", 10, 10               
-                       db "hash versao ", versaoHASH, 10, 10
+.uso:                  db 10, 10, "Usage: hash", 10, 10
+                       db "Start a Unix shell for the current user.", 10, 10
+                       db "hash version ", versaoHASH, 10, 10
                        db "Copyright (C) 2020-", __stringano, " Felipe Miguel Nery Lunkes", 10
-                       db "Todos os direitos reservados.", 10, 0
+                       db "All rights reserved.", 10, 0
 .parametroAjuda:       db "?", 0   
-.parametroAjuda2:      db "--ajuda", 0   
+.parametroAjuda2:      db "--help", 0   
 .nomeUsuario: times 64 db 0
 .separador:    times 8 db 0
  

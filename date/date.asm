@@ -374,11 +374,11 @@ versaoDATE equ "1.0"
 
 date:
         
-.uso:             db 10, 10, "Uso: date", 10, 10
-                  db "Exibe data e hora do sistema.", 10, 10
-                  db "date versao ", versaoDATE, 10, 10
+.uso:             db 10, 10, "Usage: date", 10, 10
+                  db "Display system date and time.", 10, 10
+                  db "date version ", versaoDATE, 10, 10
                   db "Copyright (C) 2020-", __stringano, " Felipe Miguel Nery Lunkes", 10
-                  db "Todos os direitos reservados.", 10, 0
+                  db "All rights reserved.", 10, 0
 .domingo:         db " (domingo)", 0
 .segunda:         db " (segunda-feira)", 0
 .terca:           db " (terca-feira)", 0
@@ -387,10 +387,10 @@ date:
 .sexta:           db " (sexta-feira)", 0
 .sabado:          db " (sabado)", 0
 .parametroAjuda:  db "?", 0
-.parametroAjuda2: db "--ajuda", 0
+.parametroAjuda2: db "--help", 0
 .sepData:         db "/", 0
 .sepHora:         db ":", 0
-.espacamento:     db " de ", 0
+.espacamento:     db " of ", 0
 .dia:             dd 0
 .mes:             dd 0
 .seculo:          dd 0

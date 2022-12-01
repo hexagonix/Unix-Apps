@@ -681,16 +681,16 @@ ls:
 .extensaoCOW:      db ".COW", 0
 .extensaoMAN:      db ".MAN", 0
 .extensaoMOD:      db ".MOD", 0
-.erroLista:        db 10, 10, "Erro ao listar os arquivos presentes no volume.", 10, 0
-.uso:              db 10, 10, "Uso: ls", 10, 10
-                   db "Lista e exibe os arquivos presentes no volume atual, classificando-os por tipo.", 10, 10
-                   db "Parametros disponiveis:", 10, 10
-                   db "-a - Lista todos os arquivos disponiveis no volume.", 10, 10
-                   db "ls versao ", versaoLS, 10, 10
+.erroLista:        db 10, 10, "Error listing the files present on the volume.", 10, 0
+.uso:              db 10, 10, "Usage: ls", 10, 10
+                   db "Lists and displays the files present on the current volume, sorting them by type.", 10, 10
+                   db "Available parameters:", 10, 10
+                   db "-a - List all files available on the volume.", 10, 10
+                   db "ls version ", versaoLS, 10, 10
                    db "Copyright (C) 2017-", __stringano, " Felipe Miguel Nery Lunkes", 10
-                   db "Todos os direitos reservados.", 10, 0
+                   db "All rights reserved.", 10, 0
 .parametroAjuda:   db "?", 0    
-.parametroAjuda2:  db "--ajuda", 0
+.parametroAjuda2:  db "--help", 0
 .parametroTudo:    db "-a" ,0         
 .exibirTudo:       db 0
 .corFonte:         dd 0

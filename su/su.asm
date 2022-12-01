@@ -725,21 +725,21 @@ posicaoBX:         dw 0
 
 su:
 
-.grandesPoderes:    db 10, 10, "Voce agora e um usuario administrativo. Isso significa que pode fazer alteracoes profundas no", 10
-                    db "sistema, entao tome cuidado.", 10, 10
-                    db 'Lembre-se: "Grandes poderes vem com grandes responsabilidades"!', 0   
-.solicitarSenha:    db 10, "Digite sua senha UNIX: ", 0 
-.uso:               db 10, 10, "Uso: su [usuario]", 10, 10
-                    db "Altera para um usuario cadastrado.", 10, 10               
-                    db "su versao ", versaoSU, 10, 10
+.grandesPoderes:    db 10, 10, "You are now an administrative user. This means you can make deep changes to", 10
+                    db "system, so be careful.", 10, 10
+                    db 'Remember: "Great power comes with great responsibility"!', 0  
+.solicitarSenha:    db 10, "Enter your UNIX password: ", 0 
+.uso:               db 10, 10, "Usage: su [user]", 10, 10
+                    db "Change to a registered user.", 10, 10
+                    db "su version ", versaoSU, 10, 10
                     db "Copyright (C) 2017-", __stringano, " Felipe Miguel Nery Lunkes", 10
-                    db "Todos os direitos reservados.", 0
-.semArquivoUnix:    db 10, "O arquivo de configuracao do ambiente Unix de controle de contas nao foi encontrado.", 10, 0 
-.semUsuario:        db 10, "O usuario solicitado nao foi encontrado: ", 0              
+                    db "All rights reserved.", 0
+.semArquivoUnix:    db 10, "The configuration file of the Unix account control environment not found.", 10, 0 
+.semUsuario:        db 10, "The requested user was not found: ", 0              
 .parametroAjuda:    db "?", 0   
-.parametroAjuda2:   db "--ajuda", 0
+.parametroAjuda2:   db "--help", 0
 .usuarioROOT:       db "root", 0
-.falhaAutenticacao: db 10, 10, "su: Falha na autenticacao.", 0
+.falhaAutenticacao: db 10, 10, "su: Authentication failed.", 0
 
 usuarioSolicitado:  times 17 db 0
 usuarioAnterior:    times 17 db 0
