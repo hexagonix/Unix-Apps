@@ -97,7 +97,7 @@ init:
 
 .inicioInit:             db "init version ", versaoINIT, ".", 0
 .procurarArquivo:        db "Looking for configuration file on volume...", 0
-.arquivoEncontrado:      db "Found config file.", 0
+.arquivoEncontrado:      db "Configuration file found.", 0
 .arquivoAusente:         db "Configuration file not found. The default shell will be executed (sh).", 0
 .erroGeral:              db "An unhandled error was encountered.", 0
 .registrandoComponentes: db "Starting service...", 0

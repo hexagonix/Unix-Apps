@@ -734,7 +734,7 @@ su:
                     db "su version ", versaoSU, 10, 10
                     db "Copyright (C) 2017-", __stringano, " Felipe Miguel Nery Lunkes", 10
                     db "All rights reserved.", 0
-.semArquivoUnix:    db 10, "The configuration file of the Unix account control environment not found.", 10, 0 
+.semArquivoUnix:    db 10, "Unix accounts database not found.", 10, 0 
 .semUsuario:        db 10, "The requested user was not found: ", 0              
 .parametroAjuda:    db "?", 0   
 .parametroAjuda2:   db "--help", 0
