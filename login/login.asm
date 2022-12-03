@@ -855,7 +855,7 @@ login:
 .verboseArquivoEncontrado:  db "The database was found.", 0
 .verboseArquivoAusente:     db "The file was not found. The default shell will run (sh.app).", 0
 .verboseErro:               db "An unhandled error was encountered.", 0
-.verboseLoginAceito:        db "Authorized login.", 0
+.verboseLoginAceito:        db "Login accepted.", 0
 .verboseLoginRecusado:      db "Login attempt prevented by authentication failure.", 0
 .verboseLogout:             db "Logout performed successfully.", 0
 

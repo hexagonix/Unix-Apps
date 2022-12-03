@@ -128,12 +128,12 @@ match =Hexagonix, TIPOLOGIN
 
 .versaoSistema:    db 10, "Hexagonix version ", 0
 .console:          db " (vd0)", 0
-.semArquivoUnix:   db 10, 10, "The configuration file of the Unix account control environment not found.", 10, 0        
+.semArquivoUnix:   db 10, 10, "Unix accounts database not found.", 10, 0        
 .colcheteEsquerdo: db " [", 0
 .colcheteDireito:  db "]", 0
 .temaClaro:        db "claro", 0
 .temaEscuro:       db "escuro", 0
-.semVersao:        db "[desconhecida]", 0
+.semVersao:        db "[unknown]", 0
 .verboseLogind:    db "logind version ", versaoLOGIND, ".", 0
 
 align 4
