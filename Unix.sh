@@ -55,10 +55,10 @@
 gerarBaseUnix(){
 
 echo
-echo -e "\e[1;94mConstruindo aplicativos base Unix do Hexagonix®...\e[0m {"
+echo -e "\e[1;94mBuilding Hexagonix® Unix applications...\e[0m {"
 echo
 
-echo "Construindo aplicativos base Unix do Hexagonix®... {" >> $LOG
+echo "Building Hexagonix® Unix based applications... {" >> $LOG
 echo >> $LOG
 	
 # Vamos agora automatizar a construção dos aplicativos base Unix
@@ -71,9 +71,9 @@ do
 	for h in *.asm
 	do
 
-	echo -en "Construindo utilitário Unix do Hexagonix® \e[1;94m$(basename $h .asm)\e[0m..."
+	echo -en "Building Hexagonix® Unix utility \e[1;94m$(basename $h .asm)\e[0m..."
 	
-	echo Construindo aplicativo Unix do Hexagonix® $(basename $h .asm)... >> $LOG
+	echo Building Hexagonix® Unix Utility $(basename $h .asm)... >> $LOG
 	
 	echo >> $LOG
 	
@@ -91,7 +91,7 @@ do
 
 	if [ -e cows ] ; then
 
-	echo -n " > Copiando arquivos adicionais do pacote" $i 
+	echo -n " > Copying additional package files for" $i 
 
 	cp cows/*.cow ../$DESTINO >> /dev/null
 
@@ -108,7 +108,7 @@ cd ..
 done
 
 echo
-echo -e "} [\e[32mUtilitários Hexagonix construídos com sucesso\e[0m]."
+echo -e "} [\e[32mHexagonix utilities built successfully\e[0m]."
 echo
 
 
@@ -137,12 +137,12 @@ umount Sistema || exit
 
 umount -a
 
-echo "Um erro ocorreu durante a construção de algum componente do sistema."
+echo "An error occurred while building some system component."
 echo
-echo "Verifique o status dos componentes e utilize as saídas de erro acima para verificar o problema."
+echo "Check the status of the components and use the above error outputs to verify the problem."
 echo
-echo "Visualize o arquivo de log 'log.log', para mais informações sobre o(s) erro(s)."
-echo 
+echo "View the log file 'log.log', for more information about the error(s)."
+echo
 
 exit	
 	

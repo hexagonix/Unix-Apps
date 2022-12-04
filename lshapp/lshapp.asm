@@ -425,7 +425,7 @@ lshapp:
                       db "<!> Check the file name and try again.", 10, 0  
 .tipoArquitetura:     db 10, 10, "> Image target architecture: ", 0
 .verHexagon:          db 10, "> Minimum version of Hexagon(R) required to run: ", 0
-.camposVersaoHexagon: db " -> [HAPP:version e HAPP:subversion].", 0
+.camposVersaoHexagon: db " -> [HAPP:version and HAPP:subversion].", 0
 .cabecalho:           db 10, "<+> This file contains a valid HAPP image -> [HAPP:+].", 0
 .i386:                db "i386", 0
 .amd64:               db "amd64", 0
