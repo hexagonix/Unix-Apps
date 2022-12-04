@@ -836,7 +836,7 @@ login:
 
 .semArquivoUnix:            db 10, 10, "The configuration file of the Unix account control environment not found.", 10, 0        
 .solicitarUsuario:          db 10, "Login: ", 0
-.solicitarSenha:            db 10, "Enter your UNIX password: ", 0 
+.solicitarSenha:            db 10, "Password: ", 0 
 .uso:                       db 10, 10, "Usage: login [user]", 10, 10
                             db "Log in a registered user.", 10, 10
                             db "login version ", versaoLOGIN, 10, 10
