@@ -81,7 +81,7 @@ include "log.s"
 
 ;;************************************************************************************
 
-versaoINIT equ "2.1"
+versaoINIT equ "2.2"
 
 tamanhoLimiteBusca = 32768
 
@@ -101,7 +101,7 @@ init:
 .arquivoAusente:         db "Configuration file not found. The default shell will be executed (sh).", 0
 .erroGeral:              db "An unhandled error was encountered.", 0
 .registrandoComponentes: db "Starting service...", 0
-.configurarConsole:      db "Configuring consoles (vd0, vd1)...", 0
+.configurarConsole:      db "Setting up consoles (vd0, vd1)...", 0
 
 ;;************************************************************************************          
 
