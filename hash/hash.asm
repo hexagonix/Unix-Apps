@@ -495,7 +495,7 @@ hash:
 
 comandos:
 
-.sair: db "sair",0
+.sair: db "exit",0
 
 ;;**************************
 
