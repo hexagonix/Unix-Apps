@@ -71,10 +71,10 @@ include "macros.s"
 
 ;;************************************************************************************
 
-versaoMAN equ "2.1.1"
+versaoMAN equ "2.2"
 
-versaoCoreUtils equ "H2-dev-4.1" 
-versaoUnixUtils equ "H2-dev-5.0"
+versaoCoreUtils equ "H2-dev-5.1" 
+versaoUnixUtils equ "H2-dev-5.1"
 
 align 32
 
@@ -89,7 +89,8 @@ man:
                   db "UnixUtils Version: ", versaoUnixUtils, 10, 10
                   db "man version ", versaoMAN, 10, 10
                   db "Copyright (C) 2018-", __stringano, " Felipe Miguel Nery Lunkes", 10
-                  db "All rights reserved.", 10, 0
+                  db "All rights reserved.", 10, 10
+                  db "Hexagonix is distributed under the BSD-3-Clause license.", 10, 0
 .aguardar:        db "Press <q> to exit.", 0
 .naoEncontrado:   db ": manual not found for this utility.", 10, 0
 .separador:       db 10, "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++", 10, 0
