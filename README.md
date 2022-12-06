@@ -114,7 +114,7 @@ Several Unix-standard utilities are included so far. Are they:
 Other utilities are exclusive to Hexagonix. Are they:
 
 * htop (alternate version of top)
-* energy (energy state control)
+* energia (energy state control)
 * hash (alternate shell)
 * lshapp (reads and displays information from HAPP images)
 
