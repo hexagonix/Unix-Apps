@@ -48,7 +48,7 @@ Diversos utilitários no padrão Unix estão incluidos até o momento. São eles
 * echo
 * file
 * free
-* init 
+* init
 * login
 * ls
 * man
@@ -63,10 +63,9 @@ Diversos utilitários no padrão Unix estão incluidos até o momento. São eles
 
 Outros utilitários são exclusivos do Hexagonix. São eles:
 
-* atop (versão alternativa de top)
+* htop (versão alternativa de top)
 * energia (controle de estado energético)
 * hash (shell alternativo)
-* log (obter logs do Hexagon, obsoleto)
 * lshapp (lê e exibe informações de imagens HAPP)
 
 </div>
@@ -95,29 +94,28 @@ Several Unix-standard utilities are included so far. Are they:
 * clear
 * cowsay
 * cp
-* gives you
+* date
 * echo
-* filet
+* file
 * free
 * init
-* Login
+* login
 * ls
 * man
 * mount
 * ps
 * rm
 * sh
-* your
+* su
 * top
 * uname
 * whoami
 
 Other utilities are exclusive to Hexagonix. Are they:
 
-* atop (alternate version of top)
+* htop (alternate version of top)
 * energy (energy state control)
 * hash (alternate shell)
-* log (get logs from Hexagon, deprecated)
 * lshapp (reads and displays information from HAPP images)
 
 </div>
