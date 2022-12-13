@@ -336,7 +336,7 @@ energia:
                      db "Possible arguments:", 10, 10
                      db "-d - Prepares and initiates computer shutdown.", 10
                      db "-r - Prepare and restart the computer.", 10, 10
-                     db "energy version ", versaoENERGIA, 10, 10
+                     db "energia version ", versaoENERGIA, 10, 10
                      db "Copyright (C) 2022-", __stringano, " Felipe Miguel Nery Lunkes", 10
                      db "All rights reserved.", 10, 0
 
