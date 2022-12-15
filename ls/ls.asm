@@ -475,7 +475,7 @@ listar:
     
 .terminado:
 
-    cmp edx, 0h  ;; Verifica se existe algum arquivo solitário em uma linha
+    cmp edx, 1h  ;; Verifica se existe algum arquivo solitário em uma linha
     jl terminar
 
     novaLinha
@@ -667,7 +667,7 @@ verificarArquivo:
 ;;
 ;;************************************************************************************
 
-versaoLS equ "3.0"
+versaoLS equ "3.1"
 
 ls:
 
