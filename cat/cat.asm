@@ -145,11 +145,11 @@ terminar:
 ;;
 ;;************************************************************************************
 
-versaoCAT equ "1.0 " 
+versaoCAT equ "1.2" 
 
 cat:
 
-.naoEncontrado:   db 10, 10, "File not found. Check the file name and try again.", 10, 0
+.naoEncontrado:   db 10, 10, "File not found. Check the filename and try again.", 10, 0
 .uso:             db 10, 10, "Usage: cat [file]", 10, 10
                   db "Send the contents of a file to the main console.", 10, 10
                   db "cat version ", versaoCAT, 10, 10
