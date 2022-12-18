@@ -233,6 +233,8 @@ match =SIM, UNIX
     
     logSistema login.verboseLogout, 0, Log.Prioridades.p4
 
+    novaLinha
+
     jmp terminar
 
 .naoEncontrado:                    ;; O shell não pôde ser localizado
@@ -816,7 +818,7 @@ checarBaseDados:
 
 ;;************************************************************************************
 
-versaoLOGIN equ "4.1"
+versaoLOGIN equ "4.2"
 
 shellPadrao:       db "sh", 0           ;; Nome do arquivo que contêm o shell padrão do Hexagonix®
 vd0:               db "vd0", 0          ;; Console padrão
