@@ -73,8 +73,8 @@ include "macros.s"
 
 versaoMAN equ "2.2"
 
-versaoCoreUtils equ "H2-dev-5.1" 
-versaoUnixUtils equ "H2-dev-5.1"
+versaoCoreUtils equ "H2-RELEASE-5.1" 
+versaoUnixUtils equ "H2-RELEASE-5.1"
 
 align 32
 

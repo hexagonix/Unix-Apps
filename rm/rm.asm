@@ -115,10 +115,10 @@ inicioAPP:
 
     Hexagonix aguardarTeclado
     
-    cmp al, 's'
+    cmp al, 'y'
     je .deletar
     
-    cmp al, 'S'
+    cmp al, 'Y'
     je .deletar
     
     cmp al, 'n'
@@ -231,7 +231,7 @@ rm:
                   db "rm version ", versaoRM, 10, 10
                   db "Copyright (C) 2017-", __stringano, " Felipe Miguel Nery Lunkes", 10
                   db "All rights reserved.", 10, 0
-.confirmacao:     db "Are you sure you want to delete this file (s/N)? ", 0
+.confirmacao:     db "Are you sure you want to delete this file (y/N)? ", 0
 .deletado:        db 10, 10, "The requested file was successfully removed.", 10, 0
 .erroDeletando:   db 10, 10, "An error occurred during the request. No files were removed.", 10, 10, 0  
 .abortar:         db 10, 10, "The operation was aborted by the user.", 10, 0  

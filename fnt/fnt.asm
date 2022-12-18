@@ -79,13 +79,13 @@ versaoFNT equ "0.1"
 
 fnt:
 
-.uso:             db 10, 10, "Usage: fnt [font file]", 10, 10   
-                 db "Asks to change the system graphics font.", 10, 10
+.uso:             db 10, 10, "Usage: fnt [graphic font file]", 10, 10   
+                  db "Asks to change the system graphics font.", 10, 10
                   db "fnt version ", versaoFNT, 10, 10
                   db "Copyright (C) 2022-", __stringano, " Felipe Miguel Nery Lunkes", 10
                   db "All rights reserved.", 10, 0
-.nomeArquivo:     db 10, 10, "Font file name: ", 0    
-.nomeFonte:       db "File name: ", 0
+.nomeArquivo:     db 10, 10, "Font filename: ", 0    
+.nomeFonte:       db "Filename: ", 0
 .sucesso:         db 10, 10, "Font changed successfully.", 10, 10
                   db "Press any key to continue...", 10, 10, 0
 .falha:           db 10, 10, "The file cannot be found.", 10, 10
