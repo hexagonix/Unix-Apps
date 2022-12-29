@@ -131,8 +131,8 @@ match =Hexagonix, TIPOLOGIN
 .semArquivoUnix:   db 10, 10, "The user account database was not found on the volume.", 10, 0        
 .colcheteEsquerdo: db " [", 0
 .colcheteDireito:  db "]", 0
-.temaClaro:        db "claro", 0
-.temaEscuro:       db "escuro", 0
+.temaClaro:        db "light", 0
+.temaEscuro:       db "dark", 0
 .semVersao:        db "[unknown]", 0
 .verboseLogind:    db "logind version ", versaoLOGIND, ".", 0
 
