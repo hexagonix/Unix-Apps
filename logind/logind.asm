@@ -128,7 +128,7 @@ match =Hexagonix, TIPOLOGIN
 
 .versaoSistema:    db 10, "Hexagonix version ", 0
 .console:          db " (vd0)", 0
-.semArquivoUnix:   db 10, 10, "Unix accounts database not found.", 10, 0        
+.semArquivoUnix:   db 10, 10, "The user account database was not found on the volume.", 10, 0        
 .colcheteEsquerdo: db " [", 0
 .colcheteDireito:  db "]", 0
 .temaClaro:        db "claro", 0

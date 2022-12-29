@@ -96,7 +96,7 @@ posicaoBX:                 dw 0             ;; Marcação da posição de busca 
 init:
 
 .inicioInit:             db "init version ", versaoINIT, ".", 0
-.procurarArquivo:        db "Looking for configuration file on volume...", 0
+.procurarArquivo:        db "Looking for configuration file in /...", 0
 .arquivoEncontrado:      db "Configuration file found.", 0
 .arquivoAusente:         db "Configuration file not found. The default shell will be executed (sh).", 0
 .erroGeral:              db "An unhandled error was encountered.", 0

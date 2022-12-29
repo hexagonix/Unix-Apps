@@ -836,7 +836,7 @@ login:
 
 ;; Mensagens gerais
 
-.semArquivoUnix:            db 10, 10, "The configuration file of the Unix account control environment not found.", 10, 0        
+.semArquivoUnix:            db 10, 10, "The user account database was not found on the volume.", 10, 0        
 .solicitarUsuario:          db 10, "Login: ", 0
 .solicitarSenha:            db 10, "Password: ", 0 
 .uso:                       db 10, 10, "Usage: login [user]", 10, 10
@@ -854,8 +854,8 @@ login:
 
 .verboseLogin:              db "login version ", versaoLOGIN, ".", 0
 .verboseProcurarArquivo:    db "Searching user database in /...", 0
-.verboseArquivoEncontrado:  db "The database was found.", 0
-.verboseArquivoAusente:     db "The file was not found. The default shell will run (sh.app).", 0
+.verboseArquivoEncontrado:  db "The user account database was found.", 0
+.verboseArquivoAusente:     db "The user account database was not found. The default shell will run (sh.app).", 0
 .verboseErro:               db "An unhandled error was encountered.", 0
 .verboseLoginAceito:        db "Login accepted.", 0
 .verboseLoginRecusado:      db "Login attempt prevented by authentication failure.", 0

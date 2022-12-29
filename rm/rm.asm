@@ -239,7 +239,7 @@ rm:
 .parametroAjuda2: db "--help", 0    
 .semParametro:    db 10, 10, "A required file name is missing.", 10
                   db "Use 'rm ?' for help with this utility.", 10, 0
-.permissaoNegada: db "Only an administrative user can complete this action.", 10
+.permissaoNegada: db "Only an administrative (or root) user can complete this action.", 10
                   db "To do so, login to one of these users with administrative privileges.", 10, 0                 
     
 parametro: dd ?

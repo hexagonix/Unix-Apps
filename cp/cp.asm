@@ -272,7 +272,7 @@ versaoCP equ "2.0"
 cp:
     
 .naoEncontrado:     db 10, 10, "File not found. Please check file name and try again.", 10, 0
-.uso:              db 10, 10, "Usage: cp [input file] [output file]", 10, 10
+.uso:               db 10, 10, "Usage: cp [input file] [output file]", 10, 10
                     db "Performs a copy of a given file into another. Two file names are required, one being", 10
                     db "for input and another for output.", 10, 10
                     db "cp version ", versaoCP, 10, 10
