@@ -79,50 +79,50 @@ inicioAPP:
     
     mov [parametro], edi ;; Salvar os parâmetros da linha de comando para uso futuro
     
-    logSistema energia.Verbose.inicio, 00h, Log.Prioridades.p4
-    logSistema energia.Verbose.estado, 00h, Log.Prioridades.p4
+    logSistema shutdown.Verbose.inicio, 00h, Log.Prioridades.p4
+    logSistema shutdown.Verbose.estado, 00h, Log.Prioridades.p4
 
     mov esi, [parametro]
     
     cmp byte[esi], 0
     je faltaArgumento
 
-    mov edi, energia.parametroAjuda
+    mov edi, shutdown.parametroAjuda
     mov esi, [parametro]
     
     Hexagonix compararPalavrasString
     
     jc usoAplicativo
 
-    mov edi, energia.parametroAjuda2
+    mov edi, shutdown.parametroAjuda2
     mov esi, [parametro]
     
     Hexagonix compararPalavrasString
     
     jc usoAplicativo
 
-    mov edi, energia.parametroDesligar
+    mov edi, shutdown.parametroDesligar
     mov esi, [parametro]
     
     Hexagonix compararPalavrasString
     
     jc iniciarDesligamento
     
-    mov edi, energia.parametroReiniciar
+    mov edi, shutdown.parametroReiniciar
     mov esi, [parametro]
     
     Hexagonix compararPalavrasString
     
     jc iniciarReinicio
 
-    mov edi, energia.parDesligarSemEco
+    mov edi, shutdown.parDesligarSemEco
     mov esi, [parametro]
     
     Hexagonix compararPalavrasString
     
     jc iniciarDesligamentoSemEco
 
-    mov edi, energia.parReiniciarSemEco
+    mov edi, shutdown.parReiniciarSemEco
     mov esi, [parametro]
     
     Hexagonix compararPalavrasString
@@ -137,7 +137,7 @@ iniciarDesligamento:
     
     novaLinha
     
-    mov esi, energia.sistema
+    mov esi, shutdown.sistema
 
     imprimirString
     
@@ -147,11 +147,11 @@ iniciarDesligamento:
 
 iniciarDesligamentoSemEco:
 
-    logSistema energia.Verbose.parametroDesligar, 00h, Log.Prioridades.p4
+    logSistema shutdown.Verbose.parametroDesligar, 00h, Log.Prioridades.p4
 
     call prepararSistemaSemEco
 
-    logSistema energia.Verbose.parametroSolicitar, 00h, Log.Prioridades.p4
+    logSistema shutdown.Verbose.parametroSolicitar, 00h, Log.Prioridades.p4
 
     Hexagonix desligarPC
 
@@ -161,11 +161,11 @@ iniciarDesligamentoSemEco:
 
 iniciarReinicioSemEco:
 
-    logSistema energia.Verbose.parametroReiniciar, 00h, Log.Prioridades.p4
+    logSistema shutdown.Verbose.parametroReiniciar, 00h, Log.Prioridades.p4
 
     call prepararSistemaSemEco
 
-    logSistema energia.Verbose.parametroSolicitar, 00h, Log.Prioridades.p4
+    logSistema shutdown.Verbose.parametroSolicitar, 00h, Log.Prioridades.p4
 
     Hexagonix reiniciarPC
 
@@ -177,7 +177,7 @@ iniciarReinicio:
 
     novaLinha
     
-    mov esi, energia.sistema
+    mov esi, shutdown.sistema
 
     imprimirString
     
@@ -187,11 +187,11 @@ iniciarReinicio:
     
 desligarHexagon:
 
-    logSistema energia.Verbose.parametroDesligar, 00h, Log.Prioridades.p4
+    logSistema shutdown.Verbose.parametroDesligar, 00h, Log.Prioridades.p4
 
     call prepararSistema
 
-    logSistema energia.Verbose.parametroSolicitar, 00h, Log.Prioridades.p4
+    logSistema shutdown.Verbose.parametroSolicitar, 00h, Log.Prioridades.p4
 
     Hexagonix desligarPC
 
@@ -201,11 +201,11 @@ desligarHexagon:
 
 reiniciarHexagon:
 
-    logSistema energia.Verbose.parametroReiniciar, 00h, Log.Prioridades.p4
+    logSistema shutdown.Verbose.parametroReiniciar, 00h, Log.Prioridades.p4
 
     call prepararSistema
 
-    logSistema energia.Verbose.parametroSolicitar, 00h, Log.Prioridades.p4
+    logSistema shutdown.Verbose.parametroSolicitar, 00h, Log.Prioridades.p4
 
     Hexagonix reiniciarPC
 
@@ -223,7 +223,7 @@ prepararSistemaSemEco:
 
 prepararSistema:
 
-    mov esi, energia.msgDesligamento
+    mov esi, shutdown.msgDesligamento
 
     imprimirString
 
@@ -231,23 +231,11 @@ prepararSistema:
     
     Hexagonix causarAtraso
     
-    mov esi, energia.msgPronto
+    mov esi, shutdown.msgPronto
 
     imprimirString
 
-    mov esi, energia.msgFinalizando
-
-    imprimirString
-
-    mov ecx, 500
-    
-    Hexagonix causarAtraso
-    
-    mov esi, energia.msgPronto
-
-    imprimirString
-
-    mov esi, energia.msgHexagonix
+    mov esi, shutdown.msgFinalizando
 
     imprimirString
 
@@ -255,11 +243,11 @@ prepararSistema:
     
     Hexagonix causarAtraso
     
-    mov esi, energia.msgPronto
+    mov esi, shutdown.msgPronto
 
     imprimirString
 
-    mov esi, energia.msgDiscos
+    mov esi, shutdown.msgHexagonix
 
     imprimirString
 
@@ -267,7 +255,19 @@ prepararSistema:
     
     Hexagonix causarAtraso
     
-    mov esi, energia.msgPronto
+    mov esi, shutdown.msgPronto
+
+    imprimirString
+
+    mov esi, shutdown.msgDiscos
+
+    imprimirString
+
+    mov ecx, 500
+    
+    Hexagonix causarAtraso
+    
+    mov esi, shutdown.msgPronto
 
     imprimirString
 
@@ -279,7 +279,7 @@ prepararSistema:
 
 usoAplicativo:
 
-    mov esi, energia.uso
+    mov esi, shutdown.uso
     
     imprimirString
     
@@ -289,7 +289,7 @@ usoAplicativo:
 
 faltaArgumento:
 
-    mov esi, energia.argumentos
+    mov esi, shutdown.argumentos
     
     imprimirString
     
@@ -299,7 +299,7 @@ faltaArgumento:
 
 terminar:
 
-    logSistema energia.Verbose.falhaSolicitacao, 00h, Log.Prioridades.p4
+    logSistema shutdown.Verbose.falhaSolicitacao, 00h, Log.Prioridades.p4
 
     Hexagonix encerrarProcesso
 
@@ -309,11 +309,11 @@ terminar:
 ;;
 ;;************************************************************************************
 
-rotuloMENSAGEM equ "[Energia]: "
+rotuloMENSAGEM equ "[shutdown]: "
 
-versaoENERGIA  equ "1.0"
+versaoSHUTDOWN  equ "1.0"
 
-energia:
+shutdown:
 
 .parametroDesligar:  db "-d", 0
 .parDesligarSemEco:  db "-de", 0
@@ -331,18 +331,18 @@ energia:
                      db "Copyright (C) 2016-2022 Felipe Miguel Nery Lunkes", 10
                      db "All rights reserved.", 10, 0
 .argumentos:         db 10, 10, "An argument is required to control the state of this device.", 10, 0
-.uso:                db 10, 10, "Usage: energia [argument]", 10, 10
+.uso:                db 10, 10, "Usage: shutdown [argument]", 10, 10
                      db "Controls the state of the computer.", 10, 10
                      db "Possible arguments:", 10, 10
                      db "-d - Prepares and initiates computer shutdown.", 10
                      db "-r - Prepare and restart the computer.", 10, 10
-                     db "energia version ", versaoENERGIA, 10, 10
+                     db "shutdown version ", versaoSHUTDOWN, 10, 10
                      db "Copyright (C) 2022-", __stringano, " Felipe Miguel Nery Lunkes", 10
                      db "All rights reserved.", 10, 0
 
-energia.Verbose:
+shutdown.Verbose:
 
-.inicio:             db rotuloMENSAGEM, "starting power management (version ", versaoENERGIA, ")...", 0
+.inicio:             db rotuloMENSAGEM, "starting power management (version ", versaoSHUTDOWN, ")...", 0
 .estado:             db rotuloMENSAGEM, "getting device state...", 0
 .parametroDesligar:  db rotuloMENSAGEM, "received shutdown request.", 0
 .parametroReiniciar: db rotuloMENSAGEM, "reboot request received.", 0
