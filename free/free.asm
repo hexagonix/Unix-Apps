@@ -95,7 +95,6 @@ inicioAPP:
     jc usoAplicativo
     
     novaLinha
-    novaLinha
 
     mov esi, free.memoria
 
@@ -138,8 +137,6 @@ inicioAPP:
 
     imprimirString
 
-    novaLinha
-
     jmp terminar
 
 ;;************************************************************************************
@@ -164,11 +161,11 @@ versaoFREE equ "0.2"
 
 free:
 
-.uso:             db 10, 10, "Usage: free", 10, 10
+.uso:             db 10, "Usage: free", 10, 10
                   db "Display information about system memory usage.", 10, 10
                   db "free version ", versaoFREE, 10, 10
                   db "Copyright (C) 2020-", __stringano, " Felipe Miguel Nery Lunkes", 10
-                  db "All rights reserved.", 10, 0
+                  db "All rights reserved.", 0
 .memoria:         db "Memory installed  | Used memory       | Reserved memory", 10, 0
 .kbytes:          db " bytes           ", 0
 .megabytes:       db " megabytes        ", 0

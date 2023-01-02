@@ -164,7 +164,6 @@ configurarExibicao:
 listar:
     
     novaLinha
-    novaLinha
     
     Hexagonix listarArquivos    ;; Obter arquivos em ESI
     
@@ -478,7 +477,7 @@ listar:
     cmp edx, 1h  ;; Verifica se existe algum arquivo solitário em uma linha
     jl terminar
 
-    novaLinha
+    ;; novaLinha
     
     jmp terminar
 
@@ -655,8 +654,6 @@ verificarArquivo:
 
     imprimirString
 
-    novaLinha
-
     jmp terminar
 
 ;;************************************************************************************
@@ -681,14 +678,14 @@ ls:
 .extensaoCOW:      db ".COW", 0
 .extensaoMAN:      db ".MAN", 0
 .extensaoMOD:      db ".MOD", 0
-.erroLista:        db 10, 10, "Error listing the files present on the volume.", 10, 0
-.uso:              db 10, 10, "Usage: ls", 10, 10
+.erroLista:        db 10, "Error listing the files present on the volume.", 0
+.uso:              db 10, "Usage: ls", 10, 10
                    db "Lists and displays the files present on the current volume, sorting them by type.", 10, 10
                    db "Available parameters:", 10, 10
                    db "-a - List all files available on the volume.", 10, 10
                    db "ls version ", versaoLS, 10, 10
                    db "Copyright (C) 2017-", __stringano, " Felipe Miguel Nery Lunkes", 10
-                   db "All rights reserved.", 10, 0
+                   db "All rights reserved.", 0
 .parametroAjuda:   db "?", 0    
 .parametroAjuda2:  db "--help", 0
 .parametroTudo:    db "-a" ,0         

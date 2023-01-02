@@ -86,7 +86,6 @@ inicioAPP: ;; Ponto de entrada do aplicativo
 ;;************************************************************************************
 
     novaLinha
-    novaLinha
     
     mov edi, top.parametroAjuda
     mov esi, [parametro]
@@ -195,8 +194,6 @@ usoAplicativo:
 ;;************************************************************************************  
 
 terminar:   
-
-    novaLinha
     
     Hexagonix encerrarProcesso
 

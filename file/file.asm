@@ -447,28 +447,28 @@ versaoFILE equ "1.7"
 
 fileUnix:
 
-.uso:             db 10, 10, "Usage: file [file]", 10, 10
+.uso:             db 10, "Usage: file [file]", 10, 10
                   db "Retrieve information from the file and send it to the main console.", 10, 10
                   db "file version ", versaoFILE, 10, 10
                   db "Copyright (C) 2017-", __stringano, " Felipe Miguel Nery Lunkes", 10
-                  db "All rights reserved.", 10, 0
-.arquivoInvalido: db 10, 10, "The file name is invalid. Please enter a valid filename.", 10, 0
-.infoArquivo:     db 10, 10, "Filename: ", 0
-.tamanhoArquivo:  db 10, 10, "Size of this file: ", 0
+                  db "All rights reserved.", 0
+.arquivoInvalido: db 10, "The file name is invalid. Please enter a valid filename.", 10, 0
+.infoArquivo:     db 10, "Filename: ", 0
+.tamanhoArquivo:  db 10, "Size of this file: ", 0
 .bytes:           db " bytes.", 10, 0
-.semArquivo:      db 10, 10, "The requested file is not available on this volume.", 10, 10
+.semArquivo:      db 10, "The requested file is not available on this volume.", 10
                   db "Check the filename and try again.", 10, 0  
-.appValido:       db 10, "This appears to be a Unix executable of Hexagon(R).", 10, 0
-.arquivoHBoot:    db 10, "This appears to be an executable in HBoot format (HBoot or HBoot module).", 10, 0
+.appValido:       db 10, "This appears to be a Unix executable of Hexagon(R).", 0
+.arquivoHBoot:    db 10, "This appears to be an executable in HBoot format (HBoot or HBoot module).", 0
 .arquivoASM:      db 10, "This appears to be an assembly source file.", 10, 0
-.arquivoLibASM:   db 10, "This appears to be a source file that contains an assembly library for development.", 10, 0
-.arquivoSIS:      db 10, "This appears to be a system file.", 10, 0
-.arquivoUnix:     db 10, "This appears to be a Unix environment data or configuration file.", 10, 0               
-.arquivoMAN:      db 10, "This appears to be a Unix environment manual file.", 10, 0
-.arquivoCOW:      db 10, "This appears to be a database file from the Unix cowsay utility.", 10, 0
-.arquivoTXT:      db 10, "This appears to be a UTF-8 text file.", 10, 0
-.arquivoFNT:      db 10, "This appears to be a Hexagon(R) display source file.", 10, 0
-.arquivoCAN:      db 10, "This appears to be a Hexagonix(R) config plugin file.", 10, 0
+.arquivoLibASM:   db 10, "This appears to be a source file that contains an assembly library for development.", 0
+.arquivoSIS:      db 10, "This appears to be a system file.", 0
+.arquivoUnix:     db 10, "This appears to be a Unix environment data or configuration file.", 0               
+.arquivoMAN:      db 10, "This appears to be a Unix environment manual file.", 0
+.arquivoCOW:      db 10, "This appears to be a database file from the Unix cowsay utility.", 0
+.arquivoTXT:      db 10, "This appears to be a UTF-8 text file.", 0
+.arquivoFNT:      db 10, "This appears to be a Hexagon(R) display source file.", 0
+.arquivoCAN:      db 10, "This appears to be a Hexagonix(R) config plugin file.", 0
 .parametroAjuda:  db "?", 0
 .parametroAjuda2: db "--help", 0
 .extensaoSIS:     db ".SIS", 0

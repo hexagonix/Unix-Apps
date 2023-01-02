@@ -79,18 +79,18 @@ versaoLSHMOD equ "0.5"
 
 lshmod:
 
-.uso:                 db 10, 10, "Usage: lshmod [file]", 10, 10
+.uso:                 db 10, "Usage: lshmod [file]", 10, 10
                       db "Retrieve information from an HBoot image or module.", 10, 10
                       db "lshmod version ", versaoLSHMOD, 10, 10
                       db "Copyright (C) 2022-", __stringano, " Felipe Miguel Nery Lunkes", 10
-                      db "All rights reserved.", 10, 0
-.arquivoInvalido:     db 10, 10, "The file name is invalid. Please enter a valid filename.", 10, 0
-.infoArquivo:         db 10, 10, "Filename: ", 0
+                      db "All rights reserved.", 0
+.arquivoInvalido:     db 10, "The file name is invalid. Please enter a valid filename.", 0
+.infoArquivo:         db 10, "Filename: ", 0
 .tamanhoArquivo:      db 10, "Size of this file: ", 0
 .bytes:               db " bytes.", 10, 0
-.imagemInvalida:      db 10, "<!> This is not an HBoot module image. Try another file.", 10, 0
-.semArquivo:          db 10, 10, "<!> The requested file is not available on this volume.", 10, 10
-                      db "<!> Check the file name and try again.", 10, 0  
+.imagemInvalida:      db 10, "<!> This is not an HBoot module image. Try another file.", 0
+.semArquivo:          db 10, "<!> The requested file is not available on this volume.", 10, 10
+                      db "<!> Check the file name and try again.", 0  
 .tipoArquitetura:     db 10, 10, "> Target architecture: ", 0
 .verModulo:           db 10, "> Module version: ", 0
 .ponto:               db ".", 0
@@ -208,8 +208,6 @@ inicioAPP:
     jmp .fim    
     
 .fim:
-    
-    novaLinha
 
     jmp terminar
 

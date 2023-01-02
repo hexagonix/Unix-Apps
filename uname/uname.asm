@@ -119,7 +119,7 @@ uname:
 .arquivoUnix:               db "host.unx", 0
 .naoSuportado:              db "Unknown architecture.", 0      
 .plataformaPC:              db "PC", 0  
-.uso:                       db 10, 10, "Usage: uname [parameter]", 10, 10
+.uso:                       db 10, "Usage: uname [parameter]", 10, 10
                             db "Displays system information.", 10, 10
                             db "Possible parameters (in case of missing parameters, the '-s' option will be selected):", 10, 10
                             db " -a: Displays all possible system, kernel and machine information.", 10
@@ -503,9 +503,7 @@ usoAplicativo:
 
 ;;************************************************************************************  
 
-terminar:   
-
-    novaLinha 
+terminar:    
 
     Hexagonix encerrarProcesso
     
@@ -513,7 +511,6 @@ terminar:
 
 espacoPadrao:
 
-    novaLinha
     novaLinha
 
     ret

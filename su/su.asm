@@ -198,7 +198,7 @@ iniciarExecucao:
     
     call restaurarUsuario          ;; Restaura o usuário da sessão anterior
     
-    jmp terminar.semLinha
+    jmp terminar
     
 ;;************************************************************************************
 
@@ -695,10 +695,6 @@ finalizarExecucao:
 
 terminar:   
 
-    novaLinha
-
-.semLinha:
-
     Hexagonix encerrarProcesso
 
 ;;************************************************************************************
@@ -729,7 +725,7 @@ su:
                     db "system, so be careful.", 10, 10
                     db 'Remember: "Great power comes with great responsibility"!', 0  
 .solicitarSenha:    db 10, "Enter your UNIX password: ", 0 
-.uso:               db 10, 10, "Usage: su [user]", 10, 10
+.uso:               db 10, "Usage: su [user]", 10, 10
                     db "Change to a registered user.", 10, 10
                     db "su version ", versaoSU, 10, 10
                     db "Copyright (C) 2017-", __stringano, " Felipe Miguel Nery Lunkes", 10
@@ -739,7 +735,7 @@ su:
 .parametroAjuda:    db "?", 0   
 .parametroAjuda2:   db "--help", 0
 .usuarioROOT:       db "root", 0
-.falhaAutenticacao: db 10, 10, "su: Authentication failed.", 0
+.falhaAutenticacao: db 10, "su: Authentication failed.", 0
 
 usuarioSolicitado:  times 17 db 0
 usuarioAnterior:    times 17 db 0

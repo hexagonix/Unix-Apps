@@ -349,22 +349,22 @@ versaoMOUNT equ "2.1"
 
 mount:
 
-.volume:            db 10, 10, "Mounting [", 0
+.volume:            db 10, "Mounting [", 0
 .fecharColchete:    db "]...", 10, 10, 0
 .pontoMontagem:     db "] on [", 0
 .montado:           db "Success mouting the volume.", 10, 0
-.uso:               db 10, 10, "Usage: mount [volume] [mount point]", 10, 10
+.uso:               db 10, "Usage: mount [volume] [mount point]", 10, 10
                     db "Performs mounting a volume to a file system mount point.", 10, 10
                     db "If no parameter is provided, the mounting points will be displayed.", 10, 10
                     db "mount version ", versaoMOUNT, 10, 10
                     db "Copyright (C) 2017-", __stringano, " Felipe Miguel Nery Lunkes", 10
-                    db "All rights reserved.", 10, 0
+                    db "All rights reserved.", 0
 .erroAbrindo:       db "Error mounting volume at specified mount point.", 10
                     db "Try to enter a valid name or reference of an attached volume.", 10, 0
 .parametroAjuda:    db "?", 0
 .dispositivoPadrao: db "/", 0
-.erroPontoMontagem: db 10, 10, "Please enter a valid mount point for this volume and file system.", 10, 0
-.volumeMontado:     db 10, 10, "Volume ", 0
+.erroPontoMontagem: db 10, "Please enter a valid mount point for this volume and file system.", 10, 0
+.volumeMontado:     db 10, "Volume ", 0
 .infoVolume:        db " mounted on ", 0
 .rotuloVolume:      db " with the label ", 0
 .operacaoNegada:    db "The mount was refused by the system. This may be explained due to the fact that the current user", 10
@@ -372,7 +372,7 @@ mount:
                     db "Only the root user (root) can perform mounts. Login in this user to perform", 10
                     db "the desired mount.", 10, 0
 .parenteses1:       db " (", 0
-.parenteses2:       db ")", 10, 0
+.parenteses2:       db ")", 0
 .FAT16:             db "FAT16B", 0
 .FAT12:             db "FAT12", 0
 .FAT16_32:          db "FAT16 <32 MB", 0

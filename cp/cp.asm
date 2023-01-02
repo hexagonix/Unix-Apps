@@ -271,25 +271,25 @@ versaoCP equ "2.0"
 
 cp:
     
-.naoEncontrado:     db 10, 10, "File not found. Please check file name and try again.", 10, 0
-.uso:               db 10, 10, "Usage: cp [input file] [output file]", 10, 10
+.naoEncontrado:     db 10, "File not found. Please check file name and try again.", 10, 0
+.uso:               db 10, "Usage: cp [input file] [output file]", 10, 10
                     db "Performs a copy of a given file into another. Two file names are required, one being", 10
                     db "for input and another for output.", 10, 10
                     db "cp version ", versaoCP, 10, 10
                     db "Copyright (C) 2017-", __stringano, " Felipe Miguel Nery Lunkes", 10
-                    db "All rights reserved.", 10, 0
-.fonteIndisponivel: db 10, 10, "The provided source file cannot be found on this volume.", 10, 0                              
-.destinoExistente:  db 10, 10, "A file with the given name already exists for the destination. Please remove the file with the same", 10
+                    db "All rights reserved.", 0
+.fonteIndisponivel: db 10, "The provided source file cannot be found on this volume.", 10, 0                              
+.destinoExistente:  db 10, "A file with the given name already exists for the destination. Please remove the file with the same", 10
                     db "destination name and try again.", 10, 0
-.erroAbrindo:       db 10, 10, "An error occurred while trying to open the copy source file.", 10
+.erroAbrindo:       db 10, "An error occurred while trying to open the copy source file.", 10
                     db "Try again. If the error persists, restart your computer.", 10, 0
-.erroSalvando:      db 10, 10, "An error occurred while requesting to save the target file to the volume.", 10
+.erroSalvando:      db 10, "An error occurred while requesting to save the target file to the volume.", 10
                     db "This could be due to write protection, drive removal", 10
                     db "out of storage or because the system is busy. Please try again", 10
                     db "later.", 10, 0
-.copiaConcluida:    db 10, 10, "The file has been successfully copied.", 10, 0
- .parametroAjuda:   db "?", 0
- .parametroAjuda2:  db "--help", 0
+.copiaConcluida:    db 10, "The file has been successfully copied.", 10, 0
+.parametroAjuda:    db "?", 0
+.parametroAjuda2:   db "--help", 0
                
 parametros:     dd 0     
 arquivoEntrada: dd ?

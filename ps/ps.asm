@@ -77,7 +77,6 @@ inicioAPP: ;; Ponto de entrada do aplicativo
     mov [parametro], edi
     
     novaLinha
-    novaLinha
     
     mov edi, ps.parametroAjuda
     mov esi, [parametro]
@@ -155,10 +154,6 @@ parametroMemoria:
     
     imprimirString
     
-    novaLinha
-    
-    Hexagonix encerrarProcesso
-    
     jmp terminar
 
 ;;************************************************************************************
@@ -196,8 +191,6 @@ usoAplicativo:
 ;;************************************************************************************  
 
 terminar:   
-
-    novaLinha
     
     Hexagonix encerrarProcesso
 

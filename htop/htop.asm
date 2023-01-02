@@ -84,7 +84,6 @@ inicioAPP: ;; Ponto de entrada do aplicativo
     mov dword[htop.corFundo], ebx
 
     novaLinha
-    novaLinha
     
     mov edi, htop.parametroAjuda
     mov esi, [parametro]
@@ -217,8 +216,6 @@ usoAplicativo:
     mov esi, htop.uso
     
     imprimirString
-    
-    novaLinha
 
     jmp terminar
 

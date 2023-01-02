@@ -95,7 +95,6 @@ inicioAPP:
     jc usoAplicativo
     
     novaLinha
-    novaLinha
 
     call processarBCD ;; Fazer a conversão de BCD para caractere imrprimível
 
@@ -239,8 +238,6 @@ match =SIM, DIASEMANA
 
 .continuar:
 
-    novaLinha
-
     jmp terminar
 
 ;;************************************************************************************
@@ -374,11 +371,11 @@ versaoDATE equ "1.0"
 
 date:
         
-.uso:             db 10, 10, "Usage: date", 10, 10
+.uso:             db 10, "Usage: date", 10, 10
                   db "Display system date and time.", 10, 10
                   db "date version ", versaoDATE, 10, 10
                   db "Copyright (C) 2020-", __stringano, " Felipe Miguel Nery Lunkes", 10
-                  db "All rights reserved.", 10, 0
+                  db "All rights reserved.", 0
 .domingo:         db " (domingo)", 0
 .segunda:         db " (segunda-feira)", 0
 .terca:           db " (terca-feira)", 0

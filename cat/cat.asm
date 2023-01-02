@@ -105,7 +105,6 @@ inicioAPP:
     jc .arquivoNaoEncontrado
     
     novaLinha
-    novaLinha
     
     mov esi, bufferArquivo
     
@@ -149,12 +148,12 @@ versaoCAT equ "1.2"
 
 cat:
 
-.naoEncontrado:   db 10, 10, "File not found. Check the filename and try again.", 10, 0
-.uso:             db 10, 10, "Usage: cat [file]", 10, 10
+.naoEncontrado:   db 10, "File not found. Check the filename and try again.", 0
+.uso:             db 10, "Usage: cat [file]", 10, 10
                   db "Send the contents of a file to the main console.", 10, 10
                   db "cat version ", versaoCAT, 10, 10
                   db "Copyright (C) 2017-", __stringano, " Felipe Miguel Nery Lunkes", 10
-                  db "All rights reserved.", 10, 0
+                  db "All rights reserved.", 0
 .parametroAjuda:  db "?", 0
 .parametroAjuda2: db "--help", 0
      

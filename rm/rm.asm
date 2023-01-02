@@ -105,7 +105,6 @@ inicioAPP:
     jc .arquivoNaoEncontrado
     
     novaLinha
-    novaLinha
     
     mov esi, rm.confirmacao
     
@@ -225,22 +224,22 @@ versaoRM equ "1.0"
 
 rm:
 
-.naoEncontrado:   db 10, 10, "File not found.", 10, 0
-.uso:             db 10, 10, "Usage: rm [file]", 10, 10
+.naoEncontrado:   db 10, "File not found.", 10, 0
+.uso:             db 10, "Usage: rm [file]", 10, 10
                   db "Requests to delete a file on the current volume.", 10, 10
                   db "rm version ", versaoRM, 10, 10
                   db "Copyright (C) 2017-", __stringano, " Felipe Miguel Nery Lunkes", 10
-                  db "All rights reserved.", 10, 0
+                  db "All rights reserved.", 0
 .confirmacao:     db "Are you sure you want to delete this file (y/N)? ", 0
-.deletado:        db 10, 10, "The requested file was successfully removed.", 10, 0
-.erroDeletando:   db 10, 10, "An error occurred during the request. No files were removed.", 10, 10, 0  
-.abortar:         db 10, 10, "The operation was aborted by the user.", 10, 0  
+.deletado:        db 10, 10, "The requested file was successfully removed.", 0
+.erroDeletando:   db 10, 10, "An error occurred during the request. No files were removed.", 0  
+.abortar:         db 10, 10, "The operation was aborted by the user.", 0  
 .parametroAjuda:  db "?", 0  
 .parametroAjuda2: db "--help", 0    
-.semParametro:    db 10, 10, "A required file name is missing.", 10
-                  db "Use 'rm ?' for help with this utility.", 10, 0
+.semParametro:    db 10, "A required file name is missing.", 10
+                  db "Use 'rm ?' for help with this utility.", 0
 .permissaoNegada: db "Only an administrative (or root) user can complete this action.", 10
-                  db "To do so, login to one of these users with administrative privileges.", 10, 0                 
+                  db "To do so, login to one of these users with administrative privileges.", 0                 
     
 parametro: dd ?
 regES:     dw 0

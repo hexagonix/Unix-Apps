@@ -344,8 +344,6 @@ verificarArquivoHAPP:
 
     imprimirString
 
-    novaLinha
-
     ret
 
 .naoHAPP:
@@ -411,13 +409,13 @@ versaoLSHAPP equ "1.9.1"
 
 lshapp:
 
-.uso:                 db 10, 10, "Usage: lshapp [file]", 10, 10
+.uso:                 db 10, "Usage: lshapp [file]", 10, 10
                       db "Retrieve and display information from a HAPP image.", 10, 10
                       db "lshapp version ", versaoLSHAPP, 10, 10
                       db "Copyright (C) 2020-", __stringano, " Felipe Miguel Nery Lunkes", 10
-                      db "All rights reserved.", 10, 0
+                      db "All rights reserved.", 0
 .arquivoInvalido:     db 10, 10, "The filename is invalid. Please enter a valid filename.", 10, 0
-.infoArquivo:         db 10, 10, "Filename: ", 0
+.infoArquivo:         db 10, "Filename: ", 0
 .tamanhoArquivo:      db 10, "Size of this file: ", 0
 .bytes:               db " bytes.", 10, 0
 .imagemInvalida:      db 10, "<!> This is not a valid HAPP image -> [HAPP:-]. Try another file.", 10, 0

@@ -327,18 +327,18 @@ shutdown:
 .msgFalha:           db "[Fail]", 0
 .parametroAjuda:     db "?", 0  
 .parametroAjuda2:    db "--help", 0
-.sistema:            db 10, "Hexagonix(R) Operating System", 10, 10
+.sistema:            db 10, "Hexagonix(R) Operating System", 10
                      db "Copyright (C) 2016-2022 Felipe Miguel Nery Lunkes", 10
-                     db "All rights reserved.", 10, 0
-.argumentos:         db 10, 10, "An argument is required to control the state of this device.", 10, 0
-.uso:                db 10, 10, "Usage: shutdown [argument]", 10, 10
+                     db "All rights reserved.", 0
+.argumentos:         db 10, "An argument is required to control the state of this device.", 10, 0
+.uso:                db 10, "Usage: shutdown [argument]", 10, 10
                      db "Controls the state of the computer.", 10, 10
                      db "Possible arguments:", 10, 10
                      db "-d - Prepares and initiates computer shutdown.", 10
                      db "-r - Prepare and restart the computer.", 10, 10
                      db "shutdown version ", versaoSHUTDOWN, 10, 10
                      db "Copyright (C) 2022-", __stringano, " Felipe Miguel Nery Lunkes", 10
-                     db "All rights reserved.", 10, 0
+                     db "All rights reserved.", 0
 
 shutdown.Verbose:
 
