@@ -83,14 +83,14 @@ man:
 .parametroAjuda:  db "?", 0
 .parametroAjuda2: db "--help",0
 .man:             db "Hexagonix(R) manual", 0
-.uso:             db 10, 10, "Usage: man [utility]", 10, 10
+.uso:             db 10, "Usage: man [utility]", 10, 10
                   db "Display detailed help for installed Unix utilities.", 10, 10
                   db "CoreUtils version: ", versaoCoreUtils, 10
                   db "UnixUtils Version: ", versaoUnixUtils, 10, 10
                   db "man version ", versaoMAN, 10, 10
                   db "Copyright (C) 2018-", __stringano, " Felipe Miguel Nery Lunkes", 10
                   db "All rights reserved.", 10, 10
-                  db "Hexagonix is distributed under the BSD-3-Clause license.", 10, 0
+                  db "Hexagonix is distributed under the BSD-3-Clause license.", 0
 .aguardar:        db "Press <q> to exit.", 0
 .naoEncontrado:   db ": manual not found for this utility.", 10, 0
 .separador:       db 10, "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++", 10, 0
@@ -167,8 +167,6 @@ inicioAPP:
     
     imprimirString
 
-    novaLinha
-
     jmp terminar
 
 ;;************************************************************************************
@@ -209,7 +207,6 @@ montarInterface:
 
 manualNaoEncontrado:
 
-    novaLinha
     novaLinha
 
     mov esi, [utilitario]
