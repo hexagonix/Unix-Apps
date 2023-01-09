@@ -273,18 +273,9 @@ inicioShell:
     
     cmp eax, Hexagon.imagemInvalida
     je .imagemHAPPInvalida
-
-    Hexagonix obterCursor
-    
-    mov dl, byte[maxColunas]    ;; Máximo de caracteres para obter
-
-    sub dl, 17
-    
-    Hexagonix definirCursor
     
     push esi
     
-    novaLinha
     novaLinha
     
     pop esi
@@ -299,13 +290,7 @@ inicioShell:
     
 .limiteAtingido:
 
-    Hexagonix obterCursor
-    
-    mov dl, byte[maxColunas]    ;; Máximo de caracteres para obter
-
-    sub dl, 17
-    
-    Hexagonix definirCursor
+    novaLinha
     
     mov esi, hash.limiteProcessos
     
@@ -317,15 +302,6 @@ inicioShell:
 
     push esi
 
-    Hexagonix obterCursor
-    
-    mov dl, byte[maxColunas]    ;; Máximo de caracteres para obter
-
-    sub dl, 17
-    
-    Hexagonix definirCursor
-    
-    novaLinha
     novaLinha
     
     pop esi
@@ -469,15 +445,15 @@ finalizarhashell:
 ;; Ela deve ser utilizada para identificar para qual versão do Hexagonix® o hash foi
 ;; desenvolvido.
 
-versaoHASH equ "1.0"
+versaoHASH equ "1.1"
 
 hash:
 
 .prompt:               db "@Hexagonix", 0
-.comandoNaoEncontrado: db ": file not found.", 10, 0
-.imagemInvalida:       db ": unable to load image. Unsupported executable format.", 10, 0
+.comandoNaoEncontrado: db ": file not found.", 0
+.imagemInvalida:       db ": unable to load image. Unsupported executable format.", 0
 .limiteProcessos:      db 10, 10, "There is not enough memory available to run the requested application.", 10
-                       db "Try to terminate applications or their instances first, and try again.", 10, 0                  
+                       db "Try to terminate applications or their instances first, and try again.", 0                  
 .ponto:                db ".", 0
 .usuarioNormal:        db "$ ", 0
 .usuarioRoot:          db "# ", 0
