@@ -93,7 +93,7 @@ tamanhoLimiteBusca = 32768
 
 versaoLOGIND equ "1.3.1"
 
-arquivo:    db "usuario.unx", 0 ;; Nome do arquivo de configuração de login
+arquivo:    db "passwd", 0      ;; Nome do arquivo de configuração de login
 vd0:        db "vd0", 0         ;; Console padrão
 vd1:        db "vd1", 0         ;; Primeiro console virtual
 posicaoBX:  dw 0                ;; Marcação da posição de busca no conteúdo do arquivo

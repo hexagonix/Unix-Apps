@@ -823,7 +823,7 @@ versaoLOGIN equ "4.2"
 shellPadrao:       db "sh", 0           ;; Nome do arquivo que contêm o shell padrão do Hexagonix®
 vd0:               db "vd0", 0          ;; Console padrão
 vd1:               db "vd1", 0          ;; Primeiro console virtual
-arquivo:           db "usuario.unx", 0  ;; Nome do arquivo de gerenciamento de login
+arquivo:           db "passwd", 0       ;; Nome do arquivo de gerenciamento de login
 tentarShellPadrao: db 0                 ;; Sinaliza a tentativa de se carregar o shell padrão
 shellHexagonix:    times 11 db 0        ;; Armazena o nome do shell à ser utilizado
 usuario:           times 15 db 0        ;; Nome de usuário obtido no arquivo
