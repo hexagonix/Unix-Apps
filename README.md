@@ -56,6 +56,7 @@ Diversos utilitários no padrão Unix estão incluidos até o momento. São eles
 * ps
 * rm
 * sh
+* shutdown
 * su
 * top
 * uname
@@ -64,9 +65,9 @@ Diversos utilitários no padrão Unix estão incluidos até o momento. São eles
 Outros utilitários são exclusivos do Hexagonix. São eles:
 
 * htop (versão alternativa de top)
-* energia (controle de estado energético)
 * hash (shell alternativo)
 * lshapp (lê e exibe informações de imagens HAPP)
+* lshmod (lê e exibe informações de imagens HBoot)
 
 </div>
 
@@ -106,6 +107,7 @@ Several Unix-standard utilities are included so far. Are they:
 * ps
 * rm
 * sh
+* shutdown
 * su
 * top
 * uname
@@ -114,9 +116,9 @@ Several Unix-standard utilities are included so far. Are they:
 Other utilities are exclusive to Hexagonix. Are they:
 
 * htop (alternate version of top)
-* energia (energy state control)
 * hash (alternate shell)
 * lshapp (reads and displays information from HAPP images)
+* lshmod (reads and displays information from HBoot images)
 
 </div>
 
