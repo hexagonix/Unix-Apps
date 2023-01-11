@@ -112,7 +112,7 @@ suHexagonix: ;; Ponto de entrada
     je usoAplicativo
     
 iniciarExecucao:
-  
+
     novaLinha
     
     call salvarUsuarioAtual         ;; Salva o usuário da sessão atual
@@ -705,7 +705,7 @@ terminar:
 ;;
 ;;************************************************************************************
 
-versaoSU equ "2.1"
+versaoSU equ "2.2"
 
 shellPadrao:       db "sh", 0          ;; Nome do arquivo que contêm o shell padrão do Hexagonix®
 vd0:               db "vd0", 0         ;; Console principal
@@ -724,7 +724,7 @@ su:
 .grandesPoderes:    db 10, 10, "You are now an administrative user. This means you can make deep changes to", 10
                     db "system, so be careful.", 10, 10
                     db 'Remember: "Great power comes with great responsibility"!', 0  
-.solicitarSenha:    db 10, "Enter your UNIX password: ", 0 
+.solicitarSenha:    db "Enter your UNIX password: ", 0 
 .uso:               db 10, "Usage: su [user]", 10, 10
                     db "Change to a registered user.", 10, 10
                     db "su version ", versaoSU, 10, 10
