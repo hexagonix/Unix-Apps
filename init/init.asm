@@ -81,7 +81,7 @@ include "log.s"
 
 ;;************************************************************************************
 
-versaoINIT equ "2.2"
+versaoINIT equ "2.3"
 
 tamanhoLimiteBusca = 32768
 
@@ -96,9 +96,9 @@ posicaoBX:                 dw 0             ;; Marcação da posição de busca 
 init:
 
 .inicioInit:             db "init version ", versaoINIT, ".", 0
-.procurarArquivo:        db "Looking for configuration file in /...", 0
-.arquivoEncontrado:      db "Configuration file found.", 0
-.arquivoAusente:         db "Configuration file not found. The default shell will be executed (sh).", 0
+.procurarArquivo:        db "Looking for /rc...", 0
+.arquivoEncontrado:      db "Configuration file (/rc) found.", 0
+.arquivoAusente:         db "Configuration file (/rc) not found. The default shell will be executed (sh).", 0
 .erroGeral:              db "An unhandled error was encountered.", 0
 .registrandoComponentes: db "Starting service...", 0
 .configurarConsole:      db "Setting up consoles (vd0, vd1)...", 0
