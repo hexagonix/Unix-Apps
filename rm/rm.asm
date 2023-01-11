@@ -236,7 +236,7 @@ rm:
 .abortar:         db 10, 10, "The operation was aborted by the user.", 0  
 .parametroAjuda:  db "?", 0  
 .parametroAjuda2: db "--help", 0    
-.semParametro:    db 10, "A required file name is missing.", 10
+.semParametro:    db 10, "A required filename is missing.", 10
                   db "Use 'rm ?' for help with this utility.", 0
 .permissaoNegada: db "Only an administrative (or root) user can complete this action.", 10
                   db "To do so, login to one of these users with administrative privileges.", 0                 
