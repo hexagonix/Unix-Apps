@@ -59,6 +59,8 @@ use32
 ;; arquivo por arquivo. O arquivo contém uma estrutura instanciável com definição de 
 ;; parâmetros no momento da instância, tornando o cabeçalho tão personalizável quanto antes.
 
+;; Primeiro utilitário que será adaptado ao novo macro
+
 include "HAPP.s" ;; Aqui está uma estrutura para o cabeçalho HAPP
 
 ;; Instância | Estrutura | Arquitetura | Versão | Subversão | Entrada | Tipo  
