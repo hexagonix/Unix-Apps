@@ -81,7 +81,7 @@ include "log.s"
 
 ;;************************************************************************************
 
-versaoINIT equ "2.3"
+versaoINIT equ "2.4"
 
 tamanhoLimiteBusca = 32768
 
@@ -114,12 +114,12 @@ initHexagonix: ;; Ponto de entrada do init
 ;; diferente de 1, o init deve ser finalizado. Caso seja 1, prosseguir com o processo de 
 ;; inicialização do ambiente de usuário do Hexagonix
 
-    Hexagonix obterPID
+    hx.syscall obterPID
     
     cmp eax, 01h
     je .configurarTerminal ;; O PID é 1? Prosseguir
     
-    Hexagonix encerrarProcesso ;; Não é? Finalizar agora
+    hx.syscall encerrarProcesso ;; Não é? Finalizar agora
 
 ;; Configura o terminal do Hexagonix
 
@@ -138,7 +138,7 @@ initHexagonix: ;; Ponto de entrada do init
 
 iniciarExecucao:
 
-    Hexagonix travar ;; Impede que o usuário mate o processo de login com uma tecla especial
+    hx.syscall travar ;; Impede que o usuário mate o processo de login com uma tecla especial
     
 ;; Agora o init irá verificar a existência do arquivo de configuração de inicialização.
 ;; Caso este arquivo esteja presente, o init irá buscar a declaração de uma imagem para ser utilizada
@@ -157,7 +157,7 @@ iniciarExecucao:
 
     mov esi, servicoHexagonix
     
-    Hexagonix arquivoExiste
+    hx.syscall arquivoExiste
     
     jc .proximoServico
 
@@ -166,7 +166,7 @@ iniciarExecucao:
     
     stc
     
-    Hexagonix iniciarProcesso      ;; Solicitar o carregamento do primeiro serviço
+    hx.syscall iniciarProcesso      ;; Solicitar o carregamento do primeiro serviço
  
     jnc .proximoServico
 
@@ -183,7 +183,7 @@ iniciarExecucao:
     cmp byte[tentarShellPadrao], 0 ;; Verifica se já se tentou carregar o shell padrão do Hexagonix
     je .tentarShellPadrao          ;; Se não, tente carregar o shell padrão do Hexagonix
     
-    Hexagonix encerrarProcesso     ;; Se sim, o shell padrão também não pode ser executado  
+    hx.syscall encerrarProcesso     ;; Se sim, o shell padrão também não pode ser executado  
 
 .tentarShellPadrao:                ;; Tentar carregar o shell padrão do Hexagonix
 
@@ -191,7 +191,7 @@ iniciarExecucao:
     
     mov byte[tentarShellPadrao], 1 ;; Sinalizar a tentativa de carregamento do shell padrão do Hexagonix
     
-    Hexagonix destravar            ;; O shell pode ser terminado utilizando uma tecla especial
+    hx.syscall destravar            ;; O shell pode ser terminado utilizando uma tecla especial
     
     jmp .carregarServico           ;; Tentar carregar o shell padrão do Hexagonix
     
@@ -203,11 +203,11 @@ limparTerminal:
 
     mov esi, vd1         ;; Abrir o primeiro console virtual 
     
-    Hexagonix abrir      ;; Abre o dispositivo
+    hx.syscall abrir      ;; Abre o dispositivo
     
     mov esi, vd0         ;; Reabre o console padrão
     
-    Hexagonix abrir      ;; Abre o dispositivo
+    hx.syscall abrir      ;; Abre o dispositivo
     
     ret
     
@@ -225,7 +225,7 @@ encontrarConfiguracaoInit:
     mov esi, arquivo
     mov edi, bufferArquivo
     
-    Hexagonix abrir
+    hx.syscall abrir
     
     jc .arquivoConfiguracaoAusente
     
@@ -331,7 +331,7 @@ obterShellPadrao:
     
     mov esi, servicoHexagonix
     
-    Hexagonix tamanhoString
+    hx.syscall tamanhoString
     
     push eax
     
@@ -351,7 +351,7 @@ obterShellPadrao:
     
     mov esi, shellPadrao
     
-    Hexagonix tamanhoString
+    hx.syscall tamanhoString
     
     push eax
     
