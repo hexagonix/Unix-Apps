@@ -78,28 +78,28 @@ inicioAPP:
     mov edi, whoami.parametroAjuda
     mov esi, [linhaComando]
     
-    Hexagonix compararPalavrasString
+    hx.syscall compararPalavrasString
     
     jc usoAplicativo
 
     mov edi, whoami.parametroAjuda2
     mov esi, [linhaComando]
     
-    Hexagonix compararPalavrasString
+    hx.syscall compararPalavrasString
     
     jc usoAplicativo
         
     mov edi, whoami.parametroTudo
     mov esi, [linhaComando]
     
-    Hexagonix compararPalavrasString
+    hx.syscall compararPalavrasString
     
     jc usuarioEGrupo
     
     mov edi, whoami.parametroUsuario
     mov esi, [linhaComando]
     
-    Hexagonix compararPalavrasString
+    hx.syscall compararPalavrasString
     
     jc exibirUsuario
 
@@ -111,7 +111,7 @@ exibirUsuario:
   
     novaLinha
     
-    Hexagonix obterUsuario
+    hx.syscall obterUsuario
     
     imprimirString
     
@@ -123,7 +123,7 @@ usuarioEGrupo:
 
     novaLinha
     
-    Hexagonix obterUsuario
+    hx.syscall obterUsuario
     
     push eax
     
@@ -153,7 +153,7 @@ usoAplicativo:
 
 terminar:   
 
-    Hexagonix encerrarProcesso
+    hx.syscall encerrarProcesso
 
 ;;************************************************************************************
 
@@ -165,7 +165,7 @@ terminar:
     
 linhaComando: dd 0
 
-versaoWHOAMI equ "1.0"
+versaoWHOAMI equ "1.1"
 
 whoami:
 
