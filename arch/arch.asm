@@ -88,14 +88,14 @@ inicioAPP:
     mov edi, arch.parametroAjuda
     mov esi, [parametro]
     
-    Hexagonix compararPalavrasString
+    hx.syscall compararPalavrasString
     
     jc usoAplicativo
 
     mov edi, arch.parametroAjuda2
     mov esi, [parametro]
     
-    Hexagonix compararPalavrasString
+    hx.syscall compararPalavrasString
     
     jc usoAplicativo
 
@@ -103,7 +103,7 @@ inicioAPP:
 
     novaLinha
 
-    Hexagonix retornarVersao
+    hx.syscall retornarVersao
 
 ;; Em EDX temos a arquitetura
     
@@ -153,7 +153,7 @@ usoAplicativo:
 
 terminar:   
 
-    Hexagonix encerrarProcesso
+    hx.syscall encerrarProcesso
 
 ;;************************************************************************************
 
@@ -163,7 +163,7 @@ terminar:
 ;;
 ;;************************************************************************************
 
-versaoARCH equ "1.0"
+versaoARCH equ "1.1"
 
 arch:
 
