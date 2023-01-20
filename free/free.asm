@@ -83,14 +83,14 @@ inicioAPP:
     mov edi, free.parametroAjuda
     mov esi, [parametro]
     
-    Hexagonix compararPalavrasString
+    hx.syscall compararPalavrasString
     
     jc usoAplicativo
 
     mov edi, free.parametroAjuda2
     mov esi, [parametro]
     
-    Hexagonix compararPalavrasString
+    hx.syscall compararPalavrasString
     
     jc usoAplicativo
     
@@ -100,7 +100,7 @@ inicioAPP:
 
     imprimirString
     
-    Hexagonix usoMemoria
+    hx.syscall usoMemoria
     
     mov eax, ecx
     
@@ -110,7 +110,7 @@ inicioAPP:
 
     imprimirString
 
-    Hexagonix usoMemoria
+    hx.syscall usoMemoria
     
     imprimirInteiro
 
@@ -118,7 +118,7 @@ inicioAPP:
 
     imprimirString
 
-    Hexagonix usoMemoria
+    hx.syscall usoMemoria
 
 ;; Agora vaos transformar bytes em megabytes
 
@@ -153,11 +153,11 @@ usoAplicativo:
 
 terminar:   
 
-    Hexagonix encerrarProcesso
+    hx.syscall encerrarProcesso
 
 ;;************************************************************************************
 
-versaoFREE equ "0.2"
+versaoFREE equ "0.3"
 
 free:
 
