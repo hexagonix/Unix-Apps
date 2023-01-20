@@ -86,21 +86,21 @@ inicioAPP:
     mov edi, hostname.parametroAjuda
     mov esi, [parametro]
     
-    Hexagonix compararPalavrasString
+    hx.syscall compararPalavrasString
     
     jc usoAplicativo
 
     mov edi, hostname.parametroAjuda2
     mov esi, [parametro]
     
-    Hexagonix compararPalavrasString
+    hx.syscall compararPalavrasString
     
     jc usoAplicativo
     
     mov edi, bufferArquivo
     mov esi, hostname.arquivoUnix
     
-    Hexagonix abrir
+    hx.syscall abrir
     
     jc .arquivoNaoEncontrado
     
@@ -108,14 +108,14 @@ inicioAPP:
     
     mov esi, bufferArquivo
 
-    Hexagonix tamanhoString
+    hx.syscall tamanhoString
 
     mov edx, eax 
     dec edx
 
     mov al, 0
     
-    Hexagonix inserirCaractere
+    hx.syscall inserirCaractere
 
     mov esi, bufferArquivo
     
@@ -145,7 +145,7 @@ usoAplicativo:
 
 terminar:   
 
-    Hexagonix encerrarProcesso
+    hx.syscall encerrarProcesso
 
 ;;************************************************************************************
 
@@ -155,7 +155,7 @@ terminar:
 ;;
 ;;************************************************************************************
 
-versaoHOSTNAME equ "1.0"
+versaoHOSTNAME equ "1.1"
 
 hostname:
 
