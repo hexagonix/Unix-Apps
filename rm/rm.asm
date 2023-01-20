@@ -87,20 +87,20 @@ inicioAPP:
     mov edi, rm.parametroAjuda
     mov esi, [parametro]
     
-    Hexagonix compararPalavrasString
+    hx.syscall compararPalavrasString
     
     jc usoAplicativo
 
     mov edi, rm.parametroAjuda2
     mov esi, [parametro]
     
-    Hexagonix compararPalavrasString
+    hx.syscall compararPalavrasString
     
     jc usoAplicativo
     
     mov esi, [parametro]
     
-    Hexagonix arquivoExiste
+    hx.syscall arquivoExiste
     
     jc .arquivoNaoEncontrado
     
@@ -112,7 +112,7 @@ inicioAPP:
     
 .obterTeclas:
 
-    Hexagonix aguardarTeclado
+    hx.syscall aguardarTeclado
     
     cmp al, 'y'
     je .deletar
@@ -139,11 +139,11 @@ inicioAPP:
 
 .deletar:
 
-    Hexagonix imprimirCaractere
+    hx.syscall imprimirCaractere
     
     mov esi, [parametro]
     
-    Hexagonix deletarArquivo
+    hx.syscall deletarArquivo
     
     jc .erroDeletando
     
@@ -155,7 +155,7 @@ inicioAPP:
 
 .abortar:
 
-    Hexagonix imprimirCaractere
+    hx.syscall imprimirCaractere
     
     mov esi, rm.abortar
     
@@ -210,7 +210,7 @@ semParametro:
 
 terminar:   
 
-    Hexagonix encerrarProcesso
+    hx.syscall encerrarProcesso
 
 ;;************************************************************************************
 
@@ -220,7 +220,7 @@ terminar:
 ;;
 ;;************************************************************************************
 
-versaoRM equ "1.0"
+versaoRM equ "1.1"
 
 rm:
 
