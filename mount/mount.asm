@@ -91,14 +91,14 @@ inicioAPP:
     mov edi, mount.parametroAjuda
     mov esi, [parametros]
     
-    Hexagonix compararPalavrasString
+    hx.syscall compararPalavrasString
     
     jc usoAplicativo
 
     mov edi, mount.dispositivoPadrao
     mov esi, [pontoMontagem]
 
-    Hexagonix compararPalavrasString
+    hx.syscall compararPalavrasString
     
     jc .realizarMontagem
     
@@ -128,7 +128,7 @@ inicioAPP:
 
     mov esi, [volume]
     
-    Hexagonix abrir
+    hx.syscall abrir
     
     jc erroAbertura
     
@@ -146,7 +146,7 @@ exibirMontagens:
   
     imprimirString  
     
-    Hexagonix obterDisco
+    hx.syscall obterDisco
     
     push eax
     push edi
@@ -172,7 +172,7 @@ exibirMontagens:
     
     mov esi, edi
     
-    Hexagonix cortarString
+    hx.syscall cortarString
     
     imprimirString
     
@@ -264,7 +264,7 @@ erroAbertura:
 
 terminar:   
 
-    Hexagonix encerrarProcesso
+    hx.syscall encerrarProcesso
 
 ;;************************************************************************************
 
@@ -281,7 +281,7 @@ obterParametros:
     
     mov al, ' '
     
-    Hexagonix encontrarCaractere
+    hx.syscall encontrarCaractere
     
     jc usoAplicativo
 
@@ -345,7 +345,7 @@ usoAplicativo:
 ;;
 ;;************************************************************************************
 
-versaoMOUNT equ "2.1"
+versaoMOUNT equ "2.2"
 
 mount:
 
