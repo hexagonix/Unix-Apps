@@ -74,7 +74,7 @@ include "verUtils.s"
 
 align 4
 
-versaoUNAME equ "2.4"
+versaoUNAME equ "2.5"
 
 uname:
 
@@ -149,14 +149,14 @@ inicioAPP: ;; Ponto de entrada do aplicativo
     mov edi, uname.parametroAjuda
     mov esi, [parametro]
     
-    Hexagonix compararPalavrasString
+    hx.syscall compararPalavrasString
     
     jc usoAplicativo
 
     mov edi, uname.parametroAjuda2
     mov esi, [parametro]
     
-    Hexagonix compararPalavrasString
+    hx.syscall compararPalavrasString
     
     jc usoAplicativo
 
@@ -165,7 +165,7 @@ inicioAPP: ;; Ponto de entrada do aplicativo
     mov edi, uname.parametroExibirTudo
     mov esi, [parametro]
     
-    Hexagonix compararPalavrasString
+    hx.syscall compararPalavrasString
     
     jc exibirTudo
 
@@ -174,7 +174,7 @@ inicioAPP: ;; Ponto de entrada do aplicativo
     mov edi, uname.parametroExibirNomeKernel
     mov esi, [parametro]
     
-    Hexagonix compararPalavrasString
+    hx.syscall compararPalavrasString
     
     jc exibirNomeKernel
 
@@ -183,7 +183,7 @@ inicioAPP: ;; Ponto de entrada do aplicativo
     mov edi, uname.parametroExibirHostname
     mov esi, [parametro]
     
-    Hexagonix compararPalavrasString
+    hx.syscall compararPalavrasString
     
     jc exibirHostname
 
@@ -192,7 +192,7 @@ inicioAPP: ;; Ponto de entrada do aplicativo
     mov edi, uname.parametroExibirLancamento
     mov esi, [parametro]
     
-    Hexagonix compararPalavrasString
+    hx.syscall compararPalavrasString
     
     jc exibirLancamento
 
@@ -201,7 +201,7 @@ inicioAPP: ;; Ponto de entrada do aplicativo
     mov edi, uname.parametroExibirTipo
     mov esi, [parametro]
     
-    Hexagonix compararPalavrasString
+    hx.syscall compararPalavrasString
     
     jc exibirArquitetura
 
@@ -210,7 +210,7 @@ inicioAPP: ;; Ponto de entrada do aplicativo
     mov edi, uname.parametroExibirArch
     mov esi, [parametro]
     
-    Hexagonix compararPalavrasString
+    hx.syscall compararPalavrasString
     
     jc exibirArquitetura
 
@@ -219,7 +219,7 @@ inicioAPP: ;; Ponto de entrada do aplicativo
     mov edi, uname.parametroExibirPlataforma
     mov esi, [parametro]
     
-    Hexagonix compararPalavrasString
+    hx.syscall compararPalavrasString
     
     jc exibirPlataforma
 
@@ -228,7 +228,7 @@ inicioAPP: ;; Ponto de entrada do aplicativo
     mov edi, uname.parametroExibirVersao
     mov esi, [parametro]
     
-    Hexagonix compararPalavrasString
+    hx.syscall compararPalavrasString
     
     jc exibirVersaoApenas
 
@@ -237,7 +237,7 @@ inicioAPP: ;; Ponto de entrada do aplicativo
     mov edi, uname.parametroExibirSO
     mov esi, [parametro]
     
-    Hexagonix compararPalavrasString
+    hx.syscall compararPalavrasString
     
     jc exibirInfoSistemaOperacional
 
@@ -249,7 +249,7 @@ exibirNomeKernel:
 
     call espacoPadrao 
     
-    Hexagonix retornarVersao
+    hx.syscall retornarVersao
     
     imprimirString
 
@@ -281,7 +281,7 @@ exibirArquitetura:
 
     call espacoPadrao
 
-    Hexagonix retornarVersao
+    hx.syscall retornarVersao
 
 ;; Em EDX temos a arquitetura
     
@@ -351,7 +351,7 @@ exibirTudo:
     
     imprimirString
     
-    Hexagonix retornarVersao
+    hx.syscall retornarVersao
     
     imprimirString
 
@@ -393,7 +393,7 @@ exibirTudo:
     
     mov al, " "
 
-    Hexagonix imprimirCaractere
+    hx.syscall imprimirCaractere
 
     mov esi, uname.hexagonix
     
@@ -419,7 +419,7 @@ exibirVersaoApenas:
 
     call espacoPadrao 
     
-    Hexagonix retornarVersao
+    hx.syscall retornarVersao
     
     imprimirString
     
@@ -437,7 +437,7 @@ exibirVersaoApenas:
     
 versaoHexagon:
 
-    Hexagonix retornarVersao
+    hx.syscall retornarVersao
     
     push ecx
     push ebx
@@ -467,7 +467,7 @@ versaoHexagon:
     
     mov al, ch
     
-    Hexagonix imprimirCaractere
+    hx.syscall imprimirCaractere
 
 .continuar:
 
@@ -479,7 +479,7 @@ versaoHexagon:
 
     imprimirString
 
-    Hexagonix retornarVersao
+    hx.syscall retornarVersao
     
     mov esi, edi 
 
@@ -505,7 +505,7 @@ usoAplicativo:
 
 terminar:    
 
-    Hexagonix encerrarProcesso
+    hx.syscall encerrarProcesso
     
 ;;*****************************************************************************
 
@@ -524,7 +524,7 @@ obterHostname:
     mov edi, enderecoCarregamento
     mov esi, uname.arquivoUnix
     
-    Hexagonix abrir
+    hx.syscall abrir
     
     jc .arquivoNaoEncontrado ;; Se não for encontrado, exibir o padrão
 
@@ -534,14 +534,14 @@ obterHostname:
 
     mov esi, enderecoCarregamento
 
-    Hexagonix tamanhoString
+    hx.syscall tamanhoString
 
     mov edx, eax 
     dec edx
 
     mov al, 0
     
-    Hexagonix inserirCaractere
+    hx.syscall inserirCaractere
 
     mov esi, enderecoCarregamento
     
