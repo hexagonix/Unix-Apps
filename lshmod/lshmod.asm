@@ -75,7 +75,7 @@ include "macros.s"
 ;;
 ;;************************************************************************************
 
-versaoLSHMOD equ "0.5"
+versaoLSHMOD equ "0.6"
 
 lshmod:
 
@@ -128,22 +128,22 @@ inicioAPP:
     mov edi, lshmod.parametroAjuda
     mov esi, [parametro]
     
-    Hexagonix compararPalavrasString
+    hx.syscall compararPalavrasString
     
     jc usoAplicativo
 
     mov edi, lshmod.parametroAjuda2
     mov esi, [parametro]
     
-    Hexagonix compararPalavrasString
+    hx.syscall compararPalavrasString
     
     jc usoAplicativo
 
     mov esi, [parametro]
     
-    Hexagonix cortarString
+    hx.syscall cortarString
     
-    Hexagonix tamanhoString
+    hx.syscall tamanhoString
     
     cmp eax, 13
     jl .obterInformacoes
@@ -156,7 +156,7 @@ inicioAPP:
     
 .obterInformacoes:
 
-    Hexagonix arquivoExiste
+    hx.syscall arquivoExiste
 
     jc .semArquivo
     
@@ -218,7 +218,7 @@ verificarArquivoHBootMod:
     mov esi, nomeArquivo
     mov edi, bufferArquivo
 
-    Hexagonix abrir
+    hx.syscall abrir
 
     jc inicioAPP.semArquivo
 
@@ -258,7 +258,7 @@ verificarArquivoHBootMod:
 
     mov esi, nomeModulo
 
-    Hexagonix cortarString
+    hx.syscall cortarString
 
     mov esi, lshmod.cabecalho
     
@@ -368,9 +368,9 @@ manterArquivo:
     push esi
     push eax
 
-    Hexagonix cortarString
+    hx.syscall cortarString
 
-    Hexagonix tamanhoString
+    hx.syscall tamanhoString
 
     mov ecx, eax
 
@@ -388,7 +388,7 @@ manterArquivo:
 
 terminar:   
 
-    Hexagonix encerrarProcesso
+    hx.syscall encerrarProcesso
 
 ;;************************************************************************************
 
