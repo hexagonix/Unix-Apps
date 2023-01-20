@@ -90,42 +90,42 @@ inicioAPP:
     mov edi, shutdown.parametroAjuda
     mov esi, [parametro]
     
-    Hexagonix compararPalavrasString
+    hx.syscall compararPalavrasString
     
     jc usoAplicativo
 
     mov edi, shutdown.parametroAjuda2
     mov esi, [parametro]
     
-    Hexagonix compararPalavrasString
+    hx.syscall compararPalavrasString
     
     jc usoAplicativo
 
     mov edi, shutdown.parametroDesligar
     mov esi, [parametro]
     
-    Hexagonix compararPalavrasString
+    hx.syscall compararPalavrasString
     
     jc iniciarDesligamento
     
     mov edi, shutdown.parametroReiniciar
     mov esi, [parametro]
     
-    Hexagonix compararPalavrasString
+    hx.syscall compararPalavrasString
     
     jc iniciarReinicio
 
     mov edi, shutdown.parDesligarSemEco
     mov esi, [parametro]
     
-    Hexagonix compararPalavrasString
+    hx.syscall compararPalavrasString
     
     jc iniciarDesligamentoSemEco
 
     mov edi, shutdown.parReiniciarSemEco
     mov esi, [parametro]
     
-    Hexagonix compararPalavrasString
+    hx.syscall compararPalavrasString
     
     jc iniciarReinicioSemEco
 
@@ -153,7 +153,7 @@ iniciarDesligamentoSemEco:
 
     logSistema shutdown.Verbose.parametroSolicitar, 00h, Log.Prioridades.p4
 
-    Hexagonix desligarPC
+    hx.syscall desligarPC
 
     jmp terminar
 
@@ -167,7 +167,7 @@ iniciarReinicioSemEco:
 
     logSistema shutdown.Verbose.parametroSolicitar, 00h, Log.Prioridades.p4
 
-    Hexagonix reiniciarPC
+    hx.syscall reiniciarPC
 
     jmp terminar
 
@@ -193,7 +193,7 @@ desligarHexagon:
 
     logSistema shutdown.Verbose.parametroSolicitar, 00h, Log.Prioridades.p4
 
-    Hexagonix desligarPC
+    hx.syscall desligarPC
 
     jmp terminar
 
@@ -207,7 +207,7 @@ reiniciarHexagon:
 
     logSistema shutdown.Verbose.parametroSolicitar, 00h, Log.Prioridades.p4
 
-    Hexagonix reiniciarPC
+    hx.syscall reiniciarPC
 
     jmp terminar
 
@@ -229,7 +229,7 @@ prepararSistema:
 
     mov ecx, 500
     
-    Hexagonix causarAtraso
+    hx.syscall causarAtraso
     
     mov esi, shutdown.msgPronto
 
@@ -241,7 +241,7 @@ prepararSistema:
 
     mov ecx, 500
     
-    Hexagonix causarAtraso
+    hx.syscall causarAtraso
     
     mov esi, shutdown.msgPronto
 
@@ -253,7 +253,7 @@ prepararSistema:
 
     mov ecx, 500
     
-    Hexagonix causarAtraso
+    hx.syscall causarAtraso
     
     mov esi, shutdown.msgPronto
 
@@ -265,7 +265,7 @@ prepararSistema:
 
     mov ecx, 500
     
-    Hexagonix causarAtraso
+    hx.syscall causarAtraso
     
     mov esi, shutdown.msgPronto
 
@@ -301,7 +301,7 @@ terminar:
 
     logSistema shutdown.Verbose.falhaSolicitacao, 00h, Log.Prioridades.p4
 
-    Hexagonix encerrarProcesso
+    hx.syscall encerrarProcesso
 
 ;;************************************************************************************
 ;;
@@ -311,7 +311,7 @@ terminar:
 
 rotuloMENSAGEM equ "[shutdown]: "
 
-versaoSHUTDOWN  equ "1.0"
+versaoSHUTDOWN  equ "1.1"
 
 shutdown:
 
