@@ -83,14 +83,14 @@ inicioAPP:
     mov edi, date.parametroAjuda
     mov esi, [parametro]
     
-    Hexagonix compararPalavrasString
+    hx.syscall compararPalavrasString
     
     jc usoAplicativo
 
     mov edi, date.parametroAjuda2
     mov esi, [parametro]
     
-    Hexagonix compararPalavrasString
+    hx.syscall compararPalavrasString
     
     jc usoAplicativo
     
@@ -248,7 +248,7 @@ processarBCD:
 
 ;; Vamos processar o dia
     
-    Hexagonix retornarData
+    hx.syscall retornarData
 
     call BCDParaASCII
 
@@ -257,7 +257,7 @@ processarBCD:
 
 ;; Vamos processar o mês
 
-    Hexagonix retornarData
+    hx.syscall retornarData
 
     mov eax, ebx 
 
@@ -268,7 +268,7 @@ processarBCD:
 
 ;; Vamos processar o século (primeiros dois dígitos do ano)
 
-    Hexagonix retornarData
+    hx.syscall retornarData
 
     mov eax, ecx 
 
@@ -279,7 +279,7 @@ processarBCD:
 
 ;; Vamos processar o ano
 
-    Hexagonix retornarData
+    hx.syscall retornarData
 
     mov eax, edx 
 
@@ -290,7 +290,7 @@ processarBCD:
 
 ;; Vamos processar o dia da semana
 
-    Hexagonix retornarData
+    hx.syscall retornarData
 
     mov eax, esi 
 
@@ -301,7 +301,7 @@ processarBCD:
 
 ;; Vamos processar a hora
 
-    Hexagonix retornarHora
+    hx.syscall retornarHora
 
     mov eax, eax 
 
@@ -312,7 +312,7 @@ processarBCD:
 
 ;; Vamos processar os minutos
 
-    Hexagonix retornarHora
+    hx.syscall retornarHora
 
     mov eax, ebx
 
@@ -323,7 +323,7 @@ processarBCD:
 
 ;; Vamos processar os segundos
 
-    Hexagonix retornarHora
+    hx.syscall retornarHora
 
     mov eax, ecx
 
@@ -363,11 +363,11 @@ usoAplicativo:
 
 terminar:   
 
-    Hexagonix encerrarProcesso
+    hx.syscall encerrarProcesso
 
 ;;************************************************************************************
 
-versaoDATE equ "1.0"
+versaoDATE equ "1.1"
 
 date:
         
