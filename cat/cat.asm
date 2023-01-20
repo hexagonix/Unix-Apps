@@ -86,21 +86,21 @@ inicioAPP:
     mov edi, cat.parametroAjuda
     mov esi, [parametro]
     
-    Hexagonix compararPalavrasString
+    hx.syscall compararPalavrasString
     
     jc usoAplicativo
 
     mov edi, cat.parametroAjuda2
     mov esi, [parametro]
     
-    Hexagonix compararPalavrasString
+    hx.syscall compararPalavrasString
     
     jc usoAplicativo
     
     mov edi, bufferArquivo
     mov esi, [parametro]
     
-    Hexagonix abrir
+    hx.syscall abrir
     
     jc .arquivoNaoEncontrado
     
@@ -134,7 +134,7 @@ usoAplicativo:
 
 terminar:   
 
-    Hexagonix encerrarProcesso
+    hx.syscall encerrarProcesso
 
 ;;************************************************************************************
 
@@ -144,7 +144,7 @@ terminar:
 ;;
 ;;************************************************************************************
 
-versaoCAT equ "1.2" 
+versaoCAT equ "1.3" 
 
 cat:
 
