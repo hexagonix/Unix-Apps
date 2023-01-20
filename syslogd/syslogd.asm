@@ -78,7 +78,7 @@ include "log.s"
 ;;
 ;;************************************************************************************
 
-versaoSYSLOGD equ "0.2" 
+versaoSYSLOGD equ "0.3" 
 
 syslogd:
 
@@ -116,14 +116,14 @@ inicioAPP:
     mov edi, syslogd.parametroAjuda
     mov esi, [parametro]
     
-    Hexagonix compararPalavrasString
+    hx.syscall compararPalavrasString
     
     jc usoAplicativo
 
     mov edi, syslogd.parametroAjuda2
     mov esi, [parametro]
     
-    Hexagonix compararPalavrasString
+    hx.syscall compararPalavrasString
     
     jc usoAplicativo
     
@@ -145,7 +145,7 @@ usoAplicativo:
 
 terminar:   
 
-    Hexagonix encerrarProcesso
+    hx.syscall encerrarProcesso
 
 ;;************************************************************************************
 
