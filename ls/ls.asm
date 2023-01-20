@@ -83,7 +83,7 @@ inicioAPP:
 
 ;;************************************************************************************
 
-    Hexagonix obterCor
+    hx.syscall obterCor
 
     mov dword[ls.corFonte], eax
     mov dword[ls.corFundo], ebx
@@ -94,7 +94,7 @@ inicioAPP:
 
 verificarResolucao:
 
-    Hexagonix obterResolucao
+    hx.syscall obterResolucao
     
     cmp eax, 1
     je .modoGrafico1
@@ -128,21 +128,21 @@ verificarParametros:
     mov edi, ls.parametroAjuda
     mov esi, [parametro]
     
-    Hexagonix compararPalavrasString
+    hx.syscall compararPalavrasString
     
     jc usoAplicativo
 
     mov edi, ls.parametroAjuda2
     mov esi, [parametro]
     
-    Hexagonix compararPalavrasString
+    hx.syscall compararPalavrasString
     
     jc usoAplicativo
 
     mov edi, ls.parametroTudo
     mov esi, [parametro]
     
-    Hexagonix compararPalavrasString
+    hx.syscall compararPalavrasString
     
     jc configurarExibicao
     
@@ -165,7 +165,7 @@ listar:
     
     novaLinha
     
-    Hexagonix listarArquivos    ;; Obter arquivos em ESI
+    hx.syscall listarArquivos    ;; Obter arquivos em ESI
     
     jc .erroLista
     
@@ -194,61 +194,61 @@ listar:
     
     mov edi, ls.extensaoAPP
     
-    Hexagonix compararPalavrasString  ;; Checar por extensão .APP
+    hx.syscall compararPalavrasString  ;; Checar por extensão .APP
     
     jc .aplicativo
     
     mov edi, ls.extensaoSIS
     
-    Hexagonix compararPalavrasString
+    hx.syscall compararPalavrasString
     
     jc .sistema
     
     mov edi, ls.extensaoASM
     
-    Hexagonix compararPalavrasString
+    hx.syscall compararPalavrasString
     
     jc .fonteASM
     
     mov edi, ls.extensaoBIN
     
-    Hexagonix compararPalavrasString
+    hx.syscall compararPalavrasString
     
     jc .arquivoBIN
     
     mov edi, ls.extensaoUNX
     
-    Hexagonix compararPalavrasString
+    hx.syscall compararPalavrasString
     
     jc .arquivoUNX
     
     mov edi, ls.extensaoFNT
     
-    Hexagonix compararPalavrasString
+    hx.syscall compararPalavrasString
     
     jc .arquivoFNT
     
     mov edi, ls.extensaoOCL
 
-    Hexagonix compararPalavrasString
+    hx.syscall compararPalavrasString
     
     jc .arquivoOCL
 
     mov edi, ls.extensaoMOD
 
-    Hexagonix compararPalavrasString
+    hx.syscall compararPalavrasString
     
     jc .arquivoMOD
 
     mov edi, ls.extensaoCOW
 
-    Hexagonix compararPalavrasString
+    hx.syscall compararPalavrasString
     
     jc .arquivoCOW
 
     mov edi, ls.extensaoMAN
 
-    Hexagonix compararPalavrasString
+    hx.syscall compararPalavrasString
     
     jc .arquivoMAN
 
@@ -501,7 +501,7 @@ usoAplicativo:
 
 terminar:   
     
-    Hexagonix encerrarProcesso
+    hx.syscall encerrarProcesso
     
 ;;************************************************************************************
 
@@ -515,7 +515,7 @@ definirCorArquivo:
 
     mov ebx, dword[ls.corFundo]
     
-    Hexagonix definirCor
+    hx.syscall definirCor
     
     ret
 
@@ -526,7 +526,7 @@ definirCorPadrao:
     mov eax, dword[ls.corFonte]
     mov ebx, dword[ls.corFundo]
     
-    Hexagonix definirCor
+    hx.syscall definirCor
     
     ret
 
@@ -543,7 +543,7 @@ colocarEspaco:
     
     mov esi, [arquivoAtual]
     
-    Hexagonix tamanhoString
+    hx.syscall tamanhoString
     
     mov ebx, 15
     
@@ -555,7 +555,7 @@ colocarEspaco:
 
     mov al, ' '
     
-    Hexagonix imprimirCaractere
+    hx.syscall imprimirCaractere
     
     dec ecx
     
@@ -587,7 +587,7 @@ lerListaArquivos:
     
     mov al, ' '
     
-    Hexagonix encontrarCaractere
+    hx.syscall encontrarCaractere
     
     jc .pronto
 
@@ -639,7 +639,7 @@ verificarArquivo:
 
     mov esi, [parametro]
 
-    Hexagonix arquivoExiste
+    hx.syscall arquivoExiste
 
     jc terminar
 
@@ -648,7 +648,7 @@ verificarArquivo:
 
     mov esi, [parametro]
 
-    Hexagonix stringParaMaiusculo
+    hx.syscall stringParaMaiusculo
 
     mov [parametro], esi
 
@@ -664,7 +664,7 @@ verificarArquivo:
 ;;
 ;;************************************************************************************
 
-versaoLS equ "3.1"
+versaoLS equ "3.2"
 
 ls:
 
