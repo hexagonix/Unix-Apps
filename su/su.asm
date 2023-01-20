@@ -95,14 +95,14 @@ suHexagonix: ;; Ponto de entrada
     mov edi, su.parametroAjuda
     mov esi, [usuarioSolicitado]
     
-    Hexagonix compararPalavrasString
+    hx.syscall compararPalavrasString
     
     jc usoAplicativo
 
     mov edi, su.parametroAjuda2
     mov esi, [usuarioSolicitado]
     
-    Hexagonix compararPalavrasString
+    hx.syscall compararPalavrasString
     
     jc usoAplicativo
         
@@ -133,13 +133,13 @@ iniciarExecucao:
     
     mov ebx, 1234h                  ;; Não queremos eco na senha! 
     
-    Hexagonix obterString
+    hx.syscall obterString
     
-    Hexagonix cortarString
+    hx.syscall cortarString
     
     mov edi, senhaObtida
     
-    Hexagonix compararPalavrasString
+    hx.syscall compararPalavrasString
     
     jc .loginAceito
     
@@ -175,7 +175,7 @@ iniciarExecucao:
     
     stc
     
-    Hexagonix iniciarProcesso      ;; Solicitar o carregamento do shell do Hexagonix®
+    hx.syscall iniciarProcesso      ;; Solicitar o carregamento do shell do Hexagonix®
  
     jnc .shellFinalizado
 
@@ -184,7 +184,7 @@ iniciarExecucao:
    cmp byte[tentarShellPadrao], 0  ;; Verifica se já se tentou carregar o shell padrão do Hexagonix®
    je .tentarShellPadrao           ;; Se não, tente carregar o shell padrão do Hexagonix®
     
-   Hexagonix encerrarProcesso      ;; Se sim, o shell padrão também não pode ser executado  
+   hx.syscall encerrarProcesso      ;; Se sim, o shell padrão também não pode ser executado  
 
 .tentarShellPadrao:                ;; Tentar carregar o shell padrão do Hexagonix®
 
@@ -206,13 +206,13 @@ limparTerminal:
 
     mov esi, vd1         ;; Abrir o dispositivo de saída secundário em memória (Buffer) 
     
-    Hexagonix abrir      ;; Abre o dispositivo
+    hx.syscall abrir      ;; Abre o dispositivo
     
-    Hexagonix limparTela ;; Limpa seu conteúdo
+    hx.syscall limparTela ;; Limpa seu conteúdo
     
     mov esi, vd0         ;; Reabre o dispositivo de saída padrão 
     
-    Hexagonix abrir      ;; Abre o dispositivo
+    hx.syscall abrir      ;; Abre o dispositivo
     
     ret
     
@@ -225,7 +225,7 @@ verificarUsuario:
     mov esi, su.usuarioROOT
     mov edi, usuario
     
-    Hexagonix compararPalavrasString
+    hx.syscall compararPalavrasString
     
     ret
 
@@ -238,7 +238,7 @@ registrarUsuario:
     mov esi, su.usuarioROOT
     mov edi, usuario
     
-    Hexagonix compararPalavrasString
+    hx.syscall compararPalavrasString
     
     jc .root
     
@@ -254,7 +254,7 @@ registrarUsuario:
     
     mov esi, usuario
     
-    Hexagonix definirUsuario
+    hx.syscall definirUsuario
     
     ret
     
@@ -272,7 +272,7 @@ encontrarNomeUsuario:
     mov esi, arquivo
     mov edi, bufferArquivo
     
-    Hexagonix abrir
+    hx.syscall abrir
     
     jc .arquivoUsuarioAusente
     
@@ -329,7 +329,7 @@ encontrarNomeUsuario:
     mov edi, usuario
     mov esi, [usuarioSolicitado]
     
-    Hexagonix compararPalavrasString
+    hx.syscall compararPalavrasString
     
     jc .obtido
     
@@ -392,7 +392,7 @@ limparVariavel:
     
     mov esi, usuario
     
-    Hexagonix tamanhoString
+    hx.syscall tamanhoString
     
     push eax
     
@@ -422,7 +422,7 @@ encontrarSenhaUsuario:
     mov esi, arquivo
     mov edi, bufferArquivo
     
-    Hexagonix abrir
+    hx.syscall abrir
     
     jc .arquivoUsuarioAusente
     
@@ -521,7 +521,7 @@ encontrarShell:
     mov esi, arquivo
     mov edi, bufferArquivo
     
-    Hexagonix abrir
+    hx.syscall abrir
     
     jc .arquivoConfiguracaoAusente
     
@@ -612,7 +612,7 @@ obterShellPadrao:
     
     mov esi, shellPadrao
     
-    Hexagonix tamanhoString
+    hx.syscall tamanhoString
     
     push eax
     
@@ -636,11 +636,11 @@ salvarUsuarioAtual:
     push ds
     pop es
     
-    Hexagonix obterUsuario
+    hx.syscall obterUsuario
     
     push esi
     
-    Hexagonix tamanhoString
+    hx.syscall tamanhoString
     
     pop esi
     
@@ -654,7 +654,7 @@ salvarUsuarioAtual:
     
     pop es
     
-    Hexagonix obterUsuario
+    hx.syscall obterUsuario
     
     mov [codigoAnterior], eax
     
@@ -667,7 +667,7 @@ restaurarUsuario:
     mov esi, usuarioAnterior
     mov eax, [codigoAnterior]
     
-    Hexagonix definirUsuario
+    hx.syscall definirUsuario
     
     ret
 
@@ -695,7 +695,7 @@ finalizarExecucao:
 
 terminar:   
 
-    Hexagonix encerrarProcesso
+    hx.syscall encerrarProcesso
 
 ;;************************************************************************************
 
@@ -705,7 +705,7 @@ terminar:
 ;;
 ;;************************************************************************************
 
-versaoSU equ "2.2"
+versaoSU equ "2.3"
 
 shellPadrao:       db "sh", 0          ;; Nome do arquivo que contêm o shell padrão do Hexagonix®
 vd0:               db "vd0", 0         ;; Console principal
