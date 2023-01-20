@@ -86,22 +86,22 @@ inicioAPP:
     mov edi, lshapp.parametroAjuda
     mov esi, [parametro]
     
-    Hexagonix compararPalavrasString
+    hx.syscall compararPalavrasString
     
     jc usoAplicativo
 
     mov edi, lshapp.parametroAjuda2
     mov esi, [parametro]
     
-    Hexagonix compararPalavrasString
+    hx.syscall compararPalavrasString
     
     jc usoAplicativo
 
     mov esi, [parametro]
     
-    Hexagonix cortarString
+    hx.syscall cortarString
     
-    Hexagonix tamanhoString
+    hx.syscall tamanhoString
     
     cmp eax, 13
     jl .obterInformacoes
@@ -114,7 +114,7 @@ inicioAPP:
     
 .obterInformacoes:
 
-    Hexagonix arquivoExiste
+    hx.syscall arquivoExiste
 
     jc .semArquivo
     
@@ -176,7 +176,7 @@ verificarArquivoHAPP:
     mov esi, nomeArquivo
     mov edi, bufferArquivo
 
-    Hexagonix abrir
+    hx.syscall abrir
 
     jc inicioAPP.semArquivo
 
@@ -371,9 +371,9 @@ manterArquivo:
     push esi
     push eax
 
-    Hexagonix cortarString
+    hx.syscall cortarString
 
-    Hexagonix tamanhoString
+    hx.syscall tamanhoString
 
     mov ecx, eax
 
@@ -391,7 +391,7 @@ manterArquivo:
 
 terminar:   
 
-    Hexagonix encerrarProcesso
+    hx.syscall encerrarProcesso
 
 ;;************************************************************************************
 
@@ -405,7 +405,7 @@ terminar:
 
 align 16
 
-versaoLSHAPP equ "1.9.1"
+versaoLSHAPP equ "1.10"
 
 lshapp:
 
