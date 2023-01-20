@@ -88,14 +88,14 @@ inicioAPP:
     mov edi, cp.parametroAjuda
     mov esi, [parametros]
     
-    Hexagonix compararPalavrasString
+    hx.syscall compararPalavrasString
     
     jc usoAplicativo
 
     mov edi, cp.parametroAjuda2
     mov esi, [parametros]
     
-    Hexagonix compararPalavrasString
+    hx.syscall compararPalavrasString
     
     jc usoAplicativo
     
@@ -104,13 +104,13 @@ inicioAPP:
     
     mov esi, [arquivoEntrada]
     
-    Hexagonix arquivoExiste
+    hx.syscall arquivoExiste
     
     jc fonteNaoEncontrado
     
     mov esi, [arquivoSaida]
     
-    Hexagonix arquivoExiste
+    hx.syscall arquivoExiste
     
     jnc destinoPresente
  
@@ -119,20 +119,20 @@ inicioAPP:
     mov esi, [arquivoEntrada]
     mov edi, bufferArquivo
     
-    Hexagonix abrir
+    hx.syscall abrir
     
     jc erroAoAbrir
     
     mov esi, [arquivoEntrada]
     
-    Hexagonix arquivoExiste
+    hx.syscall arquivoExiste
 
 ;; Salvar arquivo no disco
 
     mov esi, [arquivoSaida]
     mov edi, bufferArquivo
     
-    Hexagonix salvarArquivo
+    hx.syscall salvarArquivo
     
     jc erroAoSalvar
     
@@ -186,7 +186,7 @@ destinoPresente:
 
 terminar:   
 
-    Hexagonix encerrarProcesso
+    hx.syscall encerrarProcesso
 
 ;;************************************************************************************
 
@@ -203,7 +203,7 @@ obterParametros:
     
     mov al, ' '
     
-    Hexagonix encontrarCaractere
+    hx.syscall encontrarCaractere
     
     jc usoAplicativo
 
@@ -267,7 +267,7 @@ usoAplicativo:
 ;;
 ;;************************************************************************************
 
-versaoCP equ "2.0"  
+versaoCP equ "2.1"  
 
 cp:
     
