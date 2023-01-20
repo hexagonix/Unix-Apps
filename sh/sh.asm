@@ -79,14 +79,14 @@ inicioShell:
     mov edi, sh.parametroAjuda
     mov esi, [linhaComando]
     
-    Hexagonix compararPalavrasString
+    hx.syscall compararPalavrasString
     
     jc usoAplicativo
     
     mov edi, sh.parametroAjuda2
     mov esi, [linhaComando]
     
-    Hexagonix compararPalavrasString
+    hx.syscall compararPalavrasString
     
     jc usoAplicativo
         
@@ -101,22 +101,22 @@ inicioShell:
     
     novaLinha
     
-    Hexagonix obterInfoTela
+    hx.syscall obterInfoTela
 
     mov byte[maxColunas], bl
     mov byte[maxLinhas], bh
 
-    Hexagonix obterCursor
+    hx.syscall obterCursor
     
     dec dh
     
-    Hexagonix definirCursor
+    hx.syscall definirCursor
     
     novaLinha
     
 .iniciarSessao:
 
-    Hexagonix obterUsuario
+    hx.syscall obterUsuario
     
     push eax
     
@@ -127,7 +127,7 @@ inicioShell:
     
     push esi
     
-    Hexagonix tamanhoString
+    hx.syscall tamanhoString
     
     pop esi
     
@@ -158,7 +158,7 @@ inicioShell:
     
     mov esi, sh.usuarioNormal
     
-    Hexagonix tamanhoString
+    hx.syscall tamanhoString
     
     push eax
     
@@ -182,7 +182,7 @@ inicioShell:
     
     mov esi, sh.usuarioRoot
     
-    Hexagonix tamanhoString
+    hx.syscall tamanhoString
     
     push eax
     
@@ -203,7 +203,7 @@ inicioShell:
 
     mov esi, sh.separador
     
-    Hexagonix tamanhoString
+    hx.syscall tamanhoString
     
     inc eax
     
@@ -215,9 +215,9 @@ inicioShell:
 
     novaLinha
    
-    Hexagonix obterCursor
+    hx.syscall obterCursor
     
-    Hexagonix definirCursor
+    hx.syscall definirCursor
     
     mov esi, sh.nomeUsuario
     
@@ -235,9 +235,9 @@ inicioShell:
 
     sub al, 20
     
-    Hexagonix obterString
+    hx.syscall obterString
     
-    Hexagonix cortarString           ;; Remover espaços em branco extras
+    hx.syscall cortarString           ;; Remover espaços em branco extras
         
     cmp byte[esi], 0                 ;; Nenhum comando inserido
     je .obterComando
@@ -248,7 +248,7 @@ inicioShell:
     
     mov edi, comandos.sair      
     
-    Hexagonix compararPalavrasString
+    hx.syscall compararPalavrasString
 
     jc finalizarShell
 
@@ -320,7 +320,7 @@ inicioShell:
 
     mov esi, edi
     
-    Hexagonix cortarString
+    hx.syscall cortarString
     
     pop esi
     
@@ -328,7 +328,7 @@ inicioShell:
     
     stc
     
-    Hexagonix iniciarProcesso
+    hx.syscall iniciarProcesso
     
     jc .falhaExecutando
     
@@ -387,7 +387,7 @@ obterArgumentos:
     mov byte[esi-1], 0
     mov ebx, esi
     
-    Hexagonix tamanhoString
+    hx.syscall tamanhoString
     
     mov ecx, eax
     
@@ -431,7 +431,7 @@ finalizarShell:
     
     mov ebx, 00h
     
-    Hexagonix encerrarProcesso
+    hx.syscall encerrarProcesso
 
 ;;************************************************************************************
 
@@ -445,7 +445,7 @@ finalizarShell:
 ;; Ela deve ser utilizada para identificar para qual versão do Hexagonix® o sh foi
 ;; desenvolvido.
             
-versaoSH equ "1.5"
+versaoSH equ "1.6"
 
 sh:
 
