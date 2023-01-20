@@ -71,10 +71,10 @@ include "macros.s"
 
 ;;************************************************************************************
 
-versaoMAN equ "2.2"
+versaoMAN equ "2.3"
 
-versaoCoreUtils equ "H2-RELEASE-5.1" 
-versaoUnixUtils equ "H2-RELEASE-5.1"
+versaoCoreUtils equ "H2-RELEASE-5.2" 
+versaoUnixUtils equ "H2-RELEASE-5.2"
 
 align 32
 
@@ -108,20 +108,20 @@ inicioAPP:
     mov edi, man.parametroAjuda
     mov esi, [utilitario]
     
-    Hexagonix compararPalavrasString
+    hx.syscall compararPalavrasString
     
     jc usoAplicativo
 
     mov edi, man.parametroAjuda2
     mov esi, [utilitario]
     
-    Hexagonix compararPalavrasString
+    hx.syscall compararPalavrasString
     
     jc usoAplicativo
 
     mov esi, [utilitario]
 
-    Hexagonix tamanhoString
+    hx.syscall tamanhoString
 
     mov ebx, eax
 
@@ -145,7 +145,7 @@ inicioAPP:
 
     push esi
 
-    Hexagonix arquivoExiste
+    hx.syscall arquivoExiste
 
     jc manualNaoEncontrado
 
@@ -153,13 +153,13 @@ inicioAPP:
 
     pop esi
     
-    Hexagonix abrir
+    hx.syscall abrir
     
     jc manualNaoEncontrado
 
 ;; Preparação do ambiente
 
-    Hexagonix limparTela
+    hx.syscall limparTela
 
     call montarInterface
     
@@ -183,7 +183,7 @@ montarInterface:
 
     mov al, ' '
     
-    Hexagonix imprimirCaractere
+    hx.syscall imprimirCaractere
     
     dec ecx
     
@@ -233,7 +233,7 @@ usoAplicativo:
 
 terminar:   
 
-    Hexagonix encerrarProcesso
+    hx.syscall encerrarProcesso
     
 ;;*****************************************************************************
 
