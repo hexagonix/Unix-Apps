@@ -81,35 +81,35 @@ inicioAPP: ;; Ponto de entrada do aplicativo
     mov edi, ps.parametroAjuda
     mov esi, [parametro]
     
-    Hexagonix compararPalavrasString
+    hx.syscall compararPalavrasString
     
     jc usoAplicativo
 
     mov edi, ps.parametroAjuda2
     mov esi, [parametro]
     
-    Hexagonix compararPalavrasString
+    hx.syscall compararPalavrasString
     
     jc usoAplicativo
     
     mov edi, ps.parametroPID
     mov esi, [parametro]
     
-    Hexagonix compararPalavrasString
+    hx.syscall compararPalavrasString
     
     jc parametroPID
     
     mov edi, ps.parametroMemoria
     mov esi, [parametro]
     
-    Hexagonix compararPalavrasString
+    hx.syscall compararPalavrasString
     
     jc parametroMemoria
     
     mov edi, ps.parametroOutros
     mov esi, [parametro]
     
-    Hexagonix compararPalavrasString
+    hx.syscall compararPalavrasString
     
     jc parametroOutrosProcessos
     
@@ -119,7 +119,7 @@ inicioAPP: ;; Ponto de entrada do aplicativo
 
 parametroPID:
     
-    Hexagonix obterPID
+    hx.syscall obterPID
     
     push eax
     
@@ -146,7 +146,7 @@ parametroMemoria:
     
     imprimirString
     
-    Hexagonix usoMemoria
+    hx.syscall usoMemoria
     
     imprimirInteiro
     
@@ -160,7 +160,7 @@ parametroMemoria:
 
 parametroOutrosProcessos:
 
-    Hexagonix obterPID
+    hx.syscall obterPID
     
     push eax
     
@@ -192,11 +192,11 @@ usoAplicativo:
 
 terminar:   
     
-    Hexagonix encerrarProcesso
+    hx.syscall encerrarProcesso
 
 ;;************************************************************************************
 
-versaoPS equ "1.0"
+versaoPS equ "1.1"
 
 parametro: dd ?
 
