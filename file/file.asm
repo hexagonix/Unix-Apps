@@ -86,22 +86,22 @@ inicioAPP:
     mov edi, fileUnix.parametroAjuda
     mov esi, [parametro]
     
-    Hexagonix compararPalavrasString
+    hx.syscall compararPalavrasString
     
     jc usoAplicativo
 
     mov edi, fileUnix.parametroAjuda2
     mov esi, [parametro]
     
-    Hexagonix compararPalavrasString
+    hx.syscall compararPalavrasString
     
     jc usoAplicativo
     
     mov esi, [parametro]
     
-    Hexagonix cortarString
+    hx.syscall cortarString
     
-    Hexagonix tamanhoString
+    hx.syscall tamanhoString
     
     cmp eax, 13
     jl .obterInformacoes
@@ -114,7 +114,7 @@ inicioAPP:
     
 .obterInformacoes:
 
-    Hexagonix arquivoExiste
+    hx.syscall arquivoExiste
 
     jc .semArquivo
     
@@ -161,9 +161,9 @@ inicioAPP:
 
     mov esi, nomeArquivo
 
-    Hexagonix stringParaMaiusculo    ;; Iremos checar com base na extensão em maiúsculo
+    hx.syscall stringParaMaiusculo    ;; Iremos checar com base na extensão em maiúsculo
     
-    Hexagonix tamanhoString
+    hx.syscall tamanhoString
 
     add esi, eax                     ;; Adicionar o tamanho do nome
 
@@ -171,49 +171,49 @@ inicioAPP:
 
     mov edi, fileUnix.extensaoUNX
     
-    Hexagonix compararPalavrasString  ;; Checar por extensão .UNX
+    hx.syscall compararPalavrasString  ;; Checar por extensão .UNX
     
     jc .arquivoUNX
 
     mov edi, fileUnix.extensaoSIS
     
-    Hexagonix compararPalavrasString  ;; Checar por extensão .SIS
+    hx.syscall compararPalavrasString  ;; Checar por extensão .SIS
     
     jc .arquivoSIS
 
     mov edi, fileUnix.extensaoTXT
     
-    Hexagonix compararPalavrasString  ;; Checar por extensão .TXT
+    hx.syscall compararPalavrasString  ;; Checar por extensão .TXT
     
     jc .arquivoTXT
 
     mov edi, fileUnix.extensaoASM
     
-    Hexagonix compararPalavrasString  ;; Checar por extensão .ASM
+    hx.syscall compararPalavrasString  ;; Checar por extensão .ASM
     
     jc .arquivoASM
 
     mov edi, fileUnix.extensaoCOW
     
-    Hexagonix compararPalavrasString  ;; Checar por extensão .COW
+    hx.syscall compararPalavrasString  ;; Checar por extensão .COW
     
     jc .arquivoCOW
 
     mov edi, fileUnix.extensaoMAN
     
-    Hexagonix compararPalavrasString  ;; Checar por extensão .MAN
+    hx.syscall compararPalavrasString  ;; Checar por extensão .MAN
     
     jc .arquivoMAN
 
     mov edi, fileUnix.extensaoFNT
     
-    Hexagonix compararPalavrasString  ;; Checar por extensão .FNT
+    hx.syscall compararPalavrasString  ;; Checar por extensão .FNT
     
     jc .arquivoFNT
 
     mov edi, fileUnix.extensaoCAN
     
-    Hexagonix compararPalavrasString  ;; Checar por extensão .CAN
+    hx.syscall compararPalavrasString  ;; Checar por extensão .CAN
     
     jc .arquivoCAN
 
@@ -225,7 +225,7 @@ inicioAPP:
 
     mov edi, fileUnix.extensaoS
     
-    Hexagonix compararPalavrasString  ;; Checar por extensão .S
+    hx.syscall compararPalavrasString  ;; Checar por extensão .S
     
     jc .arquivoS
 
@@ -338,7 +338,7 @@ verificarArquivoHAPP:
     mov esi, nomeArquivo
     mov edi, bufferArquivo
 
-    Hexagonix abrir
+    hx.syscall abrir
 
     jc inicioAPP.semArquivo
 
@@ -369,7 +369,7 @@ verificarArquivoHBoot:
     mov esi, nomeArquivo
     mov edi, bufferArquivo
 
-    Hexagonix abrir
+    hx.syscall abrir
 
     jc inicioAPP.semArquivo
 
@@ -413,9 +413,9 @@ manterArquivo:
     push esi
     push eax
 
-    Hexagonix cortarString
+    hx.syscall cortarString
 
-    Hexagonix tamanhoString
+    hx.syscall tamanhoString
 
     mov ecx, eax
 
@@ -433,7 +433,7 @@ manterArquivo:
 
 terminar:   
 
-    Hexagonix encerrarProcesso
+    hx.syscall encerrarProcesso
 
 ;;************************************************************************************
 
@@ -443,7 +443,7 @@ terminar:
 ;;
 ;;************************************************************************************
     
-versaoFILE equ "1.7"
+versaoFILE equ "1.8"
 
 fileUnix:
 
