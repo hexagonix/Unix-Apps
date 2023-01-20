@@ -83,14 +83,14 @@ inicioAPP:
     mov edi, cowsay.parametroAjuda
     mov esi, [parametro]
     
-    Hexagonix compararPalavrasString
+    hx.syscall compararPalavrasString
     
     jc usoAplicativo
 
     mov edi, cowsay.parametroAjuda2
     mov esi, [parametro]
     
-    Hexagonix compararPalavrasString
+    hx.syscall compararPalavrasString
     
     jc usoAplicativo
 
@@ -98,7 +98,7 @@ inicioAPP:
 
     mov esi, [mensagemUsuario]
 
-    Hexagonix tamanhoString
+    hx.syscall tamanhoString
 
     mov dword[tamanhoMensagem], eax
 
@@ -202,7 +202,7 @@ inicioAPP:
 
     mov esi, [perfilVaquinha]
 
-    Hexagonix tamanhoString
+    hx.syscall tamanhoString
     
     mov ebx, eax
 
@@ -226,14 +226,14 @@ inicioAPP:
 
     push esi
 
-    Hexagonix arquivoExiste
+    hx.syscall arquivoExiste
     jc .vaquinhaInterna
 
     pop esi
 
     mov edi, bufferArquivo
 
-    Hexagonix abrir
+    hx.syscall abrir
 
     jc .vaquinhaInterna
     
@@ -282,7 +282,7 @@ obterParametros:
 
     clc ;; Limpar o Carry
 
-    Hexagonix encontrarCaractere ;; Solicitar o serviço de busca de caractere
+    hx.syscall encontrarCaractere ;; Solicitar o serviço de busca de caractere
 
     jnc .semArquivoExterno ;; Foi identificado um marcador de frase. Pular carregamento de personagem
 
@@ -291,7 +291,7 @@ obterParametros:
 
     mov al, ' ' ;; Vamos pesquisar se existe um espaço, que seria a indicação de duas ou mais palavras
     
-    Hexagonix encontrarCaractere ;; Solicitar o serviço de busca de caractere
+    hx.syscall encontrarCaractere ;; Solicitar o serviço de busca de caractere
     
     jc .adicionarMensagem ;; Não temos mais de uma palavra, o que indica que não há troca de personagem
 
@@ -328,20 +328,20 @@ obterParametros:
 
     mov esi, [perfilVaquinha] ;; Vamos pegar a string de parâmetro fornecida pelo Sistema
 
-    Hexagonix cortarString ;; Cortar ela (trimming), para ter certeza das posições de caracteres
+    hx.syscall cortarString ;; Cortar ela (trimming), para ter certeza das posições de caracteres
 
 ;; Agora vamos fazer a remoção dos caracteres '"', lembrando que só serão removidos o primeiro e 
 ;; último caracteres '"'. Qualquer um no interior da cadeia permanecerá, por enquanto.
 
     mov eax, 00h ;; Posição zero da cadeia cortada, primeiro '"'
 
-    Hexagonix removerCaractereString ;; Sistema, remova, por favor
+    hx.syscall removerCaractereString ;; Sistema, remova, por favor
 
-    Hexagonix tamanhoString ;; Agora, qual o tamanho da cadeia residual?
+    hx.syscall tamanhoString ;; Agora, qual o tamanho da cadeia residual?
 
     dec eax ;; O último caractere é sempre o terminador, então recue um. Este é o último '"'
 
-    Hexagonix removerCaractereString ;; Sistema, remova, por favor
+    hx.syscall removerCaractereString ;; Sistema, remova, por favor
 
     mov [mensagemUsuario], esi ;; A mensagem está pronta para ser exibida
 
@@ -409,11 +409,11 @@ usoAplicativo:
 
 terminar:   
 
-    Hexagonix encerrarProcesso
+    hx.syscall encerrarProcesso
 
 ;;************************************************************************************
 
-versaoCOWSAY equ "2.0"
+versaoCOWSAY equ "2.1"
 
 cowsay:
 
