@@ -78,7 +78,7 @@ inicioAPP: ;; Ponto de entrada do aplicativo
     
 ;;************************************************************************************
 
-    Hexagonix obterCor
+    hx.syscall obterCor
 
     mov dword[htop.corFonte], eax
     mov dword[htop.corFundo], ebx
@@ -88,14 +88,14 @@ inicioAPP: ;; Ponto de entrada do aplicativo
     mov edi, htop.parametroAjuda
     mov esi, [parametro]
     
-    Hexagonix compararPalavrasString
+    hx.syscall compararPalavrasString
     
     jc usoAplicativo
 
     mov edi, htop.parametroAjuda2
     mov esi, [parametro]
     
-    Hexagonix compararPalavrasString
+    hx.syscall compararPalavrasString
     
     jc usoAplicativo
     
@@ -117,7 +117,7 @@ exibirProcessos:
     
     call definirCorTexto
     
-    Hexagonix usoMemoria
+    hx.syscall usoMemoria
     
     imprimirInteiro
     
@@ -135,7 +135,7 @@ exibirProcessos:
     
     call definirCorTexto
     
-    Hexagonix usoMemoria
+    hx.syscall usoMemoria
     
     mov eax, ecx
     
@@ -149,7 +149,7 @@ exibirProcessos:
 
     novaLinha
 
-    Hexagonix obterProcessos
+    hx.syscall obterProcessos
     
     mov [listaRemanescente], esi
     mov dword[numeroPIDs], eax
@@ -192,7 +192,7 @@ exibirProcessos:
 
     mov al, 10
 
-    Hexagonix imprimirCaractere
+    hx.syscall imprimirCaractere
 
     cmp dword[numeroPIDs], 01h
     je .continuar
@@ -223,7 +223,7 @@ usoAplicativo:
 
 terminar:   
     
-    Hexagonix encerrarProcesso
+    hx.syscall encerrarProcesso
 
 ;;************************************************************************************
 
@@ -237,7 +237,7 @@ definirCorTexto:
 
     mov ebx, [htop.corFundo]
     
-    Hexagonix definirCor
+    hx.syscall definirCor
     
     ret
 
@@ -248,7 +248,7 @@ definirCorPadrao:
     mov eax, [htop.corFonte]
     mov ebx, [htop.corFundo]
     
-    Hexagonix definirCor
+    hx.syscall definirCor
     
     ret
 
@@ -265,7 +265,7 @@ colocarEspaco:
     
     mov esi, [arquivoAtual]
     
-    Hexagonix tamanhoString
+    hx.syscall tamanhoString
     
     mov ebx, 17
     
@@ -277,7 +277,7 @@ colocarEspaco:
 
     mov al, ' '
     
-    Hexagonix imprimirCaractere
+    hx.syscall imprimirCaractere
     
     dec ecx
     
@@ -309,7 +309,7 @@ lerListaProcessos:
     
     mov al, ' '
     
-    Hexagonix encontrarCaractere
+    hx.syscall encontrarCaractere
     
     jc .pronto
 
@@ -317,7 +317,7 @@ lerListaProcessos:
     
     call encontrarCaractereLista
     
-    Hexagonix cortarString
+    hx.syscall cortarString
 
     mov [listaRemanescente], esi
     
@@ -361,7 +361,7 @@ encontrarCaractereLista:
 
 parametro: dd ?
 
-versaoHTOP equ "1.2.1"
+versaoHTOP equ "1.3"
 
 htop:
 
