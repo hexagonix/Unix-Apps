@@ -86,14 +86,14 @@ inicioAPP:
     mov edi, echo.parametroAjuda
     mov esi, [parametro]
     
-    Hexagonix compararPalavrasString
+    hx.syscall compararPalavrasString
     
     jc usoAplicativo
 
     mov edi, echo.parametroAjuda2
     mov esi, [parametro]
     
-    Hexagonix compararPalavrasString
+    hx.syscall compararPalavrasString
     
     jc usoAplicativo
     
@@ -119,7 +119,7 @@ usoAplicativo:
 
 terminar:   
 
-    Hexagonix encerrarProcesso
+    hx.syscall encerrarProcesso
 
 ;;************************************************************************************
 
@@ -129,7 +129,7 @@ terminar:
 ;;
 ;;************************************************************************************
 
-versaoECHO equ "1.0"
+versaoECHO equ "1.1"
 
 echo:
 
