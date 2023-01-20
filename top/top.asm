@@ -78,7 +78,7 @@ inicioAPP: ;; Ponto de entrada do aplicativo
     
 ;;************************************************************************************
 
-    Hexagonix obterCor
+    hx.syscall obterCor
 
     mov dword[top.corFonte], eax
     mov dword[top.corFundo], ebx
@@ -90,14 +90,14 @@ inicioAPP: ;; Ponto de entrada do aplicativo
     mov edi, top.parametroAjuda
     mov esi, [parametro]
     
-    Hexagonix compararPalavrasString
+    hx.syscall compararPalavrasString
     
     jc usoAplicativo
 
     mov edi, top.parametroAjuda2
     mov esi, [parametro]
     
-    Hexagonix compararPalavrasString
+    hx.syscall compararPalavrasString
     
     jc usoAplicativo
     
@@ -113,7 +113,7 @@ exibirProcessos:
     
     imprimirString
     
-    Hexagonix obterProcessos
+    hx.syscall obterProcessos
     
     push eax
     
@@ -149,7 +149,7 @@ exibirProcessos:
     
     call definirCorTexto
     
-    Hexagonix usoMemoria
+    hx.syscall usoMemoria
     
     imprimirInteiro
     
@@ -167,7 +167,7 @@ exibirProcessos:
     
     call definirCorTexto
     
-    Hexagonix usoMemoria
+    hx.syscall usoMemoria
     
     mov eax, ecx
     
@@ -195,7 +195,7 @@ usoAplicativo:
 
 terminar:   
     
-    Hexagonix encerrarProcesso
+    hx.syscall encerrarProcesso
 
 ;;************************************************************************************
 
@@ -209,7 +209,7 @@ definirCorTexto:
 
     mov ebx, [top.corFundo]
     
-    Hexagonix definirCor
+    hx.syscall definirCor
     
     ret
 
@@ -220,7 +220,7 @@ definirCorPadrao:
     mov eax, [top.corFonte]
     mov ebx, [top.corFundo]
     
-    Hexagonix definirCor
+    hx.syscall definirCor
     
     ret
 
@@ -228,7 +228,7 @@ definirCorPadrao:
 
 parametro: dd ?
 
-versaoTOP equ "1.1"
+versaoTOP equ "1.2"
 
 top:
 
