@@ -83,14 +83,14 @@ inicioAPP:
     mov edi, clear.parametroAjuda
     mov esi, [parametro]
     
-    Hexagonix compararPalavrasString
+    hx.syscall compararPalavrasString
     
     jc usoAplicativo
 
     mov edi, clear.parametroAjuda2
     mov esi, [parametro]
     
-    Hexagonix compararPalavrasString
+    hx.syscall compararPalavrasString
     
     jc usoAplicativo
     
@@ -102,17 +102,17 @@ realizarLimpeza:
 
     mov esi, vd1         ;; Abrir o primeiro console virtual
     
-    Hexagonix abrir      ;; Abre o dispositivo
+    hx.syscall abrir      ;; Abre o dispositivo
     
     jc .erro
     
-    Hexagonix limparTela ;; Limpa seu conteúdo
+    hx.syscall limparTela ;; Limpa seu conteúdo
     
     mov esi, vd0         ;; Reabre o console principal
     
-    Hexagonix abrir      ;; Abre o dispositivo
+    hx.syscall abrir      ;; Abre o dispositivo
 
-    Hexagonix limparTela
+    hx.syscall limparTela
     
     jmp terminar
     
@@ -128,7 +128,7 @@ realizarLimpeza:
 
 terminar:   
 
-    Hexagonix encerrarProcesso
+    hx.syscall encerrarProcesso
 
 ;;************************************************************************************
 
@@ -148,7 +148,7 @@ usoAplicativo:
 ;;
 ;;************************************************************************************
 
-versaoCLEAR equ "1.0"
+versaoCLEAR equ "1.1"
 
 clear:
 
