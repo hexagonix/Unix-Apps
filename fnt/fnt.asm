@@ -75,7 +75,7 @@ include "macros.s"
 ;;
 ;;************************************************************************************
 
-versaoFNT equ "0.1"
+versaoFNT equ "0.2"
 
 fnt:
 
@@ -133,14 +133,14 @@ inicioAPP:
     mov edi, fnt.parametroAjuda
     mov esi, [parametro]
     
-    Hexagonix compararPalavrasString
+    hx.syscall compararPalavrasString
     
     jc usoAplicativo
 
     mov edi, fnt.parametroAjuda2
     mov esi, [parametro]
     
-    Hexagonix compararPalavrasString
+    hx.syscall compararPalavrasString
     
     jc usoAplicativo
     
@@ -154,13 +154,13 @@ inicioAPP:
     
     mov esi, [parametro]
     
-    Hexagonix cortarString          ;; Remover espaços em branco extras
+    hx.syscall cortarString          ;; Remover espaços em branco extras
     
     call validarFonte
 
     jc .erroFormato
 
-    Hexagonix alterarFonte
+    hx.syscall alterarFonte
     
     jc .erroTexto
     
@@ -178,7 +178,7 @@ inicioAPP:
     
     mov ebx, 00h
     
-    Hexagonix encerrarProcesso
+    hx.syscall encerrarProcesso
     
 .erroTexto:
 
@@ -208,7 +208,7 @@ terminar:
 
     mov ebx, 00h
 
-    Hexagonix encerrarProcesso
+    hx.syscall encerrarProcesso
     
 ;;************************************************************************************
 
@@ -227,7 +227,7 @@ validarFonte:
     mov esi, [parametro]
     mov edi, bufferArquivo
 
-    Hexagonix abrir
+    hx.syscall abrir
 
     jc .erroSemFonte
 
@@ -247,7 +247,7 @@ validarFonte:
 
 .verificarTamanho:
 
-    Hexagonix arquivoExiste
+    hx.syscall arquivoExiste
 
 ;; Em EAX, o tamanho do arquivo. Ele não deve ser maior que 2000 bytes, o que poderia
 ;; sobrescrever dados na memória do Hexagon
