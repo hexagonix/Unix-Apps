@@ -60,28 +60,28 @@ echo
 
 echo "Building Hexagonix® Unix based applications... {" >> $LOG
 echo >> $LOG
-	
+    
 # Vamos agora automatizar a construção dos aplicativos base Unix
 
 for i in */
 do
 
-	cd $i
+    cd $i
 
-	for h in *.asm
-	do
+    for h in *.asm
+    do
 
-	echo -en "Building Hexagonix® Unix utility \e[1;94m$(basename $h .asm)\e[0m..."
-	
-	echo Building Hexagonix® Unix Utility $(basename $h .asm)... >> $LOG
-	
-	echo >> $LOG
-	
-	fasm $h ../../../Andromeda/bin/`basename $h .asm` -d $BANDEIRAS >> $LOG || desmontar
-	
-	echo -e " [\e[32mOk\e[0m]"
-	
-	echo >> $LOG
+    echo -en "Building Hexagonix® Unix utility \e[1;94m$(basename $h .asm)\e[0m..."
+    
+    echo Building Hexagonix® Unix Utility $(basename $h .asm)... >> $LOG
+    
+    echo >> $LOG
+    
+    fasm $h ../../../Andromeda/bin/`basename $h .asm` -d $BANDEIRAS >> $LOG || desmontar
+    
+    echo -e " [\e[32mOk\e[0m]"
+    
+    echo >> $LOG
 
 # Aqui vão aplicações específicas dentro dos pacotes que contêm arquivos auxiliares que devem
 # ser copiados, como os arquivos da ferramenta cowsay. Devem ser adicionados loops if para
@@ -89,19 +89,19 @@ do
 # de arquivos auxiliares. A mensagem deve ser padrão. Apenas o que está dentro dos '[ ]' do loop
 # for e o comando de cópia devem variar.
 
-	if [ -e cows ] ; then
+    if [ -e cows ] ; then
 
-	echo -n " > Copying additional package files for" $i 
+    echo -n " > Copying additional package files for" $i 
 
-	cp cows/*.cow ../$DESTINO >> /dev/null
+    cp cows/*.cow ../$DESTINO >> /dev/null
 
-	echo -e " [\e[32mOk\e[0m]"
+    echo -e " [\e[32mOk\e[0m]"
 
-	fi
+    fi
 
 # Fim da área de aplicações específicas
 
-	done
+    done
 
 cd ..
 
@@ -144,8 +144,8 @@ echo
 echo "View the log file 'log.log', for more information about the error(s)."
 echo
 
-exit	
-	
+exit    
+    
 }
 
 export LOG="/dev/null"
