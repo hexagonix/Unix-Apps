@@ -91,7 +91,7 @@ tamanhoLimiteBusca = 32768
 
 ;;************************************************************************************
 
-versaoLOGIND equ "1.3.1"
+versaoLOGIND equ "1.4"
 
 arquivo:    db "passwd", 0      ;; Nome do arquivo de configuração de login
 vd0:        db "vd0", 0         ;; Console padrão
@@ -147,12 +147,12 @@ iniciologind: ;; Ponto de entrada
 ;; O logind é um daemon que só deve ser utilizado durante a inicialização.
 ;; Para isso, ele deve checar se o PID é 3 (init=1 e login=2).
 
-    Hexagonix obterPID
+    hx.syscall obterPID
     
     cmp eax, 03h
     je iniciarExecucao
     
-    Hexagonix encerrarProcesso
+    hx.syscall encerrarProcesso
 
 iniciarExecucao:
 
@@ -165,7 +165,7 @@ match =Moderno, TIPOLOGIN
      
     call verificarTema
 
-    Hexagonix limparTela
+    hx.syscall limparTela
 
 } 
 
@@ -187,7 +187,7 @@ verificarTema:
     mov esi, arquivo
     mov edi, bufferArquivo
     
-    Hexagonix abrir
+    hx.syscall abrir
     
     jc .arquivoUsuarioAusente
     
@@ -244,14 +244,14 @@ verificarTema:
     mov edi, escolhaTema
     mov esi, logind.temaClaro
     
-    Hexagonix compararPalavrasString
+    hx.syscall compararPalavrasString
     
     jc .selecionarTemaClaro
     
     mov edi, escolhaTema
     mov esi, logind.temaEscuro
     
-    Hexagonix compararPalavrasString
+    hx.syscall compararPalavrasString
     
     jc .selecionarTemaEscuro
     
@@ -269,25 +269,25 @@ verificarTema:
 
     mov esi, vd1         ;; Abrir primeiro console virtual 
     
-    Hexagonix abrir      ;; Abre o dispositivo
+    hx.syscall abrir      ;; Abre o dispositivo
     
     mov eax, PRETO 
     mov ebx, BRANCO_ANDROMEDA
 
-    Hexagonix definirCor
+    hx.syscall definirCor
 
-    Hexagonix limparTela ;; Limpa seu conteúdo
+    hx.syscall limparTela ;; Limpa seu conteúdo
     
     mov esi, vd0         ;; Reabre o dispositivo de saída padrão 
     
-    Hexagonix abrir      ;; Abre o dispositivo
+    hx.syscall abrir      ;; Abre o dispositivo
 
     mov eax, PRETO 
     mov ebx, BRANCO_ANDROMEDA
 
-    Hexagonix definirCor
+    hx.syscall definirCor
 
-    Hexagonix limparTela ;; Limpa seu conteúdo
+    hx.syscall limparTela ;; Limpa seu conteúdo
 
     ret
 
@@ -295,25 +295,25 @@ verificarTema:
 
     mov esi, vd1         ;; Abrir primeiro console virtual 
     
-    Hexagonix abrir      ;; Abre o dispositivo
+    hx.syscall abrir      ;; Abre o dispositivo
     
     mov eax, BRANCO_ANDROMEDA 
     mov ebx, PRETO
 
-    Hexagonix definirCor
+    hx.syscall definirCor
 
-    Hexagonix limparTela ;; Limpa seu conteúdo
+    hx.syscall limparTela ;; Limpa seu conteúdo
     
     mov esi, vd0         ;; Reabre o console padrão
     
-    Hexagonix abrir      ;; Abre o dispositivo
+    hx.syscall abrir      ;; Abre o dispositivo
 
     mov eax, BRANCO_ANDROMEDA 
     mov ebx, PRETO
 
-    Hexagonix definirCor
+    hx.syscall definirCor
 
-    Hexagonix limparTela ;; Limpa seu conteúdo
+    hx.syscall limparTela ;; Limpa seu conteúdo
 
 .nomeTemaInvalido:
 
@@ -399,7 +399,7 @@ verificarConsistencia:
     call verificarTema             ;; Caso algum processo seja finalizado após alterar
                                    ;; o plano de fundo padrão
 
-    Hexagonix limparTela
+    hx.syscall limparTela
 
     ret
 
@@ -407,7 +407,7 @@ verificarConsistencia:
 
 terminar:   
 
-    Hexagonix encerrarProcesso
+    hx.syscall encerrarProcesso
 
 ;;************************************************************************************
 
@@ -417,7 +417,7 @@ checarBaseDados:
 
     mov esi, arquivo
 
-    Hexagonix arquivoExiste
+    hx.syscall arquivoExiste
 
     ret
 
