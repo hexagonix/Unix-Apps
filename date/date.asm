@@ -98,53 +98,29 @@ inicioAPP:
 
     call processarBCD ;; Fazer a conversão de BCD para caractere imrprimível
 
-    mov esi, date.hora
+    fputs date.hora
 
-    imprimirString
+    fputs date.sepHora
 
-    mov esi, date.sepHora
+    fputs date.minuto
 
-    imprimirString
+    fputs date.sepHora
 
-    mov esi, date.minuto
+    fputs date.segundo
 
-    imprimirString
+    fputs date.espacamento
 
-    mov esi, date.sepHora
+    fputs date.dia
 
-    imprimirString
+    fputs date.sepData
 
-    mov esi, date.segundo
+    fputs date.mes
 
-    imprimirString
+    fputs date.sepData
 
-    mov esi, date.espacamento
+    fputs date.seculo
 
-    imprimirString
-
-    mov esi, date.dia
-
-    imprimirString
-
-    mov esi, date.sepData
-
-    imprimirString
-
-    mov esi, date.mes
-
-    imprimirString
-
-    mov esi, date.sepData
-
-    imprimirString
-
-    mov esi, date.seculo
-
-    imprimirString
-
-    mov esi, date.ano
-
-    imprimirString
+    fputs date.ano
 
 match =SIM, DIASEMANA
 {
@@ -178,57 +154,43 @@ match =SIM, DIASEMANA
 
 .domingo:
 
-    mov esi, date.domingo
-
-    imprimirString
+    fputs date.domingo
 
     jmp .continuar
 
 .segunda:
 
-    mov esi, date.segunda
-
-    imprimirString
+    fputs date.segunda
 
     jmp .continuar
 
 .terca:
 
-    mov esi, date.terca
-
-    imprimirString
+    fputs date.terca
 
     jmp .continuar
 
 .quarta:
 
-    mov esi, date.quarta
-
-    imprimirString
+    fputs date.quarta
 
     jmp .continuar
 
 .quinta:
 
-    mov esi, date.quinta
-
-    imprimirString
+    fputs date.quinta
 
     jmp .continuar
 
 .sexta:
 
-    mov esi, date.sexta
-
-    imprimirString
+    fputs date.sexta
 
     jmp .continuar
 
 .sabado:
 
-    mov esi, date.sabado
-
-    imprimirString
+    fputs date.sabado
 
     jmp .continuar
 
@@ -353,9 +315,7 @@ BCDParaASCII:
 
 usoAplicativo:
     
-    mov esi, date.uso
-    
-    imprimirString
+    fputs date.uso
     
     jmp terminar
 
@@ -367,7 +327,7 @@ terminar:
 
 ;;************************************************************************************
 
-versaoDATE equ "1.2"
+versaoDATE equ "1.2.1"
 
 date:
         
