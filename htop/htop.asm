@@ -103,15 +103,11 @@ inicioAPP: ;; Ponto de entrada do aplicativo
 
 exibirProcessos:
 
-    mov esi, htop.inicio
-    
-    imprimirString
+    fputs htop.inicio
     
     call definirCorPadrao
     
-    mov esi, htop.usoMem
-    
-    imprimirString
+    fputs htop.usoMem
     
     mov eax, VERDE_FLORESTA
     
@@ -123,13 +119,9 @@ exibirProcessos:
     
     call definirCorPadrao
     
-    mov esi, htop.bytes
+    fputs htop.bytes
     
-    imprimirString
-    
-    mov esi, htop.memTotal
-    
-    imprimirString
+    fputs htop.memTotal
     
     mov eax, VERDE_FLORESTA
     
@@ -143,9 +135,7 @@ exibirProcessos:
     
     call definirCorPadrao
     
-    mov esi, htop.mbytes
-    
-    imprimirString
+    fputs htop.mbytes
 
     novaLinha
 
@@ -167,9 +157,7 @@ exibirProcessos:
     
     mov dword[numeroProcessos], 00h
 
-    mov esi, htop.cabecalho
-
-    imprimirString
+    fputs htop.cabecalho
 
     inc dword[PIDs]
 
@@ -180,9 +168,7 @@ exibirProcessos:
 
     call lerListaProcessos
 
-    mov esi, [arquivoAtual]
-
-    imprimirString
+    fputs [processoAtual]
 
     call colocarEspaco
 
@@ -213,9 +199,7 @@ exibirProcessos:
     
 usoAplicativo:
 
-    mov esi, htop.uso
-    
-    imprimirString
+    fputs htop.uso
 
     jmp terminar
 
@@ -263,7 +247,7 @@ colocarEspaco:
     push ds
     pop es
     
-    mov esi, [arquivoAtual]
+    mov esi, [processoAtual]
     
     hx.syscall tamanhoString
     
@@ -305,7 +289,7 @@ lerListaProcessos:
     pop es
     
     mov esi, [listaRemanescente]
-    mov [arquivoAtual], esi
+    mov [processoAtual], esi
     
     mov al, ' '
     
@@ -361,7 +345,7 @@ encontrarCaractereLista:
 
 parametro: dd ?
 
-versaoHTOP equ "1.3"
+versaoHTOP equ "1.4"
 
 htop:
 
@@ -390,4 +374,4 @@ limiteExibicao:    dd 0
 numeroProcessos:   dd 0
 PIDs:              dd 0
 numeroPIDs:        dd 0
-arquivoAtual:      dd ' '
+processoAtual:      dd ' '
