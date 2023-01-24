@@ -248,7 +248,7 @@ processarBCD:
 
 ;; Vamos processar o dia
     
-    hx.syscall retornarData
+    hx.syscall hx.date
 
     call BCDParaASCII
 
@@ -257,7 +257,7 @@ processarBCD:
 
 ;; Vamos processar o mês
 
-    hx.syscall retornarData
+    hx.syscall hx.date
 
     mov eax, ebx 
 
@@ -268,7 +268,7 @@ processarBCD:
 
 ;; Vamos processar o século (primeiros dois dígitos do ano)
 
-    hx.syscall retornarData
+    hx.syscall hx.date
 
     mov eax, ecx 
 
@@ -279,7 +279,7 @@ processarBCD:
 
 ;; Vamos processar o ano
 
-    hx.syscall retornarData
+    hx.syscall hx.date
 
     mov eax, edx 
 
@@ -290,7 +290,7 @@ processarBCD:
 
 ;; Vamos processar o dia da semana
 
-    hx.syscall retornarData
+    hx.syscall hx.date
 
     mov eax, esi 
 
@@ -301,7 +301,7 @@ processarBCD:
 
 ;; Vamos processar a hora
 
-    hx.syscall retornarHora
+    hx.syscall hx.time
 
     mov eax, eax 
 
@@ -312,7 +312,7 @@ processarBCD:
 
 ;; Vamos processar os minutos
 
-    hx.syscall retornarHora
+    hx.syscall hx.time
 
     mov eax, ebx
 
@@ -323,7 +323,7 @@ processarBCD:
 
 ;; Vamos processar os segundos
 
-    hx.syscall retornarHora
+    hx.syscall hx.time
 
     mov eax, ecx
 
@@ -367,7 +367,7 @@ terminar:
 
 ;;************************************************************************************
 
-versaoDATE equ "1.1"
+versaoDATE equ "1.2"
 
 date:
         
