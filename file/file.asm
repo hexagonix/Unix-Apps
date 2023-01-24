@@ -338,7 +338,7 @@ verificarArquivoHAPP:
     mov esi, nomeArquivo
     mov edi, bufferArquivo
 
-    hx.syscall abrir
+    hx.syscall hx.open
 
     jc inicioAPP.semArquivo
 
@@ -369,7 +369,7 @@ verificarArquivoHBoot:
     mov esi, nomeArquivo
     mov edi, bufferArquivo
 
-    hx.syscall abrir
+    hx.syscall hx.open
 
     jc inicioAPP.semArquivo
 
@@ -443,7 +443,7 @@ terminar:
 ;;
 ;;************************************************************************************
     
-versaoFILE equ "1.8"
+versaoFILE equ "1.8.1"
 
 fileUnix:
 
