@@ -75,7 +75,7 @@ include "macros.s"
 ;;
 ;;************************************************************************************
 
-versaoFNT equ "0.3"
+versaoFNT equ "0.4"
 
 fnt:
 
@@ -144,13 +144,9 @@ inicioAPP:
     
     jc usoAplicativo
     
-    mov esi, fnt.nomeArquivo
+    fputs fnt.nomeArquivo
     
-    imprimirString
-    
-    mov esi, [parametro]
-    
-    imprimirString
+    fputs [parametro]
     
     mov esi, [parametro]
     
@@ -164,17 +160,11 @@ inicioAPP:
     
     jc .erroTexto
     
-    mov esi, fnt.sucessoTexto
-    
-    imprimirString
+    fputs fnt.sucessoTexto
 
-    mov esi, fnt.introducaoTeste
+    fputs fnt.introducaoTeste
 
-    imprimirString
-
-    mov esi, fnt.testeFonte
-
-    imprimirString
+    fputs fnt.testeFonte
     
     mov ebx, 00h
     
@@ -182,17 +172,13 @@ inicioAPP:
     
 .erroTexto:
 
-    mov esi, fnt.falhaTexto
-    
-    imprimirString
+    fputs fnt.falhaTexto
 
     jmp .erroFim
 
 .erroFormato:
     
-    mov esi, fnt.falhaFormatoT
-    
-    imprimirString
+    fputs fnt.falhaFormatoT
 
     jmp .erroFim
 
@@ -214,9 +200,7 @@ terminar:
 
 usoAplicativo:
 
-    mov esi, fnt.uso
-    
-    imprimirString
+    fputs fnt.uso
     
     jmp terminar
 
@@ -267,9 +251,7 @@ validarFonte:
 
 .erroSemFonte:
     
-    mov esi, fnt.falhaTexto
-    
-    imprimirString
+    fputs fnt.falhaTexto
 
     jmp terminar
 
@@ -281,9 +263,7 @@ validarFonte:
 
 .tamanhoSuperior:
 
-    mov esi, fnt.tamanhoSuperior
-    
-    imprimirString
+    fputs fnt.tamanhoSuperior
 
     jmp terminar
 
