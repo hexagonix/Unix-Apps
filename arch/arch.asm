@@ -103,7 +103,7 @@ inicioAPP:
 
     novaLinha
 
-    hx.syscall retornarVersao
+    hx.syscall hx.uname
 
 ;; Em EDX temos a arquitetura
     
@@ -163,7 +163,7 @@ terminar:
 ;;
 ;;************************************************************************************
 
-versaoARCH equ "1.1"
+versaoARCH equ "1.2"
 
 arch:
 
