@@ -74,7 +74,7 @@ include "verUtils.s"
 
 align 4
 
-versaoUNAME equ "2.5"
+versaoUNAME equ "2.6"
 
 uname:
 
@@ -249,7 +249,7 @@ exibirNomeKernel:
 
     call espacoPadrao 
     
-    hx.syscall retornarVersao
+    hx.syscall hx.uname
     
     imprimirString
 
@@ -281,7 +281,7 @@ exibirArquitetura:
 
     call espacoPadrao
 
-    hx.syscall retornarVersao
+    hx.syscall hx.uname
 
 ;; Em EDX temos a arquitetura
     
@@ -351,7 +351,7 @@ exibirTudo:
     
     imprimirString
     
-    hx.syscall retornarVersao
+    hx.syscall hx.uname
     
     imprimirString
 
@@ -419,7 +419,7 @@ exibirVersaoApenas:
 
     call espacoPadrao 
     
-    hx.syscall retornarVersao
+    hx.syscall hx.uname
     
     imprimirString
     
@@ -437,7 +437,7 @@ exibirVersaoApenas:
     
 versaoHexagon:
 
-    hx.syscall retornarVersao
+    hx.syscall hx.uname
     
     push ecx
     push ebx
@@ -479,7 +479,7 @@ versaoHexagon:
 
     imprimirString
 
-    hx.syscall retornarVersao
+    hx.syscall hx.uname
     
     mov esi, edi 
 
@@ -524,7 +524,7 @@ obterHostname:
     mov edi, enderecoCarregamento
     mov esi, uname.arquivoUnix
     
-    hx.syscall abrir
+    hx.syscall hx.open
     
     jc .arquivoNaoEncontrado ;; Se não for encontrado, exibir o padrão
 
