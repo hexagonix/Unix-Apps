@@ -204,15 +204,15 @@ iniciarExecucao:
 
 limparTerminal:
 
-    mov esi, vd1         ;; Abrir o dispositivo de saída secundário em memória (Buffer) 
+    mov esi, vd1          ;; Abrir o dispositivo de saída secundário em memória (Buffer) 
     
-    hx.syscall abrir      ;; Abre o dispositivo
+    hx.syscall hx.open    ;; Abre o dispositivo
     
     hx.syscall limparTela ;; Limpa seu conteúdo
     
-    mov esi, vd0         ;; Reabre o dispositivo de saída padrão 
+    mov esi, vd0          ;; Reabre o dispositivo de saída padrão 
     
-    hx.syscall abrir      ;; Abre o dispositivo
+    hx.syscall hx.open    ;; Abre o dispositivo
     
     ret
     
@@ -272,7 +272,7 @@ encontrarNomeUsuario:
     mov esi, arquivo
     mov edi, bufferArquivo
     
-    hx.syscall abrir
+    hx.syscall hx.open
     
     jc .arquivoUsuarioAusente
     
@@ -422,12 +422,12 @@ encontrarSenhaUsuario:
     mov esi, arquivo
     mov edi, bufferArquivo
     
-    hx.syscall abrir
+    hx.syscall hx.open
     
     jc .arquivoUsuarioAusente
     
-    mov si, bufferArquivo           ;; Aponta para o buffer com o conteúdo do arquivo
-    mov bx, word [posicaoBX]        ;; Continua de onde a opção anterior parou
+    mov si, bufferArquivo    ;; Aponta para o buffer com o conteúdo do arquivo
+    mov bx, word [posicaoBX] ;; Continua de onde a opção anterior parou
     
     dec bx
     
@@ -439,7 +439,7 @@ encontrarSenhaUsuario:
     
     cmp bx, tamanhoLimiteBusca
     
-    je .senhaUsuarioInvalida        ;; Caso nada seja encontrado até o tamanho limite, cancele a busca
+    je .senhaUsuarioInvalida ;; Caso nada seja encontrado até o tamanho limite, cancele a busca
     
     mov al, [ds:si+bx]
     
@@ -451,24 +451,24 @@ encontrarSenhaUsuario:
     push ds
     pop es
     
-    mov di, senhaObtida             ;; A senha será copiada para ES:DI
+    mov di, senhaObtida      ;; A senha será copiada para ES:DI
     
     mov si, bufferArquivo
     
-    add si, bx                      ;; Mover SI para onde BX aponta
+    add si, bx               ;; Mover SI para onde BX aponta
     
-    mov bx, 0                       ;; Iniciar em 0
+    mov bx, 0                ;; Iniciar em 0
     
 .obterSenhaUsuario:
 
     inc bx
     
     cmp bx, 66              
-    je .senhaUsuarioInvalida        ;; Se senha maior que 66, a mesma é inválida    
+    je .senhaUsuarioInvalida ;; Se senha maior que 66, a mesma é inválida    
     
     mov al, [ds:si+bx]
     
-    cmp al, '&'                     ;; Se encontrar outro delimitador, a senha foi carregada com sucesso
+    cmp al, '&'              ;; Se encontrar outro delimitador, a senha foi carregada com sucesso
     je .senhaUsuarioObtida
     
 ;; Se não estiver pronto, armazenar o caractere obtido
@@ -521,7 +521,7 @@ encontrarShell:
     mov esi, arquivo
     mov edi, bufferArquivo
     
-    hx.syscall abrir
+    hx.syscall hx.open
     
     jc .arquivoConfiguracaoAusente
     
@@ -550,24 +550,24 @@ encontrarShell:
     push ds
     pop es
     
-    mov di, shellHexagonix          ;; O nome do shell será copiado para ES:DI - shellHexagonix
+    mov di, shellHexagonix   ;; O nome do shell será copiado para ES:DI - shellHexagonix
     
     mov si, bufferArquivo
     
-    add si, bx                      ;; Mover SI para aonde BX aponta
+    add si, bx               ;; Mover SI para aonde BX aponta
     
-    mov bx, 0                       ;; Iniciar em 0
+    mov bx, 0                ;; Iniciar em 0
     
 .obterNomeShell:
 
     inc bx
     
     cmp bx, 13              
-    je .nomeShellInvalido           ;; Se nome de arquivo maior que 11, o nome é inválido     
+    je .nomeShellInvalido    ;; Se nome de arquivo maior que 11, o nome é inválido     
     
     mov al, [ds:si+bx]
     
-    cmp al, '#'                     ;; Se encontrar outro delimitador, o nome foi carregado com sucesso
+    cmp al, '#'              ;; Se encontrar outro delimitador, o nome foi carregado com sucesso
     je .nomeShellObtido
     
 ;; Se não estiver pronto, armazenar o caractere obtido
@@ -705,7 +705,7 @@ terminar:
 ;;
 ;;************************************************************************************
 
-versaoSU equ "2.3"
+versaoSU equ "2.3.1"
 
 shellPadrao:       db "sh", 0          ;; Nome do arquivo que contêm o shell padrão do Hexagonix®
 vd0:               db "vd0", 0         ;; Console principal
