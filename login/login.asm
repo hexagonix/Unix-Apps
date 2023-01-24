@@ -213,7 +213,7 @@ match =SIM, UNIX
     
     clc
     
-    hx.syscall iniciarProcesso      ;; Solicitar o carregamento do shell do Hexagonix®
+    hx.syscall iniciarProcesso     ;; Solicitar o carregamento do shell do Hexagonix®
 
     jmp .shellFinalizado
 
@@ -248,15 +248,15 @@ match =SIM, UNIX
 
 limparTerminal:
 
-    mov esi, vd1         ;; Abrir o primeiro console virtual
+    mov esi, vd1          ;; Abrir o primeiro console virtual
     
-    hx.syscall abrir      ;; Abre o dispositivo
+    hx.syscall hx.open    ;; Abre o dispositivo
     
     hx.syscall limparTela ;; Limpa seu conteúdo
     
-    mov esi, vd0         ;; Reabre o console padrão
+    mov esi, vd0          ;; Reabre o console padrão
     
-    hx.syscall abrir      ;; Abre o dispositivo
+    hx.syscall hx.open    ;; Abre o dispositivo
     
     ret
     
@@ -303,7 +303,7 @@ encontrarNomeUsuario:
     mov esi, arquivo
     mov edi, bufferArquivo
     
-    hx.syscall abrir
+    hx.syscall hx.open
     
     jc .arquivoUsuarioAusente
     
@@ -488,7 +488,7 @@ encontrarSenhaUsuario:
     mov esi, arquivo
     mov edi, bufferArquivo
     
-    hx.syscall abrir
+    hx.syscall hx.open
     
     jc .arquivoUsuarioAusente
     
@@ -587,7 +587,7 @@ encontrarShell:
     mov esi, arquivo
     mov edi, bufferArquivo
     
-    hx.syscall abrir
+    hx.syscall hx.open
     
     jc .arquivoConfiguracaoAusente
     
@@ -818,7 +818,7 @@ checarBaseDados:
 
 ;;************************************************************************************
 
-versaoLOGIN equ "4.3"
+versaoLOGIN equ "4.3.1"
 
 shellPadrao:       db "sh", 0           ;; Nome do arquivo que contêm o shell padrão do Hexagonix®
 vd0:               db "vd0", 0          ;; Console padrão
