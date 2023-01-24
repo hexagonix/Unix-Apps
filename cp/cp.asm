@@ -119,7 +119,7 @@ inicioAPP:
     mov esi, [arquivoEntrada]
     mov edi, bufferArquivo
     
-    hx.syscall abrir
+    hx.syscall hx.open
     
     jc erroAoAbrir
     
@@ -267,7 +267,7 @@ usoAplicativo:
 ;;
 ;;************************************************************************************
 
-versaoCP equ "2.1"  
+versaoCP equ "2.1.1"  
 
 cp:
     
