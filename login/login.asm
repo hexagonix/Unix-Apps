@@ -120,9 +120,7 @@ iniciarExecucao:
 
 .continuar:
 
-    mov esi, login.dadosErrados
-    
-    imprimirString
+    fputs login.dadosErrados
     
     mov byte[errado], 0
     
@@ -132,9 +130,7 @@ iniciarExecucao:
 
     call limparVariaveisUsuario
 
-    mov esi, login.solicitarUsuario
-    
-    imprimirString
+    fputs login.solicitarUsuario
     
     mov eax, 15
     
@@ -152,10 +148,8 @@ iniciarExecucao:
     
     call encontrarSenhaUsuario 
     
-    mov esi, login.solicitarSenha
-    
-    imprimirString
-    
+    fputs login.solicitarSenha
+        
     mov eax, 64
     
     mov ebx, 1234h                  ;; Não queremos eco na senha! 
@@ -400,9 +394,7 @@ encontrarNomeUsuario:
     
     popa
     
-    mov esi, login.semArquivoUnix
-    
-    imprimirString
+    fputs login.semArquivoUnix
     
     jmp terminar
 
@@ -567,9 +559,7 @@ encontrarSenhaUsuario:
     
     popa
     
-    mov esi, login.semArquivoUnix
-    
-    imprimirString
+    fputs login.semArquivoUnix
     
     jmp terminar
 
@@ -741,9 +731,7 @@ restaurarUsuario:
     
 usoAplicativo:
 
-    mov esi, login.uso
-    
-    imprimirString
+    fputs login.uso
     
     jmp terminar
 
@@ -818,7 +806,7 @@ checarBaseDados:
 
 ;;************************************************************************************
 
-versaoLOGIN equ "4.3.1"
+versaoLOGIN equ "4.3.2"
 
 shellPadrao:       db "sh", 0           ;; Nome do arquivo que contêm o shell padrão do Hexagonix®
 vd0:               db "vd0", 0          ;; Console padrão
