@@ -100,7 +100,7 @@ inicioAPP:
     mov edi, bufferArquivo
     mov esi, [parametro]
     
-    hx.syscall abrir
+    hx.syscall hx.open
     
     jc .arquivoNaoEncontrado
     
@@ -144,7 +144,7 @@ terminar:
 ;;
 ;;************************************************************************************
 
-versaoCAT equ "1.3" 
+versaoCAT equ "1.3.1" 
 
 cat:
 
