@@ -136,9 +136,7 @@ inicioAPP:
     
     jc erroAoSalvar
     
-    mov esi, cp.copiaConcluida
-    
-    imprimirString
+    fputs cp.copiaConcluida
     
     jmp terminar
 
@@ -146,9 +144,7 @@ inicioAPP:
 
 erroAoSalvar:
 
-    mov esi, cp.erroSalvando
-    
-    imprimirString
+    fputs cp.erroSalvando
     
     jmp terminar
 
@@ -156,9 +152,7 @@ erroAoSalvar:
     
 erroAoAbrir:
 
-    mov esi, cp.erroAbrindo
-    
-    imprimirString
+    fputs cp.erroAbrindo
     
     jmp terminar
 
@@ -166,9 +160,7 @@ erroAoAbrir:
 
 fonteNaoEncontrado:
 
-    mov esi, cp.fonteIndisponivel
-    
-    imprimirString
+    fputs cp.fonteIndisponivel
     
     jmp terminar
 
@@ -176,9 +168,7 @@ fonteNaoEncontrado:
     
 destinoPresente:
 
-    mov esi, cp.destinoExistente
-    
-    imprimirString
+    fputs cp.destinoExistente
     
     jmp terminar
     
@@ -253,9 +243,7 @@ encontrarCaractereCP:
 
 usoAplicativo:
 
-    mov esi, cp.uso
-    
-    imprimirString
+    fputs cp.uso
     
     jmp terminar
 
@@ -267,7 +255,7 @@ usoAplicativo:
 ;;
 ;;************************************************************************************
 
-versaoCP equ "2.1.1"  
+versaoCP equ "2.1.3"  
 
 cp:
     
