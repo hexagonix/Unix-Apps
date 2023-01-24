@@ -107,9 +107,7 @@ inicioAPP:
 
 .loopBalaoSuperior:
 
-    mov esi, cowsay.linhaSuperior
-
-    imprimirString
+    fputs cowsay.linhaSuperior
 
     loop .loopBalaoSuperior
 
@@ -117,69 +115,47 @@ inicioAPP:
 
     novaLinha
 
-    mov esi, cowsay.barra
-
-    imprimirString
+    fputs cowsay.barra
 
     mov ecx, dword[tamanhoMensagem]
     add ecx, 2
 
 .loopEspacoSuperior:
 
-    mov esi, cowsay.espaco
-
-    imprimirString
+    fputs cowsay.espaco
 
     loop .loopEspacoSuperior
 
-    mov esi, cowsay.barra
-
-    imprimirString
+    fputs cowsay.barra
 
     novaLinha
 
 .mensagem:
 
-    mov esi, cowsay.barra
+    fputs cowsay.barra
 
-    imprimirString
+    fputs cowsay.espaco
 
-    mov esi, cowsay.espaco
+    fputs [mensagemUsuario]
 
-    imprimirString
+    fputs cowsay.espaco
 
-    mov esi, [mensagemUsuario]
-
-    imprimirString
-
-    mov esi, cowsay.espaco
-
-    imprimirString
-
-    mov esi, cowsay.barra
-
-    imprimirString
+    fputs cowsay.barra
 
     novaLinha
 
-    mov esi, cowsay.barra
-
-    imprimirString
+    fputs cowsay.barra
 
     mov ecx, dword[tamanhoMensagem]
     add ecx, 2
 
 .loopEspacoInferior:
 
-    mov esi, cowsay.espaco
-
-    imprimirString
+    fputs cowsay.espaco
 
     loop .loopEspacoInferior
 
-    mov esi, cowsay.barra
-
-    imprimirString
+    fputs cowsay.barra
 
     novaLinha
 
@@ -189,9 +165,7 @@ inicioAPP:
 
 .loopBalaoInferior:
 
-    mov esi, cowsay.linhaInferior
-
-    imprimirString
+    fputs cowsay.linhaInferior
 
     loop .loopBalaoInferior
 
@@ -237,17 +211,13 @@ inicioAPP:
 
     jc .vaquinhaInterna
     
-    mov esi, bufferArquivo
-
-    imprimirString
+    fputs bufferArquivo
 
     jmp .finalizar
 
 .vaquinhaInterna:
 
-    mov esi, cowsay.vaquinha
-
-    imprimirString
+    fputs cowsay.vaquinha
 
 .finalizar:
 
@@ -399,9 +369,7 @@ encontrarCaractereCowsay:
 
 usoAplicativo:
 
-    mov esi, cowsay.uso
-    
-    imprimirString
+    fputs cowsay.uso
     
     jmp terminar
 
@@ -413,7 +381,7 @@ terminar:
 
 ;;************************************************************************************
 
-versaoCOWSAY equ "2.1.1"
+versaoCOWSAY equ "2.1.3"
 
 cowsay:
 
