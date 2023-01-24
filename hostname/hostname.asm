@@ -117,17 +117,13 @@ inicioAPP:
     
     hx.syscall inserirCaractere
 
-    mov esi, bufferArquivo
-    
-    imprimirString
+    fputs bufferArquivo
 
     jmp terminar
     
 .arquivoNaoEncontrado:
 
-    mov esi, hostname.naoEncontrado
-    
-    imprimirString
+    fputs hostname.naoEncontrado
     
     jmp terminar
 
@@ -135,9 +131,7 @@ inicioAPP:
 
 usoAplicativo:
 
-    mov esi, hostname.uso
-    
-    imprimirString
+    fputs hostname.uso
     
     jmp terminar
 
@@ -155,7 +149,7 @@ terminar:
 ;;
 ;;************************************************************************************
 
-versaoHOSTNAME equ "1.1.1"
+versaoHOSTNAME equ "1.1.2"
 
 hostname:
 
