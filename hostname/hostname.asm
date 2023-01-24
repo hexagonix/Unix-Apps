@@ -100,7 +100,7 @@ inicioAPP:
     mov edi, bufferArquivo
     mov esi, hostname.arquivoUnix
     
-    hx.syscall abrir
+    hx.syscall hx.open
     
     jc .arquivoNaoEncontrado
     
@@ -155,7 +155,7 @@ terminar:
 ;;
 ;;************************************************************************************
 
-versaoHOSTNAME equ "1.1"
+versaoHOSTNAME equ "1.1.1"
 
 hostname:
 
