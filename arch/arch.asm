@@ -113,25 +113,19 @@ inicioAPP:
     cmp edx, 02
     je .x86_64 
 
-    mov esi, arch.naoSuportado
-
-    imprimirString
+    fputs arch.naoSuportado
 
     jmp .terminar 
 
 .i386:
 
-    mov esi, arch.i386
-
-    imprimirString
+    fputs arch.i386
     
     jmp .terminar
 
 .x86_64:
 
-    mov esi, arch.x86_64
-
-    imprimirString
+    fputs arch.x86_64
 
     jmp .terminar
 
@@ -143,9 +137,7 @@ inicioAPP:
 
 usoAplicativo:
 
-    mov esi, arch.uso
-    
-    imprimirString
+    fputs arch.uso
     
     jmp terminar
 
@@ -163,7 +155,7 @@ terminar:
 ;;
 ;;************************************************************************************
 
-versaoARCH equ "1.2"
+versaoARCH equ "1.2.1"
 
 arch:
 
