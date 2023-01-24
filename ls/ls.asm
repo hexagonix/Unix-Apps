@@ -262,9 +262,7 @@ listar:
     
     call definirCorArquivo
 
-    mov esi, [arquivoAtual]
-    
-    imprimirString
+    fputs [arquivoAtual]
     
     call definirCorPadrao
     
@@ -278,9 +276,7 @@ listar:
     
     call definirCorArquivo
 
-    mov esi, [arquivoAtual]
-    
-    imprimirString
+    fputs [arquivoAtual]
     
     call definirCorPadrao
     
@@ -294,9 +290,7 @@ listar:
     
     call definirCorArquivo
 
-    mov esi, [arquivoAtual]
-    
-    imprimirString
+    fputs [arquivoAtual]
     
     call definirCorPadrao
     
@@ -310,9 +304,7 @@ listar:
     
     call definirCorArquivo
 
-    mov esi, [arquivoAtual]
-    
-    imprimirString
+    fputs [arquivoAtual]
     
     call definirCorPadrao
     
@@ -326,9 +318,7 @@ listar:
     
     call definirCorArquivo
 
-    mov esi, [arquivoAtual]
-    
-    imprimirString
+    fputs [arquivoAtual]
     
     call definirCorPadrao
     
@@ -351,9 +341,7 @@ listar:
     
     call definirCorArquivo
 
-    mov esi, [arquivoAtual]
-    
-    imprimirString
+    fputs [arquivoAtual]
     
     call definirCorPadrao
 
@@ -370,9 +358,7 @@ listar:
     
     call definirCorArquivo
 
-    mov esi, [arquivoAtual]
-    
-    imprimirString
+    fputs [arquivoAtual]
     
     call definirCorPadrao
 
@@ -389,9 +375,7 @@ listar:
     
     call definirCorArquivo
 
-    mov esi, [arquivoAtual]
-    
-    imprimirString
+    fputs [arquivoAtual]
     
     call definirCorPadrao
 
@@ -408,9 +392,7 @@ listar:
     
     call definirCorArquivo
 
-    mov esi, [arquivoAtual]
-    
-    imprimirString
+    fputs [arquivoAtual]
     
     call definirCorPadrao
 
@@ -430,9 +412,7 @@ listar:
     
     call definirCorArquivo
 
-    mov esi, [arquivoAtual]
-    
-    imprimirString
+    fputs [arquivoAtual]
     
     call definirCorPadrao
     
@@ -483,7 +463,7 @@ listar:
 
 .erroLista:
   
-    mov esi, ls.erroLista
+    fputs ls.erroLista
     
     jmp terminar
     
@@ -491,9 +471,7 @@ listar:
 
 usoAplicativo:
 
-    mov esi, ls.uso
-    
-    imprimirString
+    fputs ls.uso
     
     jmp terminar
 
@@ -664,7 +642,7 @@ verificarArquivo:
 ;;
 ;;************************************************************************************
 
-versaoLS equ "3.2"
+versaoLS equ "3.2.1"
 
 ls:
 
