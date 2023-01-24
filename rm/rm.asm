@@ -143,7 +143,7 @@ inicioAPP:
     
     mov esi, [parametro]
     
-    hx.syscall deletarArquivo
+    hx.syscall hx.unlink
     
     jc .erroDeletando
     
@@ -220,7 +220,7 @@ terminar:
 ;;
 ;;************************************************************************************
 
-versaoRM equ "1.1"
+versaoRM equ "1.1.1"
 
 rm:
 
