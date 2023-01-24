@@ -106,9 +106,7 @@ inicioAPP:
     cmp eax, 13
     jl .obterInformacoes
     
-    mov esi, fileUnix.arquivoInvalido
-    
-    imprimirString
+    fputs fileUnix.arquivoInvalido
     
     jmp .fim
     
@@ -131,17 +129,13 @@ inicioAPP:
 
     imprimirString
 
-    mov esi, fileUnix.tamanhoArquivo
-    
-    imprimirString
+    fputs fileUnix.tamanhoArquivo
     
     pop eax 
     
     imprimirInteiro
     
-    mov esi, fileUnix.bytes
-    
-    imprimirString
+    fputs fileUnix.bytes
 
 ;; Primeiro vamos ver se se trata de uma imagem executável. Se sim, podemos pular todo o
 ;; restante do processamento. Isso garante que imagens executáveis sejam relatadas como
@@ -233,97 +227,73 @@ inicioAPP:
 
 .aplicativo:
 
-    mov esi, fileUnix.appValido
-
-    imprimirString
+    fputs fileUnix.appValido
 
     jmp .fim
 
 .arquivoHBoot:
 
-    mov esi, fileUnix.arquivoHBoot
-
-    imprimirString
+    fputs fileUnix.arquivoHBoot
 
     jmp .fim
 
 .arquivoUNX:
 
-    mov esi, fileUnix.arquivoUnix
-
-    imprimirString
+    fputs fileUnix.arquivoUnix
 
     jmp .fim
 
 .arquivoTXT:
 
-    mov esi, fileUnix.arquivoTXT
-
-    imprimirString
+    fputs fileUnix.arquivoTXT
 
     jmp .fim
 
 .arquivoFNT:
 
-    mov esi, fileUnix.arquivoFNT
-
-    imprimirString
+    fputs fileUnix.arquivoFNT
 
     jmp .fim
 
 .arquivoCAN:
 
-    mov esi, fileUnix.arquivoCAN
-
-    imprimirString
+    fputs fileUnix.arquivoCAN
 
     jmp .fim
 
 .arquivoCOW:
 
-    mov esi, fileUnix.arquivoCOW
-
-    imprimirString
+    fputs fileUnix.arquivoCOW
 
     jmp .fim
 
 .arquivoMAN:
 
-    mov esi, fileUnix.arquivoMAN
-
-    imprimirString
+    fputs fileUnix.arquivoMAN
 
     jmp .fim
 
 .arquivoSIS:
 
-    mov esi, fileUnix.arquivoSIS
-
-    imprimirString
+    fputs fileUnix.arquivoSIS
 
     jmp .fim
 
 .arquivoASM:
 
-    mov esi, fileUnix.arquivoASM
-
-    imprimirString
+    fputs fileUnix.arquivoASM
 
     jmp .fim
 
 .arquivoS:
 
-    mov esi, fileUnix.arquivoLibASM
-
-    imprimirString
+    fputs fileUnix.arquivoLibASM
 
     jmp .fim
 
 .semArquivo:
 
-    mov esi, fileUnix.semArquivo
-   
-    imprimirString
+    fputs fileUnix.semArquivo
 
     jmp .fim    
     
@@ -400,9 +370,7 @@ verificarArquivoHBoot:
 
 usoAplicativo:
 
-    mov esi, fileUnix.uso
-    
-    imprimirString
+    fputs fileUnix.uso
     
     jmp terminar
 
@@ -443,7 +411,7 @@ terminar:
 ;;
 ;;************************************************************************************
     
-versaoFILE equ "1.8.1"
+versaoFILE equ "1.8.2"
 
 fileUnix:
 
