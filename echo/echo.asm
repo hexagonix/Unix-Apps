@@ -99,9 +99,7 @@ inicioAPP:
     
     novaLinha
     
-    mov esi, [parametro]
-    
-    imprimirString
+    fputs [parametro]
     
     jmp terminar
 
@@ -109,9 +107,7 @@ inicioAPP:
 
 usoAplicativo:
 
-    mov esi, echo.uso
-    
-    imprimirString
+    fputs echo.uso
     
     jmp terminar
 
@@ -129,7 +125,7 @@ terminar:
 ;;
 ;;************************************************************************************
 
-versaoECHO equ "1.1"
+versaoECHO equ "1.1.2"
 
 echo:
 
