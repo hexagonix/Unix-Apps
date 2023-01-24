@@ -75,7 +75,7 @@ include "macros.s"
 ;;
 ;;************************************************************************************
 
-versaoLSHMOD equ "0.6.1"
+versaoLSHMOD equ "0.6.2"
 
 lshmod:
 
@@ -148,9 +148,7 @@ inicioAPP:
     cmp eax, 13
     jl .obterInformacoes
     
-    mov esi, lshmod.arquivoInvalido
-    
-    imprimirString
+    fputs lshmod.arquivoInvalido
     
     jmp .fim
     
@@ -163,9 +161,7 @@ inicioAPP:
     push eax
     push esi
 
-    mov esi, lshmod.infoArquivo
-    
-    imprimirString
+    fputs lshmod.infoArquivo
     
     pop esi
 
@@ -173,17 +169,13 @@ inicioAPP:
 
     imprimirString
 
-    mov esi, lshmod.tamanhoArquivo
-    
-    imprimirString
+    fputs lshmod.tamanhoArquivo
     
     pop eax 
     
     imprimirInteiro
     
-    mov esi, lshmod.bytes
-    
-    imprimirString
+    fputs lshmod.bytes
 
 ;; Primeiro vamos ver se se trata de uma imagem executável. Se sim, podemos pular todo o
 ;; restante do processamento. Isso garante que imagens executáveis sejam relatadas como
@@ -201,9 +193,7 @@ inicioAPP:
 
 .semArquivo:
 
-    mov esi, lshmod.semArquivo
-   
-    imprimirString
+    fputs lshmod.semArquivo
 
     jmp .fim    
     
@@ -260,13 +250,9 @@ verificarArquivoHBootMod:
 
     hx.syscall cortarString
 
-    mov esi, lshmod.cabecalho
-    
-    imprimirString
+    fputs lshmod.cabecalho
 
-    mov esi, lshmod.tipoArquitetura
-
-    imprimirString
+    fputs lshmod.tipoArquitetura
 
     cmp byte[lshmod.arquitetura], 01h
     je .i386
@@ -279,75 +265,53 @@ verificarArquivoHBootMod:
 
 .i386:
 
-    mov esi, lshmod.i386
-
-    imprimirString
+    fputs lshmod.i386
 
     jmp .continuar
 
 .amd64:
 
-    mov esi, lshmod.amd64
-
-    imprimirString
+    fputs lshmod.amd64
 
     jmp .continuar
 
 .arquiteturaInvalida:
 
-    mov esi, lshmod.arquiteturaInvalida
-
-    imprimirString
+    fputs lshmod.arquiteturaInvalida
 
     jmp .continuar
 
 .continuar:
 
-    mov esi, lshmod.ponto
+    fputs lshmod.ponto
 
-    imprimirString
-
-    mov esi, lshmod.verModulo
-
-    imprimirString
+    fputs lshmod.verModulo
 
     mov dh, byte[lshmod.verMod]
     movzx eax, dh
 
     imprimirInteiro
 
-    mov esi, lshmod.ponto
-
-    imprimirString
+    fputs lshmod.ponto
 
     mov dh, byte[lshmod.subverMod]
     movzx eax, dh
 
     imprimirInteiro
 
-    mov esi, lshmod.ponto
+    fputs lshmod.ponto
 
-    imprimirString
+    fputs lshmod.entradaCodigo
 
-    mov esi, lshmod.entradaCodigo
+    fputs nomeModulo
 
-    imprimirString
-
-    mov esi, nomeModulo
-    
-    imprimirString
-
-    mov esi, lshmod.ponto
-
-    imprimirString
+    fputs lshmod.ponto
 
     ret
 
 .naoHBootMod:
 
-    mov esi, lshmod.imagemInvalida
-
-    imprimirString
+    fputs lshmod.imagemInvalida
 
     ret
 
@@ -355,9 +319,7 @@ verificarArquivoHBootMod:
 
 usoAplicativo:
 
-    mov esi, lshmod.uso
-    
-    imprimirString
+    fputs lshmod.uso
     
     jmp terminar
 
