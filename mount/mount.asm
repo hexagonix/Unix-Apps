@@ -128,7 +128,7 @@ inicioAPP:
 
     mov esi, [volume]
     
-    hx.syscall abrir
+    hx.syscall hx.open
     
     jc erroAbertura
     
@@ -345,7 +345,7 @@ usoAplicativo:
 ;;
 ;;************************************************************************************
 
-versaoMOUNT equ "2.2"
+versaoMOUNT equ "2.2.1"
 
 mount:
 
