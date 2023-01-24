@@ -219,17 +219,11 @@ inicioShell:
     
     hx.syscall definirCursor
     
-    mov esi, hash.nomeUsuario
+    fputs hash.nomeUsuario
     
-    imprimirString
+    fputs hash.prompt
     
-    mov esi, hash.prompt
-    
-    imprimirString
-    
-    mov esi, hash.separador
-    
-    imprimirString
+    fputs hash.separador
     
     mov al, byte[maxColunas]         ;; Máximo de caracteres para obter
 
@@ -282,9 +276,7 @@ inicioShell:
     
     imprimirString
     
-    mov esi, hash.comandoNaoEncontrado
-    
-    imprimirString
+    fputs hash.comandoNaoEncontrado
     
     jmp .obterComando   
     
@@ -292,9 +284,7 @@ inicioShell:
 
     novaLinha
     
-    mov esi, hash.limiteProcessos
-    
-    imprimirString
+    fputs hash.limiteProcessos
     
     jmp .obterComando   
 
@@ -308,9 +298,7 @@ inicioShell:
     
     imprimirString
 
-    mov esi, hash.imagemInvalida
-    
-    imprimirString
+    fputs hash.imagemInvalida
     
     jmp .obterComando   
 
@@ -419,9 +407,7 @@ obterArgumentos:
 
 usoAplicativo:
 
-    mov esi, hash.uso
-    
-    imprimirString
+    fputs hash.uso
     
     jmp finalizarhashell    
 
@@ -445,7 +431,7 @@ finalizarhashell:
 ;; Ela deve ser utilizada para identificar para qual versão do Hexagonix® o hash foi
 ;; desenvolvido.
 
-versaoHASH equ "1.2"
+versaoHASH equ "1.2.1"
 
 hash:
 
