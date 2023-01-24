@@ -233,7 +233,7 @@ inicioAPP:
 
     mov edi, bufferArquivo
 
-    hx.syscall abrir
+    hx.syscall hx.open
 
     jc .vaquinhaInterna
     
@@ -413,7 +413,7 @@ terminar:
 
 ;;************************************************************************************
 
-versaoCOWSAY equ "2.1"
+versaoCOWSAY equ "2.1.1"
 
 cowsay:
 
