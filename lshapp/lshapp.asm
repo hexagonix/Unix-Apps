@@ -106,9 +106,7 @@ inicioAPP:
     cmp eax, 13
     jl .obterInformacoes
     
-    mov esi, lshapp.arquivoInvalido
-    
-    imprimirString
+    fputs lshapp.arquivoInvalido
     
     jmp .fim
     
@@ -121,27 +119,21 @@ inicioAPP:
     push eax
     push esi
 
-    mov esi, lshapp.infoArquivo
-    
-    imprimirString
-    
+    fputs lshapp.infoArquivo
+        
     pop esi
 
     call manterArquivo
 
     imprimirString
 
-    mov esi, lshapp.tamanhoArquivo
-    
-    imprimirString
+    fputs lshapp.tamanhoArquivo
     
     pop eax 
     
     imprimirInteiro
     
-    mov esi, lshapp.bytes
-    
-    imprimirString
+    fputs lshapp.bytes
 
 ;; Primeiro vamos ver se se trata de uma imagem executável. Se sim, podemos pular todo o
 ;; restante do processamento. Isso garante que imagens executáveis sejam relatadas como
@@ -159,9 +151,7 @@ inicioAPP:
 
 .semArquivo:
 
-    mov esi, lshapp.semArquivo
-   
-    imprimirString
+    fputs lshapp.semArquivo
 
     jmp .fim    
     
@@ -209,13 +199,9 @@ verificarArquivoHAPP:
     mov ah, byte[edi+11]
     mov byte[lshapp.especieImagem], ah
 
-    mov esi, lshapp.cabecalho
-    
-    imprimirString
+    fputs lshapp.cabecalho
 
-    mov esi, lshapp.tipoArquitetura
-
-    imprimirString
+    fputs lshapp.tipoArquitetura
 
     cmp byte[lshapp.arquitetura], 01h
     je .i386
@@ -228,71 +214,51 @@ verificarArquivoHAPP:
 
 .i386:
 
-    mov esi, lshapp.i386
-
-    imprimirString
+    fputs lshapp.i386
 
     jmp .continuar
 
 .amd64:
 
-    mov esi, lshapp.amd64
-
-    imprimirString
+    fputs lshapp.amd64
 
     jmp .continuar
 
 .arquiteturaInvalida:
 
-    mov esi, lshapp.arquiteturaInvalida
-
-    imprimirString
+    fputs lshapp.arquiteturaInvalida
 
     jmp .continuar
 
 .continuar:
 
-    mov esi, lshapp.campoArquitetura
+    fputs lshapp.campoArquitetura
 
-    imprimirString
-
-    mov esi, lshapp.verHexagon
-
-    imprimirString
+    fputs lshapp.verHexagon
 
     mov dh, byte[lshapp.versaoMinima]
     movzx eax, dh
 
     imprimirInteiro
 
-    mov esi, lshapp.ponto
-
-    imprimirString
+    fputs lshapp.ponto
 
     mov dh, byte[lshapp.subverMinima]
     movzx eax, dh
 
     imprimirInteiro
 
-    mov esi, lshapp.camposVersaoHexagon
+    fputs lshapp.camposVersaoHexagon
 
-    imprimirString
-
-    mov esi, lshapp.entradaCodigo
-
-    imprimirString
+    fputs lshapp.entradaCodigo
 
     mov eax, dword[lshapp.pontoEntrada]
     
     imprimirHexadecimal
 
-    mov esi, lshapp.campoEntrada
+    fputs lshapp.campoEntrada
 
-    imprimirString
-
-    mov esi, lshapp.tipoImagem
-
-    imprimirString
+    fputs lshapp.tipoImagem
 
     ;; mov dh, byte[lshapp.especieImagem]
     ;; movzx eax, dh
@@ -308,49 +274,37 @@ verificarArquivoHAPP:
     cmp byte[lshapp.especieImagem], 03h
     je .HAPPLibD
 
-    mov esi, lshapp.HAPPDesconhecido
-
-    imprimirString
+    fputs lshapp.HAPPDesconhecido
 
     jmp .tipoHAPPListado
 
 .HAPPExec:
 
-    mov esi, lshapp.HAPPExec
-
-    imprimirString
+    fputs lshapp.HAPPExec
 
     jmp .tipoHAPPListado
 
 .HAPPLibS:
 
-    mov esi, lshapp.HAPPLibS
-
-    imprimirString
+    fputs lshapp.HAPPLibS
 
     jmp .tipoHAPPListado
 
 .HAPPLibD:
 
-    mov esi, lshapp.HAPPLibD
-
-    imprimirString
+    fputs lshapp.HAPPLibD
 
     jmp .tipoHAPPListado
 
 .tipoHAPPListado:
 
-    mov esi, lshapp.campoImagem
-
-    imprimirString
+    fputs lshapp.campoImagem
 
     ret
 
 .naoHAPP:
 
-    mov esi, lshapp.imagemInvalida
-
-    imprimirString
+    fputs lshapp.imagemInvalida
 
     ret
 
@@ -358,9 +312,7 @@ verificarArquivoHAPP:
 
 usoAplicativo:
 
-    mov esi, lshapp.uso
-    
-    imprimirString
+    fputs lshapp.uso
     
     jmp terminar
 
@@ -405,7 +357,7 @@ terminar:
 
 align 16
 
-versaoLSHAPP equ "1.10.1"
+versaoLSHAPP equ "1.10.2"
 
 lshapp:
 
