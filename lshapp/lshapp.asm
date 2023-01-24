@@ -176,7 +176,7 @@ verificarArquivoHAPP:
     mov esi, nomeArquivo
     mov edi, bufferArquivo
 
-    hx.syscall abrir
+    hx.syscall hx.open
 
     jc inicioAPP.semArquivo
 
@@ -405,7 +405,7 @@ terminar:
 
 align 16
 
-versaoLSHAPP equ "1.10"
+versaoLSHAPP equ "1.10.1"
 
 lshapp:
 
