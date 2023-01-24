@@ -96,9 +96,7 @@ inicioAPP:
     
     novaLinha
 
-    mov esi, free.memoria
-
-    imprimirString
+    fputs free.memoria
     
     hx.syscall usoMemoria
     
@@ -106,17 +104,13 @@ inicioAPP:
     
     imprimirInteiro
 
-    mov esi, free.megabytes
-
-    imprimirString
+    fputs free.megabytes
 
     hx.syscall usoMemoria
     
     imprimirInteiro
 
-    mov esi, free.kbytes
-
-    imprimirString
+    fputs free.kbytes
 
     hx.syscall usoMemoria
 
@@ -133,9 +127,7 @@ inicioAPP:
 
     imprimirInteiro
 
-    mov esi, free.megabytes
-
-    imprimirString
+    fputs free.megabytes
 
     jmp terminar
 
@@ -143,9 +135,7 @@ inicioAPP:
 
 usoAplicativo:
 
-    mov esi, free.uso
-    
-    imprimirString
+    fputs free.uso
     
     jmp terminar
 
@@ -157,7 +147,7 @@ terminar:
 
 ;;************************************************************************************
 
-versaoFREE equ "0.3"
+versaoFREE equ "0.4"
 
 free:
 
