@@ -75,7 +75,7 @@ include "macros.s"
 ;;
 ;;************************************************************************************
 
-versaoLSHMOD equ "0.6"
+versaoLSHMOD equ "0.6.1"
 
 lshmod:
 
@@ -218,7 +218,7 @@ verificarArquivoHBootMod:
     mov esi, nomeArquivo
     mov edi, bufferArquivo
 
-    hx.syscall abrir
+    hx.syscall hx.open
 
     jc inicioAPP.semArquivo
 
