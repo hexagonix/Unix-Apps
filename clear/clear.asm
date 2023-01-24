@@ -118,9 +118,7 @@ realizarLimpeza:
     
 .erro:
 
-    mov esi, clear.erro
-    
-    imprimirString
+    fputs clear.erro
     
     jmp terminar
     
@@ -134,9 +132,7 @@ terminar:
 
 usoAplicativo:
     
-    mov esi, clear.uso
-    
-    imprimirString
+    fputs clear.uso
     
     jmp terminar
 
@@ -148,7 +144,7 @@ usoAplicativo:
 ;;
 ;;************************************************************************************
 
-versaoCLEAR equ "1.2"
+versaoCLEAR equ "1.2.1"
 
 clear:
 
