@@ -71,10 +71,10 @@ include "macros.s"
 
 ;;************************************************************************************
 
-versaoMAN equ "2.3.1"
+versaoMAN equ "2.3.2"
 
-versaoCoreUtils equ "H2-RELEASE-5.2" 
-versaoUnixUtils equ "H2-RELEASE-5.2"
+versaoCoreUtils equ "H2-RELEASE-5.3" 
+versaoUnixUtils equ "H2-RELEASE-5.3"
 
 align 32
 
@@ -163,9 +163,7 @@ inicioAPP:
 
     call montarInterface
     
-    mov esi, bufferArquivo
-    
-    imprimirString
+    fputs bufferArquivo
 
     jmp terminar
 
@@ -173,9 +171,7 @@ inicioAPP:
 
 montarInterface:
     
-    mov esi, man.man
-
-    imprimirString
+    fputs man.man
 
     mov ecx, 22
 
@@ -194,9 +190,7 @@ montarInterface:
 
 .terminado:
 
-    mov esi, [utilitario]
-
-    imprimirString
+    fputs [utilitario]
 
     novaLinha
     novaLinha
@@ -209,13 +203,9 @@ manualNaoEncontrado:
 
     novaLinha
 
-    mov esi, [utilitario]
+    fputs [utilitario]
 
-    imprimirString
-
-    mov esi, man.naoEncontrado
-
-    imprimirString
+    fputs man.naoEncontrado
 
    jmp terminar
 
@@ -223,9 +213,7 @@ manualNaoEncontrado:
 
 usoAplicativo:
 
-    mov esi, man.uso
-    
-    imprimirString
+    fputs man.uso
     
     jmp terminar
 
