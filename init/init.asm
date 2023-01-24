@@ -81,7 +81,7 @@ include "log.s"
 
 ;;************************************************************************************
 
-versaoINIT equ "2.4"
+versaoINIT equ "2.4.1"
 
 tamanhoLimiteBusca = 32768
 
@@ -114,7 +114,7 @@ initHexagonix: ;; Ponto de entrada do init
 ;; diferente de 1, o init deve ser finalizado. Caso seja 1, prosseguir com o processo de 
 ;; inicialização do ambiente de usuário do Hexagonix
 
-    hx.syscall obterPID
+    hx.syscall hx.getpid
     
     cmp eax, 01h
     je .configurarTerminal ;; O PID é 1? Prosseguir
@@ -183,7 +183,7 @@ iniciarExecucao:
     cmp byte[tentarShellPadrao], 0 ;; Verifica se já se tentou carregar o shell padrão do Hexagonix
     je .tentarShellPadrao          ;; Se não, tente carregar o shell padrão do Hexagonix
     
-    hx.syscall encerrarProcesso     ;; Se sim, o shell padrão também não pode ser executado  
+    hx.syscall encerrarProcesso    ;; Se sim, o shell padrão também não pode ser executado  
 
 .tentarShellPadrao:                ;; Tentar carregar o shell padrão do Hexagonix
 
@@ -191,7 +191,7 @@ iniciarExecucao:
     
     mov byte[tentarShellPadrao], 1 ;; Sinalizar a tentativa de carregamento do shell padrão do Hexagonix
     
-    hx.syscall destravar            ;; O shell pode ser terminado utilizando uma tecla especial
+    hx.syscall destravar           ;; O shell pode ser terminado utilizando uma tecla especial
     
     jmp .carregarServico           ;; Tentar carregar o shell padrão do Hexagonix
     
@@ -203,11 +203,11 @@ limparTerminal:
 
     mov esi, vd1         ;; Abrir o primeiro console virtual 
     
-    hx.syscall abrir      ;; Abre o dispositivo
+    hx.syscall hx.open   ;; Abre o dispositivo
     
     mov esi, vd0         ;; Reabre o console padrão
     
-    hx.syscall abrir      ;; Abre o dispositivo
+    hx.syscall hx.open   ;; Abre o dispositivo
     
     ret
     
@@ -225,7 +225,7 @@ encontrarConfiguracaoInit:
     mov esi, arquivo
     mov edi, bufferArquivo
     
-    hx.syscall abrir
+    hx.syscall hx.open
     
     jc .arquivoConfiguracaoAusente
     
