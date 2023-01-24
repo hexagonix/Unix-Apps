@@ -106,17 +106,13 @@ inicioAPP:
     
     novaLinha
     
-    mov esi, bufferArquivo
-    
-    imprimirString
+    fputs bufferArquivo
     
     jmp terminar
     
 .arquivoNaoEncontrado:
 
-    mov esi, cat.naoEncontrado
-    
-    imprimirString
+    fputs cat.naoEncontrado
     
     jmp terminar
 
@@ -124,9 +120,7 @@ inicioAPP:
 
 usoAplicativo:
 
-    mov esi, cat.uso
-    
-    imprimirString
+    fputs cat.uso
     
     jmp terminar
 
@@ -144,7 +138,7 @@ terminar:
 ;;
 ;;************************************************************************************
 
-versaoCAT equ "1.3.1" 
+versaoCAT equ "1.3.2" 
 
 cat:
 
