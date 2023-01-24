@@ -106,25 +106,15 @@ inicioAPP:
     
 .realizarMontagem:
     
-    mov esi, mount.volume
+    fputs mount.volume
     
-    imprimirString
+    fputs [volume]
     
-    mov esi, [volume]
+    fputs mount.pontoMontagem
     
-    imprimirString
+    fputs [pontoMontagem]
     
-    mov esi, mount.pontoMontagem
-    
-    imprimirString
-    
-    mov esi, [pontoMontagem]
-    
-    imprimirString
-    
-    mov esi, mount.fecharColchete
-    
-    imprimirString
+    fputs mount.fecharColchete
 
     mov esi, [volume]
     
@@ -132,9 +122,7 @@ inicioAPP:
     
     jc erroAbertura
     
-    mov esi, mount.montado
-    
-    imprimirString
+    fputs mount.montado
     
     jmp terminar
 
@@ -142,9 +130,7 @@ inicioAPP:
 
 exibirMontagens:
 
-    mov esi, mount.volumeMontado
-  
-    imprimirString  
+    fputs mount.volumeMontado  
     
     hx.syscall obterDisco
     
@@ -156,17 +142,11 @@ exibirMontagens:
     
     imprimirString
     
-    mov esi, mount.infoVolume
+    fputs mount.infoVolume
     
-    imprimirString
+    fputs mount.dispositivoPadrao
     
-    mov esi, mount.dispositivoPadrao
-    
-    imprimirString
-    
-    mov esi, mount.rotuloVolume
-    
-    imprimirString
+    fputs mount.rotuloVolume
     
     pop edi
     
@@ -176,9 +156,7 @@ exibirMontagens:
     
     imprimirString
     
-    mov esi, mount.parenteses1
-
-    imprimirString
+    fputs mount.parenteses1
 
     pop eax
 
@@ -195,37 +173,25 @@ exibirMontagens:
 
 .fat12:
 
-    mov esi, mount.FAT12
+    fputs mount.FAT12
 
-    imprimirString
-
-    mov esi, mount.parenteses2
-
-    imprimirString
+    fputs mount.parenteses2
 
     jmp terminar
 
 .fat16_32:
 
-    mov esi, mount.FAT16_32
+    fputs mount.FAT16_32
 
-    imprimirString
-
-    mov esi, mount.parenteses2
-
-    imprimirString
+    fputs mount.parenteses2
 
     jmp terminar
 
 .fat16:
 
-    mov esi, mount.FAT16
+    fputs mount.FAT16
 
-    imprimirString
-
-    mov esi, mount.parenteses2
-
-    imprimirString
+    fputs mount.parenteses2
 
     jmp terminar
 
@@ -233,9 +199,7 @@ exibirMontagens:
 
 erroPontoMontagem:
 
-    mov esi, mount.erroPontoMontagem
-    
-    imprimirString
+    fputs mount.erroPontoMontagem
     
     jmp terminar
 
@@ -246,17 +210,13 @@ erroAbertura:
     cmp eax, IO.operacaoNegada
     je .operacaoNegada
 
-    mov esi, mount.erroAbrindo
-    
-    imprimirString
+    fputs mount.erroAbrindo
 
     jmp terminar
 
 .operacaoNegada:
 
-    mov esi, mount.operacaoNegada
-
-    imprimirString
+    fputs mount.operacaoNegada
 
     jmp terminar
 
@@ -331,9 +291,7 @@ encontrarCaractereCP:
 
 usoAplicativo:
 
-    mov esi, mount.uso
-    
-    imprimirString
+    fputs mount.uso
     
     jmp terminar
 
@@ -345,7 +303,7 @@ usoAplicativo:
 ;;
 ;;************************************************************************************
 
-versaoMOUNT equ "2.2.1"
+versaoMOUNT equ "2.2.2"
 
 mount:
 
