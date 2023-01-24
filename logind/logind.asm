@@ -91,7 +91,7 @@ tamanhoLimiteBusca = 32768
 
 ;;************************************************************************************
 
-versaoLOGIND equ "1.4"
+versaoLOGIND equ "1.4.1"
 
 arquivo:    db "passwd", 0      ;; Nome do arquivo de configuração de login
 vd0:        db "vd0", 0         ;; Console padrão
@@ -187,7 +187,7 @@ verificarTema:
     mov esi, arquivo
     mov edi, bufferArquivo
     
-    hx.syscall abrir
+    hx.syscall hx.open
     
     jc .arquivoUsuarioAusente
     
@@ -269,7 +269,7 @@ verificarTema:
 
     mov esi, vd1         ;; Abrir primeiro console virtual 
     
-    hx.syscall abrir      ;; Abre o dispositivo
+    hx.syscall hx.open   ;; Abre o dispositivo
     
     mov eax, PRETO 
     mov ebx, BRANCO_ANDROMEDA
@@ -278,9 +278,9 @@ verificarTema:
 
     hx.syscall limparTela ;; Limpa seu conteúdo
     
-    mov esi, vd0         ;; Reabre o dispositivo de saída padrão 
+    mov esi, vd0          ;; Reabre o dispositivo de saída padrão 
     
-    hx.syscall abrir      ;; Abre o dispositivo
+    hx.syscall hx.open    ;; Abre o dispositivo
 
     mov eax, PRETO 
     mov ebx, BRANCO_ANDROMEDA
@@ -295,7 +295,7 @@ verificarTema:
 
     mov esi, vd1         ;; Abrir primeiro console virtual 
     
-    hx.syscall abrir      ;; Abre o dispositivo
+    hx.syscall hx.open   ;; Abre o dispositivo
     
     mov eax, BRANCO_ANDROMEDA 
     mov ebx, PRETO
@@ -304,16 +304,16 @@ verificarTema:
 
     hx.syscall limparTela ;; Limpa seu conteúdo
     
-    mov esi, vd0         ;; Reabre o console padrão
+    mov esi, vd0          ;; Reabre o console padrão
     
-    hx.syscall abrir      ;; Abre o dispositivo
+    hx.syscall hx.open    ;; Abre o dispositivo
 
     mov eax, BRANCO_ANDROMEDA 
     mov ebx, PRETO
 
     hx.syscall definirCor
 
-    hx.syscall limparTela ;; Limpa seu conteúdo
+    hx.syscall limparTela  ;; Limpa seu conteúdo
 
 .nomeTemaInvalido:
 
