@@ -91,7 +91,7 @@ tamanhoLimiteBusca = 32768
 
 ;;************************************************************************************
 
-versaoLOGIND equ "1.4.1"
+versaoLOGIND equ "1.4.2"
 
 arquivo:    db "passwd", 0      ;; Nome do arquivo de configuração de login
 vd0:        db "vd0", 0         ;; Console padrão
@@ -329,9 +329,7 @@ verificarTema:
     
     popa
     
-    mov esi, logind.semArquivoUnix
-    
-    imprimirString
+    fputs logind.semArquivoUnix
     
     jmp terminar
 
@@ -339,36 +337,24 @@ verificarTema:
 
 exibirInfoSistema:
 
-    mov esi, logind.sobreSistema
-
-    imprimirString
+    fputs logind.sobreSistema
     
-    mov esi, logind.versaoSistema
-
-    imprimirString
+    fputs logind.versaoSistema
 
     call obterVersaoDistribuicao
 
     jc .erro 
 
-    mov esi, versaoObtida
-
-    imprimirString
+    fputs versaoObtida
 
 match =Moderno, TIPOLOGIN
 {
 
-    mov esi, logind.colcheteEsquerdo
+    fputs logind.colcheteEsquerdo
 
-    imprimirString
+    fputs codigoObtido
 
-    mov esi, codigoObtido
-
-    imprimirString
-
-    mov esi, logind.colcheteDireito
-
-    imprimirString
+    fputs logind.colcheteDireito
 
 }
 
@@ -376,17 +362,13 @@ match =Moderno, TIPOLOGIN
 
 .erro:
 
-    mov esi, logind.semVersao
-
-    imprimirString
+    fputs logind.semVersao
 
     jmp .continuar
 
 .continuar:
 
-    mov esi, logind.console
-
-    imprimirString
+    fputs logind.console
 
     novaLinha
     
