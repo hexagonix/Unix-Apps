@@ -119,7 +119,7 @@ inicioAPP: ;; Ponto de entrada do aplicativo
 
 parametroPID:
     
-    hx.syscall obterPID
+    hx.syscall hx.getpid
     
     push eax
     
@@ -160,7 +160,7 @@ parametroMemoria:
 
 parametroOutrosProcessos:
 
-    hx.syscall obterPID
+    hx.syscall hx.getpid
     
     push eax
     
@@ -196,7 +196,7 @@ terminar:
 
 ;;************************************************************************************
 
-versaoPS equ "1.1"
+versaoPS equ "1.1.1"
 
 parametro: dd ?
 
