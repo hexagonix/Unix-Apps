@@ -71,7 +71,7 @@ include "macros.s"
 
 ;;************************************************************************************
 
-versaoMAN equ "2.3"
+versaoMAN equ "2.3.1"
 
 versaoCoreUtils equ "H2-RELEASE-5.2" 
 versaoUnixUtils equ "H2-RELEASE-5.2"
@@ -153,7 +153,7 @@ inicioAPP:
 
     pop esi
     
-    hx.syscall abrir
+    hx.syscall hx.open
     
     jc manualNaoEncontrado
 
