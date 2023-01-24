@@ -75,7 +75,7 @@ include "macros.s"
 ;;
 ;;************************************************************************************
 
-versaoFNT equ "0.2"
+versaoFNT equ "0.3"
 
 fnt:
 
@@ -227,7 +227,7 @@ validarFonte:
     mov esi, [parametro]
     mov edi, bufferArquivo
 
-    hx.syscall abrir
+    hx.syscall hx.open
 
     jc .erroSemFonte
 
