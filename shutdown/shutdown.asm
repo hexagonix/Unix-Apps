@@ -137,9 +137,7 @@ iniciarDesligamento:
     
     novaLinha
     
-    mov esi, shutdown.sistema
-
-    imprimirString
+    fputs shutdown.sistema
     
     jmp desligarHexagon
 
@@ -177,9 +175,7 @@ iniciarReinicio:
 
     novaLinha
     
-    mov esi, shutdown.sistema
-
-    imprimirString
+    fputs shutdown.sistema
     
     jmp reiniciarHexagon
 
@@ -223,53 +219,37 @@ prepararSistemaSemEco:
 
 prepararSistema:
 
-    mov esi, shutdown.msgDesligamento
-
-    imprimirString
+    fputs shutdown.msgDesligamento
 
     mov ecx, 500
     
     hx.syscall causarAtraso
     
-    mov esi, shutdown.msgPronto
+    fputs shutdown.msgPronto
 
-    imprimirString
-
-    mov esi, shutdown.msgFinalizando
-
-    imprimirString
+    fputs shutdown.msgFinalizando
 
     mov ecx, 500
     
     hx.syscall causarAtraso
     
-    mov esi, shutdown.msgPronto
+    fputs shutdown.msgPronto
 
-    imprimirString
-
-    mov esi, shutdown.msgHexagonix
-
-    imprimirString
+    fputs shutdown.msgHexagonix
 
     mov ecx, 500
     
     hx.syscall causarAtraso
     
-    mov esi, shutdown.msgPronto
+    fputs shutdown.msgPronto
 
-    imprimirString
-
-    mov esi, shutdown.msgDiscos
-
-    imprimirString
+    fputs shutdown.msgDiscos
 
     mov ecx, 500
     
     hx.syscall causarAtraso
     
-    mov esi, shutdown.msgPronto
-
-    imprimirString
+    fputs shutdown.msgPronto
 
     novaLinha
 
@@ -279,20 +259,16 @@ prepararSistema:
 
 usoAplicativo:
 
-    mov esi, shutdown.uso
-    
-    imprimirString
-    
+    fputs shutdown.uso
+        
     jmp terminar
 
 ;;************************************************************************************
 
 faltaArgumento:
 
-    mov esi, shutdown.argumentos
-    
-    imprimirString
-    
+    fputs shutdown.argumentos
+        
     jmp terminar
 
 ;;************************************************************************************
@@ -311,7 +287,7 @@ terminar:
 
 rotuloMENSAGEM equ "[shutdown]: "
 
-versaoSHUTDOWN  equ "1.1"
+versaoSHUTDOWN  equ "1.2"
 
 shutdown:
 
