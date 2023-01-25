@@ -78,7 +78,7 @@ include "log.s"
 ;;
 ;;************************************************************************************
 
-versaoSYSLOGD equ "0.3" 
+versaoSYSLOGD equ "0.4" 
 
 syslogd:
 
@@ -135,10 +135,8 @@ inicioAPP:
 
 usoAplicativo:
 
-    mov esi, syslogd.uso
-    
-    imprimirString
-    
+    fputs syslogd.uso
+        
     jmp terminar
 
 ;;************************************************************************************
