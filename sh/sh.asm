@@ -219,17 +219,11 @@ inicioShell:
     
     hx.syscall definirCursor
     
-    mov esi, sh.nomeUsuario
-    
-    imprimirString
-    
-    mov esi, sh.prompt
-    
-    imprimirString
-    
-    mov esi, sh.separador
-    
-    imprimirString
+    fputs sh.nomeUsuario
+        
+    fputs sh.prompt
+        
+    fputs sh.separador
     
     mov al, byte[maxColunas]         ;; Máximo de caracteres para obter
 
@@ -282,20 +276,16 @@ inicioShell:
     
     imprimirString
     
-    mov esi, sh.comandoNaoEncontrado
-    
-    imprimirString
-    
+    fputs sh.comandoNaoEncontrado
+        
     jmp .obterComando   
     
 .limiteAtingido:
 
     novaLinha
 
-    mov esi, sh.limiteProcessos
-    
-    imprimirString
-    
+    fputs sh.limiteProcessos
+        
     jmp .obterComando   
 
 .imagemHAPPInvalida:
@@ -308,9 +298,7 @@ inicioShell:
     
     imprimirString
 
-    mov esi, sh.imagemInvalida
-    
-    imprimirString
+    fputs sh.imagemInvalida
     
     jmp .obterComando   
 
@@ -419,9 +407,7 @@ obterArgumentos:
 
 usoAplicativo:
 
-    mov esi, sh.uso
-    
-    imprimirString
+    fputs sh.uso
     
     jmp finalizarShell  
 
@@ -445,7 +431,7 @@ finalizarShell:
 ;; Ela deve ser utilizada para identificar para qual versão do Hexagonix® o sh foi
 ;; desenvolvido.
             
-versaoSH equ "1.6"
+versaoSH equ "1.6.1"
 
 sh:
 
