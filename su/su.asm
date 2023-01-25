@@ -125,10 +125,8 @@ iniciarExecucao:
     
     call encontrarSenhaUsuario 
     
-    mov esi, su.solicitarSenha
-    
-    imprimirString
-    
+    fputs su.solicitarSenha
+        
     mov eax, 64
     
     mov ebx, 1234h                  ;; Não queremos eco na senha! 
@@ -164,10 +162,8 @@ iniciarExecucao:
 
 .grandesPoderes:
 
-    mov esi, su.grandesPoderes
+    fputs su.grandesPoderes
     
-    imprimirString
-
 .carregarShell:
     
     mov eax, 0                     ;; Não passar argumentos
@@ -357,13 +353,9 @@ encontrarNomeUsuario:
     
     popa
     
-    mov esi, su.semUsuario
-    
-    imprimirString
-    
-    mov esi, [usuarioSolicitado]
-    
-    imprimirString
+    fputs su.semUsuario
+        
+    fputs [usuarioSolicitado]
     
     stc
     
@@ -375,10 +367,8 @@ encontrarNomeUsuario:
     
     popa
     
-    mov esi, su.semArquivoUnix
-    
-    imprimirString
-    
+    fputs su.semArquivoUnix
+        
     jmp terminar
 
 ;;************************************************************************************
@@ -501,10 +491,8 @@ encontrarSenhaUsuario:
     
     popa
     
-    mov esi, su.semArquivoUnix
-    
-    imprimirString
-    
+    fputs su.semArquivoUnix
+        
     jmp terminar
     
 ;;************************************************************************************
@@ -675,19 +663,15 @@ restaurarUsuario:
     
 usoAplicativo:
 
-    mov esi, su.uso
-    
-    imprimirString
-    
+    fputs su.uso
+        
     jmp terminar
 
 ;;************************************************************************************
 
 finalizarExecucao:
 
-    mov esi, su.falhaAutenticacao
-
-    imprimirString
+    fputs su.falhaAutenticacao
 
     jmp terminar
 
@@ -705,7 +689,7 @@ terminar:
 ;;
 ;;************************************************************************************
 
-versaoSU equ "2.3.1"
+versaoSU equ "2.3.2"
 
 shellPadrao:       db "sh", 0          ;; Nome do arquivo que contêm o shell padrão do Hexagonix®
 vd0:               db "vd0", 0         ;; Console principal
