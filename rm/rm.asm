@@ -106,10 +106,8 @@ inicioAPP:
     
     novaLinha
     
-    mov esi, rm.confirmacao
-    
-    imprimirString
-    
+    fputs rm.confirmacao
+        
 .obterTeclas:
 
     hx.syscall aguardarTeclado
@@ -131,10 +129,8 @@ inicioAPP:
     
 .arquivoNaoEncontrado:
 
-    mov esi, rm.naoEncontrado
-    
-    imprimirString
-    
+    fputs rm.naoEncontrado
+        
     jmp terminar
 
 .deletar:
@@ -147,30 +143,24 @@ inicioAPP:
     
     jc .erroDeletando
     
-    mov esi, rm.deletado
-    
-    imprimirString
-    
+    fputs rm.deletado
+        
     jmp terminar
 
 .abortar:
 
     hx.syscall imprimirCaractere
     
-    mov esi, rm.abortar
-    
-    imprimirString
-    
+    fputs rm.abortar
+        
     jmp terminar
     
 .erroDeletando:
 
     push eax
 
-    mov esi, rm.erroDeletando
-    
-    imprimirString  
-    
+    fputs rm.erroDeletando
+        
     pop eax
     
     cmp eax, IO.operacaoNegada
@@ -180,30 +170,24 @@ inicioAPP:
 
 .permissaoNegada:
 
-    mov esi, rm.permissaoNegada
-    
-    imprimirString
-    
+    fputs rm.permissaoNegada
+        
     jmp terminar
     
 ;;************************************************************************************
 
 usoAplicativo:
 
-    mov esi, rm.uso
-    
-    imprimirString
-    
+    fputs rm.uso
+        
     jmp terminar
 
 ;;************************************************************************************
 
 semParametro:
 
-    mov esi, rm.semParametro
-    
-    imprimirString
-    
+    fputs rm.semParametro
+        
     jmp terminar
 
 ;;************************************************************************************
