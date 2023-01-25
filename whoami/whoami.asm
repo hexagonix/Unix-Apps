@@ -129,10 +129,8 @@ usuarioEGrupo:
     
     imprimirString
     
-    mov esi, whoami.grupo
-    
-    imprimirString
-    
+    fputs whoami.grupo
+        
     pop eax
     
     imprimirInteiro
@@ -143,10 +141,8 @@ usuarioEGrupo:
 
 usoAplicativo:
 
-    mov esi, whoami.uso
-    
-    imprimirString
-    
+    fputs whoami.uso
+        
     jmp terminar
     
 ;;************************************************************************************  
@@ -165,7 +161,7 @@ terminar:
     
 linhaComando: dd 0
 
-versaoWHOAMI equ "1.1"
+versaoWHOAMI equ "1.1.1"
 
 whoami:
 
