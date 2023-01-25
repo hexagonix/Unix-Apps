@@ -74,7 +74,7 @@ include "verUtils.s"
 
 align 4
 
-versaoUNAME equ "2.6"
+versaoUNAME equ "2.6.1"
 
 uname:
 
@@ -291,25 +291,19 @@ exibirArquitetura:
     cmp edx, 02
     je .x86_64 
 
-    mov esi, uname.naoSuportado
-
-    imprimirString
+    fputs uname.naoSuportado
 
     jmp .terminar 
 
 .i386:
 
-    mov esi, uname.arquiteturai386
-
-    imprimirString
+    fputs uname.arquiteturai386
     
     jmp .terminar
 
 .x86_64:
 
-    mov esi, uname.arquiteturaamd64
-
-    imprimirString
+    fputs uname.arquiteturaamd64
 
     jmp .terminar
 
@@ -323,9 +317,7 @@ exibirPlataforma:
 
     call espacoPadrao
 
-    mov esi, uname.plataformaPC
-
-    imprimirString
+    fputs uname.plataformaPC
 
     jmp terminar 
 
@@ -335,22 +327,16 @@ exibirTudo:
 
     call espacoPadrao 
     
-    mov esi, uname.sistemaOperacional
+    fputs uname.sistemaOperacional
 
-    imprimirString
-
-    mov esi, uname.espaco
+    fputs uname.espaco
     
-    imprimirString
-
     call obterHostname
 
 .continuarHost:
 
-    mov esi, uname.espaco
-    
-    imprimirString
-    
+    fputs uname.espaco
+        
     hx.syscall hx.uname
     
     imprimirString
@@ -361,10 +347,8 @@ exibirTudo:
     
     ;; imprimirString
 
-    mov esi, uname.espaco
-    
-    imprimirString
-    
+    fputs uname.espaco
+        
     call versaoHexagon
     
     cmp edx, 01h 
@@ -375,17 +359,13 @@ exibirTudo:
 
 .i386:
 
-    mov esi, uname.arquiteturai386
-
-    imprimirString
+    fputs uname.arquiteturai386
 
     jmp .continuar
 
 .amd64:
 
-    mov esi, uname.arquiteturaamd64
-
-    imprimirString
+    fputs uname.arquiteturaamd64
 
     jmp .continuar
 
@@ -395,9 +375,7 @@ exibirTudo:
 
     hx.syscall imprimirCaractere
 
-    mov esi, uname.hexagonix
-    
-    imprimirString
+    fputs uname.hexagonix
     
     jmp terminar
 
@@ -407,10 +385,8 @@ exibirInfoSistemaOperacional:
 
     call espacoPadrao 
     
-    mov esi, uname.sistemaOperacional
-    
-    imprimirString
-    
+    fputs uname.sistemaOperacional
+        
     jmp terminar
     
 ;;************************************************************************************
@@ -423,9 +399,7 @@ exibirVersaoApenas:
     
     imprimirString
     
-    mov esi, uname.espaco
-
-    imprimirString
+    fputs uname.espaco
 
     call versaoHexagon
 
@@ -444,10 +418,8 @@ versaoHexagon:
     
     imprimirInteiro
     
-    mov esi, ponto
-    
-    imprimirString
-    
+    fputs ponto
+        
     pop eax
     
     imprimirInteiro
@@ -459,10 +431,8 @@ versaoHexagon:
 
     push ecx
 
-    mov esi, ponto
-    
-    imprimirString
-    
+    fputs ponto
+        
     pop ecx 
     
     mov al, ch
@@ -471,23 +441,15 @@ versaoHexagon:
 
 .continuar:
 
-    mov esi, uname.espaco
+    fputs uname.espaco
 
-    imprimirString
-
-    mov esi, uname.buildHexagon
-
-    imprimirString
+    fputs uname.buildHexagon
 
     hx.syscall hx.uname
     
-    mov esi, edi 
+    fputs edi 
 
-    imprimirString
-
-    mov esi, uname.fecharParenteses
-
-    imprimirString
+    fputs uname.fecharParenteses
 
     ret
 
@@ -495,10 +457,8 @@ versaoHexagon:
 
 usoAplicativo:
 
-    mov esi, uname.uso
-    
-    imprimirString
-    
+    fputs uname.uso
+        
     jmp terminar
 
 ;;************************************************************************************  
@@ -543,9 +503,7 @@ obterHostname:
     
     hx.syscall inserirCaractere
 
-    mov esi, enderecoCarregamento
-    
-    imprimirString
+    fputs enderecoCarregamento
 
     jmp .retornar 
 
@@ -553,10 +511,8 @@ obterHostname:
 
     stc 
 
-    mov esi, uname.maquina
+    fputs uname.maquina
     
-    imprimirString
-
 .retornar:
 
     ret
