@@ -123,9 +123,7 @@ parametroPID:
     
     push eax
     
-    mov esi, ps.pid
-    
-    imprimirString
+    fputs ps.pid
     
     pop eax
     
@@ -142,17 +140,13 @@ parametroMemoria:
 
 .linha:
     
-    mov esi, ps.usoMem
-    
-    imprimirString
+    fputs ps.usoMem
     
     hx.syscall usoMemoria
     
     imprimirInteiro
     
-    mov esi, ps.kbytes
-    
-    imprimirString
+    fputs ps.kbytes
     
     jmp terminar
 
@@ -164,27 +158,21 @@ parametroOutrosProcessos:
     
     push eax
     
-    mov esi, ps.numeroProcessos
-    
-    imprimirString
+    fputs ps.numeroProcessos
     
     pop eax
     
     imprimirInteiro
     
-    mov esi, ps.processos
-    
-    imprimirString
-    
+    fputs ps.processos
+        
     jmp terminar
     
 ;;************************************************************************************
     
 usoAplicativo:
 
-    mov esi, ps.uso
-    
-    imprimirString
+    fputs ps.uso
     
     jmp terminar
 
@@ -196,7 +184,7 @@ terminar:
 
 ;;************************************************************************************
 
-versaoPS equ "1.1.1"
+versaoPS equ "1.1.2"
 
 parametro: dd ?
 
