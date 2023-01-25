@@ -105,14 +105,10 @@ inicioAPP: ;; Ponto de entrada do aplicativo
 
 exibirProcessos:
 
-    mov esi, top.inicio
-    
-    imprimirString
-    
-    mov esi, top.processosCarregados
-    
-    imprimirString
-    
+    fputs top.inicio
+        
+    fputs top.processosCarregados
+        
     hx.syscall obterProcessos
     
     push eax
@@ -127,10 +123,8 @@ exibirProcessos:
     
     novaLinha
     
-    mov esi, top.numeroProcessos
-    
-    imprimirString
-    
+    fputs top.numeroProcessos
+        
     mov eax, VERMELHO
     
     call definirCorTexto
@@ -141,10 +135,8 @@ exibirProcessos:
     
     call definirCorPadrao
     
-    mov esi, top.usoMem
-    
-    imprimirString
-    
+    fputs top.usoMem
+        
     mov eax, VERDE_FLORESTA
     
     call definirCorTexto
@@ -155,14 +147,10 @@ exibirProcessos:
     
     call definirCorPadrao
     
-    mov esi, top.bytes
-    
-    imprimirString
-    
-    mov esi, top.memTotal
-    
-    imprimirString
-    
+    fputs top.bytes
+        
+    fputs top.memTotal
+        
     mov eax, VERDE_FLORESTA
     
     call definirCorTexto
@@ -175,20 +163,16 @@ exibirProcessos:
     
     call definirCorPadrao
     
-    mov esi, top.mbytes
-    
-    imprimirString
-    
+    fputs top.mbytes
+        
     jmp terminar
     
 ;;************************************************************************************
     
 usoAplicativo:
 
-    mov esi, top.uso
-    
-    imprimirString
-    
+    fputs top.uso
+        
     jmp terminar
 
 ;;************************************************************************************  
@@ -228,7 +212,7 @@ definirCorPadrao:
 
 parametro: dd ?
 
-versaoTOP equ "1.2"
+versaoTOP equ "1.2.1"
 
 top:
 
