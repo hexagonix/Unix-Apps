@@ -106,12 +106,6 @@ inicioAPP:
 
     fputs date.espaco 
 
-    fputs date.seculo 
-
-    fputs date.ano 
-
-    fputs date.espaco 
-
     fputs date.hora
 
     fputs date.sepHora
@@ -125,6 +119,12 @@ inicioAPP:
     fputs date.espaco 
 
     fputs date.fuso
+
+    fputs date.espaco 
+
+    fputs date.seculo 
+
+    fputs date.ano 
 
 match =SIM, DIASEMANA
 {
@@ -331,7 +331,7 @@ terminar:
 
 ;;************************************************************************************
 
-versaoDATE equ "1.2.2"
+versaoDATE equ "1.2.3"
 
 date:
         
