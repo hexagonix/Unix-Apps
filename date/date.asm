@@ -98,6 +98,20 @@ inicioAPP:
 
     call processarBCD ;; Fazer a conversão de BCD para caractere imrprimível
 
+    fputs date.dia
+
+    fputs date.espaco 
+
+    fputs date.mes
+
+    fputs date.espaco 
+
+    fputs date.seculo 
+
+    fputs date.ano 
+
+    fputs date.espaco 
+
     fputs date.hora
 
     fputs date.sepHora
@@ -108,19 +122,9 @@ inicioAPP:
 
     fputs date.segundo
 
-    fputs date.espacamento
+    fputs date.espaco 
 
-    fputs date.dia
-
-    fputs date.sepData
-
-    fputs date.mes
-
-    fputs date.sepData
-
-    fputs date.seculo
-
-    fputs date.ano
+    fputs date.fuso
 
 match =SIM, DIASEMANA
 {
@@ -327,7 +331,7 @@ terminar:
 
 ;;************************************************************************************
 
-versaoDATE equ "1.2.1"
+versaoDATE equ "1.2.2"
 
 date:
         
@@ -348,6 +352,8 @@ date:
 .sepData:         db "/", 0
 .sepHora:         db ":", 0
 .espacamento:     db " of ", 0
+.espaco:          db " ", 0
+.fuso:            db "GMT", 0
 .dia:             dd 0
 .mes:             dd 0
 .seculo:          dd 0
