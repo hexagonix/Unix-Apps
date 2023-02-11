@@ -97,7 +97,11 @@ inicioAPP:
     novaLinha
 
     fputs free.memoria
-    
+
+    hx.syscall obterCursor
+
+    mov byte[free.posicaoY], dh
+
     hx.syscall usoMemoria
     
     mov eax, ecx
@@ -108,9 +112,17 @@ inicioAPP:
 
     hx.syscall usoMemoria
     
+    cursorPara 20, [free.posicaoY]
+
+    hx.syscall definirCursor
+
     imprimirInteiro
 
     fputs free.kbytes
+
+    cursorPara 40, [free.posicaoY]
+
+    hx.syscall definirCursor
 
     hx.syscall usoMemoria
 
@@ -147,7 +159,7 @@ terminar:
 
 ;;************************************************************************************
 
-versaoFREE equ "0.4"
+versaoFREE equ "1.0.0"
 
 free:
 
@@ -162,6 +174,7 @@ free:
 .reservado:       db "16", 0
 .parametroAjuda:  db "?", 0
 .parametroAjuda2: db "--help", 0
-     
+.posicaoY:        db 0
+
 parametro: dd ?
 regES:     dw 0
