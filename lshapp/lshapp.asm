@@ -357,7 +357,7 @@ terminar:
 
 align 16
 
-versaoLSHAPP equ "1.10.2"
+versaoLSHAPP equ "1.10.3"
 
 lshapp:
 
@@ -370,13 +370,13 @@ lshapp:
 .infoArquivo:         db 10, "Filename: ", 0
 .tamanhoArquivo:      db 10, "Size of this file: ", 0
 .bytes:               db " bytes.", 10, 0
-.imagemInvalida:      db 10, "<!> This is not a valid HAPP image -> [HAPP:-]. Try another file.", 10, 0
+.imagemInvalida:      db 10, "<!> This is not a valid HAPP image. Try another file.", 10, 0
 .semArquivo:          db 10, 10, "<!> The requested file is not available on this volume.", 10, 10
                       db "<!> Check the file name and try again.", 10, 0  
 .tipoArquitetura:     db 10, 10, "> Image target architecture: ", 0
 .verHexagon:          db 10, "> Minimum version of Hexagon(R) required to run: ", 0
 .camposVersaoHexagon: db " -> [HAPP:version and HAPP:subversion].", 0
-.cabecalho:           db 10, "<+> This file contains a valid HAPP image -> [HAPP:+].", 0
+.cabecalho:           db 10, "<+> This file contains a valid HAPP image.", 0
 .i386:                db "i386", 0
 .amd64:               db "amd64", 0
 .campoArquitetura:    db " -> [HAPP:arch].", 0
