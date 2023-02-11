@@ -81,7 +81,7 @@ include "log.s"
 
 ;;************************************************************************************
 
-versaoINIT equ "2.4.2"
+versaoINIT equ "2.5.0"
 
 tamanhoLimiteBusca = 32768
 
@@ -96,6 +96,8 @@ posicaoBX:                 dw 0        ;; Marcação da posição de busca no co
 init:
 
 .inicioInit:             db "init version ", versaoINIT, ".", 0
+.iniciandoSistema:       db "The system is coming up. Please wait.", 0
+.sistemaPronto:          db "The system is ready.", 0
 .procurarArquivo:        db "Looking for /rc...", 0
 .arquivoEncontrado:      db "Configuration file (/rc) found.", 0
 .arquivoAusente:         db "Configuration file (/rc) not found. The default shell will be executed (sh).", 0
@@ -126,6 +128,7 @@ initHexagonix: ;; Ponto de entrada do init
 .configurarTerminal:
 
     logSistema init.inicioInit, 0, Log.Prioridades.p5
+    logSistema init.iniciandoSistema, 0, Log.Prioridades.p5
 
 ;; Agora, o buffer de memória do double buffering deve ser limpo. Isto evita que memória 
 ;; poluída seja utilizada como base para a exibição, quando um aplicativo é fechado de forma forçada.
@@ -151,9 +154,11 @@ iniciarExecucao:
 
     call encontrarConfiguracaoInit          
 
+    logSistema init.sistemaPronto, 0, Log.Prioridades.p5
+
 .carregarServico:
 
-    logSistema init.registrandoComponentes, 0, Log.Prioridades.p5
+    logSistema init.registrandoComponentes, 0, Log.Prioridades.p4
 
     mov esi, servicoHexagonix
     
