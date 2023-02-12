@@ -616,7 +616,9 @@ finalizarShell:
 ;; desenvolvido.
             
 versaoSH equ "1.7.0"
+
 tamanhoLimiteBusca = 32768
+
 sh:
 
 .prompt:               db "@Hexagonix", 0
@@ -639,7 +641,6 @@ sh:
 .argumentoNecessario:  db 10, "An argument is necessary.", 0
 .imagemDisco: times 12 db 0        ;; Armazena o nome do shell à ser utilizado pelo sistema
 .posicaoBX:            dw 0        ;; Marcação da posição de busca no conteúdo do arquivo
-
 .nomeUsuario: times 64 db 0
 .separador:    times 8 db 0
  
