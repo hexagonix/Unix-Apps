@@ -258,6 +258,8 @@ inicioShell:
 
     jc finalizarShell
 
+    ;; Comando EXEC
+
     mov edi, comandos.exec      
     
     hx.syscall compararPalavrasString
@@ -475,7 +477,7 @@ procurarComandos:
     
     mov al, [ds:si+bx]
     
-;; Agora vamos procurar os limitadores finais do nome de um serviço, que podem ser:
+;; Agora vamos procurar os limitadores finais do nome de um comando, que podem ser:
 ;;
 ;; EOL - nova linha (10)
 ;; Espaço - um espaço após o último caractere
@@ -487,7 +489,7 @@ procurarComandos:
     cmp al, ' '                     ;; Se encontrar outro delimitador, o nome foi carregado com sucesso
     je .nomeComandoObtido
 
-    cmp al, '<'                     ;; Se encontrar outro delimitador, o nome foi carregado com sucesso
+    cmp al, '#'                     ;; Se encontrar outro delimitador, o nome foi carregado com sucesso
     je .nomeComandoObtido
     
 ;; Se não estiver pronto, armazenar o caractere obtido
@@ -615,7 +617,7 @@ finalizarShell:
 ;; Ela deve ser utilizada para identificar para qual versão do Hexagonix® o sh foi
 ;; desenvolvido.
             
-versaoSH equ "1.7.0"
+versaoSH equ "1.7.1"
 
 tamanhoLimiteBusca = 32768
 
