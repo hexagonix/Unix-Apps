@@ -111,8 +111,20 @@ inicioShell:
     dec dh
     
     hx.syscall definirCursor
-    
+
     novaLinha
+
+.processarRC:
+
+    mov esi, sh.arquivorc
+
+    hx.syscall arquivoExiste
+
+    jc .continuar 
+
+    jmp processarArquivoShell
+
+.continuar:
     
 .iniciarSessao:
 
@@ -246,12 +258,20 @@ inicioShell:
 
     jc finalizarShell
 
+    mov edi, comandos.exec      
+    
+    hx.syscall compararPalavrasString
+
+    jc executarExec ;; Iniciar a execução de arquivo em lote
+
 ;;************************************************************************************
 
 ;; Tentar carregar um programa
     
-    call obterArgumentos              ;; Separar comando e argumentos
+    call obterArgumentos ;; Separar comando e argumentos
     
+.entradaCarregamentoImagem:
+
     push esi
     push edi
     
@@ -324,12 +344,176 @@ inicioShell:
 
 ;;************************************************************************************
 
+processarArquivoShell:
+
+    mov esi, sh.arquivorc
+    mov edi, bufferArquivo
+
+    hx.syscall abrir 
+
+    novaLinha
+
+    fputs bufferArquivo
+
+    jmp inicioShell.continuar
+
 ;;************************************************************************************
+
+executarExec:
+
+    add esi, 04h
+    
+    hx.syscall cortarString
+
+    cmp byte[esi], 0
+    je .argumentonNecessario
+
+    mov word[sh.posicaoBX], 0FFFFh ;; A cada execução, zerar o contador.
+
+    mov edi, bufferArquivo
+    
+    hx.syscall hx.open
+    
+    jc .arquivoShellAusente
+
+    call procurarComandos
+
+    jc .naoEncontrado
+
+.carregarImagem:
+
+    mov esi, sh.imagemDisco
+    
+    hx.syscall arquivoExiste
+    
+    jc .proximoComando
+
+    mov eax, 0                     ;; Não passar argumentos
+    mov esi, sh.imagemDisco        ;; Nome do arquivo
+    
+    stc
+    
+    hx.syscall iniciarProcesso     ;; Solicitar o carregamento do primeiro comando
+ 
+    jnc .proximoComando
+
+.proximoComando:
+
+    clc 
+
+    call procurarComandos
+
+    jmp .carregarImagem
+
+.naoEncontrado:                    ;; O serviço não pôde ser localizado
+    
+    jmp inicioShell.obterComando
+
+.arquivoShellAusente:
+
+    fputs sh.semArquivoShell
+
+    jmp inicioShell.obterComando
+
+.argumentonNecessario:
+
+    fputs sh.argumentoNecessario
+
+    jmp inicioShell.obterComando
+
+;;************************************************************************************
+
+;; Componentes do comando exec para execução do comando em lotes do shell
+
+procurarComandos:
+
+    pusha
+    
+    push es
+
+    push ds
+    pop es
+    
+    mov si, bufferArquivo           ;; Aponta para o buffer com o conteúdo do arquivo
+    mov bx, word[sh.posicaoBX]         
+    
+    jmp .procurarEntreDelimitadores
+
+.procurarEntreDelimitadores:
+
+    inc bx
+    
+    mov word[sh.posicaoBX], bx
+
+    cmp bx, tamanhoLimiteBusca
+    je inicioShell.obterComando
+    
+    mov al, [ds:si+bx]
+    
+    cmp al, '>'
+    jne .procurarEntreDelimitadores ;; O limitador inicial foi encontrado
+    
+;; BX agora aponta para o primeira caractere do nome do shell resgatado do arquivo
+    
+    push ds
+    pop es
+    
+    mov di, sh.imagemDisco          ;; O nome do shell será copiado para ES:DI
+    
+    mov si, bufferArquivo
+    
+    add si, bx                      ;; Mover SI para aonde BX aponta
+    
+    mov bx, 0                       ;; Iniciar em 0
+    
+.obterComando:
+
+    inc bx
+    
+    cmp bx, 13              
+    je .nomeComandoInvalido           ;; Se nome de arquivo maior que 11, o nome é inválido     
+    
+    mov al, [ds:si+bx]
+    
+;; Agora vamos procurar os limitadores finais do nome de um serviço, que podem ser:
 ;;
-;; Fim dos comandos internos do Shell Unix do Hexagonix®
-;;
-;; Funções úteis para o manipulação de dados no Shell Unix do Hexagonix® 
-;;
+;; EOL - nova linha (10)
+;; Espaço - um espaço após o último caractere
+;; # - Se usado após o último caractere do nome do serviço, marcar como comentário
+
+    cmp al, 10                     ;; Se encontrar outro delimitador, o nome foi carregado com sucesso
+    je .nomeComandoObtido
+
+    cmp al, ' '                     ;; Se encontrar outro delimitador, o nome foi carregado com sucesso
+    je .nomeComandoObtido
+
+    cmp al, '<'                     ;; Se encontrar outro delimitador, o nome foi carregado com sucesso
+    je .nomeComandoObtido
+    
+;; Se não estiver pronto, armazenar o caractere obtido
+
+    stosb
+    
+    jmp .obterComando
+
+.nomeComandoObtido:
+
+    pop es
+    
+    popa
+
+    ret
+    
+.nomeComandoInvalido:
+
+    pop es
+    
+    popa
+    
+    stc 
+
+    ret
+
 ;;************************************************************************************
 
 ;; Separar nome de comando e argumentos
@@ -431,12 +615,13 @@ finalizarShell:
 ;; Ela deve ser utilizada para identificar para qual versão do Hexagonix® o sh foi
 ;; desenvolvido.
             
-versaoSH equ "1.6.1"
-
+versaoSH equ "1.7.0"
+tamanhoLimiteBusca = 32768
 sh:
 
 .prompt:               db "@Hexagonix", 0
 .comandoNaoEncontrado: db ": command not found.", 0
+.arquivorc:            db "sh.rc", 0
 .imagemInvalida:       db ": unable to load image. Unsupported executable format.", 0
 .limiteProcessos:      db 10, 10, "There is no memory available to run the requested application.", 10
                        db "First try to terminate applications or their instances, and try again.", 0                  
@@ -450,6 +635,11 @@ sh:
                        db "All rights reserved.", 10, 0
 .parametroAjuda:       db "?", 0   
 .parametroAjuda2:      db "--help", 0
+.semArquivoShell:      db 10, "Shell script not found.", 0
+.argumentoNecessario:  db 10, "An argument is necessary.", 0
+.imagemDisco: times 12 db 0        ;; Armazena o nome do shell à ser utilizado pelo sistema
+.posicaoBX:            dw 0        ;; Marcação da posição de busca no conteúdo do arquivo
+
 .nomeUsuario: times 64 db 0
 .separador:    times 8 db 0
  
@@ -457,14 +647,15 @@ sh:
 
 comandos:
 
-.sair: db "exit",0
+.sair: db "exit", 0
+.exec: db "exec", 0
 
 ;;**************************
 
 maxColunas:   db 0 ;; Total de colunas disponíveis no vídeo na resolução atual
 maxLinhas:    db 0 ;; Total de linhas disponíveis no vídeo na resolução atual
 linhaComando: dd 0
-                   
+
 ;;************************************************************************************
 
 bufferArquivo:  ;; Endereço para carregamento de arquivos
