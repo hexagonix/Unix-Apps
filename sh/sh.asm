@@ -615,7 +615,7 @@ finalizarShell:
 ;; Ela deve ser utilizada para identificar para qual versão do Hexagonix® o sh foi
 ;; desenvolvido.
             
-versaoSH equ "1.7.0"
+versaoSH equ "1.7.0.1"
 
 tamanhoLimiteBusca = 32768
 
@@ -623,7 +623,7 @@ sh:
 
 .prompt:               db "@Hexagonix", 0
 .comandoNaoEncontrado: db ": command not found.", 0
-.arquivorc:            db "sh.rc", 0
+.arquivorc:            db "shrc", 0
 .imagemInvalida:       db ": unable to load image. Unsupported executable format.", 0
 .limiteProcessos:      db 10, 10, "There is no memory available to run the requested application.", 10
                        db "First try to terminate applications or their instances, and try again.", 0                  
