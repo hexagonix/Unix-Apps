@@ -122,7 +122,20 @@ inicioShell:
 
     jc .continuar 
 
-    jmp processarArquivoShell
+    jmp .processarArquivoShell
+
+.processarArquivoShell:
+
+    mov esi, sh.arquivorc
+    mov edi, bufferArquivo
+
+    hx.syscall abrir 
+
+    novaLinha
+
+    fputs bufferArquivo
+
+    jmp .continuar
 
 .continuar:
     
@@ -346,20 +359,7 @@ inicioShell:
 
 ;;************************************************************************************
 
-processarArquivoShell:
-
-    mov esi, sh.arquivorc
-    mov edi, bufferArquivo
-
-    hx.syscall abrir 
-
-    novaLinha
-
-    fputs bufferArquivo
-
-    jmp inicioShell.continuar
-
-;;************************************************************************************
+;; Outras funções auxiliares 
 
 executarExec:
 
@@ -617,7 +617,7 @@ finalizarShell:
 ;; Ela deve ser utilizada para identificar para qual versão do Hexagonix® o sh foi
 ;; desenvolvido.
             
-versaoSH equ "1.7.0.1"
+versaoSH equ "1.7.0.2"
 
 tamanhoLimiteBusca = 32768
 
