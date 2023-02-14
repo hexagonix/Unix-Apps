@@ -613,6 +613,8 @@ finalizarShell:
 ;;
 ;;************************************************************************************
 
+;; TODO: melhorar suporta a script de shell
+
 ;; A versão do sh é independente da versão do restante do Sistema.
 ;; Ela deve ser utilizada para identificar para qual versão do Hexagonix® o sh foi
 ;; desenvolvido.
