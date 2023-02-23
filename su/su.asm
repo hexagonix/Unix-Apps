@@ -1,21 +1,36 @@
 ;;************************************************************************************
 ;;
-;;    
-;; ┌┐ ┌┐                                 Sistema Operacional Hexagonix®
-;; ││ ││
-;; │└─┘├──┬┐┌┬──┬──┬──┬─┐┌┬┐┌┐    Copyright © 2015-2023 Felipe Miguel Nery Lunkes
-;; │┌─┐││─┼┼┼┤┌┐│┌┐│┌┐│┌┐┼┼┼┼┘          Todos os direitos reservados
-;; ││ │││─┼┼┼┤┌┐│└┘│└┘││││├┼┼┐
-;; └┘ └┴──┴┘└┴┘└┴─┐├──┴┘└┴┴┘└┘
-;;              ┌─┘│                 Licenciado sob licença BSD-3-Clause
-;;              └──┘          
+;;                             ┌┐ ┌┐
+;;                             ││ ││
+;;                             │└─┘├──┬┐┌┬──┬──┬──┬─┐┌┬┐┌┐
+;;                             │┌─┐││─┼┼┼┤┌┐│┌┐│┌┐│┌┐┼┼┼┼┘
+;;                             ││ │││─┼┼┼┤┌┐│└┘│└┘││││├┼┼┐
+;;                             └┘ └┴──┴┘└┴┘└┴─┐├──┴┘└┴┴┘└┘
+;;                                          ┌─┘│                 
+;;                                          └──┘          
 ;;
+;;            Sistema Operacional Hexagonix® - Hexagonix® Operating System            
+;;
+;;                  Copyright © 2015-2023 Felipe Miguel Nery Lunkes
+;;                Todos os direitos reservados - All rights reserved.
 ;;
 ;;************************************************************************************
 ;;
-;; Este arquivo é licenciado sob licença BSD-3-Clause. Observe o arquivo de licença 
-;; disponível no repositório para mais informações sobre seus direitos e deveres ao 
-;; utilizar qualquer trecho deste arquivo.
+;; Português:
+;; 
+;; O Hexagonix e seus componentes são licenciados sob licença BSD-3-Clause. Leia abaixo
+;; a licença que governa este arquivo e verifique a licença de cada repositório para
+;; obter mais informações sobre seus direitos e obrigações ao utilizar e reutilizar
+;; o código deste ou de outros arquivos.
+;;
+;; English:
+;;
+;; Hexagonix and its components are licensed under a BSD-3-Clause license. Read below
+;; the license that governs this file and check each repository's license for
+;; obtain more information about your rights and obligations when using and reusing
+;; the code of this or other files.
+;;
+;;************************************************************************************
 ;;
 ;; BSD 3-Clause License
 ;;
