@@ -108,7 +108,7 @@ tamanhoLimiteBusca = 32768
 
 ;;************************************************************************************
 
-versaoLOGIND equ "1.4.3"
+versaoLOGIND equ "1.5.0"
 
 arquivo:    db "passwd", 0 ;; Nome do arquivo de configuração de login
 vd0:        db "vd0", 0    ;; Console padrão
@@ -152,6 +152,7 @@ match =Hexagonix, TIPOLOGIN
 .temaEscuro:       db "dark", 0
 .semVersao:        db "[unknown]", 0
 .verboseLogind:    db "logind version ", versaoLOGIND, ".", 0
+.OOBE:             db "oobe", 0
 
 align 4
 
@@ -174,6 +175,21 @@ iniciologind: ;; Ponto de entrada
 iniciarExecucao:
 
     logSistema logind.verboseLogind, 0, Log.Prioridades.p4
+
+.verificarOOBE:
+
+    mov esi, logind.OOBE
+
+    hx.syscall arquivoExiste
+
+    mov esi, logind.OOBE
+    mov eax, 0h
+
+    hx.syscall iniciarProcesso
+
+    jc .continuar
+
+.continuar:
 
     call checarBaseDados
     
