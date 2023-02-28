@@ -11,10 +11,10 @@
 ;;                                               aa,    ,88                                         
 ;;                                                "P8bbdP"       
 ;;
-;;            Sistema Operacional Hexagonix® - Hexagonix® Operating System            
+;;                    Sistema Operacional Hexagonix® - Hexagonix® Operating System
 ;;
-;;                  Copyright © 2015-2023 Felipe Miguel Nery Lunkes
-;;                Todos os direitos reservados - All rights reserved.
+;;                          Copyright © 2015-2023 Felipe Miguel Nery Lunkes
+;;                        Todos os direitos reservados - All rights reserved.
 ;;
 ;;*************************************************************************************************
 ;;
@@ -321,7 +321,7 @@ shutdown:
 .parametroAjuda:     db "?", 0  
 .parametroAjuda2:    db "--help", 0
 .sistema:            db 10, "Hexagonix(R) Operating System", 10
-                     db "Copyright (C) 2016-2022 Felipe Miguel Nery Lunkes", 10
+                     db "Copyright (C) 2015-", __stringano, " Felipe Miguel Nery Lunkes", 10
                      db "All rights reserved.", 0
 .argumentos:         db 10, "An argument is required to control the state of this device.", 10, 0
 .uso:                db 10, "Usage: shutdown [argument]", 10, 10

@@ -11,10 +11,10 @@
 ;;                                               aa,    ,88                                         
 ;;                                                "P8bbdP"       
 ;;
-;;            Sistema Operacional Hexagonix® - Hexagonix® Operating System            
+;;                    Sistema Operacional Hexagonix® - Hexagonix® Operating System
 ;;
-;;                  Copyright © 2015-2023 Felipe Miguel Nery Lunkes
-;;                Todos os direitos reservados - All rights reserved.
+;;                          Copyright © 2015-2023 Felipe Miguel Nery Lunkes
+;;                        Todos os direitos reservados - All rights reserved.
 ;;
 ;;*************************************************************************************************
 ;;
@@ -70,7 +70,7 @@
 ;;                                                                                  
 ;;               Gerenciador de Login do Sistema Operacional Hexagonix®                 
 ;;                                                                   
-;;                  Copyright © 2016-2023 Felipe Miguel Nery Lunkes                
+;;                  Copyright © 2015-2023 Felipe Miguel Nery Lunkes                
 ;;                          Todos os direitos reservados.                    
 ;;                                                                   
 ;;************************************************************************************
