@@ -85,7 +85,7 @@ cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, inicioAPP, 01h
 
 include "hexagon.s"
 include "macros.s"
-include "Estelar/estelar.s"
+include "console.s"
 
 ;;************************************************************************************
 
@@ -229,7 +229,7 @@ definirCorPadrao:
 
 parametro: dd ?
 
-versaoTOP equ "1.2.1"
+versaoTOP equ "1.2.2"
 
 top:
 
