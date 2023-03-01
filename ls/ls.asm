@@ -87,7 +87,7 @@ align 4
 
 include "hexagon.s"
 include "macros.s"
-include "Estelar/estelar.s"
+include "console.s"
 
 ;;************************************************************************************
 
@@ -659,7 +659,7 @@ verificarArquivo:
 ;;
 ;;************************************************************************************
 
-versaoLS equ "3.2.1"
+versaoLS equ "3.2.2"
 
 ls:
 
