@@ -85,7 +85,7 @@ cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, inicioAPP, 01h
 
 include "hexagon.s"
 include "macros.s"
-include "Estelar/estelar.s"
+include "console.s"
 
 ;;************************************************************************************
 
@@ -362,7 +362,7 @@ encontrarCaractereLista:
 
 parametro: dd ?
 
-versaoHTOP equ "1.4"
+versaoHTOP equ "1.4.1"
 
 htop:
 
