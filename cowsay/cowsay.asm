@@ -68,13 +68,7 @@
 
 use32
 
-;; Agora vamos criar um cabeçalho para a imagem HAPP final do aplicativo. Anteriormente,
-;; o cabeçalho era criado em cada imagem e poderia diferir de uma para outra. Caso algum
-;; campo da especificação HAPP mudasse, os cabeçalhos de todos os aplicativos deveriam ser
-;; alterados manualmente. Com uma estrutura padronizada, basta alterar um arquivo que deve
-;; ser incluído e montar novamente o aplicativo, sem a necessidade de alterar manualmente
-;; arquivo por arquivo. O arquivo contém uma estrutura instanciável com definição de 
-;; parâmetros no momento da instância, tornando o cabeçalho tão personalizável quanto antes.
+;; Agora vamos criar um cabeçalho para a imagem HAPP final do aplicativo.
 
 include "HAPP.s" ;; Aqui está uma estrutura para o cabeçalho HAPP
 
