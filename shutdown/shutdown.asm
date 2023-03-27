@@ -118,6 +118,13 @@ inicioAPP:
     hx.syscall compararPalavrasString
     
     jc iniciarDesligamento
+
+    mov edi, shutdown.desligarAgora
+    mov esi, [parametro]
+    
+    hx.syscall compararPalavrasString
+    
+    jc iniciarDesligamento
     
     mov edi, shutdown.parametroReiniciar
     mov esi, [parametro]
@@ -298,7 +305,7 @@ terminar:
 
 rotuloMENSAGEM equ "[shutdown]: "
 
-versaoSHUTDOWN  equ "1.2"
+versaoSHUTDOWN  equ "1.3"
 
 shutdown:
 
@@ -306,6 +313,7 @@ shutdown:
 .parDesligarSemEco:  db "-de", 0
 .parametroReiniciar: db "-r", 0
 .parReiniciarSemEco: db "-re", 0
+.desligarAgora:      db "now", 0
 .msgDesligamento:    db 10, 10, "!> Preparing to shut down your computer... ", 0
 .msgFinalizando:     db 10, 10, "#> Terminating all processes still running...  ", 0
 .msgHexagonix:       db 10, 10, "#> Shutting down the Hexagonix(R) Operating System...    ", 0
@@ -321,8 +329,9 @@ shutdown:
 .uso:                db 10, "Usage: shutdown [argument]", 10, 10
                      db "Controls the state of the computer.", 10, 10
                      db "Possible arguments:", 10, 10
-                     db "-d - Prepares and initiates computer shutdown.", 10
-                     db "-r - Prepare and restart the computer.", 10, 10
+                     db "-d  - Prepares and initiates computer shutdown.", 10
+                     db "-r  - Prepare and restart the computer.", 10
+                     db "now - Same as -d", 10, 10
                      db "shutdown version ", versaoSHUTDOWN, 10, 10
                      db "Copyright (C) 2022-", __stringano, " Felipe Miguel Nery Lunkes", 10
                      db "All rights reserved.", 0
