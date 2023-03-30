@@ -68,6 +68,8 @@
 #
 # $HexagonixOS$
 
+# Versão 2.0
+
 gerarBaseUnix(){
 
 echo
@@ -89,15 +91,13 @@ do
 
     echo -en "Building Hexagonix® Unix utility \e[1;94m$(basename $h .asm)\e[0m..."
     
-    echo Building Hexagonix® Unix Utility $(basename $h .asm)... >> $LOG
+    echo " > Building Hexagonix® Unix utility $(basename $h .asm)..." >> ../$LOG
     
-    echo >> $LOG
-    
-    fasm $h ../../../Andromeda/bin/`basename $h .asm` -d $BANDEIRAS >> $LOG || desmontar
+    fasm $h ../../../Andromeda/bin/`basename $h .asm` -d $BANDEIRAS >> ../$LOG || desmontar
     
     echo -e " [\e[32mOk\e[0m]"
     
-    echo >> $LOG
+    echo >> ../$LOG
 
 # Aqui vão aplicações específicas dentro dos pacotes que contêm arquivos auxiliares que devem
 # ser copiados, como os arquivos da ferramenta cowsay. Devem ser adicionados loops if para
@@ -127,16 +127,11 @@ echo
 echo -e "} [\e[32mHexagonix utilities built successfully\e[0m]."
 echo
 
-
-}
-
-hexagonix()
-{
-
-export DESTINO="../../Hexagonix"
-#export BANDEIRAS="UNIX=SIM -d TIPOLOGIN=UNIX -d VERBOSE=SIM"
-
-gerarBaseUnix
+echo >> $LOG
+echo -e "} Hexagonix utilities built successfully." >> $LOG
+echo >> $LOG
+echo "----------------------------------------------------------------------" >> $LOG
+echo >> $LOG
 
 }
 
@@ -164,12 +159,11 @@ exit
     
 }
 
-export LOG="/dev/null"
-export DESTINO="../../Andromeda"
+export LOG="../../log.log"
+export DESTINO="../../$1"
 
 case $1 in
 
-hexagonix) hexagonix; exit;;
 *) gerarBaseUnix; exit;;
 
 esac 
