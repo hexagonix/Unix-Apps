@@ -68,7 +68,7 @@
 
 ;;************************************************************************************
 ;;                                                                                  
-;;                Daemon de login para Sistema Operacional Hexagonix®                 
+;;                         Daemon de login para Hexagonix®                 
 ;;                                                                   
 ;;                  Copyright © 2015-2023 Felipe Miguel Nery Lunkes                
 ;;                          Todos os direitos reservados.                    
