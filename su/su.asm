@@ -68,7 +68,7 @@
 
 ;;************************************************************************************
 ;;                                                                                  
-;;               Gerenciador de Login do Sistema Operacional Hexagonix®                 
+;;                         Utilitário su para Hexagonix®                 
 ;;                                                                   
 ;;                  Copyright © 2015-2023 Felipe Miguel Nery Lunkes                
 ;;                          Todos os direitos reservados.                    
