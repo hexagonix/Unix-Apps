@@ -68,7 +68,7 @@
 
 ;;************************************************************************************
 ;;                                                                                  
-;;             Utilitário Unix login para Sistema Operacional Hexagonix®                 
+;;                       Utilitário Unix login para Hexagonix®                 
 ;;                                                                   
 ;;                  Copyright © 2015-2023 Felipe Miguel Nery Lunkes                
 ;;                          Todos os direitos reservados.                    
