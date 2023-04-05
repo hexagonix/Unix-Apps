@@ -82,7 +82,7 @@ include "macros.s"
 
 ;;************************************************************************************
 
-versaoMAN equ "2.3.2"
+versaoMAN equ "2.3.3"
 
 versaoCoreUtils equ "H2-RELEASE-5.3" 
 versaoUnixUtils equ "H2-RELEASE-5.3"
@@ -184,7 +184,7 @@ montarInterface:
     
     fputs man.man
 
-    mov ecx, 22
+    mov ecx, 24
 
 .loopEspaco:
 
