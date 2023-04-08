@@ -282,13 +282,13 @@ inicioShell:
 
     jc finalizarShell
 
-    ;; Comando EXEC
+    ;; Comando RC
 
-    mov edi, comandos.exec      
+    mov edi, comandos.rc      
     
     hx.syscall compararPalavrasString
 
-    jc executarExec ;; Iniciar a execução de arquivo em lote
+    jc executarShellScript ;; Iniciar a execução de arquivo em lote
 
 ;;************************************************************************************
 
@@ -372,7 +372,7 @@ inicioShell:
 
 ;; Outras funções auxiliares 
 
-executarExec:
+executarShellScript:
 
     add esi, 04h
     
@@ -630,7 +630,7 @@ finalizarShell:
 ;; Ela deve ser utilizada para identificar para qual versão do Hexagonix® o sh foi
 ;; desenvolvido.
             
-versaoSH equ "1.7.0.2"
+versaoSH equ "1.7.1.0"
 
 tamanhoLimiteBusca = 32768
 
@@ -664,7 +664,7 @@ sh:
 comandos:
 
 .sair: db "exit", 0
-.exec: db "exec", 0
+.rc: db "rc", 0
 
 ;;**************************
 
