@@ -140,16 +140,13 @@ inicioAPP:
 ;;************************************************************************************
 
 exibirMontagens:
-
-    fputs mount.volumeMontado  
     
+    fputs mount.volumeMontado
+
     hx.syscall obterDisco
     
-    push eax
     push edi
-    push esi
-    
-    pop esi
+    push eax
     
     imprimirString
     
@@ -157,17 +154,7 @@ exibirMontagens:
     
     fputs mount.dispositivoPadrao
     
-    fputs mount.rotuloVolume
-    
-    pop edi
-    
-    mov esi, edi
-    
-    hx.syscall cortarString
-    
-    imprimirString
-    
-    fputs mount.parenteses1
+    fputs mount.tipoFS
 
     pop eax
 
@@ -180,32 +167,42 @@ exibirMontagens:
     cmp ah, 06h
     je .fat16
 
-    jmp terminar
+    fputs mount.desconhecido
+
+    jmp .continuar
 
 .fat12:
 
     fputs mount.FAT12
 
-    fputs mount.parenteses2
-
-    jmp terminar
+    jmp .continuar
 
 .fat16_32:
 
     fputs mount.FAT16_32
 
-    fputs mount.parenteses2
-
-    jmp terminar
+    jmp .continuar
 
 .fat16:
 
     fputs mount.FAT16
 
-    fputs mount.parenteses2
+    jmp .continuar
 
-    jmp terminar
+.continuar:
 
+    fputs mount.rotuloVolume
+    
+    pop edi
+    
+    mov esi, edi
+    
+    hx.syscall cortarString
+    
+    imprimirString
+
+    jmp terminar 
+    
 ;;************************************************************************************
 
 erroPontoMontagem:
@@ -314,7 +311,7 @@ usoAplicativo:
 ;;
 ;;************************************************************************************
 
-versaoMOUNT equ "2.2.2"
+versaoMOUNT equ "2.3.0"
 
 mount:
 
@@ -333,9 +330,10 @@ mount:
 .parametroAjuda:    db "?", 0
 .dispositivoPadrao: db "/", 0
 .erroPontoMontagem: db 10, "Please enter a valid mount point for this volume and file system.", 10, 0
-.volumeMontado:     db 10, "Volume ", 0
-.infoVolume:        db " mounted on ", 0
+.volumeMontado:     db 10, 0
+.infoVolume:        db " on ", 0
 .rotuloVolume:      db " with the label ", 0
+.tipoFS:            db " type ", 0
 .operacaoNegada:    db "The mount was refused by the system. This may be explained due to the fact that the current user", 10
                     db "does not have administrative privileges, not being a root user (root).", 10, 10
                     db "Only the root user (root) can perform mounts. Login in this user to perform", 10
@@ -345,6 +343,7 @@ mount:
 .FAT16:             db "FAT16B", 0
 .FAT12:             db "FAT12", 0
 .FAT16_32:          db "FAT16 <32 MB", 0
+.desconhecido:      db "unknown", 0
               
 parametros:    dd 0     
 volume:        dd ?
