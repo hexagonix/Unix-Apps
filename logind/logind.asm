@@ -102,14 +102,14 @@ tamanhoLimiteBusca = 32768
 
 ;;************************************************************************************
 
-versaoLOGIND equ "1.5.0"
+versaoLOGIND equ "1.6.0"
 
 arquivo:    db "passwd", 0 ;; Nome do arquivo de configuração de login
 vd0:        db "vd0", 0    ;; Console padrão
 vd1:        db "vd1", 0    ;; Primeiro console virtual
 posicaoBX:  dw 0           ;; Marcação da posição de busca no conteúdo do arquivo
 
-align 32
+align 4
 
 logind:
 
@@ -147,8 +147,6 @@ match =Hexagonix, TIPOLOGIN
 .semVersao:        db "[unknown]", 0
 .verboseLogind:    db "logind version ", versaoLOGIND, ".", 0
 .OOBE:             db "oobe", 0
-
-align 4
 
 escolhaTema: times 7  db 0
 
