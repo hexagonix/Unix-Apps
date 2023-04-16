@@ -94,6 +94,66 @@ tamanhoLimiteBusca = 32768
     
 ;;************************************************************************************
 
+;;************************************************************************************
+;;
+;;                    Área de dados e variáveis do aplicativo
+;;
+;;************************************************************************************
+
+;;************************************************************************************
+
+versaoLOGIN equ "4.4.0"
+
+shellPadrao:       db "sh", 0     ;; Nome do arquivo que contêm o shell padrão do Hexagonix®
+vd0:               db "vd0", 0    ;; Console padrão
+vd1:               db "vd1", 0    ;; Primeiro console virtual
+arquivo:           db "passwd", 0 ;; Nome do arquivo de gerenciamento de login
+tentarShellPadrao: db 0           ;; Sinaliza a tentativa de se carregar o shell padrão
+shellHexagonix:    times 11 db 0  ;; Armazena o nome do shell à ser utilizado
+usuario:           times 15 db 0  ;; Nome de usuário obtido no arquivo
+senhaObtida:       times 64 db 0  ;; Senha obtida no arquivo
+parametros:        db 0           ;; Se o aplicativo recebeu algum parâmetro
+ponto:             db ".", 0      ;; Caractere de ponto
+posicaoBX:         dw 0           ;; Marcação da posição de busca no conteúdo do arquivo
+
+login:
+
+;; Mensagens gerais
+
+.semArquivoUnix:   db 10, 10, "The user account database was not found on the volume.", 10, 0        
+.solicitarUsuario: db 10, "Login: ", 0
+.solicitarSenha:   db 10, "Password: ", 0 
+.uso:              db 10, 10, "Usage: login [user]", 10, 10
+                   db "Log in a registered user.", 10, 10
+                   db "login version ", versaoLOGIN, 10, 10
+                   db "Copyright (C) 2017-", __stringano, " Felipe Miguel Nery Lunkes", 10
+                   db "All rights reserved.", 10, 0
+.parametroAjuda:   db "?", 0  
+.parametroAjuda2:  db "--help", 0 
+.usuarioROOT:      db "root", 0
+.dadosErrados:     db 10, "Authentication failed.", 10, 0
+.logind:           db "logind", 0
+
+;; Mensagens de verbose
+
+.verboseLogin:             db "login version ", versaoLOGIN, ".", 0
+.verboseProcurarArquivo:   db "Searching user database in /...", 0
+.verboseArquivoEncontrado: db "The user account database was found.", 0
+.verboseArquivoAusente:    db "The user account database was not found. The default shell will run (sh.app).", 0
+.verboseErro:              db "An unhandled error was encountered.", 0
+.verboseLoginAceito:       db "Login accepted.", 0
+.verboseLoginRecusado:     db "Login attempt prevented by authentication failure.", 0
+.verboseLogout:            db "Logout performed successfully.", 0
+
+;; Constantes e buffers
+
+usuarioSolicitado: times 17 db 0
+usuarioAnterior:   times 17 db 0
+codigoAnterior:             dd 0
+errado:                     db 0
+
+;;************************************************************************************    
+
 loginHexagonix: ;; Ponto de entrada
     
     mov [usuarioSolicitado], edi
@@ -807,67 +867,7 @@ checarBaseDados:
 
     ret
 
-;;************************************************************************************
-
-;;************************************************************************************
-;;
-;;                    Área de dados e variáveis do aplicativo
-;;
-;;************************************************************************************
-
-;;************************************************************************************
-
-versaoLOGIN equ "4.3.3"
-
-shellPadrao:       db "sh", 0     ;; Nome do arquivo que contêm o shell padrão do Hexagonix®
-vd0:               db "vd0", 0    ;; Console padrão
-vd1:               db "vd1", 0    ;; Primeiro console virtual
-arquivo:           db "passwd", 0 ;; Nome do arquivo de gerenciamento de login
-tentarShellPadrao: db 0           ;; Sinaliza a tentativa de se carregar o shell padrão
-shellHexagonix:    times 11 db 0  ;; Armazena o nome do shell à ser utilizado
-usuario:           times 15 db 0  ;; Nome de usuário obtido no arquivo
-senhaObtida:       times 64 db 0  ;; Senha obtida no arquivo
-parametros:        db 0           ;; Se o aplicativo recebeu algum parâmetro
-ponto:             db ".", 0      ;; Caractere de ponto
-posicaoBX:         dw 0           ;; Marcação da posição de busca no conteúdo do arquivo
-
-login:
-
-;; Mensagens gerais
-
-.semArquivoUnix:   db 10, 10, "The user account database was not found on the volume.", 10, 0        
-.solicitarUsuario: db 10, "Login: ", 0
-.solicitarSenha:   db 10, "Password: ", 0 
-.uso:              db 10, 10, "Usage: login [user]", 10, 10
-                   db "Log in a registered user.", 10, 10
-                   db "login version ", versaoLOGIN, 10, 10
-                   db "Copyright (C) 2017-", __stringano, " Felipe Miguel Nery Lunkes", 10
-                   db "All rights reserved.", 10, 0
-.parametroAjuda:   db "?", 0  
-.parametroAjuda2:  db "--help", 0 
-.usuarioROOT:      db "root", 0
-.dadosErrados:     db 10, "Authentication failed.", 10, 0
-.logind:           db "logind", 0
-
-;; Mensagens de verbose
-
-.verboseLogin:             db "login version ", versaoLOGIN, ".", 0
-.verboseProcurarArquivo:   db "Searching user database in /...", 0
-.verboseArquivoEncontrado: db "The user account database was found.", 0
-.verboseArquivoAusente:    db "The user account database was not found. The default shell will run (sh.app).", 0
-.verboseErro:              db "An unhandled error was encountered.", 0
-.verboseLoginAceito:       db "Login accepted.", 0
-.verboseLoginRecusado:     db "Login attempt prevented by authentication failure.", 0
-.verboseLogout:            db "Logout performed successfully.", 0
-
-;; Constantes e buffers
-
-usuarioSolicitado: times 17 db 0
-usuarioAnterior:   times 17 db 0
-codigoAnterior:             dd 0
-errado:                     db 0
-
-;;************************************************************************************      
+;;************************************************************************************  
 
 enderecoCarregamento:
 
