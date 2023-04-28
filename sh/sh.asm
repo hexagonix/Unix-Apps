@@ -374,7 +374,7 @@ inicioShell:
 
 executarShellScript:
 
-    add esi, 04h
+    add esi, 02h
     
     hx.syscall cortarString
 
@@ -630,7 +630,7 @@ finalizarShell:
 ;; Ela deve ser utilizada para identificar para qual versão do Hexagonix® o sh foi
 ;; desenvolvido.
             
-versaoSH equ "1.7.1.0"
+versaoSH equ "1.7.1.1"
 
 tamanhoLimiteBusca = 32768
 
@@ -664,7 +664,7 @@ sh:
 comandos:
 
 .sair: db "exit", 0
-.rc: db "rc", 0
+.rc:   db "rc", 0
 
 ;;**************************
 
