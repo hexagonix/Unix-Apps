@@ -392,31 +392,40 @@ terminar:
 
 ;;************************************************************************************
 
-versaoCOWSAY equ "2.1.3"
+versaoCOWSAY equ "2.1.4"
 
 cowsay:
 
-.uso:             db 10, "Usage: cowsay [profile] [message]", 10, 10
-                  db "Amusedly display a message to the user.", 10, 10
-                  db "You can change the animal or entity profile that displays the message.", 10
-                  db "This change must be requested BEFORE the message.", 10
-                  db 'In the case of a sentence, the character " must appear before and after the sentence.', 10, 10
-                  db "cowsay version ", versaoCOWSAY, 10, 10
-                  db "Copyright (C) 2020-", __stringano, " Felipe Miguel Nery Lunkes", 10
-                  db "All rights reserved.", 0
-.parametroAjuda:  db "?", 0
-.parametroAjuda2: db "--help", 0
-.espaco:          db " ", 0
-.barra:           db "|", 0
-.linhaSuperior:   db "_", 0
-.linhaInferior:   db "-", 0
-.vaquinha:        db "   \", 10
-                  db "    \   ^__^", 10
-                  db "     \  (oo)\_______", 10
-                  db "        (__)\       )\/\", 10
-                  db "             ||----w |", 10
-                  db "             ||     ||", 0
-.extensaoCOW:     db ".cow", 0
+.uso:
+db 10, "Usage: cowsay [profile] [message]", 10, 10
+db "Amusedly display a message to the user.", 10, 10
+db "You can change the animal or entity profile that displays the message.", 10
+db "This change must be requested BEFORE the message.", 10
+db 'In the case of a sentence, the character " must appear before and after the sentence.', 10, 10
+db "cowsay version ", versaoCOWSAY, 10, 10
+db "Copyright (C) 2020-", __stringano, " Felipe Miguel Nery Lunkes", 10
+db "All rights reserved.", 0
+.parametroAjuda:
+db "?", 0
+.parametroAjuda2:
+db "--help", 0
+.espaco:
+db " ", 0
+.barra:
+db "|", 0
+.linhaSuperior:
+db "_", 0
+.linhaInferior:
+db "-", 0
+.vaquinha:
+db "   \", 10
+db "    \   ^__^", 10
+db "     \  (oo)\_______", 10
+db "        (__)\       )\/\", 10
+db "             ||----w |", 10
+db "             ||     ||", 0
+.extensaoCOW:
+db ".cow", 0
 
 parametro:        dd ?
 perfilVaquinha:   dd ?
