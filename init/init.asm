@@ -94,7 +94,7 @@ include "log.s"
 
 versaoINIT equ "2.5.0"
 
-tamanhoLimiteBusca = 32768
+tamanhoLimiteBusca = 32768 ;; Tamanho máximo do arquivo: 32 kbytes
 
 shellPadrao:               db "sh", 0  ;; Nome do arquivo que contêm o shell padrão Unix
 vd0:                       db "vd0", 0 ;; Console principal
