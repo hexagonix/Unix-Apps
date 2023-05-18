@@ -170,21 +170,28 @@ terminar:
 
 ;;************************************************************************************
 
-versaoFREE equ "1.0.0"
+versaoFREE equ "1.0.1"
 
 free:
 
-.uso:             db 10, "Usage: free", 10, 10
-                  db "Display information about system memory usage.", 10, 10
-                  db "free version ", versaoFREE, 10, 10
-                  db "Copyright (C) 2020-", __stringano, " Felipe Miguel Nery Lunkes", 10
-                  db "All rights reserved.", 0
-.memoria:         db "Memory installed  | Used memory       | Reserved memory", 10, 0
-.kbytes:          db " bytes           ", 0
-.megabytes:       db " megabytes        ", 0
-.reservado:       db "16", 0
-.parametroAjuda:  db "?", 0
-.parametroAjuda2: db "--help", 0
+.uso:
+db 10, "Usage: free", 10, 10
+db "Display information about system memory usage.", 10, 10
+db "free version ", versaoFREE, 10, 10
+db "Copyright (C) 2020-", __stringano, " Felipe Miguel Nery Lunkes", 10
+db "All rights reserved.", 0
+.memoria:
+db "Memory installed  | Used memory       | Reserved memory", 10, 0
+.kbytes:
+db " bytes           ", 0
+.megabytes:
+db " megabytes        ", 0
+.reservado:
+db "16", 0
+.parametroAjuda:
+db "?", 0
+.parametroAjuda2:
+db "--help", 0
 .posicaoY:        db 0
 
 parametro: dd ?
