@@ -89,18 +89,22 @@ include "log.s"
 ;;
 ;;************************************************************************************
 
-versaoSYSLOGD equ "0.4" 
+versaoSYSLOGD equ "0.5" 
 
 syslogd:
 
-.uso:              db 10, "Usage: syslogd [message]", 10, 10
-                   db "Send a message from Hexagonix components and utilities to the system log.", 10, 10
-                   db "syslogd version ", versaoSYSLOGD, 10, 10
-                   db "Copyright (C) 2022-", __stringano, " Felipe Miguel Nery Lunkes", 10
-                   db "All rights reserved.", 0
-.parametroAjuda:   db "?", 0
-.parametroAjuda2:  db "--help", 0
-.verboseIniciando: db "syslogd version ", versaoSYSLOGD, ".", 0
+.uso:
+db 10, "Usage: syslogd [message]", 10, 10
+db "Send a message from Hexagonix components and utilities to the system log.", 10, 10
+db "syslogd version ", versaoSYSLOGD, 10, 10
+db "Copyright (C) 2022-", __stringano, " Felipe Miguel Nery Lunkes", 10
+db "All rights reserved.", 0
+.parametroAjuda:
+db "?", 0
+.parametroAjuda2:
+db "--help", 0
+.verboseIniciando:
+db "syslogd version ", versaoSYSLOGD, ".", 0
 
 parametro: dd ? ;; Endereço do parâmetro
 
