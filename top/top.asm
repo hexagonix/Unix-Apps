@@ -223,27 +223,40 @@ definirCorPadrao:
 
 parametro: dd ?
 
-versaoTOP equ "1.2.2"
+versaoTOP equ "1.2.3"
 
 top:
 
-.inicio:              db "Hexagonix(R) process viewer", 10, 10, 0   
-.pid:                 db "PID of this process: ", 0
-.usoMem:              db 10, 10, "Memory usage: ", 0
-.memTotal:            db 10, "Total installed memory identified: ", 0
-.bytes:               db " bytes used by running processes.", 0
-.kbytes:              db " kbytes.", 0
-.mbytes:              db " megabytes.", 0
-.uso:                 db "Usage: top", 10, 10
-                      db "Displays the processes loaded in the Hexagonix(R) execution stack.", 10, 10
-                      db "Kernel processes are filtered and not displayed in this list.", 10, 10
-                      db "top version ", versaoTOP, 10, 10
-                      db "Copyright (C) 2017-", __stringano, " Felipe Miguel Nery Lunkes", 10
-                      db "All rights reserved.", 0
-.parametroAjuda:      db "?", 0  
-.parametroAjuda2:     db "--help", 0
-.processos:           db " processes on the execution stack.", 0
-.processosCarregados: db "Processes present in the system execution stack: ", 10, 10, 0
-.numeroProcessos:     db 10, "Number of processes present in the execution stack: ", 0 
-.corFonte:            dd 0
-.corFundo:            dd 0
+.inicio:
+db "Hexagonix(R) process viewer", 10, 10, 0   
+.pid:
+db "PID of this process: ", 0
+.usoMem:
+db 10, 10, "Memory usage: ", 0
+.memTotal:
+db 10, "Total installed memory identified: ", 0
+.bytes:
+db " bytes used by running processes.", 0
+.kbytes:
+db " kbytes.", 0
+.mbytes:
+db " megabytes.", 0
+.uso:
+db "Usage: top", 10, 10
+db "Displays the processes loaded in the Hexagonix(R) execution stack.", 10, 10
+db "Kernel processes are filtered and not displayed in this list.", 10, 10
+db "top version ", versaoTOP, 10, 10
+db "Copyright (C) 2017-", __stringano, " Felipe Miguel Nery Lunkes", 10
+db "All rights reserved.", 0
+.parametroAjuda:
+db "?", 0  
+.parametroAjuda2:
+db "--help", 0
+.processos:
+db " processes on the execution stack.", 0
+.processosCarregados:
+db "Processes present in the system execution stack: ", 10, 10, 0
+.numeroProcessos:
+db 10, "Number of processes present in the execution stack: ", 0 
+.corFonte: dd 0
+.corFundo: dd 0
