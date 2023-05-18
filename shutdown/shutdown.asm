@@ -305,44 +305,66 @@ terminar:
 
 rotuloMENSAGEM equ "[shutdown]: "
 
-versaoSHUTDOWN  equ "1.3"
+versaoSHUTDOWN  equ "1.4"
 
 shutdown:
 
-.parametroDesligar:  db "-d", 0
-.parDesligarSemEco:  db "-de", 0
-.parametroReiniciar: db "-r", 0
-.parReiniciarSemEco: db "-re", 0
-.desligarAgora:      db "now", 0
-.msgDesligamento:    db 10, 10, "!> Preparing to shut down your computer... ", 0
-.msgFinalizando:     db 10, 10, "#> Terminating all processes still running...  ", 0
-.msgHexagonix:       db 10, 10, "#> Shutting down the Hexagonix(R) Operating System...    ", 0
-.msgDiscos:          db 10, 10, "#> Stoping disks and shutting down your computer... ", 0
-.msgPronto:          db "[Ok]", 0
-.msgFalha:           db "[Fail]", 0
-.parametroAjuda:     db "?", 0  
-.parametroAjuda2:    db "--help", 0
-.sistema:            db 10, "Hexagonix(R) Operating System", 10
-                     db "Copyright (C) 2015-", __stringano, " Felipe Miguel Nery Lunkes", 10
-                     db "All rights reserved.", 0
-.argumentos:         db 10, "An argument is required to control the state of this device.", 10, 0
-.uso:                db 10, "Usage: shutdown [argument]", 10, 10
-                     db "Controls the state of the computer.", 10, 10
-                     db "Possible arguments:", 10, 10
-                     db "-d  - Prepares and initiates computer shutdown.", 10
-                     db "-r  - Prepare and restart the computer.", 10
-                     db "now - Same as -d", 10, 10
-                     db "shutdown version ", versaoSHUTDOWN, 10, 10
-                     db "Copyright (C) 2022-", __stringano, " Felipe Miguel Nery Lunkes", 10
-                     db "All rights reserved.", 0
+.parametroDesligar:
+db "-d", 0
+.parDesligarSemEco:
+db "-de", 0
+.parametroReiniciar:
+db "-r", 0
+.parReiniciarSemEco:
+db "-re", 0
+.desligarAgora:
+db "now", 0
+.msgDesligamento:
+db 10, 10, "!> Preparing to shut down your computer... ", 0
+.msgFinalizando:
+db 10, 10, "#> Terminating all processes still running...  ", 0
+.msgHexagonix:
+db 10, 10, "#> Shutting down the Hexagonix(R) Operating System...    ", 0
+.msgDiscos:
+db 10, 10, "#> Stoping disks and shutting down your computer... ", 0
+.msgPronto:
+db "[Ok]", 0
+.msgFalha:
+db "[Fail]", 0
+.parametroAjuda:
+db "?", 0  
+.parametroAjuda2:
+db "--help", 0
+.sistema:
+db 10, "Hexagonix(R) Operating System", 10
+db "Copyright (C) 2015-", __stringano, " Felipe Miguel Nery Lunkes", 10
+db "All rights reserved.", 0
+.argumentos:
+db 10, "An argument is required to control the state of this device.", 10, 0
+.uso:
+db 10, "Usage: shutdown [argument]", 10, 10
+db "Controls the state of the computer.", 10, 10
+db "Possible arguments:", 10, 10
+db "-d  - Prepares and initiates computer shutdown.", 10
+db "-r  - Prepare and restart the computer.", 10
+db "now - Same as -d", 10, 10
+db "shutdown version ", versaoSHUTDOWN, 10, 10
+db "Copyright (C) 2022-", __stringano, " Felipe Miguel Nery Lunkes", 10
+db "All rights reserved.", 0
 
 shutdown.Verbose:
 
-.inicio:             db rotuloMENSAGEM, "starting power management (version ", versaoSHUTDOWN, ")...", 0
-.estado:             db rotuloMENSAGEM, "getting device state...", 0
-.parametroDesligar:  db rotuloMENSAGEM, "received shutdown request.", 0
-.parametroReiniciar: db rotuloMENSAGEM, "reboot request received.", 0
-.parametroSolicitar: db rotuloMENSAGEM, "sending signal to processes and request to Hexagon...", 0
-.falhaSolicitacao:   db rotuloMENSAGEM, "failed to process the request or request failed by Hexagon.", 0
+.inicio:
+db rotuloMENSAGEM, "starting power management (version ", versaoSHUTDOWN, ")...", 0
+.estado:
+db rotuloMENSAGEM, "getting device state...", 0
+.parametroDesligar:
+db rotuloMENSAGEM, "received shutdown request.", 0
+.parametroReiniciar:
+db rotuloMENSAGEM, "reboot request received.", 0
+.parametroSolicitar:
+db rotuloMENSAGEM, "sending signal to processes and request to Hexagon...", 0
+.falhaSolicitacao:
+db rotuloMENSAGEM, "failed to process the request or request failed by Hexagon.", 0
 
 parametro: dd ?
