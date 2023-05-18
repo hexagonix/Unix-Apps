@@ -102,12 +102,16 @@ tamanhoLimiteBusca = 32768
 
 ;;************************************************************************************
 
-versaoLOGIN equ "4.4.0"
+versaoLOGIN equ "4.4.1"
 
-shellPadrao:       db "sh", 0     ;; Nome do arquivo que contêm o shell padrão do Hexagonix®
-vd0:               db "vd0", 0    ;; Console padrão
-vd1:               db "vd1", 0    ;; Primeiro console virtual
-arquivo:           db "passwd", 0 ;; Nome do arquivo de gerenciamento de login
+shellPadrao:
+db "sh", 0     ;; Nome do arquivo que contêm o shell padrão do Hexagonix®
+vd0:
+db "vd0", 0    ;; Console padrão
+vd1:
+db "vd1", 0    ;; Primeiro console virtual
+arquivo:
+db "passwd", 0 ;; Nome do arquivo de gerenciamento de login
 tentarShellPadrao: db 0           ;; Sinaliza a tentativa de se carregar o shell padrão
 shellHexagonix:    times 11 db 0  ;; Armazena o nome do shell à ser utilizado
 usuario:           times 15 db 0  ;; Nome de usuário obtido no arquivo
@@ -120,30 +124,47 @@ login:
 
 ;; Mensagens gerais
 
-.semArquivoUnix:   db 10, 10, "The user account database was not found on the volume.", 10, 0        
-.solicitarUsuario: db 10, "Login: ", 0
-.solicitarSenha:   db 10, "Password: ", 0 
-.uso:              db 10, 10, "Usage: login [user]", 10, 10
-                   db "Log in a registered user.", 10, 10
-                   db "login version ", versaoLOGIN, 10, 10
-                   db "Copyright (C) 2017-", __stringano, " Felipe Miguel Nery Lunkes", 10
-                   db "All rights reserved.", 10, 0
-.parametroAjuda:   db "?", 0  
-.parametroAjuda2:  db "--help", 0 
-.usuarioROOT:      db "root", 0
-.dadosErrados:     db 10, "Authentication failed.", 10, 0
-.logind:           db "logind", 0
+.semArquivoUnix:
+db 10, 10, "The user account database was not found on the volume.", 10, 0        
+.solicitarUsuario:
+db 10, "Login: ", 0
+.solicitarSenha:
+db 10, "Password: ", 0 
+.uso:
+db 10, 10, "Usage: login [user]", 10, 10
+db "Log in a registered user.", 10, 10
+db "login version ", versaoLOGIN, 10, 10
+db "Copyright (C) 2017-", __stringano, " Felipe Miguel Nery Lunkes", 10
+db "All rights reserved.", 10, 0
+.parametroAjuda:
+db "?", 0  
+.parametroAjuda2:
+db "--help", 0 
+.usuarioROOT:
+db "root", 0
+.dadosErrados:
+db 10, "Authentication failed.", 10, 0
+.logind:
+db "logind", 0
 
 ;; Mensagens de verbose
 
-.verboseLogin:             db "login version ", versaoLOGIN, ".", 0
-.verboseProcurarArquivo:   db "Searching user database in /...", 0
-.verboseArquivoEncontrado: db "The user account database was found.", 0
-.verboseArquivoAusente:    db "The user account database was not found. The default shell will run (sh.app).", 0
-.verboseErro:              db "An unhandled error was encountered.", 0
-.verboseLoginAceito:       db "Login accepted.", 0
-.verboseLoginRecusado:     db "Login attempt prevented by authentication failure.", 0
-.verboseLogout:            db "Logout performed successfully.", 0
+.verboseLogin:
+db "login version ", versaoLOGIN, ".", 0
+.verboseProcurarArquivo:
+db "Searching user database in /...", 0
+.verboseArquivoEncontrado:
+db "The user account database was found.", 0
+.verboseArquivoAusente:
+db "The user account database was not found. The default shell will run (sh.app).", 0
+.verboseErro:
+db "An unhandled error was encountered.", 0
+.verboseLoginAceito:
+db "Login accepted.", 0
+.verboseLoginRecusado:
+db "Login attempt prevented by authentication failure.", 0
+.verboseLogout:
+db "Logout performed successfully.", 0
 
 ;; Constantes e buffers
 
