@@ -164,21 +164,27 @@ terminar:
 ;;
 ;;************************************************************************************
 
-versaoARCH equ "1.2.1"
+versaoARCH equ "1.2.2"
 
 arch:
 
-.uso:             db 10, "Usage: arch", 10
-                  db "This utility does not accept arguments.", 10, 10
-                  db "Displays the architecture of this system and device.", 10, 10
-                  db "arch version ", versaoARCH, 10, 10
-                  db "Copyright (C) 2021-", __stringano, " Felipe Miguel Nery Lunkes", 10
-                  db "All rights reserved.", 0
-.naoSuportado:    db 10, "Unknown architecture.", 10, 0
-.i386:            db "i386", 0
-.x86_64:          db "x86_64", 0
-.parametroAjuda:  db "?", 0
-.parametroAjuda2: db "--help", 0
+.uso:
+db 10, "Usage: arch", 10
+db "This utility does not accept arguments.", 10, 10
+db "Displays the architecture of this system and device.", 10, 10
+db "arch version ", versaoARCH, 10, 10
+db "Copyright (C) 2021-", __stringano, " Felipe Miguel Nery Lunkes", 10
+db "All rights reserved.", 0
+.naoSuportado:
+db 10, "Unknown architecture.", 10, 0
+.i386:
+db "i386", 0
+.x86_64:
+db "x86_64", 0
+.parametroAjuda:
+db "?", 0
+.parametroAjuda2:
+db "--help", 0
      
 parametro: dd ?
 regES:     dw 0
