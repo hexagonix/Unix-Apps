@@ -92,29 +92,43 @@ include "log.s"
 
 ;;************************************************************************************
 
-versaoINIT equ "2.5.0"
+versaoINIT equ "2.5.1"
 
 tamanhoLimiteBusca = 32768 ;; Tamanho máximo do arquivo: 32 kbytes
 
-shellPadrao:               db "sh", 0  ;; Nome do arquivo que contêm o shell padrão Unix
-vd0:                       db "vd0", 0 ;; Console principal
-vd1:                       db "vd1", 0 ;; Primeiro console virtual
-arquivo:                   db "rc", 0  ;; Nome do arquivo de configuração do init
-tentarShellPadrao:         db 0        ;; Sinaliza a tentativa de se carregar o shell padrão
+shellPadrao:
+db "sh", 0  ;; Nome do arquivo que contêm o shell padrão Unix
+vd0:
+db "vd0", 0 ;; Console principal
+vd1:
+db "vd1", 0 ;; Primeiro console virtual
+arquivo:
+db "rc", 0  ;; Nome do arquivo de configuração do init
+tentarShellPadrao:
+db 0        ;; Sinaliza a tentativa de se carregar o shell padrão
 servicoHexagonix: times 12 db 0        ;; Armazena o nome do shell à ser utilizado pelo sistema
 posicaoBX:                 dw 0        ;; Marcação da posição de busca no conteúdo do arquivo
 
 init:
 
-.inicioInit:             db "init version ", versaoINIT, ".", 0
-.iniciandoSistema:       db "The system is coming up. Please wait.", 0
-.sistemaPronto:          db "The system is ready.", 0
-.procurarArquivo:        db "Looking for /rc...", 0
-.arquivoEncontrado:      db "Configuration file (/rc) found.", 0
-.arquivoAusente:         db "Configuration file (/rc) not found. The default shell will be executed (sh).", 0
-.erroGeral:              db "An unhandled error was encountered.", 0
-.registrandoComponentes: db "Starting service...", 0
-.configurarConsole:      db "Setting up consoles (vd0, vd1)...", 0
+.inicioInit:
+db "init version ", versaoINIT, ".", 0
+.iniciandoSistema:
+db "The system is coming up. Please wait.", 0
+.sistemaPronto:
+db "The system is ready.", 0
+.procurarArquivo:
+db "Looking for /rc...", 0
+.arquivoEncontrado:
+db "Configuration file (/rc) found.", 0
+.arquivoAusente:
+db "Configuration file (/rc) not found. The default shell will be executed (sh).", 0
+.erroGeral:
+db "An unhandled error was encountered.", 0
+.registrandoComponentes:
+db "Starting service...", 0
+.configurarConsole:
+db "Setting up consoles (vd0, vd1)...", 0
 
 ;;************************************************************************************          
 
