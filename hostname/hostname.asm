@@ -160,19 +160,24 @@ terminar:
 ;;
 ;;************************************************************************************
 
-versaoHOSTNAME equ "1.1.2"
+versaoHOSTNAME equ "1.1.3"
 
 hostname:
 
-.naoEncontrado:   db 10, "Host file not found. Check that it has been set.", 10, 0
-.uso:             db 10, "Usage: hostname", 10, 10
-                  db "Displays the hostname defined for this device.", 10, 10
-                  db "hostname version ", versaoHOSTNAME, 10, 10
-                  db "Copyright (C) 2021-", __stringano, " Felipe Miguel Nery Lunkes", 10
-                  db "All rights reserved.", 0
-.parametroAjuda:  db "?", 0
-.parametroAjuda2: db "--help", 0
-.arquivoUnix:     db "host.unx", 0
+.naoEncontrado:
+db 10, "Host file not found. Check that it has been set.", 10, 0
+.uso:
+db 10, "Usage: hostname", 10, 10
+db "Displays the hostname defined for this device.", 10, 10
+db "hostname version ", versaoHOSTNAME, 10, 10
+db "Copyright (C) 2021-", __stringano, " Felipe Miguel Nery Lunkes", 10
+db "All rights reserved.", 0
+.parametroAjuda:
+db "?", 0
+.parametroAjuda2:
+db "--help", 0
+.arquivoUnix:
+db "host.unx", 0
      
 parametro: dd ?
 regES:     dw 0
