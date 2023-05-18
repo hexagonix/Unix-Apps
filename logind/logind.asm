@@ -102,7 +102,7 @@ tamanhoLimiteBusca = 32768
 
 ;;************************************************************************************
 
-versaoLOGIND equ "1.6.0"
+versaoLOGIND equ "1.7.0"
 
 arquivo:    db "passwd", 0 ;; Nome do arquivo de configuração de login
 vd0:        db "vd0", 0    ;; Console padrão
@@ -116,17 +116,20 @@ logind:
 match =Moderno, TIPOLOGIN
 {
 
-.sobreSistema:     db 10, 10   
-                   db "        %#@$%    &@$%$ tm          Hexagonix(R) Operating System", 10
-                   db "        #$@$@    #@#@$", 10
-                   db "        @#@$%    %#$#%", 10
-                   db "        @#$@$    #@#$@", 10
-                   db "        #@#$$#$#%!@#@#     Copyright (C) 2015-", __stringano, " Felipe Miguel Nery Lunkes",10
-                   db "        @#@%!@&$#&$#@#                  All rights reserved.",10
-                   db "        !@$%#    @&$%#", 10
-                   db "        @$#!%    #&*@&", 10
-                   db "        $#$#%    &%$#@", 10
-                   db "        @#!$$    !#@#@", 10, 0
+.sobreSistema: db 10,10
+               db "  88                                                                                88", 10
+               db "  88                                                                                ''", 10
+               db "  88", 10
+               db "  88,dPPPba,   ,adPPPba, 8b,     ,d8 ,adPPPPba,  ,adPPPb,d8  ,adPPPba,  8b,dPPPba,  88 8b,     ,d8", 10
+               db "  88P'    '88 a8P     88  `P8, ,8P'  ''     `P8 a8'    `P88 a8'     '8a 88P'   `'88 88  `P8, ,8P'", 10
+               db "  88       88 8PP'''''''    )888(    ,adPPPPP88 8b       88 8b       d8 88       88 88    )888(", 10
+               db "  88       88 '8b,   ,aa  ,d8' '8b,  88,    ,88 '8a,   ,d88 '8a,   ,a8' 88       88 88  ,d8' '8b,", 10
+               db "  88       88  `'Pbbd8'' 8P'     `P8 `'8bbdP'P8  `'PbbdP'P8  `'PbbdP''  88       88 88 8P'     `P8", 10
+               db "                                                 aa,    ,88", 10
+               db "                                                  'P8bbdP'", 10, 10
+               db "                              Hexagonix(R) Operating System", 10, 10
+               db "                  Copyright (C) 2020-", __stringano, " Felipe Miguel Nery Lunkes", 10
+               db "                                    All rights reserved.", 10, 0
 
 }
 
