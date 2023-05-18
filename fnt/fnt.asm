@@ -86,40 +86,54 @@ include "macros.s"
 ;;
 ;;************************************************************************************
 
-versaoFNT equ "0.4"
+versaoFNT equ "0.5"
 
 fnt:
 
-.uso:             db 10, "Usage: fnt [graphic font file]", 10, 10   
-                  db "Asks to change the system graphics font.", 10, 10
-                  db "fnt version ", versaoFNT, 10, 10
-                  db "Copyright (C) 2022-", __stringano, " Felipe Miguel Nery Lunkes", 10
-                  db "All rights reserved.", 0
-.nomeArquivo:     db 10, "Font filename: ", 0    
-.nomeFonte:       db "Filename: ", 0
-.sucesso:         db 10, 10, "Font changed successfully.", 10, 10
-                  db "Press any key to continue...", 10, 10, 0
-.falha:           db 10, 10, "The file cannot be found.", 10, 10
-                  db 10, 10, "Press any key to continue...", 10, 10, 0
-.falhaFormato:    db 10, 10, "The provided file does not contain a font in Hexagon(R) format.", 10, 10
-                  db "Press any key to continue...", 10, 10, 0
-.falhaFormatoT:   db 10, 10, "The file provided does not contain a font in Hexagon(R) format.", 10, 0
-.sucessoTexto:    db 10, 10, "Font changed successfully.", 10, 0
-.falhaTexto:      db 10, 10, "The file cannot be located.", 10, 0
-.introducaoTeste: db 10, "Font and characters preview: ", 0
-.testeFonte:      db 10, 10, "Hexagonix(R) Operating System", 10, 10
-                  db "1234567890-=", 10
-                  db "!@#$%^&*()_+", 10
-                  db "QWERTYUIOP{}", 10
-                  db "qwertyuiop[]", 10
-                  db 'ASDFGHJKL:"|', 10
-                  db "asdfghjkl;'\", 10
-                  db "ZXCVBNM<>?", 10
-                  db "zxcvbnm,./", 10, 10
-                  db "Hexagonix(R) Operating System", 10, 0
-.tamanhoSuperior: db 10, 10, "This font file exceeds the maximum size of 2 Kb.", 10, 0
-.parametroAjuda:  db "?", 0
-.parametroAjuda2: db "--help", 0
+.uso:
+db 10, "Usage: fnt [graphic font file]", 10, 10   
+db "Asks to change the system graphics font.", 10, 10
+db "fnt version ", versaoFNT, 10, 10
+db "Copyright (C) 2022-", __stringano, " Felipe Miguel Nery Lunkes", 10
+db "All rights reserved.", 0
+.nomeArquivo:
+db 10, "Font filename: ", 0    
+.nomeFonte:
+db "Filename: ", 0
+.sucesso:
+db 10, 10, "Font changed successfully.", 10, 10
+db "Press any key to continue...", 10, 10, 0
+.falha:
+db 10, 10, "The file cannot be found.", 10, 10
+db 10, 10, "Press any key to continue...", 10, 10, 0
+.falhaFormato:
+db 10, 10, "The provided file does not contain a font in Hexagon(R) format.", 10, 10
+db "Press any key to continue...", 10, 10, 0
+.falhaFormatoT:
+db 10, 10, "The file provided does not contain a font in Hexagon(R) format.", 10, 0
+.sucessoTexto:
+db 10, 10, "Font changed successfully.", 10, 0
+.falhaTexto:
+db 10, 10, "The file cannot be located.", 10, 0
+.introducaoTeste:
+db 10, "Font and characters preview: ", 0
+.testeFonte:
+db 10, 10, "Hexagonix(R) Operating System", 10, 10
+db "1234567890-=", 10
+db "!@#$%^&*()_+", 10
+db "QWERTYUIOP{}", 10
+db "qwertyuiop[]", 10
+db 'ASDFGHJKL:"|', 10
+db "asdfghjkl;'\", 10
+db "ZXCVBNM<>?", 10
+db "zxcvbnm,./", 10, 10
+db "Hexagonix(R) Operating System", 10, 0
+.tamanhoSuperior:
+db 10, 10, "This font file exceeds the maximum size of 2 Kb.", 10, 0
+.parametroAjuda: 
+db "?", 0
+.parametroAjuda2:
+db "--help", 0
 
 parametro:        dd 0
 arquivoFonte:     dd ?
