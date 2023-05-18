@@ -195,29 +195,39 @@ terminar:
 
 ;;************************************************************************************
 
-versaoPS equ "1.1.2"
+versaoPS equ "1.1.3"
 
 parametro: dd ?
 
 ps:
     
-.pid:              db "PID of this process: ", 0
-.usoMem:           db "Memory usage: ", 0
-.kbytes:           db " bytes used by running processes.", 0
-.uso:              db "Usage: ps [parameter]", 10, 10
-                   db "Displays process information and usage of memory and system resources.", 10, 10
-                   db "Possible parameters (in case of missing parameters, the '-v' option will be selected):", 10, 10
-                   db "-t - Displays all possible process and system resource information.", 10
-                   db "-v - Display only memory usage of running processes.", 10, 10
-                   db "-o - Displays the number of processes in the execution queue.", 10, 10
-                   db "ps version ", versaoPS, 10, 10
-                   db "Copyright (C) 2017-", __stringano, " Felipe Miguel Nery Lunkes", 10
-                   db "All rights reserved.", 0
-.parametroAjuda:   db "?", 0  
-.parametroAjuda2:  db "--help", 0
-.parametroPID:     db "-t", 0
-.parametroOutros:  db "-o", 0
-.parametroMemoria: db "-v", 0     
-.numeroProcessos:  db "There are currently ", 0
-.processos:        db " processes in the Hexagonix(R) runtime stack.", 0
-    
+.pid:
+db "PID of this process: ", 0
+.usoMem:
+db "Memory usage: ", 0
+.kbytes:
+db " bytes used by running processes.", 0
+.uso:
+db "Usage: ps [parameter]", 10, 10
+db "Displays process information and usage of memory and system resources.", 10, 10
+db "Possible parameters (in case of missing parameters, the '-v' option will be selected):", 10, 10
+db "-t - Displays all possible process and system resource information.", 10
+db "-v - Display only memory usage of running processes.", 10, 10
+db "-o - Displays the number of processes in the execution queue.", 10, 10
+db "ps version ", versaoPS, 10, 10
+db "Copyright (C) 2017-", __stringano, " Felipe Miguel Nery Lunkes", 10
+db "All rights reserved.", 0
+.parametroAjuda:
+db "?", 0  
+.parametroAjuda2:
+db "--help", 0
+.parametroPID:
+db "-t", 0
+.parametroOutros:
+db "-o", 0
+.parametroMemoria:
+db "-v", 0     
+.numeroProcessos:
+db "There are currently ", 0
+.processos:
+db " processes in the Hexagonix(R) runtime stack.", 0
