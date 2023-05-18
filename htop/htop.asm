@@ -356,27 +356,38 @@ encontrarCaractereLista:
 
 parametro: dd ?
 
-versaoHTOP equ "1.4.1"
+versaoHTOP equ "1.4.2"
 
 htop:
 
-.inicio:              db "Hexagonix(R) process viewer", 10, 10, 0   
-.pid:                 db "PID of this process: ", 0
-.usoMem:              db "Memory usage: ", 0
-.memTotal:            db 10, "Total installed memory identified: ", 0
-.bytes:               db " bytes used by running processes.", 0
-.kbytes:              db " kbytes.", 0
-.mbytes:              db " megabytes.", 0
-.cabecalho:           db 10, "Process        | PID", 10
-                      db "---------------|----", 10, 10, 0
-.uso:                 db "Usage: htop", 10, 10
-                      db "Displays processes loaded on the system.", 10, 10
-                      db "Kernel processes are filtered and not displayed in this list.", 10, 10
-                      db "htop version ", versaoHTOP, 10, 10
-                      db "Copyright (C) 2020-", __stringano, " Felipe Miguel Nery Lunkes", 10
-                      db "All rights reserved.", 0
-.parametroAjuda:      db "?", 0  
-.parametroAjuda2:     db "--help", 0
+.inicio:
+db "Hexagonix(R) process viewer", 10, 10, 0   
+.pid:
+db "PID of this process: ", 0
+.usoMem:
+db "Memory usage: ", 0
+.memTotal:
+db 10, "Total installed memory identified: ", 0
+.bytes:
+db " bytes used by running processes.", 0
+.kbytes:
+db " kbytes.", 0
+.mbytes:
+db " megabytes.", 0
+.cabecalho:
+db 10, "Process        | PID", 10
+db "---------------|----", 10, 10, 0
+.uso:
+db "Usage: htop", 10, 10
+db "Displays processes loaded on the system.", 10, 10
+db "Kernel processes are filtered and not displayed in this list.", 10, 10
+db "htop version ", versaoHTOP, 10, 10
+db "Copyright (C) 2020-", __stringano, " Felipe Miguel Nery Lunkes", 10
+db "All rights reserved.", 0
+.parametroAjuda:
+db "?", 0  
+.parametroAjuda2:
+db "--help", 0
 .corFonte:            dd 0
 .corFundo:            dd 0
 
