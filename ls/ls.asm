@@ -653,31 +653,46 @@ verificarArquivo:
 ;;
 ;;************************************************************************************
 
-versaoLS equ "3.2.2"
+versaoLS equ "3.2.3"
 
 ls:
 
-.extensaoAPP:      db ".APP", 0
-.extensaoSIS:      db ".SIS", 0
-.extensaoASM:      db ".ASM", 0
-.extensaoBIN:      db ".BIN", 0
-.extensaoUNX:      db ".UNX", 0
-.extensaoFNT:      db ".FNT", 0
-.extensaoOCL:      db ".OCL", 0
-.extensaoCOW:      db ".COW", 0
-.extensaoMAN:      db ".MAN", 0
-.extensaoMOD:      db ".MOD", 0
-.erroLista:        db 10, "Error listing the files present on the volume.", 0
-.uso:              db 10, "Usage: ls", 10, 10
-                   db "Lists and displays the files present on the current volume, sorting them by type.", 10, 10
-                   db "Available parameters:", 10, 10
-                   db "-a - List all files available on the volume.", 10, 10
-                   db "ls version ", versaoLS, 10, 10
-                   db "Copyright (C) 2017-", __stringano, " Felipe Miguel Nery Lunkes", 10
-                   db "All rights reserved.", 0
-.parametroAjuda:   db "?", 0    
-.parametroAjuda2:  db "--help", 0
-.parametroTudo:    db "-a" ,0         
+.extensaoAPP:
+db ".APP", 0
+.extensaoSIS:
+db ".SIS", 0
+.extensaoASM:
+db ".ASM", 0
+.extensaoBIN:
+db ".BIN", 0
+.extensaoUNX:
+db ".UNX", 0
+.extensaoFNT:
+db ".FNT", 0
+.extensaoOCL:
+db ".OCL", 0
+.extensaoCOW:
+db ".COW", 0
+.extensaoMAN:
+db ".MAN", 0
+.extensaoMOD:
+db ".MOD", 0
+.erroLista:
+db 10, "Error listing the files present on the volume.", 0
+.uso:
+db 10, "Usage: ls", 10, 10
+db "Lists and displays the files present on the current volume, sorting them by type.", 10, 10
+db "Available parameters:", 10, 10
+db "-a - List all files available on the volume.", 10, 10
+db "ls version ", versaoLS, 10, 10
+db "Copyright (C) 2017-", __stringano, " Felipe Miguel Nery Lunkes", 10
+db "All rights reserved.", 0
+.parametroAjuda:
+db "?", 0    
+.parametroAjuda2:
+db "--help", 0
+.parametroTudo:
+db "-a" ,0         
 .exibirTudo:       db 0
 .corFonte:         dd 0
 .corFundo:         dd 0
