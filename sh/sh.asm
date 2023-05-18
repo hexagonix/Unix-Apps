@@ -630,30 +630,43 @@ finalizarShell:
 ;; Ela deve ser utilizada para identificar para qual versão do Hexagonix® o sh foi
 ;; desenvolvido.
             
-versaoSH equ "1.7.1.1"
+versaoSH equ "1.7.1.2"
 
 tamanhoLimiteBusca = 32768
 
 sh:
 
-.prompt:               db "@Hexagonix", 0
-.comandoNaoEncontrado: db ": command not found.", 0
-.arquivorc:            db "shrc", 0
-.imagemInvalida:       db ": unable to load image. Unsupported executable format.", 0
-.limiteProcessos:      db 10, 10, "There is no memory available to run the requested application.", 10
-                       db "First try to terminate applications or their instances, and try again.", 0                  
-.ponto:                db ".", 0
-.usuarioNormal:        db "$ ", 0
-.usuarioRoot:          db "# ", 0
-.uso:                  db 10, 10, "Usage: sh", 10, 10
-                       db "Start a Unix shell for the current user.", 10, 10
-                       db "sh version ", versaoSH, 10, 10
-                       db "Copyright (C) 2017-", __stringano, " Felipe Miguel Nery Lunkes", 10
-                       db "All rights reserved.", 10, 0
-.parametroAjuda:       db "?", 0   
-.parametroAjuda2:      db "--help", 0
-.semArquivoShell:      db 10, "Shell script not found.", 0
-.argumentoNecessario:  db 10, "An argument is necessary.", 0
+.prompt:
+db "@Hexagonix", 0
+.comandoNaoEncontrado:
+db ": command not found.", 0
+.arquivorc:
+db "shrc", 0
+.imagemInvalida:
+db ": unable to load image. Unsupported executable format.", 0
+.limiteProcessos:
+db 10, 10, "There is no memory available to run the requested application.", 10
+db "First try to terminate applications or their instances, and try again.", 0                  
+.ponto:
+db ".", 0
+.usuarioNormal:
+db "$ ", 0
+.usuarioRoot:
+db "# ", 0
+.uso:
+db 10, 10, "Usage: sh", 10, 10
+db "Start a Unix shell for the current user.", 10, 10
+db "sh version ", versaoSH, 10, 10
+db "Copyright (C) 2017-", __stringano, " Felipe Miguel Nery Lunkes", 10
+db "All rights reserved.", 10, 0
+.parametroAjuda:
+db "?", 0   
+.parametroAjuda2:
+db "--help", 0
+.semArquivoShell:
+db 10, "Shell script not found.", 0
+.argumentoNecessario:
+db 10, "An argument is necessary.", 0
 .imagemDisco: times 12 db 0        ;; Armazena o nome do shell à ser utilizado pelo sistema
 .posicaoBX:            dw 0        ;; Marcação da posição de busca no conteúdo do arquivo
 .nomeUsuario: times 64 db 0
