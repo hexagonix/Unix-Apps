@@ -342,29 +342,44 @@ terminar:
 
 ;;************************************************************************************
 
-versaoDATE equ "1.2.3"
+versaoDATE equ "1.2.4"
 
 date:
         
-.uso:             db 10, "Usage: date", 10, 10
-                  db "Display system date and time.", 10, 10
-                  db "date version ", versaoDATE, 10, 10
-                  db "Copyright (C) 2020-", __stringano, " Felipe Miguel Nery Lunkes", 10
-                  db "All rights reserved.", 0
-.domingo:         db " (domingo)", 0
-.segunda:         db " (segunda-feira)", 0
-.terca:           db " (terca-feira)", 0
-.quarta:          db " (quarta-feira)", 0
-.quinta:          db " (quinta-feira)", 0
-.sexta:           db " (sexta-feira)", 0
-.sabado:          db " (sabado)", 0
-.parametroAjuda:  db "?", 0
-.parametroAjuda2: db "--help", 0
-.sepData:         db "/", 0
-.sepHora:         db ":", 0
-.espacamento:     db " of ", 0
-.espaco:          db " ", 0
-.fuso:            db "GMT", 0
+.uso:
+db 10, "Usage: date", 10, 10
+db "Display system date and time.", 10, 10
+db "date version ", versaoDATE, 10, 10
+db "Copyright (C) 2020-", __stringano, " Felipe Miguel Nery Lunkes", 10
+db "All rights reserved.", 0
+.domingo:
+db " (domingo)", 0
+.segunda:
+db " (segunda-feira)", 0
+.terca:
+db " (terca-feira)", 0
+.quarta:
+db " (quarta-feira)", 0
+.quinta:
+db " (quinta-feira)", 0
+.sexta:
+db " (sexta-feira)", 0
+.sabado:
+db " (sabado)", 0
+.parametroAjuda:
+db "?", 0
+.parametroAjuda2:
+db "--help", 0
+.sepData:
+db "/", 0
+.sepHora:
+db ":", 0
+.espacamento:
+db " of ", 0
+.espaco:
+db " ", 0
+.fuso:
+db "GMT", 0
 .dia:             dd 0
 .mes:             dd 0
 .seculo:          dd 0
