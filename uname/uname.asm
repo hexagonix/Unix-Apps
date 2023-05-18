@@ -85,7 +85,7 @@ include "verUtils.s"
 
 align 4
 
-versaoUNAME equ "2.6.1"
+versaoUNAME equ "2.6.2"
 
 uname:
 
@@ -101,51 +101,82 @@ uname:
 ;; -i: plataforma de hardware
 ;; -o: sistema operacional
 
-.parametrosSistema:         db " Unix" , 0 
-.sistemaOperacional:        db "Hexagonix", 0
-.usuario:                   db " ", 0
-.espaco:                    db " ", 0
-.maquina:                   db "Hexagonix-PC", 0
-.colcheteEsquerdo:          db "[", 0
-.colcheteDireito:           db "]", 0
-.pontoVirgula:              db "; ", 0
-.nucleo:                    db " Kernel ", 0
-.buildHexagon:              db "(build ", 0
-.fecharParenteses:          db ")", 0
-.versao:                    db " version ", 0 
-.arquiteturai386:           db " i386", 0
-.arquiteturaamd64:          db " amd64", 0
-.hexagonix:                 db "Hexagonix", 0
-.parametroAjuda:            db "?", 0  
-.parametroAjuda2:           db "--help", 0
-.parametroExibirTudo:       db "-a", 0
-.parametroExibirNomeKernel: db "-s", 0
-.parametroExibirHostname:   db "-n", 0
-.parametroExibirLancamento: db "-r", 0
-.parametroExibirTipo:       db "-m", 0
-.parametroExibirArch:       db "-p", 0
-.parametroExibirPlataforma: db "-i", 0
-.parametroExibirVersao:     db "-v", 0   
-.parametroExibirSO:         db "-o", 0   
-.arquivoUnix:               db "host.unx", 0
-.naoSuportado:              db "Unknown architecture.", 0      
-.plataformaPC:              db "PC", 0  
-.uso:                       db 10, "Usage: uname [parameter]", 10, 10
-                            db "Displays system information.", 10, 10
-                            db "Possible parameters (in case of missing parameters, the '-s' option will be selected):", 10, 10
-                            db " -a: Displays all possible system, kernel and machine information.", 10
-                            db " -s: Running kernel name.", 10
-                            db " -n: Display the hostname of the machine running the system.", 10
-                            db " -r: Release of the running kernel.", 10
-                            db " -v: Running kernel version.", 10
-                            db " -m: Machine type.", 10
-                            db " -p: System processor architecture.", 10
-                            db " -i: System hardware platform.", 10
-                            db " -o: Name of running operating system.", 10, 10
-                            db "uname version ", versaoUNAME, 10, 10
-                            db "Copyright (C) 2017-", __stringano, " Felipe Miguel Nery Lunkes", 10
-                            db "All rights reserved.", 0                     
-ponto:                      db ".", 0
+.parametrosSistema:
+db " Unix" , 0 
+.sistemaOperacional:
+db "Hexagonix", 0
+.usuario:
+db " ", 0
+.espaco:
+db " ", 0
+.maquina:
+db "Hexagonix-PC", 0
+.colcheteEsquerdo:
+db "[", 0
+.colcheteDireito:
+db "]", 0
+.pontoVirgula:
+db "; ", 0
+.nucleo:
+db " Kernel ", 0
+.buildHexagon:
+db "(build ", 0
+.fecharParenteses:
+db ")", 0
+.versao:
+db " version ", 0 
+.arquiteturai386:
+db " i386", 0
+.arquiteturaamd64:
+db " amd64", 0
+.hexagonix:
+db "Hexagonix", 0
+.parametroAjuda:
+db "?", 0  
+.parametroAjuda2:
+db "--help", 0
+.parametroExibirTudo:
+db "-a", 0
+.parametroExibirNomeKernel:
+db "-s", 0
+.parametroExibirHostname:
+db "-n", 0
+.parametroExibirLancamento:
+db "-r", 0
+.parametroExibirTipo:
+db "-m", 0
+.parametroExibirArch:
+db "-p", 0
+.parametroExibirPlataforma:
+db "-i", 0
+.parametroExibirVersao:
+db "-v", 0   
+.parametroExibirSO:
+db "-o", 0   
+.arquivoUnix:
+db "host.unx", 0
+.naoSuportado:
+db "Unknown architecture.", 0      
+.plataformaPC:
+db "PC", 0  
+.uso:
+db 10, "Usage: uname [parameter]", 10, 10
+db "Displays system information.", 10, 10
+db "Possible parameters (in case of missing parameters, the '-s' option will be selected):", 10, 10
+db " -a: Displays all possible system, kernel and machine information.", 10
+db " -s: Running kernel name.", 10
+db " -n: Display the hostname of the machine running the system.", 10
+db " -r: Release of the running kernel.", 10
+db " -v: Running kernel version.", 10
+db " -m: Machine type.", 10
+db " -p: System processor architecture.", 10
+db " -i: System hardware platform.", 10
+db " -o: Name of running operating system.", 10, 10
+db "uname version ", versaoUNAME, 10, 10
+db "Copyright (C) 2017-", __stringano, " Felipe Miguel Nery Lunkes", 10
+db "All rights reserved.", 0                     
+ponto:
+db ".", 0
 
 parametro: dd ?
 
