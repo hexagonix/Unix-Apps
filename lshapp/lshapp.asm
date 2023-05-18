@@ -90,46 +90,72 @@ include "macros.s"
 ;;
 ;;************************************************************************************
 
-versaoLSHAPP equ "1.11.0"
+versaoLSHAPP equ "1.11.1"
 
 lshapp:
 
-.uso:                 db 10, "Usage: lshapp [file]", 10, 10
-                      db "Retrieve and display information from a HAPP image.", 10, 10
-                      db "lshapp version ", versaoLSHAPP, 10, 10
-                      db "Copyright (C) 2020-", __stringano, " Felipe Miguel Nery Lunkes", 10
-                      db "All rights reserved.", 0
-.arquivoInvalido:     db 10, 10, "The filename is invalid. Please enter a valid filename.", 10, 0
-.infoArquivo:         db 10, "Filename: ", 0
-.tamanhoArquivo:      db 10, "Size of this file: ", 0
-.bytes:               db " bytes.", 10, 0
-.imagemInvalida:      db 10, "<!> This is not a valid HAPP image. Try another file.", 10, 0
-.semArquivo:          db 10, 10, "<!> The requested file is not available on this volume.", 10, 10
-                      db "<!> Check the file name and try again.", 10, 0  
-.tipoArquitetura:     db 10, 10, "> Image target architecture: ", 0
-.verHexagon:          db 10, "> Minimum version of Hexagon(R) required to run: ", 0
-.camposVersaoHexagon: db " -> [HAPP:version and HAPP:subversion].", 0
-.cabecalho:           db 10, "<+> This file contains a valid HAPP image.", 0
-.i386:                db "i386", 0
-.amd64:               db "amd64", 0
-.campoArquitetura:    db " -> [HAPP:arch].", 0
-.arquiteturaInvalida: db "unknown", 0
-.entradaCodigo:       db 10, "> Image entry point: ?:", 0
-.campoEntrada:        db " -> [HAPP:entryPoint].", 0
-.tipoImagem:          db 10, "> HAPP image format (type): ", 0
-.HAPPExec:            db "(Exec)", 0
-.HAPPLibS:            db "(LibS)", 0
-.HAPPLibD:            db "(LibD)", 0
-.HAPPDesconhecido:    db "(?)", 0
-.campoImagem:         db " -> [HAPP:imageFormat].", 0
-.parametroAjuda:      db "?", 0
-.parametroAjuda2:     db "--help", 0
-.ponto:               db ".", 0
-.pontoEntrada:        dd 0
-.arquitetura:         db 0
-.versaoMinima:        db 0
-.subverMinima:        db 0
-.especieImagem:       db 0
+.uso:
+db 10, "Usage: lshapp [file]", 10, 10
+db "Retrieve and display information from a HAPP image.", 10, 10
+db "lshapp version ", versaoLSHAPP, 10, 10
+db "Copyright (C) 2020-", __stringano, " Felipe Miguel Nery Lunkes", 10
+db "All rights reserved.", 0
+.arquivoInvalido:
+db 10, 10, "The filename is invalid. Please enter a valid filename.", 10, 0
+.infoArquivo:
+db 10, "Filename: ", 0
+.tamanhoArquivo:
+db 10, "Size of this file: ", 0
+.bytes:
+db " bytes.", 10, 0
+.imagemInvalida:
+db 10, "<!> This is not a valid HAPP image. Try another file.", 10, 0
+.semArquivo:
+db 10, 10, "<!> The requested file is not available on this volume.", 10, 10
+db "<!> Check the file name and try again.", 10, 0  
+.tipoArquitetura:
+db 10, 10, "> Image target architecture: ", 0
+.verHexagon:
+db 10, "> Minimum version of Hexagon(R) required to run: ", 0
+.camposVersaoHexagon:
+db " -> [HAPP:version and HAPP:subversion].", 0
+.cabecalho:
+db 10, "<+> This file contains a valid HAPP image.", 0
+.i386:
+db "i386", 0
+.amd64:
+db "amd64", 0
+.campoArquitetura:
+db " -> [HAPP:arch].", 0
+.arquiteturaInvalida:
+db "unknown", 0
+.entradaCodigo:
+db 10, "> Image entry point: ?:", 0
+.campoEntrada:
+db " -> [HAPP:entryPoint].", 0
+.tipoImagem:
+db 10, "> HAPP image format (type): ", 0
+.HAPPExec:
+db "(Exec)", 0
+.HAPPLibS:
+db "(LibS)", 0
+.HAPPLibD:
+db "(LibD)", 0
+.HAPPDesconhecido:
+db "(?)", 0
+.campoImagem:
+db " -> [HAPP:imageFormat].", 0
+.parametroAjuda:
+db "?", 0
+.parametroAjuda2:
+db "--help", 0
+.ponto:
+db ".", 0
+.pontoEntrada:  dd 0
+.arquitetura:   db 0
+.versaoMinima:  db 0
+.subverMinima:  db 0
+.especieImagem: db 0
 
 parametro:            dd ?
 nomeArquivo: times 13 db 0
