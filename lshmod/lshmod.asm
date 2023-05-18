@@ -86,36 +86,53 @@ include "macros.s"
 ;;
 ;;************************************************************************************
 
-versaoLSHMOD equ "0.6.2"
+versaoLSHMOD equ "0.6.3"
 
 lshmod:
 
-.uso:                 db 10, "Usage: lshmod [file]", 10, 10
-                      db "Retrieve information from an HBoot image or module.", 10, 10
-                      db "lshmod version ", versaoLSHMOD, 10, 10
-                      db "Copyright (C) 2022-", __stringano, " Felipe Miguel Nery Lunkes", 10
-                      db "All rights reserved.", 0
-.arquivoInvalido:     db 10, "The file name is invalid. Please enter a valid filename.", 0
-.infoArquivo:         db 10, "Filename: ", 0
-.tamanhoArquivo:      db 10, "Size of this file: ", 0
-.bytes:               db " bytes.", 10, 0
-.imagemInvalida:      db 10, "<!> This is not an HBoot module image. Try another file.", 0
-.semArquivo:          db 10, "<!> The requested file is not available on this volume.", 10, 10
-                      db "<!> Check the file name and try again.", 0  
-.tipoArquitetura:     db 10, 10, "> Target architecture: ", 0
-.verModulo:           db 10, "> Module version: ", 0
-.ponto:               db ".", 0
-.cabecalho:           db 10, "<+> This file contains a valid HBoot image or HBoot module.", 0
-.i386:                db "i386", 0
-.amd64:               db "amd64", 0
-.arquiteturaInvalida: db "unknown", 0
-.entradaCodigo:       db 10, "> Internal name of the HBoot image or module: ", 0
-.parametroAjuda:      db "?", 0
-.parametroAjuda2:     db "--help", 0
-.nomeMod:             dd 0
-.arquitetura:         db 0
-.verMod:              db 0
-.subverMod:           db 0
+.uso:
+db 10, "Usage: lshmod [file]", 10, 10
+db "Retrieve information from an HBoot image or module.", 10, 10
+db "lshmod version ", versaoLSHMOD, 10, 10
+db "Copyright (C) 2022-", __stringano, " Felipe Miguel Nery Lunkes", 10
+db "All rights reserved.", 0
+.arquivoInvalido:
+db 10, "The file name is invalid. Please enter a valid filename.", 0
+.infoArquivo:
+db 10, "Filename: ", 0
+.tamanhoArquivo:
+db 10, "Size of this file: ", 0
+.bytes:
+db " bytes.", 10, 0
+.imagemInvalida:
+db 10, "<!> This is not an HBoot module image. Try another file.", 0
+.semArquivo:
+db 10, "<!> The requested file is not available on this volume.", 10, 10
+db "<!> Check the file name and try again.", 0  
+.tipoArquitetura:
+db 10, 10, "> Target architecture: ", 0
+.verModulo:
+db 10, "> Module version: ", 0
+.ponto:
+db ".", 0
+.cabecalho:
+db 10, "<+> This file contains a valid HBoot image or HBoot module.", 0
+.i386:
+db "i386", 0
+.amd64:
+db "amd64", 0
+.arquiteturaInvalida:
+db "unknown", 0
+.entradaCodigo:
+db 10, "> Internal name of the HBoot image or module: ", 0
+.parametroAjuda:
+db "?", 0
+.parametroAjuda2:
+db "--help", 0
+.nomeMod:     dd 0
+.arquitetura: db 0
+.verMod:      db 0
+.subverMod:   db 0
 
 parametro:            dd ?
 nomeArquivo: times 13 db 0
