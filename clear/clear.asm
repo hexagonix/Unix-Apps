@@ -155,18 +155,22 @@ usoAplicativo:
 ;;
 ;;************************************************************************************
 
-versaoCLEAR equ "1.2.1"
+versaoCLEAR equ "1.2.2"
 
 clear:
 
-.erro:            db 10, "Error opening a console.", 10, 10, 0
-.uso:             db 10, "Usage: clear", 10, 10
-                  db "Clears the contents of the main console (vd0) and virtual consoles.", 10, 10
-                  db "clear version ", versaoCLEAR, 10, 10
-                  db "Copyright (C) 2017-", __stringano, " Felipe Miguel Nery Lunkes", 10
-                  db "All rights reserved.", 0
-.parametroAjuda:  db "?", 0
-.parametroAjuda2: db "--help", 0
+.erro:
+db 10, "Error opening a console.", 10, 10, 0
+.uso:
+db 10, "Usage: clear", 10, 10
+db "Clears the contents of the main console (vd0) and virtual consoles.", 10, 10
+db "clear version ", versaoCLEAR, 10, 10
+db "Copyright (C) 2017-", __stringano, " Felipe Miguel Nery Lunkes", 10
+db "All rights reserved.", 0
+.parametroAjuda:
+db "?", 0
+.parametroAjuda2:
+db "--help", 0
        
 vd0: db "vd0", 0 ;; Console principal
 vd1: db "vd1", 0 ;; Primeiro console virtual
