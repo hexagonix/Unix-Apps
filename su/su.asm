@@ -700,37 +700,51 @@ terminar:
 ;;
 ;;************************************************************************************
 
-versaoSU equ "2.3.2"
+versaoSU equ "2.3.3"
 
-shellPadrao:       db "sh", 0          ;; Nome do arquivo que contêm o shell padrão do Hexagonix®
-vd0:               db "vd0", 0         ;; Console principal
-vd1:               db "vd1", 0         ;; Console secundário
-arquivo:           db "passwd", 0      ;; Nome do arquivo de gerenciamento de login
+shellPadrao:
+db "sh", 0          ;; Nome do arquivo que contêm o shell padrão do Hexagonix®
+vd0:
+db "vd0", 0         ;; Console principal
+vd1:
+db "vd1", 0         ;; Console secundário
+arquivo:
+db "passwd", 0      ;; Nome do arquivo de gerenciamento de login
 tentarShellPadrao: db 0                ;; Sinaliza a tentativa de se carregar o shell padrão
 shellHexagonix:    times 11 db 0       ;; Armazena o nome do shell à ser utilizado pelo sistema
 usuario:           times 15 db 0       ;; Nome de usuário obtido no arquivo
 senhaObtida:       times 64 db 0       ;; Senha obtida no arquivo
 parametros:        db 0                ;; Se o aplicativo recebeu algum parâmetro
-ponto:             db ".", 0
+ponto:
+db ".", 0
 posicaoBX:         dw 0
 
 su:
 
-.grandesPoderes:    db 10, 10, "You are now an administrative user. This means you can make deep changes to", 10
-                    db "system, so be careful.", 10, 10
-                    db 'Remember: "Great power comes with great responsibility"!', 0  
-.solicitarSenha:    db "Enter your UNIX password: ", 0 
-.uso:               db 10, "Usage: su [user]", 10, 10
-                    db "Change to a registered user.", 10, 10
-                    db "su version ", versaoSU, 10, 10
-                    db "Copyright (C) 2017-", __stringano, " Felipe Miguel Nery Lunkes", 10
-                    db "All rights reserved.", 0
-.semArquivoUnix:    db 10, "The user account database was not found on the volume.", 10, 0 
-.semUsuario:        db 10, "The requested user was not found: ", 0              
-.parametroAjuda:    db "?", 0   
-.parametroAjuda2:   db "--help", 0
-.usuarioROOT:       db "root", 0
-.falhaAutenticacao: db 10, "su: Authentication failed.", 0
+.grandesPoderes:
+db 10, 10, "You are now an administrative user. This means you can make deep changes to", 10
+db "system, so be careful.", 10, 10
+db 'Remember: "Great power comes with great responsibility"!', 0  
+.solicitarSenha:
+db "Enter your UNIX password: ", 0 
+.uso:
+db 10, "Usage: su [user]", 10, 10
+db "Change to a registered user.", 10, 10
+db "su version ", versaoSU, 10, 10
+db "Copyright (C) 2017-", __stringano, " Felipe Miguel Nery Lunkes", 10
+db "All rights reserved.", 0
+.semArquivoUnix:
+db 10, "The user account database was not found on the volume.", 10, 0 
+.semUsuario:
+db 10, "The requested user was not found: ", 0              
+.parametroAjuda:
+db "?", 0   
+.parametroAjuda2:
+db "--help", 0
+.usuarioROOT:
+db "root", 0
+.falhaAutenticacao:
+db 10, "su: Authentication failed.", 0
 
 usuarioSolicitado:  times 17 db 0
 usuarioAnterior:    times 17 db 0
