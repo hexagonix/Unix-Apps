@@ -102,12 +102,16 @@ tamanhoLimiteBusca = 32768
 
 ;;************************************************************************************
 
-versaoLOGIND equ "1.7.0"
+versaoLOGIND equ "1.7.1"
 
-arquivo:    db "passwd", 0 ;; Nome do arquivo de configuração de login
-vd0:        db "vd0", 0    ;; Console padrão
-vd1:        db "vd1", 0    ;; Primeiro console virtual
-posicaoBX:  dw 0           ;; Marcação da posição de busca no conteúdo do arquivo
+arquivo:
+db "passwd", 0 ;; Nome do arquivo de configuração de login
+vd0:
+db "vd0", 0    ;; Console padrão
+vd1:
+db "vd1", 0    ;; Primeiro console virtual
+posicaoBX:
+dw 0           ;; Marcação da posição de busca no conteúdo do arquivo
 
 align 4
 
@@ -116,20 +120,21 @@ logind:
 match =Moderno, TIPOLOGIN
 {
 
-.sobreSistema: db 10,10
-               db "  88                                                                                88", 10
-               db "  88                                                                                ''", 10
-               db "  88", 10
-               db "  88,dPPPba,   ,adPPPba, 8b,     ,d8 ,adPPPPba,  ,adPPPb,d8  ,adPPPba,  8b,dPPPba,  88 8b,     ,d8", 10
-               db "  88P'    '88 a8P     88  `P8, ,8P'  ''     `P8 a8'    `P88 a8'     '8a 88P'   `'88 88  `P8, ,8P'", 10
-               db "  88       88 8PP'''''''    )888(    ,adPPPPP88 8b       88 8b       d8 88       88 88    )888(", 10
-               db "  88       88 '8b,   ,aa  ,d8' '8b,  88,    ,88 '8a,   ,d88 '8a,   ,a8' 88       88 88  ,d8' '8b,", 10
-               db "  88       88  `'Pbbd8'' 8P'     `P8 `'8bbdP'P8  `'PbbdP'P8  `'PbbdP''  88       88 88 8P'     `P8", 10
-               db "                                                 aa,    ,88", 10
-               db "                                                  'P8bbdP'", 10, 10
-               db "                              Hexagonix(R) Operating System", 10, 10
-               db "                  Copyright (C) 2020-", __stringano, " Felipe Miguel Nery Lunkes", 10
-               db "                                    All rights reserved.", 10, 0
+.sobreSistema: 
+db 10,10
+db "  88                                                                                88", 10
+db "  88                                                                                ''", 10
+db "  88", 10
+db "  88,dPPPba,   ,adPPPba, 8b,     ,d8 ,adPPPPba,  ,adPPPb,d8  ,adPPPba,  8b,dPPPba,  88 8b,     ,d8", 10
+db "  88P'    '88 a8P     88  `P8, ,8P'  ''     `P8 a8'    `P88 a8'     '8a 88P'   `'88 88  `P8, ,8P'", 10
+db "  88       88 8PP'''''''    )888(    ,adPPPPP88 8b       88 8b       d8 88       88 88    )888(", 10
+db "  88       88 '8b,   ,aa  ,d8' '8b,  88,    ,88 '8a,   ,d88 '8a,   ,a8' 88       88 88  ,d8' '8b,", 10
+db "  88       88  `'Pbbd8'' 8P'     `P8 `'8bbdP'P8  `'PbbdP'P8  `'PbbdP''  88       88 88 8P'     `P8", 10
+db "                                                 aa,    ,88", 10
+db "                                                  'P8bbdP'", 10, 10
+db "                              Hexagonix(R) Operating System", 10, 10
+db "                  Copyright (C) 2020-", __stringano, " Felipe Miguel Nery Lunkes", 10
+db "                                    All rights reserved.", 10, 0
 
 }
 
@@ -140,16 +145,26 @@ match =Hexagonix, TIPOLOGIN
 
 }
 
-.versaoSistema:    db 10, "Hexagonix version ", 0
-.console:          db " (vd0)", 0
-.semArquivoUnix:   db 10, 10, "The user account database was not found on the volume.", 10, 0        
-.colcheteEsquerdo: db " [", 0
-.colcheteDireito:  db "]", 0
-.temaClaro:        db "light", 0
-.temaEscuro:       db "dark", 0
-.semVersao:        db "[unknown]", 0
-.verboseLogind:    db "logind version ", versaoLOGIND, ".", 0
-.OOBE:             db "oobe", 0
+.versaoSistema:
+db 10, "Hexagonix version ", 0
+.console:
+db " (vd0)", 0
+.semArquivoUnix:
+db 10, 10, "The user account database was not found on the volume.", 10, 0        
+.colcheteEsquerdo:
+db " [", 0
+.colcheteDireito:
+db "]", 0
+.temaClaro:
+db "light", 0
+.temaEscuro:
+db "dark", 0
+.semVersao:
+db "[unknown]", 0
+.verboseLogind:
+db "logind version ", versaoLOGIND, ".", 0
+.OOBE:
+db "oobe", 0
 
 escolhaTema: times 7  db 0
 
