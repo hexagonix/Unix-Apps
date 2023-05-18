@@ -422,45 +422,75 @@ terminar:
 ;;
 ;;************************************************************************************
     
-versaoFILE equ "1.8.2"
+versaoFILE equ "1.8.3"
 
 fileUnix:
 
-.uso:             db 10, "Usage: file [file]", 10, 10
-                  db "Retrieve information from the file and send it to the main console.", 10, 10
-                  db "file version ", versaoFILE, 10, 10
-                  db "Copyright (C) 2017-", __stringano, " Felipe Miguel Nery Lunkes", 10
-                  db "All rights reserved.", 0
-.arquivoInvalido: db 10, "The file name is invalid. Please enter a valid filename.", 10, 0
-.infoArquivo:     db 10, "Filename: ", 0
-.tamanhoArquivo:  db 10, "Size of this file: ", 0
-.bytes:           db " bytes.", 10, 0
-.semArquivo:      db 10, "The requested file is not available on this volume.", 10
-                  db "Check the filename and try again.", 10, 0  
-.appValido:       db 10, "This appears to be a Unix executable of Hexagon(R).", 0
-.arquivoHBoot:    db 10, "This appears to be an executable in HBoot format (HBoot or HBoot module).", 0
-.arquivoASM:      db 10, "This appears to be an assembly source file.", 10, 0
-.arquivoLibASM:   db 10, "This appears to be a source file that contains an assembly library for development.", 0
-.arquivoSIS:      db 10, "This appears to be a system file.", 0
-.arquivoUnix:     db 10, "This appears to be a Unix environment data or configuration file.", 0               
-.arquivoMAN:      db 10, "This appears to be a Unix environment manual file.", 0
-.arquivoCOW:      db 10, "This appears to be a database file from the Unix cowsay utility.", 0
-.arquivoTXT:      db 10, "This appears to be a UTF-8 text file.", 0
-.arquivoFNT:      db 10, "This appears to be a Hexagon(R) display source file.", 0
-.arquivoCAN:      db 10, "This appears to be a Hexagonix(R) config plugin file.", 0
-.parametroAjuda:  db "?", 0
-.parametroAjuda2: db "--help", 0
-.extensaoSIS:     db ".SIS", 0
-.extensaoASM:     db ".ASM", 0
-.extensaoBIN:     db ".BIN", 0
-.extensaoUNX:     db ".UNX", 0
-.extensaoFNT:     db ".FNT", 0
-.extensaoOCL:     db ".OCL", 0
-.extensaoMAN:     db ".MAN", 0
-.extensaoCOW:     db ".COW", 0
-.extensaoTXT:     db ".TXT", 0
-.extensaoCAN:     db ".CAN", 0
-.extensaoS:       db ".S", 0
+.uso:
+db 10, "Usage: file [file]", 10, 10
+db "Retrieve information from the file and send it to the main console.", 10, 10
+db "file version ", versaoFILE, 10, 10
+db "Copyright (C) 2017-", __stringano, " Felipe Miguel Nery Lunkes", 10
+db "All rights reserved.", 0
+.arquivoInvalido:
+db 10, "The file name is invalid. Please enter a valid filename.", 10, 0
+.infoArquivo:
+db 10, "Filename: ", 0
+.tamanhoArquivo:
+db 10, "Size of this file: ", 0
+.bytes:
+db " bytes.", 10, 0
+.semArquivo:
+db 10, "The requested file is not available on this volume.", 10
+db "Check the filename and try again.", 10, 0  
+.appValido:
+db 10, "This appears to be a Unix executable of Hexagon(R).", 0
+.arquivoHBoot:
+db 10, "This appears to be an executable in HBoot format (HBoot or HBoot module).", 0
+.arquivoASM:
+db 10, "This appears to be an assembly source file.", 10, 0
+.arquivoLibASM:
+db 10, "This appears to be a source file that contains an assembly library for development.", 0
+.arquivoSIS:
+db 10, "This appears to be a system file.", 0
+.arquivoUnix:
+db 10, "This appears to be a Unix environment data or configuration file.", 0               
+.arquivoMAN:
+db 10, "This appears to be a Unix environment manual file.", 0
+.arquivoCOW:
+db 10, "This appears to be a database file from the Unix cowsay utility.", 0
+.arquivoTXT:
+db 10, "This appears to be a UTF-8 text file.", 0
+.arquivoFNT:
+db 10, "This appears to be a Hexagon(R) display source file.", 0
+.arquivoCAN:
+db 10, "This appears to be a Hexagonix(R) config plugin file.", 0
+.parametroAjuda:
+db "?", 0
+.parametroAjuda2:
+db "--help", 0
+.extensaoSIS:
+db ".SIS", 0
+.extensaoASM:
+db ".ASM", 0
+.extensaoBIN:
+db ".BIN", 0
+.extensaoUNX:
+db ".UNX", 0
+.extensaoFNT:
+db ".FNT", 0
+.extensaoOCL:
+db ".OCL", 0
+.extensaoMAN:
+db ".MAN", 0
+.extensaoCOW:
+db ".COW", 0
+.extensaoTXT:
+db ".TXT", 0
+.extensaoCAN:
+db ".CAN", 0
+.extensaoS:
+db ".S", 0
 
 parametro:            dd ?
 regES:                dw 0
