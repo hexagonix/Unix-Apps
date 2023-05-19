@@ -82,7 +82,7 @@ include "macros.s"
 
 ;;************************************************************************************
 
-versaoMAN equ "2.3.4"
+versaoMAN equ "2.3.4.1"
 
 versaoCoreUtils equ "Raava-CURRENT-6.0" 
 versaoUnixUtils equ "Raava-CURRENT-6.0"
@@ -109,7 +109,7 @@ db "Hexagonix is distributed under the BSD-3-Clause license.", 0
 .aguardar:
 db "Press <q> to exit.", 0
 .naoEncontrado:
-db ": manual not found for this utility.", 10, 0
+db ": manual not found for this utility.", 0
 .separador:
 db 10, "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++", 10, 0
 .extensaoManual:
