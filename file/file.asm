@@ -422,7 +422,7 @@ terminar:
 ;;
 ;;************************************************************************************
     
-versaoFILE equ "1.8.3"
+versaoFILE equ "1.8.4"
 
 fileUnix:
 
@@ -433,7 +433,7 @@ db "file version ", versaoFILE, 10, 10
 db "Copyright (C) 2017-", __stringano, " Felipe Miguel Nery Lunkes", 10
 db "All rights reserved.", 0
 .arquivoInvalido:
-db 10, "The file name is invalid. Please enter a valid filename.", 10, 0
+db 10, "The file name is invalid. Please enter a valid filename.", 0
 .infoArquivo:
 db 10, "Filename: ", 0
 .tamanhoArquivo:
@@ -442,13 +442,13 @@ db 10, "Size of this file: ", 0
 db " bytes.", 10, 0
 .semArquivo:
 db 10, "The requested file is not available on this volume.", 10
-db "Check the filename and try again.", 10, 0  
+db "Check the filename and try again.", 0  
 .appValido:
 db 10, "This appears to be a Unix executable of Hexagon(R).", 0
 .arquivoHBoot:
 db 10, "This appears to be an executable in HBoot format (HBoot or HBoot module).", 0
 .arquivoASM:
-db 10, "This appears to be an assembly source file.", 10, 0
+db 10, "This appears to be an Assembly source file.", 0
 .arquivoLibASM:
 db 10, "This appears to be a source file that contains an assembly library for development.", 0
 .arquivoSIS:
