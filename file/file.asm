@@ -128,13 +128,6 @@ inicioAPP:
     jc .semArquivo
     
     push eax
-    push esi
-
-    mov esi, fileUnix.infoArquivo
-    
-    imprimirString
-    
-    pop esi
 
     call manterArquivo
 
@@ -233,6 +226,10 @@ inicioAPP:
     hx.syscall compararPalavrasString  ;; Checar por extensão .S
     
     jc .arquivoS
+
+.semExtensaoValida:
+
+    fputs fileUnix.arquivoPadrao
 
     jmp .fim
 
@@ -422,7 +419,7 @@ terminar:
 ;;
 ;;************************************************************************************
     
-versaoFILE equ "1.8.4"
+versaoFILE equ "1.9.0"
 
 fileUnix:
 
@@ -434,12 +431,10 @@ db "Copyright (C) 2017-", __stringano, " Felipe Miguel Nery Lunkes", 10
 db "All rights reserved.", 0
 .arquivoInvalido:
 db 10, "The file name is invalid. Please enter a valid filename.", 0
-.infoArquivo:
-db 10, "Filename: ", 0
 .tamanhoArquivo:
-db 10, "Size of this file: ", 0
+db 10, "File size: ", 0
 .bytes:
-db " bytes.", 10, 0
+db " bytes.", 0
 .semArquivo:
 db 10, "The requested file is not available on this volume.", 10
 db "Check the filename and try again.", 0  
@@ -465,6 +460,8 @@ db 10, "This appears to be a UTF-8 text file.", 0
 db 10, "This appears to be a Hexagon(R) display source file.", 0
 .arquivoCAN:
 db 10, "This appears to be a Hexagonix(R) config plugin file.", 0
+.arquivoPadrao:
+db 10, "This appears to be a plain text file.", 0
 .parametroAjuda:
 db "?", 0
 .parametroAjuda2:
