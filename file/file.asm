@@ -131,8 +131,6 @@ inicioAPP:
 
     call manterArquivo
 
-    imprimirString
-
     fputs fileUnix.tamanhoArquivo
     
     pop eax 
@@ -419,7 +417,7 @@ terminar:
 ;;
 ;;************************************************************************************
     
-versaoFILE equ "1.9.0"
+versaoFILE equ "1.9.1"
 
 fileUnix:
 
@@ -439,25 +437,25 @@ db " bytes.", 0
 db 10, "The requested file is not available on this volume.", 10
 db "Check the filename and try again.", 0  
 .appValido:
-db 10, "This appears to be a Unix executable of Hexagon(R).", 0
+db 10, "This appears to be a Unix executable for Hexagon(R).", 0
 .arquivoHBoot:
 db 10, "This appears to be an executable in HBoot format (HBoot or HBoot module).", 0
 .arquivoASM:
 db 10, "This appears to be an Assembly source file.", 0
 .arquivoLibASM:
-db 10, "This appears to be a source file that contains an assembly library for development.", 0
+db 10, "This appears to be a source file that contains an Assembly library for development.", 0
 .arquivoSIS:
 db 10, "This appears to be a system file.", 0
 .arquivoUnix:
 db 10, "This appears to be a Unix environment data or configuration file.", 0               
 .arquivoMAN:
-db 10, "This appears to be a Unix environment manual file.", 0
+db 10, "This appears to be a manual file.", 0
 .arquivoCOW:
-db 10, "This appears to be a database file from the Unix cowsay utility.", 0
+db 10, "This appears to be a database file from the cowsay utility.", 0
 .arquivoTXT:
 db 10, "This appears to be a UTF-8 text file.", 0
 .arquivoFNT:
-db 10, "This appears to be a Hexagon(R) display source file.", 0
+db 10, "This appears to be a Hexagon(R) display font file.", 0
 .arquivoCAN:
 db 10, "This appears to be a Hexagonix(R) config plugin file.", 0
 .arquivoPadrao:
