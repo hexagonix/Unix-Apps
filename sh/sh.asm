@@ -676,8 +676,10 @@ db 10, "An argument is necessary.", 0
 
 comandos:
 
-.sair: db "exit", 0
-.rc:   db "rc", 0
+.sair:
+db "exit", 0
+.rc:
+db "rc", 0
 
 ;;**************************
 
