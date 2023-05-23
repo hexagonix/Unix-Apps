@@ -78,8 +78,8 @@ cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, inicioShell, 01h
 ;;************************************************************************************
 
 include "hexagon.s"
-include "erros.s"
 include "macros.s"
+include "erros.s"
 
 ;;************************************************************************************
 
@@ -93,7 +93,7 @@ inicioShell:
     hx.syscall compararPalavrasString
     
     jc usoAplicativo
-
+    
     mov edi, hash.parametroAjuda2
     mov esi, [linhaComando]
     
@@ -122,37 +122,37 @@ inicioShell:
     dec dh
     
     hx.syscall definirCursor
-    
+
     novaLinha
+
+.processarRC:
+
+    mov esi, hash.arquivorc
+
+    hx.syscall arquivoExiste
+
+    jc .continuar 
+
+    jmp .processarArquivoShell
+
+.processarArquivoShell:
+
+    mov esi, hash.arquivorc
+    mov edi, bufferArquivo
+
+    hx.syscall abrir 
+
+    novaLinha
+
+    fputs bufferArquivo
+
+    jmp .continuar
+
+.continuar:
     
 .iniciarSessao:
 
     hx.syscall obterUsuario
-    
-    push eax
-    
-    push es
-    
-    push  ds
-    pop es
-    
-    push  esi
-    
-    hx.syscall tamanhoString
-    
-    pop esi
-    
-    push  eax
-    
-    mov edi, hash.nomeUsuario
-    
-    pop ecx
-    
-    rep movsb
-    
-    pop es  
-    
-    pop eax
     
     cmp eax, 555
     je .usuarioNormal
@@ -162,18 +162,18 @@ inicioShell:
     
 .usuarioNormal:
 
-    push  es
+    push es
     
-    push  ds
+    push ds
     pop es
     
     mov esi, hash.usuarioNormal
     
     hx.syscall tamanhoString
     
-    push  eax
+    push eax
     
-    mov edi, hash.separador
+    mov edi, hash.prompt
     mov esi, hash.usuarioNormal
     
     pop ecx
@@ -186,18 +186,18 @@ inicioShell:
 
 .usuarioRoot:
 
-    push  es
+    push es
     
-    push  ds
+    push ds
     pop es
     
     mov esi, hash.usuarioRoot
     
     hx.syscall tamanhoString
     
-    push  eax
+    push eax
     
-    mov edi, hash.separador
+    mov edi, hash.prompt
     mov esi, hash.usuarioRoot
     
     pop ecx
@@ -212,13 +212,13 @@ inicioShell:
 
 .finalizarPrompt:
 
-    mov esi, hash.separador
+    mov esi, hash.prompt
     
     hx.syscall tamanhoString
     
     inc eax
     
-    mov byte[hash.separador+eax], 0
+    mov byte[hash.prompt+eax], 0
     
 ;;************************************************************************************
 
@@ -229,12 +229,8 @@ inicioShell:
     hx.syscall obterCursor
     
     hx.syscall definirCursor
-    
-    fputs hash.nomeUsuario
-    
+        
     fputs hash.prompt
-    
-    fputs hash.separador
     
     mov al, byte[maxColunas]         ;; Máximo de caracteres para obter
 
@@ -255,22 +251,32 @@ inicioShell:
     
     hx.syscall compararPalavrasString
 
-    jc finalizarhashell
+    jc finalizarShell
+
+    ;; Comando RC
+
+    mov edi, comandos.rc      
+    
+    hx.syscall compararPalavrasString
+
+    jc executarShellScript ;; Iniciar a execução de arquivo em lote
 
 ;;************************************************************************************
 
 ;; Tentar carregar um programa
     
-    call obterArgumentos              ;; Separar comando e argumentos
+    call obterArgumentos ;; Separar comando e argumentos
     
-    push  esi
-    push  edi
+.entradaCarregamentoImagem:
+
+    push esi
+    push edi
     
     jmp .carregarPrograma
     
 .falhaExecutando:
 
-;; Agora o erro enviado pelo sistema será analisado, para que o Shell conheça
+;; Agora o erro enviado pelo Sistema será analisado, para que o Shell conheça
 ;; sua natureza
 
     cmp eax, Hexagon.limiteProcessos ;; Limite de processos em execução atingido
@@ -288,15 +294,15 @@ inicioShell:
     imprimirString
     
     fputs hash.comandoNaoEncontrado
-    
+        
     jmp .obterComando   
     
 .limiteAtingido:
 
     novaLinha
-    
+
     fputs hash.limiteProcessos
-    
+        
     jmp .obterComando   
 
 .imagemHAPPInvalida:
@@ -335,12 +341,163 @@ inicioShell:
 
 ;;************************************************************************************
 
+;; Outras funções auxiliares 
+
+executarShellScript:
+
+    add esi, 02h
+    
+    hx.syscall cortarString
+
+    cmp byte[esi], 0
+    je .argumentonNecessario
+
+    mov word[hash.posicaoBX], 0FFFFh ;; A cada execução, zerar o contador.
+
+    mov edi, bufferArquivo
+    
+    hx.syscall hx.open
+    
+    jc .arquivoShellAusente
+
+    call procurarComandos
+
+    jc .naoEncontrado
+
+.carregarImagem:
+
+    mov esi, hash.imagemDisco
+    
+    hx.syscall arquivoExiste
+    
+    jc .proximoComando
+
+    mov eax, 0                     ;; Não passar argumentos
+    mov esi, hash.imagemDisco        ;; Nome do arquivo
+    
+    stc
+    
+    hx.syscall iniciarProcesso     ;; Solicitar o carregamento do primeiro comando
+ 
+    jnc .proximoComando
+
+.proximoComando:
+
+    clc 
+
+    call procurarComandos
+
+    jmp .carregarImagem
+
+.naoEncontrado:                    ;; O serviço não pôde ser localizado
+    
+    jmp inicioShell.obterComando
+
+.arquivoShellAusente:
+
+    fputs hash.semArquivoShell
+
+    jmp inicioShell.obterComando
+
+.argumentonNecessario:
+
+    fputs hash.argumentoNecessario
+
+    jmp inicioShell.obterComando
+
 ;;************************************************************************************
+
+;; Componentes do comando exec para execução do comando em lotes do shell
+
+procurarComandos:
+
+    pusha
+    
+    push es
+
+    push ds
+    pop es
+    
+    mov si, bufferArquivo           ;; Aponta para o buffer com o conteúdo do arquivo
+    mov bx, word[hash.posicaoBX]         
+    
+    jmp .procurarEntreDelimitadores
+
+.procurarEntreDelimitadores:
+
+    inc bx
+    
+    mov word[hash.posicaoBX], bx
+
+    cmp bx, tamanhoLimiteBusca
+    je inicioShell.obterComando
+    
+    mov al, [ds:si+bx]
+    
+    cmp al, '>'
+    jne .procurarEntreDelimitadores ;; O limitador inicial foi encontrado
+    
+;; BX agora aponta para o primeira caractere do nome do shell resgatado do arquivo
+    
+    push ds
+    pop es
+    
+    mov di, hash.imagemDisco          ;; O nome do shell será copiado para ES:DI
+    
+    mov si, bufferArquivo
+    
+    add si, bx                      ;; Mover SI para aonde BX aponta
+    
+    mov bx, 0                       ;; Iniciar em 0
+    
+.obterComando:
+
+    inc bx
+    
+    cmp bx, 13              
+    je .nomeComandoInvalido           ;; Se nome de arquivo maior que 11, o nome é inválido     
+    
+    mov al, [ds:si+bx]
+    
+;; Agora vamos procurar os limitadores finais do nome de um comando, que podem ser:
 ;;
-;; Fim dos comandos internos do shell Unix do Hexagonix®
-;;
-;; Funções úteis para o manipulação de dados no hashell Unix do Hexagonix® 
-;;
+;; EOL - nova linha (10)
+;; Espaço - um espaço após o último caractere
+;; # - Se usado após o último caractere do nome do serviço, marcar como comentário
+
+    cmp al, 10                     ;; Se encontrar outro delimitador, o nome foi carregado com sucesso
+    je .nomeComandoObtido
+
+    cmp al, ' '                     ;; Se encontrar outro delimitador, o nome foi carregado com sucesso
+    je .nomeComandoObtido
+
+    cmp al, '#'                     ;; Se encontrar outro delimitador, o nome foi carregado com sucesso
+    je .nomeComandoObtido
+    
+;; Se não estiver pronto, armazenar o caractere obtido
+
+    stosb
+    
+    jmp .obterComando
+
+.nomeComandoObtido:
+
+    pop es
+    
+    popa
+
+    ret
+    
+.nomeComandoInvalido:
+
+    pop es
+    
+    popa
+    
+    stc 
+
+    ret
+
 ;;************************************************************************************
 
 ;; Separar nome de comando e argumentos
@@ -357,7 +514,7 @@ inicioShell:
 
 obterArgumentos:
 
-    push  esi
+    push esi
     
 .loop:
 
@@ -420,11 +577,11 @@ usoAplicativo:
 
     fputs hash.uso
     
-    jmp finalizarhashell    
+    jmp finalizarShell  
 
 ;;************************************************************************************
 
-finalizarhashell:
+finalizarShell:
     
     mov ebx, 00h
     
@@ -434,27 +591,31 @@ finalizarhashell:
 
 ;;************************************************************************************
 ;;
-;; Dados, variáveis e constantes utilizadas pelo hash
+;; Dados, variáveis e constantes utilizadas pelo Shell
 ;;
 ;;************************************************************************************
 
-;; A versão do hash é independente da versão do restante do sistema.
+;; TODO: melhorar suporta a script de shell
+
+;; A versão do hash é independente da versão do restante do Sistema.
 ;; Ela deve ser utilizada para identificar para qual versão do Hexagonix® o hash foi
 ;; desenvolvido.
+            
+versaoHASH equ "0.9.1.2"
 
-versaoHASH equ "1.2.2"
+tamanhoLimiteBusca = 32768
 
 hash:
 
-.prompt:
-db "@Hexagonix", 0
 .comandoNaoEncontrado:
-db ": file not found.", 0
+db ": command not found.", 0
+.arquivorc:
+db "shrc", 0
 .imagemInvalida:
 db ": unable to load image. Unsupported executable format.", 0
 .limiteProcessos:
-db 10, 10, "There is not enough memory available to run the requested application.", 10
-db "Try to terminate applications or their instances first, and try again.", 0                  
+db 10, 10, "There is no memory available to run the requested application.", 10
+db "First try to terminate applications or their instances, and try again.", 0                  
 .ponto:
 db ".", 0
 .usuarioNormal:
@@ -470,23 +631,28 @@ db "All rights reserved.", 10, 0
 .parametroAjuda:
 db "?", 0   
 .parametroAjuda2:
-db "--help", 0   
-.nomeUsuario: times 64 db 0
-.separador:    times 8 db 0
+db "--help", 0
+.semArquivoShell:
+db 10, "Shell script not found.", 0
+.argumentoNecessario:
+db 10, "An argument is necessary.", 0
+.imagemDisco: times 12 db 0        ;; Armazena o nome do shell à ser utilizado pelo sistema
+.posicaoBX:            dw 0        ;; Marcação da posição de busca no conteúdo do arquivo
+.prompt:    times 8 db 0
  
 ;;**************************
 
 comandos:
 
-.sair: 
-db "exit",0
+.sair: db "exit", 0
+.rc:   db "rc", 0
 
 ;;**************************
 
 maxColunas:   db 0 ;; Total de colunas disponíveis no vídeo na resolução atual
 maxLinhas:    db 0 ;; Total de linhas disponíveis no vídeo na resolução atual
 linhaComando: dd 0
-                   
+
 ;;************************************************************************************
 
 bufferArquivo:  ;; Endereço para carregamento de arquivos
