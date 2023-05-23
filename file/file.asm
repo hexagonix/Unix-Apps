@@ -417,7 +417,7 @@ terminar:
 ;;
 ;;************************************************************************************
     
-versaoFILE equ "1.9.1"
+versaoFILE equ "1.9.1.1"
 
 fileUnix:
 
@@ -443,7 +443,7 @@ db 10, "This appears to be an executable in HBoot format (HBoot or HBoot module)
 .arquivoASM:
 db 10, "This appears to be an Assembly source file.", 0
 .arquivoLibASM:
-db 10, "This appears to be a source file that contains an Assembly library for development.", 0
+db 10, "This appears to be a source file that contains an Assembly development library.", 0
 .arquivoSIS:
 db 10, "This appears to be a system file.", 0
 .arquivoUnix:
