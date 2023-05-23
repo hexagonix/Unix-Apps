@@ -136,13 +136,13 @@ terminar:
 ;;
 ;;************************************************************************************
 
-versaoECHO equ "1.1.3"
+versaoECHO equ "1.1.3.1"
 
 echo:
 
 .uso:
 db 10, 10, "Usage: echo [message]", 10, 10
-db "Send the contents of a message to the main console.", 10, 10
+db "Send the contents of a message to the console.", 10, 10
 db "echo version ", versaoECHO, 10, 10
 db "Copyright (C) 2017-", __stringano, " Felipe Miguel Nery Lunkes", 10
 db "All rights reserved.", 0
