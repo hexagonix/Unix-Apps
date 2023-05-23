@@ -149,7 +149,7 @@ terminar:
 ;;
 ;;************************************************************************************
 
-versaoCAT equ "1.3.3"
+versaoCAT equ "1.3.3.1"
 
 cat:
 
@@ -157,7 +157,7 @@ cat:
 db 10, "File not found. Check the filename and try again.", 0
 .uso:
 db 10, "Usage: cat [file]", 10, 10
-db "Send the contents of a file to the main console.", 10, 10
+db "Send the contents of a file to the console.", 10, 10
 db "cat version ", versaoCAT, 10, 10
 db "Copyright (C) 2017-", __stringano, " Felipe Miguel Nery Lunkes", 10
 db "All rights reserved.", 0
