@@ -215,7 +215,7 @@ terminar:
 ;;
 ;;************************************************************************************
 
-versaoRM equ "1.1.3.1"
+versaoRM equ "1.1.3.2"
 
 rm:
 
@@ -230,11 +230,11 @@ db "All rights reserved.", 0
 .confirmacao:
 db "Are you sure you want to delete this file (y/N)? ", 0
 .deletado:
-db 10, 10, "The requested file was successfully removed.", 0
+db 10, "The requested file was successfully removed.", 0
 .erroDeletando:
-db 10, 10, "An error occurred during the request. No files were removed.", 0  
+db 10, "An error occurred during the request. No files were removed.", 0  
 .abortar:
-db 10, 10, "The operation was aborted by the user.", 0  
+db 10, "The operation was aborted by the user.", 0  
 .parametroAjuda:
 db "?", 0  
 .parametroAjuda2:
