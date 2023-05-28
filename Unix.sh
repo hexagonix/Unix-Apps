@@ -93,7 +93,7 @@ do
     
     echo " > Building Hexagonix® Unix utility $(basename $h .asm)..." >> ../$LOG
     
-    fasm $h ../../../Andromeda/bin/`basename $h .asm` -d $BANDEIRAS >> ../$LOG || desmontar
+    fasm $h ../../../Andromeda/bin/`basename $h .asm` -d $FLAGS_COMUM >> ../$LOG || desmontar
     
     echo -e " [\e[32mOk\e[0m]"
     
