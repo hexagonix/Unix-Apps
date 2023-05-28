@@ -410,7 +410,7 @@ listar:
     jmp .continuar
 
 .pularExibicao:
-
+ 
     dec edx
 
     jmp .semEspaco
@@ -653,7 +653,7 @@ verificarArquivo:
 ;;
 ;;************************************************************************************
 
-versaoLS equ "3.2.3"
+versaoLS equ "3.2.3.1"
 
 ls:
 
