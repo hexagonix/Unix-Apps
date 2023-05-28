@@ -215,12 +215,12 @@ terminar:
 ;;
 ;;************************************************************************************
 
-versaoRM equ "1.1.3"
+versaoRM equ "1.1.3.1"
 
 rm:
 
 .naoEncontrado:
-db 10, "File not found.", 10, 0
+db 10, "File not found.", 0
 .uso:
 db 10, "Usage: rm [file]", 10, 10
 db "Requests to delete a file on the current volume.", 10, 10
@@ -232,7 +232,7 @@ db "Are you sure you want to delete this file (y/N)? ", 0
 .deletado:
 db 10, 10, "The requested file was successfully removed.", 0
 .erroDeletando:
-db 10, 10, "An error occurred during the request. No files were removed.", 10, 0  
+db 10, 10, "An error occurred during the request. No files were removed.", 0  
 .abortar:
 db 10, 10, "The operation was aborted by the user.", 0  
 .parametroAjuda:
