@@ -164,7 +164,7 @@ terminar:
 ;;
 ;;************************************************************************************
 
-versaoARCH equ "1.2.2"
+versaoARCH equ "1.2.3"
 
 arch:
 
@@ -176,7 +176,7 @@ db "arch version ", versaoARCH, 10, 10
 db "Copyright (C) 2021-", __stringano, " Felipe Miguel Nery Lunkes", 10
 db "All rights reserved.", 0
 .naoSuportado:
-db 10, "Unknown architecture.", 10, 0
+db 10, "Unknown architecture.", 0
 .i386:
 db "i386", 0
 .x86_64:
