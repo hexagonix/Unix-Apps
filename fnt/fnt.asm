@@ -86,7 +86,7 @@ include "macros.s"
 ;;
 ;;************************************************************************************
 
-versaoFNT equ "0.6.0"
+versaoFNT equ "0.6.1"
 
 fnt:
 
@@ -101,11 +101,11 @@ db 10, "Font filename: ", 0
 .nomeFonte:
 db "Filename: ", 0
 .falhaFormato:
-db 10, 10, "The file provided does not contain a font in Hexagon(R) format.", 0
+db 10, "The file provided does not contain a font in Hexagon(R) format.", 0
 .sucesso:
 db 10, 10, "Font changed successfully.", 0
 .falha:
-db 10, 10, "The file cannot be located.", 0
+db 10, "File not found.", 0
 .introducaoTeste:
 db 10, "Font and characters preview: ", 0
 .testeFonte:
@@ -120,7 +120,7 @@ db "ZXCVBNM<>?", 10
 db "zxcvbnm,./", 10, 10
 db "Hexagonix(R) Operating System", 10, 0
 .tamanhoSuperior:
-db 10, 10, "This font file exceeds the maximum size of 2 Kb.", 0
+db 10, "This font file exceeds the maximum size of 2 Kb.", 0
 .parametroAjuda: 
 db "?", 0
 .parametroAjuda2:
