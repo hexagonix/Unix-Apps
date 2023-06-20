@@ -160,12 +160,12 @@ terminar:
 ;;
 ;;************************************************************************************
 
-versaoHOSTNAME equ "1.1.3"
+versaoHOSTNAME equ "1.1.4"
 
 hostname:
 
 .naoEncontrado:
-db 10, "Host file not found. Check that it has been set.", 10, 0
+db 10, "Host file not found. Check that it has been set.", 0
 .uso:
 db 10, "Usage: hostname", 10, 10
 db "Displays the hostname defined for this device.", 10, 10
