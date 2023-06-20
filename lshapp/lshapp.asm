@@ -90,7 +90,7 @@ include "macros.s"
 ;;
 ;;************************************************************************************
 
-versaoLSHAPP equ "1.11.1"
+versaoLSHAPP equ "1.11.2"
 
 lshapp:
 
@@ -109,10 +109,10 @@ db 10, "Size of this file: ", 0
 .bytes:
 db " bytes.", 10, 0
 .imagemInvalida:
-db 10, "<!> This is not a valid HAPP image. Try another file.", 10, 0
+db 10, "<!> This is not a valid HAPP image. Try another file.", 0
 .semArquivo:
 db 10, 10, "<!> The requested file is not available on this volume.", 10, 10
-db "<!> Check the file name and try again.", 10, 0  
+db "<!> Check the file name and try again.", 0  
 .tipoArquitetura:
 db 10, 10, "> Image target architecture: ", 0
 .verHexagon:
