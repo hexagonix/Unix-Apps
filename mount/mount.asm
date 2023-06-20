@@ -311,7 +311,7 @@ usoAplicativo:
 ;;
 ;;************************************************************************************
 
-versaoMOUNT equ "2.3.1"
+versaoMOUNT equ "2.3.3"
 
 mount:
 
@@ -322,7 +322,7 @@ db "]...", 10, 10, 0
 .pontoMontagem:
 db "] on [", 0
 .montado:
-db "Success mouting the volume.", 10, 0
+db "Success mouting the volume.", 0
 .uso:
 db 10, "Usage: mount [volume] [mount point]", 10, 10
 db "Performs mounting a volume to a file system mount point.", 10, 10
@@ -332,13 +332,13 @@ db "Copyright (C) 2017-", __stringano, " Felipe Miguel Nery Lunkes", 10
 db "All rights reserved.", 0
 .erroAbrindo:
 db "Error mounting volume at specified mount point.", 10
-db "Try to enter a valid name or reference of an attached volume.", 10, 0
+db "Try to enter a valid name or reference of an attached volume.", 0
 .parametroAjuda:
 db "?", 0
 .dispositivoPadrao:
 db "/", 0
 .erroPontoMontagem:
-db 10, "Please enter a valid mount point for this volume and file system.", 10, 0
+db 10, "Please enter a valid mount point for this volume and file system.", 0
 .volumeMontado:
 db 10, 0
 .infoVolume:
@@ -351,7 +351,7 @@ db " type ", 0
 db "The mount was refused by the system. This may be explained due to the fact that the current user", 10
 db "does not have administrative privileges, not being a root user (root).", 10, 10
 db "Only the root user (root) can perform mounts. Login in this user to perform", 10
-db "the desired mount.", 10, 0
+db "the desired mount.", 0
 .parenteses1:
 db " (", 0
 .parenteses2:
