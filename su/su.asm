@@ -700,7 +700,7 @@ terminar:
 ;;
 ;;************************************************************************************
 
-versaoSU equ "2.3.3"
+versaoSU equ "2.3.4"
 
 shellPadrao:
 db "sh", 0          ;; Nome do arquivo que contêm o shell padrão do Hexagonix®
@@ -734,7 +734,7 @@ db "su version ", versaoSU, 10, 10
 db "Copyright (C) 2017-", __stringano, " Felipe Miguel Nery Lunkes", 10
 db "All rights reserved.", 0
 .semArquivoUnix:
-db 10, "The user account database was not found on the volume.", 10, 0 
+db 10, "The user account database was not found on the volume.", 0 
 .semUsuario:
 db 10, "The requested user was not found: ", 0              
 .parametroAjuda:
