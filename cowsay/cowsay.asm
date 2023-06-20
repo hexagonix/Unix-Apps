@@ -392,13 +392,13 @@ terminar:
 
 ;;************************************************************************************
 
-versaoCOWSAY equ "2.1.4"
+versaoCOWSAY equ "2.1.5"
 
 cowsay:
 
 .uso:
 db 10, "Usage: cowsay [profile] [message]", 10, 10
-db "Amusedly display a message to the user.", 10, 10
+db "Display a message to the user.", 10, 10
 db "You can change the animal or entity profile that displays the message.", 10
 db "This change must be requested BEFORE the message.", 10
 db 'In the case of a sentence, the character " must appear before and after the sentence.', 10, 10
