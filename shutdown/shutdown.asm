@@ -305,7 +305,7 @@ terminar:
 
 rotuloMENSAGEM equ "[shutdown]: "
 
-versaoSHUTDOWN  equ "1.4"
+versaoSHUTDOWN  equ "1.4.1"
 
 shutdown:
 
@@ -340,7 +340,7 @@ db 10, "Hexagonix(R) Operating System", 10
 db "Copyright (C) 2015-", __stringano, " Felipe Miguel Nery Lunkes", 10
 db "All rights reserved.", 0
 .argumentos:
-db 10, "An argument is required to control the state of this device.", 10, 0
+db 10, "An argument is required to control the state of this device.", 0
 .uso:
 db 10, "Usage: shutdown [argument]", 10, 10
 db "Controls the state of the computer.", 10, 10
