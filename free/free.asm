@@ -170,7 +170,7 @@ terminar:
 
 ;;************************************************************************************
 
-versaoFREE equ "1.0.1"
+versaoFREE equ "1.0.2"
 
 free:
 
@@ -181,7 +181,7 @@ db "free version ", versaoFREE, 10, 10
 db "Copyright (C) 2020-", __stringano, " Felipe Miguel Nery Lunkes", 10
 db "All rights reserved.", 0
 .memoria:
-db "Memory installed  | Used memory       | Reserved memory", 10, 0
+db "Installed memory  | Used memory       | Reserved memory", 10, 0
 .kbytes:
 db " bytes           ", 0
 .megabytes:
