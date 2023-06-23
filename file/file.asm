@@ -417,7 +417,7 @@ terminar:
 ;;
 ;;************************************************************************************
     
-versaoFILE equ "1.9.1.1"
+versaoFILE equ "1.9.2.0"
 
 fileUnix:
 
@@ -459,7 +459,7 @@ db 10, "This appears to be a Hexagon(R) display font file.", 0
 .arquivoCAN:
 db 10, "This appears to be a Hexagonix(R) config plugin file.", 0
 .arquivoPadrao:
-db 10, "This appears to be a plain text file.", 0
+db 10, "This appears to be a data file.", 0
 .parametroAjuda:
 db "?", 0
 .parametroAjuda2:
