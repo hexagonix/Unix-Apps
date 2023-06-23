@@ -82,10 +82,10 @@ include "macros.s"
 
 ;;************************************************************************************
 
-versaoMAN equ "2.3.4.1"
+versaoMAN equ "2.3.4.2"
 
-versaoCoreUtils equ "Raava-CURRENT-6.0" 
-versaoUnixUtils equ "Raava-CURRENT-6.0"
+versaoCoreUtils equ "Raava-CURRENT-6.1" 
+versaoUnixUtils equ "Raava-CURRENT-6.1"
 
 align 32
 
