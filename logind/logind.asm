@@ -102,7 +102,7 @@ tamanhoLimiteBusca = 32768
 
 ;;************************************************************************************
 
-versaoLOGIND equ "1.7.1"
+versaoLOGIND equ "1.7.2"
 
 arquivo:
 db "passwd", 0 ;; Nome do arquivo de configuração de login
@@ -133,7 +133,7 @@ db "  88       88  `'Pbbd8'' 8P'     `P8 `'8bbdP'P8  `'PbbdP'P8  `'PbbdP''  88  
 db "                                                 aa,    ,88", 10
 db "                                                  'P8bbdP'", 10, 10
 db "                              Hexagonix(R) Operating System", 10, 10
-db "                  Copyright (C) 2020-", __stringano, " Felipe Miguel Nery Lunkes", 10
+db "                  Copyright (C) 2015-", __stringano, " Felipe Miguel Nery Lunkes", 10
 db "                                    All rights reserved.", 10, 0
 
 }
