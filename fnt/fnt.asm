@@ -86,13 +86,13 @@ include "macros.s"
 ;;
 ;;************************************************************************************
 
-versaoFNT equ "0.6.1"
+versaoFNT equ "0.6.2"
 
 fnt:
 
 .uso:
 db 10, "Usage: fnt [graphic font file]", 10, 10   
-db "Asks to change the system graphics font.", 10, 10
+db "Changes the system font.", 10, 10
 db "fnt version ", versaoFNT, 10, 10
 db "Copyright (C) 2022-", __stringano, " Felipe Miguel Nery Lunkes", 10
 db "All rights reserved.", 0
@@ -101,7 +101,7 @@ db 10, "Font filename: ", 0
 .nomeFonte:
 db "Filename: ", 0
 .falhaFormato:
-db 10, "The file provided does not contain a font in Hexagon(R) format.", 0
+db 10, "The file does not contain a font in Hexagon(R) format.", 0
 .sucesso:
 db 10, 10, "Font changed successfully.", 0
 .falha:
