@@ -154,7 +154,7 @@ inicioAPP:
     
     jc .erroDeletando
     
-    fputs rm.deletado
+    ;; fputs rm.deletado
         
     jmp terminar
 
@@ -215,7 +215,7 @@ terminar:
 ;;
 ;;************************************************************************************
 
-versaoRM equ "1.1.3.2"
+versaoRM equ "1.1.3.3"
 
 rm:
 
