@@ -147,7 +147,7 @@ inicioAPP:
     
     jc erroAoSalvar
     
-    fputs cp.copiaConcluida
+;; Sucesso ao salvar
     
     jmp terminar
 
@@ -266,7 +266,7 @@ usoAplicativo:
 ;;
 ;;************************************************************************************
 
-versaoCP equ "2.1.5"  
+versaoCP equ "2.2.0"  
 
 cp:
     
@@ -280,20 +280,16 @@ db "cp version ", versaoCP, 10, 10
 db "Copyright (C) 2017-", __stringano, " Felipe Miguel Nery Lunkes", 10
 db "All rights reserved.", 0
 .fonteIndisponivel:
-db 10, "The provided source file cannot be found on this volume.", 0                              
+db 10, "The source file cannot be found on this volume.", 0                              
 .destinoExistente:
 db 10, "A file with the given name already exists for the destination. Please remove the file with the same", 10
 db "destination name and try again.", 0
 .erroAbrindo:
-db 10, "An error occurred while trying to open the copy source file.", 10
-db "Try again. If the error persists, restart your computer.", 0
+db 10, "An error occurred while trying to open the source file.", 0
 .erroSalvando:
-db 10, "An error occurred while requesting to save the target file to the volume.", 10
-db "This could be due to write protection, drive removal", 10
-db "out of storage or because the system is busy. Please try again", 10
-db "later.", 0
-.copiaConcluida:
-db 10, "The file has been successfully copied.", 0
+db 10, "An error occurred while requesting to save the file.", 10
+db "This could be due to write protection, drive removal, out of storage or because the system is busy.", 10
+db "Please try again later.", 0
 .parametroAjuda:
 db "?", 0
 .parametroAjuda2:
