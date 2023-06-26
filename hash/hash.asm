@@ -636,9 +636,10 @@ db "--help", 0
 db 10, "Shell script not found.", 0
 .argumentoNecessario:
 db 10, "An argument is necessary.", 0
-.imagemDisco: times 12 db 0        ;; Armazena o nome do shell à ser utilizado pelo sistema
-.posicaoBX:            dw 0        ;; Marcação da posição de busca no conteúdo do arquivo
-.prompt:    times 8 db 0
+
+.imagemDisco: times 12 db 0 ;; Armazena o nome do shell à ser utilizado pelo sistema
+.posicaoBX:            dw 0 ;; Marcação da posição de busca no conteúdo do arquivo
+.prompt:      times 8  db 0 ;; Armazena # ou $
  
 ;;**************************
 
