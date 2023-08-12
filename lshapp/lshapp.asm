@@ -90,7 +90,7 @@ include "macros.s"
 ;;
 ;;************************************************************************************
 
-versaoLSHAPP equ "1.11.2"
+versaoLSHAPP equ "1.11.3"
 
 lshapp:
 
@@ -105,16 +105,16 @@ db 10, 10, "The filename is invalid. Please enter a valid filename.", 10, 0
 .infoArquivo:
 db 10, "Filename: ", 0
 .tamanhoArquivo:
-db 10, "Size of this file: ", 0
+db 10, "File size: ", 0
 .bytes:
 db " bytes.", 10, 0
 .imagemInvalida:
 db 10, "<!> This is not a valid HAPP image. Try another file.", 0
 .semArquivo:
 db 10, 10, "<!> The requested file is not available on this volume.", 10, 10
-db "<!> Check the file name and try again.", 0  
+db "<!> Check the filename and try again.", 0  
 .tipoArquitetura:
-db 10, 10, "> Image target architecture: ", 0
+db 10, 10, "> Target architecture: ", 0
 .verHexagon:
 db 10, "> Minimum version of Hexagon(R) required to run: ", 0
 .camposVersaoHexagon:
