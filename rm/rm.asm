@@ -215,7 +215,7 @@ terminar:
 ;;
 ;;************************************************************************************
 
-versaoRM equ "1.1.3.3"
+versaoRM equ "1.1.4.0"
 
 rm:
 
@@ -244,7 +244,7 @@ db 10, "A required filename is missing.", 10
 db "Use 'rm ?' for help with this utility.", 0
 .permissaoNegada:
 db "Only an administrative (or root) user can complete this action.", 10
-db "To do so, login to one of these users with administrative privileges.", 0                 
+db "Login in this user to perform the desired operation.", 0                 
     
 parametro: dd ?
 regES:     dw 0
