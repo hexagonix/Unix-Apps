@@ -417,7 +417,7 @@ terminar:
 ;;
 ;;************************************************************************************
     
-versaoFILE equ "1.9.2.0"
+versaoFILE equ "1.9.2.1"
 
 fileUnix:
 
@@ -434,8 +434,7 @@ db 10, "File size: ", 0
 .bytes:
 db " bytes.", 0
 .semArquivo:
-db 10, "The requested file is not available on this volume.", 10
-db "Check the filename and try again.", 0  
+db 10, "The requested file is not available on this volume. Check the filename and try again.", 0  
 .appValido:
 db 10, "This appears to be a Unix executable for Hexagon(R).", 0
 .arquivoHBoot:
