@@ -102,7 +102,7 @@ tamanhoLimiteBusca = 32768
 
 ;;************************************************************************************
 
-versaoLOGIN equ "4.4.1"
+versaoLOGIN equ "4.4.2"
 
 shellPadrao:
 db "sh", 0     ;; Nome do arquivo que contêm o shell padrão do Hexagonix®
@@ -126,7 +126,7 @@ login:
 ;; Mensagens gerais
 
 .semArquivoUnix:
-db 10, 10, "The user account database was not found on the volume.", 10, 0        
+db 10, 10, "The user database was not found on the volume.", 10, 0        
 .solicitarUsuario:
 db 10, "Login: ", 0
 .solicitarSenha:
@@ -155,9 +155,9 @@ db "login version ", versaoLOGIN, ".", 0
 .verboseProcurarArquivo:
 db "Searching user database in /...", 0
 .verboseArquivoEncontrado:
-db "The user account database was found.", 0
+db "The user database was found.", 0
 .verboseArquivoAusente:
-db "The user account database was not found. The default shell will run (sh.app).", 0
+db "The user database was not found. The default shell will run (sh.app).", 0
 .verboseErro:
 db "An unhandled error was encountered.", 0
 .verboseLoginAceito:
