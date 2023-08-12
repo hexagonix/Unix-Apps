@@ -311,7 +311,7 @@ usoAplicativo:
 ;;
 ;;************************************************************************************
 
-versaoMOUNT equ "2.3.3"
+versaoMOUNT equ "2.3.4"
 
 mount:
 
@@ -350,8 +350,7 @@ db " type ", 0
 .operacaoNegada:
 db "The mount was refused by the system. This may be explained due to the fact that the current user", 10
 db "does not have administrative privileges, not being a root user (root).", 10, 10
-db "Only the root user (root) can perform mounts. Login in this user to perform", 10
-db "the desired mount.", 0
+db "Only the root user (root) can perform mounts. Login in this user to perform the desired mount.", 0
 .parenteses1:
 db " (", 0
 .parenteses2:
