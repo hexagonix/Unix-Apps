@@ -86,7 +86,7 @@ include "macros.s"
 ;;
 ;;************************************************************************************
 
-versaoFNT equ "0.6.2"
+versaoFNT equ "0.6.3"
 
 fnt:
 
@@ -109,7 +109,8 @@ db 10, "File not found.", 0
 .introducaoTeste:
 db 10, "Font and characters preview: ", 0
 .testeFonte:
-db 10, 10, "Hexagonix(R) Operating System", 10, 10
+db 10, 10
+db "Hexagonix(R) Operating System", 10, 10
 db "1234567890-=", 10
 db "!@#$%^&*()_+", 10
 db "QWERTYUIOP{}", 10
