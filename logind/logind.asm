@@ -102,7 +102,7 @@ tamanhoLimiteBusca = 32768
 
 ;;************************************************************************************
 
-versaoLOGIND equ "1.7.2"
+versaoLOGIND equ "1.7.3"
 
 arquivo:
 db "passwd", 0 ;; Nome do arquivo de configuração de login
@@ -150,7 +150,7 @@ db 10, "Hexagonix version ", 0
 .console:
 db " (vd0)", 0
 .semArquivoUnix:
-db 10, 10, "The user account database was not found on the volume.", 10, 0        
+db 10, 10, "The user database was not found on the volume.", 10, 0        
 .colcheteEsquerdo:
 db " [", 0
 .colcheteDireito:
