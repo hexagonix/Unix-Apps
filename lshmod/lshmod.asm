@@ -86,7 +86,7 @@ include "macros.s"
 ;;
 ;;************************************************************************************
 
-versaoLSHMOD equ "0.6.3"
+versaoLSHMOD equ "0.6.4"
 
 lshmod:
 
@@ -101,14 +101,14 @@ db 10, "The file name is invalid. Please enter a valid filename.", 0
 .infoArquivo:
 db 10, "Filename: ", 0
 .tamanhoArquivo:
-db 10, "Size of this file: ", 0
+db 10, "File size: ", 0
 .bytes:
 db " bytes.", 10, 0
 .imagemInvalida:
 db 10, "<!> This is not an HBoot module image. Try another file.", 0
 .semArquivo:
 db 10, "<!> The requested file is not available on this volume.", 10, 10
-db "<!> Check the file name and try again.", 0  
+db "<!> Check the filename and try again.", 0  
 .tipoArquitetura:
 db 10, 10, "> Target architecture: ", 0
 .verModulo:
