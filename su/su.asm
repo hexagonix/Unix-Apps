@@ -700,7 +700,7 @@ terminar:
 ;;
 ;;************************************************************************************
 
-versaoSU equ "2.3.4"
+versaoSU equ "2.3.5"
 
 shellPadrao:
 db "sh", 0          ;; Nome do arquivo que contêm o shell padrão do Hexagonix®
@@ -722,8 +722,7 @@ posicaoBX:         dw 0
 su:
 
 .grandesPoderes:
-db 10, 10, "You are now an administrative user. This means you can make deep changes to", 10
-db "system, so be careful.", 10, 10
+db 10, 10, "You are now an administrative user. This means you can make deep changes to system, so be careful.", 10, 10
 db 'Remember: "Great power comes with great responsibility"!', 0  
 .solicitarSenha:
 db "Enter your UNIX password: ", 0 
@@ -734,7 +733,7 @@ db "su version ", versaoSU, 10, 10
 db "Copyright (C) 2017-", __stringano, " Felipe Miguel Nery Lunkes", 10
 db "All rights reserved.", 0
 .semArquivoUnix:
-db 10, "The user account database was not found on the volume.", 0 
+db 10, "The user database was not found on the volume.", 0 
 .semUsuario:
 db 10, "The requested user was not found: ", 0              
 .parametroAjuda:
