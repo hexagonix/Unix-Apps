@@ -133,15 +133,13 @@ inicioAPP:
     
     jc erroAbertura
     
-    fputs mount.montado
-    
     jmp terminar
 
 ;;************************************************************************************
 
 exibirMontagens:
     
-    fputs mount.volumeMontado
+    novaLinha
 
     hx.syscall obterDisco
     
@@ -218,6 +216,9 @@ erroAbertura:
     cmp eax, IO.operacaoNegada
     je .operacaoNegada
 
+    cmp eax, IO.naoEncontrado
+    je .naoEncontrado
+
     fputs mount.erroAbrindo
 
     jmp terminar
@@ -225,6 +226,12 @@ erroAbertura:
 .operacaoNegada:
 
     fputs mount.operacaoNegada
+
+    jmp terminar
+
+.naoEncontrado:
+
+    fputs mount.naoEncontrado
 
     jmp terminar
 
@@ -311,18 +318,16 @@ usoAplicativo:
 ;;
 ;;************************************************************************************
 
-versaoMOUNT equ "2.3.4"
+versaoMOUNT equ "2.5.0"
 
 mount:
 
 .volume:
 db 10, "Mounting [", 0
-.fecharColchete:
-db "]...", 10, 10, 0
 .pontoMontagem:
 db "] on [", 0
-.montado:
-db "Success mouting the volume.", 0
+.fecharColchete:
+db "]...", 0
 .uso:
 db 10, "Usage: mount [volume] [mount point]", 10, 10
 db "Performs mounting a volume to a file system mount point.", 10, 10
@@ -331,7 +336,7 @@ db "mount version ", versaoMOUNT, 10, 10
 db "Copyright (C) 2017-", __stringano, " Felipe Miguel Nery Lunkes", 10
 db "All rights reserved.", 0
 .erroAbrindo:
-db "Error mounting volume at specified mount point.", 10
+db 10, "Error mounting volume at specified mount point.", 10
 db "Try to enter a valid name or reference of an attached volume.", 0
 .parametroAjuda:
 db "?", 0
@@ -339,14 +344,14 @@ db "?", 0
 db "/", 0
 .erroPontoMontagem:
 db 10, "Please enter a valid mount point for this volume and file system.", 0
-.volumeMontado:
-db 10, 0
 .infoVolume:
 db " on ", 0
 .rotuloVolume:
 db " with the label ", 0
 .tipoFS:
 db " type ", 0
+.naoEncontrado:
+db 10, "Device not found.", 0
 .operacaoNegada:
 db "The mount was refused by the system. This may be explained due to the fact that the current user", 10
 db "does not have administrative privileges, not being a root user (root).", 10, 10
