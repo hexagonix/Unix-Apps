@@ -700,7 +700,7 @@ terminar:
 ;;
 ;;************************************************************************************
 
-versaoSU equ "2.3.5"
+versaoSU equ "2.3.5.1"
 
 shellPadrao:
 db "sh", 0          ;; Nome do arquivo que contêm o shell padrão do Hexagonix®
@@ -743,7 +743,7 @@ db "--help", 0
 .usuarioROOT:
 db "root", 0
 .falhaAutenticacao:
-db 10, "su: Authentication failed.", 0
+db 10, "su: authentication failed.", 0
 
 usuarioSolicitado:  times 17 db 0
 usuarioAnterior:    times 17 db 0
