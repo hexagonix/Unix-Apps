@@ -318,7 +318,7 @@ usoAplicativo:
 ;;
 ;;************************************************************************************
 
-versaoMOUNT equ "2.5.0"
+versaoMOUNT equ "2.5.1"
 
 mount:
 
@@ -351,7 +351,7 @@ db " with the label ", 0
 .tipoFS:
 db " type ", 0
 .naoEncontrado:
-db 10, "Device not found.", 0
+db 10, "Device not found or filesystem not supported.", 0
 .operacaoNegada:
 db "The mount was refused by the system. This may be explained due to the fact that the current user", 10
 db "does not have administrative privileges, not being a root user (root).", 10, 10
