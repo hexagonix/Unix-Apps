@@ -82,7 +82,7 @@ include "macros.s"
 
 ;;************************************************************************************
 
-versaoMAN equ "2.3.4.2"
+versaoMAN equ "2.3.4.3"
 
 versaoCoreUtils equ "Raava-CURRENT-6.1" 
 versaoUnixUtils equ "Raava-CURRENT-6.1"
@@ -96,7 +96,7 @@ db "?", 0
 .parametroAjuda2:
 db "--help",0
 .man:
-db "Hexagonix(R) manual", 0
+db "Hexagonix manual", 0
 .uso:
 db 10, "Usage: man [utility]", 10, 10
 db "Display detailed help for installed Unix utilities.", 10, 10
