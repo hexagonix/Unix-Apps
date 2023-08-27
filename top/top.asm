@@ -223,12 +223,12 @@ definirCorPadrao:
 
 parametro: dd ?
 
-versaoTOP equ "1.2.3"
+versaoTOP equ "1.2.4"
 
 top:
 
 .inicio:
-db "Hexagonix(R) process viewer", 10, 10, 0   
+db "Hexagonix process viewer", 10, 10, 0   
 .pid:
 db "PID of this process: ", 0
 .usoMem:
@@ -243,7 +243,7 @@ db " kbytes.", 0
 db " megabytes.", 0
 .uso:
 db "Usage: top", 10, 10
-db "Displays the processes loaded in the Hexagonix(R) execution stack.", 10, 10
+db "Displays the processes loaded in the Hexagonix execution stack.", 10, 10
 db "Kernel processes are filtered and not displayed in this list.", 10, 10
 db "top version ", versaoTOP, 10, 10
 db "Copyright (C) 2017-", __stringano, " Felipe Miguel Nery Lunkes", 10
