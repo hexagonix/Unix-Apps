@@ -90,7 +90,7 @@ include "macros.s"
 ;;
 ;;************************************************************************************
 
-versaoLSHAPP equ "1.11.3"
+versaoLSHAPP equ "1.11.4"
 
 lshapp:
 
@@ -116,7 +116,7 @@ db "<!> Check the filename and try again.", 0
 .tipoArquitetura:
 db 10, 10, "> Target architecture: ", 0
 .verHexagon:
-db 10, "> Minimum version of Hexagon(R) required to run: ", 0
+db 10, "> Minimum version of Hexagon required to run: ", 0
 .camposVersaoHexagon:
 db " -> [HAPP:version and HAPP:subversion].", 0
 .cabecalho:
