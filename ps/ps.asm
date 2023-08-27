@@ -195,7 +195,7 @@ terminar:
 
 ;;************************************************************************************
 
-versaoPS equ "1.1.3"
+versaoPS equ "1.1.4"
 
 parametro: dd ?
 
@@ -230,4 +230,4 @@ db "-v", 0
 .numeroProcessos:
 db "There are currently ", 0
 .processos:
-db " processes in the Hexagonix(R) runtime stack.", 0
+db " processes in the Hexagonix runtime stack.", 0
