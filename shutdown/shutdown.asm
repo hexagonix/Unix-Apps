@@ -305,7 +305,7 @@ terminar:
 
 rotuloMENSAGEM equ "[shutdown]: "
 
-versaoSHUTDOWN  equ "1.4.1"
+versaoSHUTDOWN  equ "1.4.2"
 
 shutdown:
 
@@ -324,7 +324,7 @@ db 10, 10, "!> Preparing to shut down your computer... ", 0
 .msgFinalizando:
 db 10, 10, "#> Terminating all processes still running...  ", 0
 .msgHexagonix:
-db 10, 10, "#> Shutting down the Hexagonix(R) Operating System...    ", 0
+db 10, 10, "#> Shutting down the Hexagonix Operating System...    ", 0
 .msgDiscos:
 db 10, 10, "#> Stoping disks and shutting down your computer... ", 0
 .msgPronto:
@@ -336,7 +336,7 @@ db "?", 0
 .parametroAjuda2:
 db "--help", 0
 .sistema:
-db 10, "Hexagonix(R) Operating System", 10
+db 10, "Hexagonix Operating System", 10
 db "Copyright (C) 2015-", __stringano, " Felipe Miguel Nery Lunkes", 10
 db "All rights reserved.", 0
 .argumentos:
