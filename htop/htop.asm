@@ -356,12 +356,12 @@ encontrarCaractereLista:
 
 parametro: dd ?
 
-versaoHTOP equ "1.4.2"
+versaoHTOP equ "1.4.3"
 
 htop:
 
 .inicio:
-db "Hexagonix(R) process viewer", 10, 10, 0   
+db "Hexagonix process viewer", 10, 10, 0   
 .pid:
 db "PID of this process: ", 0
 .usoMem:
