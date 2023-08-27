@@ -417,7 +417,7 @@ terminar:
 ;;
 ;;************************************************************************************
     
-versaoFILE equ "1.9.2.1"
+versaoFILE equ "1.9.2.2"
 
 fileUnix:
 
@@ -436,7 +436,7 @@ db " bytes.", 0
 .semArquivo:
 db 10, "The requested file is not available on this volume. Check the filename and try again.", 0  
 .appValido:
-db 10, "This appears to be a Unix executable for Hexagon(R).", 0
+db 10, "This appears to be a Unix executable for Hexagon.", 0
 .arquivoHBoot:
 db 10, "This appears to be an executable in HBoot format (HBoot or HBoot module).", 0
 .arquivoASM:
@@ -454,9 +454,9 @@ db 10, "This appears to be a database file from the cowsay utility.", 0
 .arquivoTXT:
 db 10, "This appears to be a UTF-8 text file.", 0
 .arquivoFNT:
-db 10, "This appears to be a Hexagon(R) display font file.", 0
+db 10, "This appears to be a Hexagon display font file.", 0
 .arquivoCAN:
-db 10, "This appears to be a Hexagonix(R) config plugin file.", 0
+db 10, "This appears to be a Hexagonix config plugin file.", 0
 .arquivoPadrao:
 db 10, "This appears to be a data file.", 0
 .parametroAjuda:
