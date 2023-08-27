@@ -86,7 +86,7 @@ include "macros.s"
 ;;
 ;;************************************************************************************
 
-versaoFNT equ "0.6.3"
+versaoFNT equ "0.6.4"
 
 fnt:
 
@@ -101,7 +101,7 @@ db 10, "Font filename: ", 0
 .nomeFonte:
 db "Filename: ", 0
 .falhaFormato:
-db 10, "The file does not contain a font in Hexagon(R) format.", 0
+db 10, "The file does not contain a font in Hexagon format.", 0
 .sucesso:
 db 10, 10, "Font changed successfully.", 0
 .falha:
@@ -110,7 +110,7 @@ db 10, "File not found.", 0
 db 10, "Font and characters preview: ", 0
 .testeFonte:
 db 10, 10
-db "Hexagonix(R) Operating System", 10, 10
+db "Hexagonix Operating System", 10, 10
 db "1234567890-=", 10
 db "!@#$%^&*()_+", 10
 db "QWERTYUIOP{}", 10
@@ -119,7 +119,7 @@ db 'ASDFGHJKL:"|', 10
 db "asdfghjkl;'\", 10
 db "ZXCVBNM<>?", 10
 db "zxcvbnm,./", 10, 10
-db "Hexagonix(R) Operating System", 10, 0
+db "Hexagonix Operating System", 10, 0
 .tamanhoSuperior:
 db 10, "This font file exceeds the maximum size of 2 Kb.", 0
 .parametroAjuda: 
