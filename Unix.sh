@@ -68,15 +68,15 @@
 #
 # $HexagonixOS$
 
-# Versão 2.0
+# Versão 2.1
 
 gerarBaseUnix(){
 
 echo
-echo -e "\e[1;94mBuilding Hexagonix® Unix applications...\e[0m {"
+echo -e "\e[1;94mBuilding Hexagonix Unix applications...\e[0m {"
 echo
 
-echo "Building Hexagonix® Unix based applications... {" >> $LOG
+echo "Building Hexagonix Unix based applications... {" >> $LOG
 echo >> $LOG
     
 # Vamos agora automatizar a construção dos aplicativos base Unix
@@ -89,9 +89,9 @@ do
     for h in *.asm
     do
 
-    echo -en "Building Hexagonix® Unix utility \e[1;94m$(basename $h .asm)\e[0m..."
+    echo -en "Building Hexagonix Unix utility \e[1;94m$(basename $h .asm)\e[0m..."
     
-    echo " > Building Hexagonix® Unix utility $(basename $h .asm)..." >> ../$LOG
+    echo " > Building Hexagonix Unix utility $(basename $h .asm)..." >> ../$LOG
     
     fasm $h ../../../Andromeda/bin/`basename $h .asm` -d $FLAGS_COMUM >> ../$LOG || desmontar
     
