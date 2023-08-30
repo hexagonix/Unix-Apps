@@ -78,8 +78,8 @@ cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, inicioAPP, 01h
 ;;************************************************************************************
 
 include "hexagon.s"
-include "macros.s"
 include "console.s"
+include "macros.s"
 
 ;;************************************************************************************
 
