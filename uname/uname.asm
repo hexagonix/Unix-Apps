@@ -78,6 +78,7 @@ cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, inicioAPP, 01h
 ;;************************************************************************************
 
 include "hexagon.s"
+include "console.s"
 include "macros.s"
 include "verUtils.s"
     
@@ -85,7 +86,7 @@ include "verUtils.s"
 
 align 4
 
-versaoUNAME equ "2.6.2"
+versaoUNAME equ "2.6.3"
 
 uname:
 
