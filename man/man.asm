@@ -78,14 +78,15 @@ cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, inicioAPP, 01h
 ;;************************************************************************************
 
 include "hexagon.s"
+include "console.s"
 include "macros.s"
 
 ;;************************************************************************************
 
-versaoMAN equ "2.3.4.3"
+versaoMAN equ "2.3.4.4"
 
-versaoCoreUtils equ "Raava-CURRENT-6.1" 
-versaoUnixUtils equ "Raava-CURRENT-6.1"
+versaoCoreUtils equ "Raava-CURRENT-6.2" 
+versaoUnixUtils equ "Raava-CURRENT-6.2"
 
 align 32
 
