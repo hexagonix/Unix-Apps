@@ -87,6 +87,7 @@ cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, loginHexagonix, 01h
 ;;************************************************************************************
                     
 include "hexagon.s"
+include "console.s"
 include "macros.s"
 include "log.s"
 
@@ -102,7 +103,7 @@ tamanhoLimiteBusca = 32768
 
 ;;************************************************************************************
 
-versaoLOGIN equ "4.4.2"
+versaoLOGIN equ "4.4.3"
 
 shellPadrao:
 db "sh", 0     ;; Nome do arquivo que contêm o shell padrão do Hexagonix®
