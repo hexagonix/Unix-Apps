@@ -78,6 +78,7 @@ cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, inicioShell, 01h
 ;;************************************************************************************
 
 include "hexagon.s"
+include "console.s"
 include "macros.s"
 include "erros.s"
 
@@ -630,7 +631,7 @@ finalizarShell:
 ;; Ela deve ser utilizada para identificar para qual versão do Hexagonix® o sh foi
 ;; desenvolvido.
             
-versaoSH equ "1.7.1.2"
+versaoSH equ "1.7.1.3"
 
 tamanhoLimiteBusca = 32768
 
