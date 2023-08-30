@@ -78,6 +78,7 @@ cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, inicioAPP, 01h
 ;;************************************************************************************
 
 include "hexagon.s"
+include "console.s"
 include "macros.s"
 include "log.s"
 
@@ -89,7 +90,7 @@ include "log.s"
 ;;
 ;;************************************************************************************
 
-versaoSYSLOGD equ "0.5" 
+versaoSYSLOGD equ "0.6" 
 
 syslogd:
 
