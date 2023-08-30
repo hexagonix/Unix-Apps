@@ -78,6 +78,7 @@ cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, inicioAPP, 01h
 ;;************************************************************************************
 
 include "hexagon.s"
+include "console.s"
 include "macros.s"
 include "log.s"
 
@@ -305,7 +306,7 @@ terminar:
 
 rotuloMENSAGEM equ "[shutdown]: "
 
-versaoSHUTDOWN  equ "1.4.2"
+versaoSHUTDOWN  equ "1.4.3"
 
 shutdown:
 
