@@ -95,6 +95,7 @@ cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, suHexagonix, 01h
 ;;************************************************************************************
 
 include "hexagon.s"
+include "console.s"
 include "macros.s"
 
 ;;************************************************************************************          
@@ -700,7 +701,7 @@ terminar:
 ;;
 ;;************************************************************************************
 
-versaoSU equ "2.3.5.1"
+versaoSU equ "2.3.5.2"
 
 shellPadrao:
 db "sh", 0          ;; Nome do arquivo que contêm o shell padrão do Hexagonix®
