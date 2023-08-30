@@ -78,6 +78,7 @@ cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, inicioAPP, 01h
 ;;************************************************************************************
 
 include "hexagon.s"
+include "console.s"
 include "macros.s"
 
 ;;************************************************************************************
@@ -86,7 +87,7 @@ include "macros.s"
 ;;
 ;;************************************************************************************
 
-versaoLSHMOD equ "0.6.4"
+versaoLSHMOD equ "0.6.5"
 
 lshmod:
 
