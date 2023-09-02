@@ -306,7 +306,7 @@ terminar:
 
 rotuloMENSAGEM equ "[shutdown]: "
 
-versaoSHUTDOWN  equ "1.4.3"
+versaoSHUTDOWN  equ "1.4.4"
 
 shutdown:
 
@@ -321,13 +321,13 @@ db "-re", 0
 .desligarAgora:
 db "now", 0
 .msgDesligamento:
-db 10, 10, "!> Preparing to shut down your computer... ", 0
+db 10, 10, "!> Preparing to shutdown the computer...  ", 0
 .msgFinalizando:
 db 10, 10, "#> Terminating all processes still running...  ", 0
 .msgHexagonix:
-db 10, 10, "#> Shutting down the Hexagonix Operating System...    ", 0
+db 10, 10, "#> The system is coming down. Please wait...    ", 0
 .msgDiscos:
-db 10, 10, "#> Stoping disks and shutting down your computer... ", 0
+db 10, 10, "#> Stoping disks and shutting down the computer... ", 0
 .msgPronto:
 db "[Ok]", 0
 .msgFalha:
