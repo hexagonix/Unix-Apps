@@ -87,7 +87,7 @@ include "macros.s"
 ;;
 ;;************************************************************************************
 
-versaoFNT equ "0.6.5"
+versaoFNT equ "0.6.6"
 
 fnt:
 
@@ -108,7 +108,7 @@ db 10, 10, "Font changed successfully.", 0
 .falha:
 db 10, "File not found.", 0
 .introducaoTeste:
-db 10, "Font and characters preview: ", 0
+db 10, "Font preview: ", 0
 .testeFonte:
 db 10, 10
 db "Hexagonix Operating System", 10, 10
