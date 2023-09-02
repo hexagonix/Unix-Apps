@@ -102,7 +102,7 @@ tamanhoLimiteBusca = 32768
 
 ;;************************************************************************************
 
-versaoLOGIND equ "1.7.4"
+versaoLOGIND equ "1.7.4.1"
 
 arquivo:
 db "passwd", 0 ;; Nome do arquivo de configuração de login
@@ -141,7 +141,8 @@ db "                                    All rights reserved.", 10, 0
 match =Hexagonix, TIPOLOGIN
 {
 
-.sobreSistema:     db 0
+.sobreSistema:
+db 0
 
 }
 
