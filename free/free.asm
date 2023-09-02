@@ -124,17 +124,13 @@ inicioAPP:
 
     hx.syscall usoMemoria
     
-    cursorPara 20, [free.posicaoY]
-
-    hx.syscall definirCursor
+    gotoxy 20, [free.posicaoY]
 
     imprimirInteiro
 
     fputs free.kbytes
 
-    cursorPara 40, [free.posicaoY]
-
-    hx.syscall definirCursor
+    gotoxy 40, [free.posicaoY]
 
     hx.syscall usoMemoria
 
@@ -171,7 +167,7 @@ terminar:
 
 ;;************************************************************************************
 
-versaoFREE equ "1.0.3"
+versaoFREE equ "1.1.0"
 
 free:
 
