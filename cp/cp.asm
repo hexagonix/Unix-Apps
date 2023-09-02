@@ -267,7 +267,7 @@ usoAplicativo:
 ;;
 ;;************************************************************************************
 
-versaoCP equ "2.2.1"  
+versaoCP equ "2.2.2"  
 
 cp:
     
@@ -289,7 +289,7 @@ db "destination name and try again.", 0
 db 10, "An error occurred while trying to open the source file.", 0
 .erroSalvando:
 db 10, "An error occurred while requesting to save the file.", 10
-db "This could be due to write protection, drive removal, out of storage or because the system is busy.", 10
+db "This could be due to write protection, volume removal, out of storage or because the system is busy.", 10
 db "Please try again later.", 0
 .parametroAjuda:
 db "?", 0
