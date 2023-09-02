@@ -343,7 +343,7 @@ terminar:
 
 ;;************************************************************************************
 
-versaoDATE equ "1.2.5"
+versaoDATE equ "1.2.5.1"
 
 date:
         
@@ -354,19 +354,19 @@ db "date version ", versaoDATE, 10, 10
 db "Copyright (C) 2020-", __stringano, " Felipe Miguel Nery Lunkes", 10
 db "All rights reserved.", 0
 .domingo:
-db " (domingo)", 0
+db " (Sunday)", 0
 .segunda:
-db " (segunda-feira)", 0
+db " (Monday)", 0
 .terca:
-db " (terca-feira)", 0
+db " (Tuesday)", 0
 .quarta:
-db " (quarta-feira)", 0
+db " (Wednesday)", 0
 .quinta:
-db " (quinta-feira)", 0
+db " (Thursday)", 0
 .sexta:
-db " (sexta-feira)", 0
+db " (Friday)", 0
 .sabado:
-db " (sabado)", 0
+db " (Saturday)", 0
 .parametroAjuda:
 db "?", 0
 .parametroAjuda2:
