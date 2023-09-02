@@ -83,10 +83,10 @@ include "macros.s"
 
 ;;************************************************************************************
 
-versaoMAN equ "2.3.4.4"
+versaoMAN equ "2.3.5"
 
-versaoCoreUtils equ "Raava-CURRENT-6.2" 
-versaoUnixUtils equ "Raava-CURRENT-6.2"
+versaoCoreUtils equ "Raava-CURRENT-6.2.1" 
+versaoUnixUtils equ "Raava-CURRENT-6.2.1"
 
 align 32
 
@@ -161,7 +161,7 @@ inicioAPP:
     
     mov byte[esi+ebx+3], al
     
-    mov byte[esi+ebx+4], 0      ;; Fim da string
+    mov byte[esi+ebx+4], 0 ;; Fim da string
 
     push esi
 
@@ -179,8 +179,6 @@ inicioAPP:
 
 ;; Preparação do ambiente
 
-    hx.syscall limparTela
-
     call montarInterface
     
     fputs bufferArquivo
@@ -190,27 +188,12 @@ inicioAPP:
 ;;************************************************************************************
 
 montarInterface:
+
+    hx.syscall limparTela
     
     fputs man.man
 
-    mov ecx, 24
-
-.loopEspaco:
-
-    mov al, ' '
-    
-    hx.syscall imprimirCaractere
-    
-    dec ecx
-    
-    cmp ecx, 0
-    je .terminado
-    
-    jmp .loopEspaco
-
-.terminado:
-
-    fputs [utilitario]
+    xyfputs 40, 0, [utilitario]
 
     novaLinha
     novaLinha
