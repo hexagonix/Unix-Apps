@@ -11,9 +11,9 @@
 ;;                                               aa,    ,88                                         
 ;;                                                "P8bbdP"       
 ;;
-;;                    Sistema Operacional Hexagonix® - Hexagonix® Operating System
+;;                     Sistema Operacional Hexagonix - Hexagonix Operating System
 ;;
-;;                          Copyright © 2015-2023 Felipe Miguel Nery Lunkes
+;;                         Copyright (c) 2015-2023 Felipe Miguel Nery Lunkes
 ;;                        Todos os direitos reservados - All rights reserved.
 ;;
 ;;*************************************************************************************************
@@ -145,7 +145,7 @@ inicioAPP:
 ;; tal mesmo se tiverem diferentes extensões, visto que cada shell pode procurar por um
 ;; tipo de extensão específico/preferido além de .APP. Imagens acessórias que necessitam
 ;; de ser chamadas por outro processo no âmbito de sua execução podem apresentar outra extensão.
-;; O próprio Hexagon® é uma imagem HAPP mas apresenta extensão .SIS
+;; O próprio Hexagon é uma imagem HAPP mas apresenta extensão .SIS
 
     call verificarArquivoHAPP 
     
