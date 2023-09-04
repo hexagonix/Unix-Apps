@@ -11,9 +11,9 @@
 ;;                                               aa,    ,88                                         
 ;;                                                "P8bbdP"       
 ;;
-;;                    Sistema Operacional Hexagonix® - Hexagonix® Operating System
+;;                     Sistema Operacional Hexagonix - Hexagonix Operating System
 ;;
-;;                          Copyright © 2015-2023 Felipe Miguel Nery Lunkes
+;;                         Copyright (c) 2015-2023 Felipe Miguel Nery Lunkes
 ;;                        Todos os direitos reservados - All rights reserved.
 ;;
 ;;*************************************************************************************************
@@ -91,7 +91,7 @@ include "macros.s"
 ;;
 ;;************************************************************************************
 
-versaoLSHAPP equ "1.11.5"
+versaoLSHAPP equ "1.11.6"
 
 lshapp:
 
@@ -230,10 +230,7 @@ inicioAPP:
 
 ;; Primeiro vamos ver se se trata de uma imagem executável. Se sim, podemos pular todo o
 ;; restante do processamento. Isso garante que imagens executáveis sejam relatadas como
-;; tal mesmo se tiverem diferentes extensões, visto que cada shell pode procurar por um
-;; tipo de extensão específico/preferido além de .APP. Imagens acessórias que necessitam
-;; de ser chamadas por outro processo no âmbito de sua execução podem apresentar outra extensão.
-;; O próprio Hexagon® é uma imagem HAPP mas apresenta extensão .SIS
+;; tal mesmo se tiverem diferentes extensões. O próprio Hexagon é uma imagem HAPP.
 
     call verificarArquivoHAPP 
 
