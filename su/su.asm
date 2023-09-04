@@ -11,9 +11,9 @@
 ;;                                               aa,    ,88                                         
 ;;                                                "P8bbdP"       
 ;;
-;;                    Sistema Operacional Hexagonix® - Hexagonix® Operating System
+;;                     Sistema Operacional Hexagonix - Hexagonix Operating System
 ;;
-;;                          Copyright © 2015-2023 Felipe Miguel Nery Lunkes
+;;                         Copyright (c) 2015-2023 Felipe Miguel Nery Lunkes
 ;;                        Todos os direitos reservados - All rights reserved.
 ;;
 ;;*************************************************************************************************
@@ -68,9 +68,9 @@
 
 ;;************************************************************************************
 ;;                                                                                  
-;;                         Utilitário su para Hexagonix®                 
+;;                          Utilitário su para Hexagonix                 
 ;;                                                                   
-;;                  Copyright © 2015-2023 Felipe Miguel Nery Lunkes                
+;;                 Copyright (c) 2015-2023 Felipe Miguel Nery Lunkes                
 ;;                          Todos os direitos reservados.                    
 ;;                                                                   
 ;;************************************************************************************
@@ -183,24 +183,24 @@ iniciarExecucao:
     
     stc
     
-    hx.syscall iniciarProcesso      ;; Solicitar o carregamento do shell do Hexagonix®
+    hx.syscall iniciarProcesso      ;; Solicitar o carregamento do shell do Hexagonix
  
     jnc .shellFinalizado
 
 .naoEncontrado:                    ;; O shell não pôde ser localizado
     
-   cmp byte[tentarShellPadrao], 0  ;; Verifica se já se tentou carregar o shell padrão do Hexagonix®
-   je .tentarShellPadrao           ;; Se não, tente carregar o shell padrão do Hexagonix®
+   cmp byte[tentarShellPadrao], 0  ;; Verifica se já se tentou carregar o shell padrão do Hexagonix
+   je .tentarShellPadrao           ;; Se não, tente carregar o shell padrão do Hexagonix
     
    hx.syscall encerrarProcesso      ;; Se sim, o shell padrão também não pode ser executado  
 
-.tentarShellPadrao:                ;; Tentar carregar o shell padrão do Hexagonix®
+.tentarShellPadrao:                ;; Tentar carregar o shell padrão do Hexagonix
 
-   call obterShellPadrao           ;; Solicitar a configuração do nome do shell padrão do Hexagonix®
+   call obterShellPadrao           ;; Solicitar a configuração do nome do shell padrão do Hexagonix
     
-   mov byte[tentarShellPadrao], 1  ;; Sinalizar a tentativa de carregamento do shell padrão do Hexagonix®
+   mov byte[tentarShellPadrao], 1  ;; Sinalizar a tentativa de carregamento do shell padrão do Hexagonix
     
-   jmp .carregarShell              ;; Tentar carregar o shell padrão do Hexagonix®
+   jmp .carregarShell              ;; Tentar carregar o shell padrão do Hexagonix
     
 .shellFinalizado:                  ;; Tentar carregar o shell novamente
     
@@ -704,7 +704,7 @@ terminar:
 versaoSU equ "2.3.5.2"
 
 shellPadrao:
-db "sh", 0          ;; Nome do arquivo que contêm o shell padrão do Hexagonix®
+db "sh", 0          ;; Nome do arquivo que contêm o shell padrão do Hexagonix
 vd0:
 db "vd0", 0         ;; Console principal
 vd1:
