@@ -222,8 +222,6 @@ reiniciarHexagon:
 
 prepararSistemaSemEco:
 
-;; Qualquer ação que possa ser incluída aqui
-
     mov ecx, 20000
     
     hx.syscall causarAtraso
