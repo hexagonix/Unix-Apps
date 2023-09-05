@@ -90,7 +90,7 @@ include "log.s"
 ;;
 ;;************************************************************************************
 
-versaoSYSLOGD equ "0.6" 
+versaoSYSLOGD equ "0.7" 
 
 syslogd:
 
@@ -104,8 +104,6 @@ db "All rights reserved.", 0
 db "?", 0
 .parametroAjuda2:
 db "--help", 0
-.verboseIniciando:
-db "syslogd version ", versaoSYSLOGD, ".", 0
 
 parametro: dd ? ;; Endereço do parâmetro
 
@@ -122,8 +120,6 @@ inicioAPP:
     
     mov [parametro], edi
     
-    logSistema syslogd.verboseIniciando, 0, Log.Prioridades.p4
-
     mov esi, [parametro]
         
     cmp byte[esi], 0
