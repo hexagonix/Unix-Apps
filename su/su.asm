@@ -701,24 +701,24 @@ terminar:
 ;;
 ;;************************************************************************************
 
-versaoSU equ "2.3.5.2"
+versaoSU equ "2.3.5.3"
 
 shellPadrao:
-db "sh", 0          ;; Nome do arquivo que contêm o shell padrão do Hexagonix
+db "sh", 0     ;; Nome do arquivo que contêm o shell padrão do Hexagonix
 vd0:
-db "vd0", 0         ;; Console principal
+db "vd0", 0    ;; Console principal
 vd1:
-db "vd1", 0         ;; Console secundário
+db "vd1", 0    ;; Console secundário
 arquivo:
-db "passwd", 0      ;; Nome do arquivo de gerenciamento de login
-tentarShellPadrao: db 0                ;; Sinaliza a tentativa de se carregar o shell padrão
-shellHexagonix:    times 11 db 0       ;; Armazena o nome do shell à ser utilizado pelo sistema
-usuario:           times 15 db 0       ;; Nome de usuário obtido no arquivo
-senhaObtida:       times 64 db 0       ;; Senha obtida no arquivo
-parametros:        db 0                ;; Se o aplicativo recebeu algum parâmetro
+db "passwd", 0 ;; Nome do arquivo de gerenciamento de login
+tentarShellPadrao:          db 0 ;; Sinaliza a tentativa de se carregar o shell padrão
+shellHexagonix:    times 11 db 0 ;; Armazena o nome do shell à ser utilizado pelo sistema
+usuario:           times 15 db 0 ;; Nome de usuário obtido no arquivo
+senhaObtida:       times 64 db 0 ;; Senha obtida no arquivo
+parametros:                 db 0 ;; Se o aplicativo recebeu algum parâmetro
 ponto:
 db ".", 0
-posicaoBX:         dw 0
+posicaoBX: dw 0
 
 su:
 
