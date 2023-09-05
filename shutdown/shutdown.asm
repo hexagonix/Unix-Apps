@@ -278,7 +278,7 @@ terminar:
 
 rotuloMENSAGEM equ "[shutdown]: "
 
-versaoSHUTDOWN  equ "1.5.2"
+versaoSHUTDOWN  equ "1.5.3"
 
 shutdown:
 
@@ -310,9 +310,9 @@ db 10, "An argument is required.", 0
 db 10, "Usage: shutdown [argument]", 10, 10
 db "Controls the state of the computer.", 10, 10
 db "Possible arguments:", 10, 10
-db "-d  - Prepares and initiates computer shutdown.", 10
-db "-r  - Prepare and restart the computer.", 10
-db "now - Same as -d", 10, 10
+db "-d  - Power the machine off.", 10
+db "-r  - Restart the machine.", 10
+db "now - Same as -d.", 10, 10
 db "shutdown version ", versaoSHUTDOWN, 10, 10
 db "Copyright (C) 2022-", __stringano, " Felipe Miguel Nery Lunkes", 10
 db "All rights reserved.", 0
