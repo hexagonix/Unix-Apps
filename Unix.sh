@@ -68,7 +68,7 @@
 #
 # $HexagonixOS$
 
-# Versão 2.1
+# Versão 2.2
 
 gerarBaseUnix(){
 
@@ -93,7 +93,7 @@ do
     
     echo " > Building Hexagonix Unix utility $(basename $h .asm)..." >> ../$LOG
     
-    fasm $h ../../../Andromeda/bin/`basename $h .asm` -d $FLAGS_COMUM >> ../$LOG || desmontar
+    fasm $h ../$DIRETORIO/bin/`basename $h .asm` -d $FLAGS_COMUM >> ../$LOG || desmontar
     
     echo -e " [\e[32mOk\e[0m]"
     
@@ -109,7 +109,7 @@ do
 
     echo -n " > Copying additional package files for" $i 
 
-    cp cows/*.cow ../$DESTINO >> /dev/null
+    cp cows/*.cow ../$DIRETORIO >> /dev/null
 
     echo -e " [\e[32mOk\e[0m]"
 
@@ -160,7 +160,7 @@ exit
 }
 
 export LOG="../../log.log"
-export DESTINO="../../$1"
+export DIRETORIO="../../$1"
 
 case $1 in
 
