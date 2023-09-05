@@ -110,7 +110,7 @@ parametro: dd ? ;; Endereço do parâmetro
 ;;************************************************************************************
 
 ;; Syslogd é responsável por receber logs de utilitários, publicá-los no serviço de 
-;; mensagens oferecido pelo Hexagon(R) e, futuramente, salvar esses logs em arquivos
+;; mensagens oferecido pelo Hexagon e, futuramente, salvar esses logs em arquivos
 ;; de texto editáveis
 
 inicioAPP:
