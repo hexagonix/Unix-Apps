@@ -154,9 +154,13 @@ inicioAPP:
 
 iniciarDesligamento:
     
-    novaLinha
-    
     jmp desligarHexagon
+
+;;************************************************************************************
+
+iniciarReinicio:
+    
+    jmp reiniciarHexagon
 
 ;;************************************************************************************
 
@@ -185,14 +189,6 @@ iniciarReinicioSemEco:
     hx.syscall reiniciarPC
 
     jmp terminar
-
-;;************************************************************************************
-
-iniciarReinicio:
-
-    novaLinha
-    
-    jmp reiniciarHexagon
 
 ;;************************************************************************************
     
@@ -284,7 +280,7 @@ terminar:
 
 rotuloMENSAGEM equ "[shutdown]: "
 
-versaoSHUTDOWN  equ "1.5.1"
+versaoSHUTDOWN  equ "1.5.2"
 
 shutdown:
 
