@@ -91,7 +91,7 @@ include "macros.s"
 ;;
 ;;************************************************************************************
 
-versaoLSHAPP equ "1.11.6"
+versaoLSHAPP equ "1.11.7"
 
 lshapp:
 
@@ -350,11 +350,6 @@ verificarArquivoHAPP:
 
     fputs lshapp.tipoImagem
 
-    ;; mov dh, byte[lshapp.especieImagem]
-    ;; movzx eax, dh
-
-    ;; imprimirInteiro
-
     cmp byte[lshapp.especieImagem], 01h
     je .HAPPExec
 
@@ -421,7 +416,7 @@ manterArquivo:
 
     mov edi, nomeArquivo
 
-    rep movsb       ;; Copiar (ECX) caracteres de ESI para EDI
+    rep movsb ;; Copiar (ECX) caracteres de ESI para EDI
     
     pop eax
 
