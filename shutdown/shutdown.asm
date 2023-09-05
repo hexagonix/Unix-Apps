@@ -284,7 +284,7 @@ terminar:
 
 rotuloMENSAGEM equ "[shutdown]: "
 
-versaoSHUTDOWN  equ "1.5.0"
+versaoSHUTDOWN  equ "1.5.1"
 
 shutdown:
 
@@ -311,7 +311,7 @@ db "?", 0
 .parametroAjuda2:
 db "--help", 0
 .argumentos:
-db 10, "An argument is required to control the state of this device.", 0
+db 10, "An argument is required.", 0
 .uso:
 db 10, "Usage: shutdown [argument]", 10, 10
 db "Controls the state of the computer.", 10, 10
