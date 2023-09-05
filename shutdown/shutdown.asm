@@ -308,7 +308,7 @@ db "--help", 0
 db 10, "An argument is required.", 0
 .uso:
 db 10, "Usage: shutdown [argument]", 10, 10
-db "Controls the state of the computer.", 10, 10
+db "Power off or restart the computer.", 10, 10
 db "Possible arguments:", 10, 10
 db "-d  - Power the computer off.", 10
 db "-r  - Restart the computer.", 10
