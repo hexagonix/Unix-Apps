@@ -196,7 +196,7 @@ terminar:
 
 ;;************************************************************************************
 
-versaoPS equ "1.1.5"
+versaoPS equ "1.1.5.1"
 
 parametro: dd ?
 
@@ -213,7 +213,7 @@ db "Usage: ps [parameter]", 10, 10
 db "Displays process information and usage of memory and system resources.", 10, 10
 db "Possible parameters (in case of missing parameters, the '-v' option will be selected):", 10, 10
 db "-t - Displays all possible process and system resource information.", 10
-db "-v - Display only memory usage of running processes.", 10, 10
+db "-v - Displays only memory usage of running processes.", 10, 10
 db "-o - Displays the number of processes in the execution queue.", 10, 10
 db "ps version ", versaoPS, 10, 10
 db "Copyright (C) 2017-", __stringano, " Felipe Miguel Nery Lunkes", 10
