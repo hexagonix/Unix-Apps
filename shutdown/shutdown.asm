@@ -156,8 +156,6 @@ iniciarDesligamento:
     
     novaLinha
     
-    fputs shutdown.sistema
-    
     jmp desligarHexagon
 
 ;;************************************************************************************
@@ -193,8 +191,6 @@ iniciarReinicioSemEco:
 iniciarReinicio:
 
     novaLinha
-    
-    fputs shutdown.sistema
     
     jmp reiniciarHexagon
 
@@ -232,45 +228,27 @@ prepararSistemaSemEco:
 
 ;; Qualquer ação que possa ser incluída aqui
 
+    mov ecx, 20000
+    
+    hx.syscall causarAtraso
+
     ret
 
 ;;************************************************************************************
 
 prepararSistema:
 
-    fputs shutdown.msgDesligamento
-
-    mov ecx, 500
-    
-    hx.syscall causarAtraso
-    
-    fputs shutdown.msgPronto
-
-    fputs shutdown.msgFinalizando
-
-    mov ecx, 500
-    
-    hx.syscall causarAtraso
-    
-    fputs shutdown.msgPronto
-
     fputs shutdown.msgHexagonix
 
-    mov ecx, 500
+    mov ecx, 10000
     
     hx.syscall causarAtraso
-    
-    fputs shutdown.msgPronto
 
     fputs shutdown.msgDiscos
 
-    mov ecx, 500
+    mov ecx, 10000
     
     hx.syscall causarAtraso
-    
-    fputs shutdown.msgPronto
-
-    novaLinha
 
     ret
 
@@ -306,7 +284,7 @@ terminar:
 
 rotuloMENSAGEM equ "[shutdown]: "
 
-versaoSHUTDOWN  equ "1.4.4"
+versaoSHUTDOWN  equ "1.5.0"
 
 shutdown:
 
@@ -320,14 +298,10 @@ db "-r", 0
 db "-re", 0
 .desligarAgora:
 db "now", 0
-.msgDesligamento:
-db 10, 10, "!> Preparing to shutdown the computer...  ", 0
-.msgFinalizando:
-db 10, 10, "#> Terminating all processes still running...  ", 0
 .msgHexagonix:
-db 10, 10, "#> The system is coming down. Please wait...    ", 0
+db 10, "The system is coming down. Please wait...", 0
 .msgDiscos:
-db 10, 10, "#> Stoping disks and shutting down the computer... ", 0
+db 10, "Stoping disks and shutting down the computer...", 0
 .msgPronto:
 db "[Ok]", 0
 .msgFalha:
@@ -336,10 +310,6 @@ db "[Fail]", 0
 db "?", 0  
 .parametroAjuda2:
 db "--help", 0
-.sistema:
-db 10, "Hexagonix Operating System", 10
-db "Copyright (C) 2015-", __stringano, " Felipe Miguel Nery Lunkes", 10
-db "All rights reserved.", 0
 .argumentos:
 db 10, "An argument is required to control the state of this device.", 0
 .uso:
@@ -366,6 +336,6 @@ db rotuloMENSAGEM, "reboot request received.", 0
 .parametroSolicitar:
 db rotuloMENSAGEM, "sending signal to processes and request to Hexagon...", 0
 .falhaSolicitacao:
-db rotuloMENSAGEM, "failed to process the request or request failed by Hexagon.", 0
+db rotuloMENSAGEM, "failed to process the request or request rejected by Hexagon.", 0
 
 parametro: dd ?
