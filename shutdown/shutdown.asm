@@ -308,10 +308,10 @@ db "--help", 0
 db 10, "An argument is required.", 0
 .uso:
 db 10, "Usage: shutdown [argument]", 10, 10
-db "Power off or restart the computer.", 10, 10
+db "Power off or reboot the computer.", 10, 10
 db "Possible arguments:", 10, 10
 db "-d  - Power the computer off.", 10
-db "-r  - Restart the computer.", 10
+db "-r  - Reboot the computer.", 10
 db "now - Same as -d.", 10, 10
 db "shutdown version ", versaoSHUTDOWN, 10, 10
 db "Copyright (C) 2022-", __stringano, " Felipe Miguel Nery Lunkes", 10
