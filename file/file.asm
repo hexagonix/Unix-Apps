@@ -158,59 +158,59 @@ inicioAPP:
 
     mov esi, nomeArquivo
 
-    hx.syscall stringParaMaiusculo    ;; Iremos checar com base na extensão em maiúsculo
+    hx.syscall stringParaMaiusculo ;; Iremos checar com base na extensão em maiúsculo
 
     hx.syscall tamanhoString
 
-    add esi, eax                     ;; Adicionar o tamanho do nome
+    add esi, eax ;; Adicionar o tamanho do nome
 
-    sub esi, 4                       ;; Subtrair 4 para manter apenas a extensão
+    sub esi, 4 ;; Subtrair 4 para manter apenas a extensão
 
     mov edi, fileUnix.extensaoUNX
 
-    hx.syscall compararPalavrasString  ;; Checar por extensão .UNX
+    hx.syscall compararPalavrasString ;; Checar por extensão .UNX
 
     jc .arquivoUNX
 
     mov edi, fileUnix.extensaoSIS
 
-    hx.syscall compararPalavrasString  ;; Checar por extensão .SIS
+    hx.syscall compararPalavrasString ;; Checar por extensão .SIS
 
     jc .arquivoSIS
 
     mov edi, fileUnix.extensaoTXT
 
-    hx.syscall compararPalavrasString  ;; Checar por extensão .TXT
+    hx.syscall compararPalavrasString ;; Checar por extensão .TXT
 
     jc .arquivoTXT
 
     mov edi, fileUnix.extensaoASM
 
-    hx.syscall compararPalavrasString  ;; Checar por extensão .ASM
+    hx.syscall compararPalavrasString ;; Checar por extensão .ASM
 
     jc .arquivoASM
 
     mov edi, fileUnix.extensaoCOW
 
-    hx.syscall compararPalavrasString  ;; Checar por extensão .COW
+    hx.syscall compararPalavrasString ;; Checar por extensão .COW
 
     jc .arquivoCOW
 
     mov edi, fileUnix.extensaoMAN
 
-    hx.syscall compararPalavrasString  ;; Checar por extensão .MAN
+    hx.syscall compararPalavrasString ;; Checar por extensão .MAN
 
     jc .arquivoMAN
 
     mov edi, fileUnix.extensaoFNT
 
-    hx.syscall compararPalavrasString  ;; Checar por extensão .FNT
+    hx.syscall compararPalavrasString ;; Checar por extensão .FNT
 
     jc .arquivoFNT
 
     mov edi, fileUnix.extensaoCAN
 
-    hx.syscall compararPalavrasString  ;; Checar por extensão .CAN
+    hx.syscall compararPalavrasString ;; Checar por extensão .CAN
 
     jc .arquivoCAN
 
@@ -222,7 +222,7 @@ inicioAPP:
 
     mov edi, fileUnix.extensaoS
 
-    hx.syscall compararPalavrasString  ;; Checar por extensão .S
+    hx.syscall compararPalavrasString ;; Checar por extensão .S
 
     jc .arquivoS
 
@@ -396,7 +396,7 @@ manterArquivo:
 
     mov edi, nomeArquivo
 
-    rep movsb       ;; Copiar (ECX) caracteres de ESI para EDI
+    rep movsb ;; Copiar (ECX) caracteres de ESI para EDI
 
     pop eax
 

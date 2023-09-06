@@ -112,17 +112,17 @@ inicioAPP:
 
 realizarLimpeza:
 
-    mov esi, vd1          ;; Abrir o primeiro console virtual
+    mov esi, vd1 ;; Abrir o primeiro console virtual
 
-    hx.syscall hx.open    ;; Abre o dispositivo
+    hx.syscall hx.open ;; Abre o dispositivo
 
     jc .erro
 
     hx.syscall limparTela ;; Limpa seu conteúdo
 
-    mov esi, vd0          ;; Reabre o console principal
+    mov esi, vd0 ;; Reabre o console principal
 
-    hx.syscall hx.open    ;; Abre o dispositivo
+    hx.syscall hx.open ;; Abre o dispositivo
 
     hx.syscall limparTela
 
@@ -177,4 +177,3 @@ vd0: db "vd0", 0 ;; Console principal
 vd1: db "vd1", 0 ;; Primeiro console virtual
 
 parametro: dd ?
-

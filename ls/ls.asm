@@ -176,7 +176,7 @@ listar:
 
     novaLinha
 
-    hx.syscall listarArquivos    ;; Obter arquivos em ESI
+    hx.syscall listarArquivos ;; Obter arquivos em ESI
 
     jc .erroLista
 
@@ -205,7 +205,7 @@ listar:
 
     mov edi, ls.extensaoAPP
 
-    hx.syscall compararPalavrasString  ;; Checar por extensão .APP
+    hx.syscall compararPalavrasString ;; Checar por extensão .APP
 
     jc .aplicativo
 

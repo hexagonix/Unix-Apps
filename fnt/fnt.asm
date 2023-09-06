@@ -168,7 +168,7 @@ inicioAPP:
 
     mov esi, [parametro]
 
-    hx.syscall cortarString          ;; Remover espaços em branco extras
+    hx.syscall cortarString ;; Remover espaços em branco extras
 
     call validarFonte
 

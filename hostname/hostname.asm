@@ -184,5 +184,3 @@ parametro: dd ?
 regES:     dw 0
 
 bufferArquivo:
-
-

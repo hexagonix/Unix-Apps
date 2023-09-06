@@ -208,7 +208,7 @@ inicioAPP:
 
     mov byte[esi+ebx+3], al
 
-    mov byte[esi+ebx+4], 0      ;; Fim da string, será cortada aqui e nada após será relevante
+    mov byte[esi+ebx+4], 0 ;; Fim da string, será cortada aqui e nada após será relevante
 
     push esi
 

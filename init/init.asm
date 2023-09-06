@@ -106,8 +106,8 @@ arquivo:
 db "rc", 0  ;; Nome do arquivo de configuração do init
 tentarShellPadrao:
 db 0        ;; Sinaliza a tentativa de se carregar o shell padrão
-servicoHexagonix: times 12 db 0        ;; Armazena o nome do shell à ser utilizado pelo sistema
-posicaoBX:                 dw 0        ;; Marcação da posição de busca no conteúdo do arquivo
+servicoHexagonix: times 12 db 0 ;; Armazena o nome do shell à ser utilizado pelo sistema
+posicaoBX:                 dw 0 ;; Marcação da posição de busca no conteúdo do arquivo
 
 init:
 
@@ -191,12 +191,12 @@ iniciarExecucao:
 
     jc .proximoServico
 
-    mov eax, 0                     ;; Não passar argumentos
-    mov esi, servicoHexagonix      ;; Nome do arquivo
+    mov eax, 0 ;; Não passar argumentos
+    mov esi, servicoHexagonix ;; Nome do arquivo
 
     stc
 
-    hx.syscall iniciarProcesso      ;; Solicitar o carregamento do primeiro serviço
+    hx.syscall iniciarProcesso ;; Solicitar o carregamento do primeiro serviço
 
     jnc .proximoServico
 
@@ -208,22 +208,22 @@ iniciarExecucao:
 
     jmp .carregarServico
 
-.naoEncontrado:                    ;; O serviço não pôde ser localizado
+.naoEncontrado: ;; O serviço não pôde ser localizado
 
     cmp byte[tentarShellPadrao], 0 ;; Verifica se já se tentou carregar o shell padrão do Hexagonix
     je .tentarShellPadrao          ;; Se não, tente carregar o shell padrão do Hexagonix
 
-    hx.syscall encerrarProcesso    ;; Se sim, o shell padrão também não pode ser executado
+    hx.syscall encerrarProcesso ;; Se sim, o shell padrão também não pode ser executado
 
-.tentarShellPadrao:                ;; Tentar carregar o shell padrão do Hexagonix
+.tentarShellPadrao: ;; Tentar carregar o shell padrão do Hexagonix
 
-    call obterShellPadrao          ;; Solicitar a configuração do nome do shell padrão do Hexagonix
+    call obterShellPadrao ;; Solicitar a configuração do nome do shell padrão do Hexagonix
 
     mov byte[tentarShellPadrao], 1 ;; Sinalizar a tentativa de carregamento do shell padrão do Hexagonix
 
-    hx.syscall destravar           ;; O shell pode ser terminado utilizando uma tecla especial
+    hx.syscall destravar ;; O shell pode ser terminado utilizando uma tecla especial
 
-    jmp .carregarServico           ;; Tentar carregar o shell padrão do Hexagonix
+    jmp .carregarServico ;; Tentar carregar o shell padrão do Hexagonix
 
 ;;************************************************************************************
 
@@ -231,13 +231,13 @@ limparTerminal:
 
     logSistema init.configurarConsole, 0, Log.Prioridades.p5
 
-    mov esi, vd1         ;; Abrir o primeiro console virtual
+    mov esi, vd1 ;; Abrir o primeiro console virtual
 
-    hx.syscall hx.open   ;; Abre o dispositivo
+    hx.syscall hx.open ;; Abre o dispositivo
 
-    mov esi, vd0         ;; Reabre o console padrão
+    mov esi, vd0 ;; Reabre o console padrão
 
-    hx.syscall hx.open   ;; Abre o dispositivo
+    hx.syscall hx.open ;; Abre o dispositivo
 
     ret
 
@@ -259,7 +259,7 @@ encontrarConfiguracaoInit:
 
     jc .arquivoConfiguracaoAusente
 
-    mov si, bufferArquivo           ;; Aponta para o buffer com o conteúdo do arquivo
+    mov si, bufferArquivo ;; Aponta para o buffer com o conteúdo do arquivo
     mov bx, word[posicaoBX]
 
     jmp .procurarEntreDelimitadores
@@ -271,7 +271,7 @@ encontrarConfiguracaoInit:
     mov word[posicaoBX], bx
 
     cmp bx, tamanhoLimiteBusca
-    je iniciarExecucao.tentarShellPadrao  ;; Caso nada seja encontrado até o tamanho limite, cancele a busca
+    je iniciarExecucao.tentarShellPadrao ;; Caso nada seja encontrado até o tamanho limite, cancele a busca
 
     mov al, [ds:si+bx]
 
@@ -283,20 +283,20 @@ encontrarConfiguracaoInit:
     push ds
     pop es
 
-    mov di, servicoHexagonix        ;; O nome do shell será copiado para ES:DI - servicoHexagonix
+    mov di, servicoHexagonix ;; O nome do shell será copiado para ES:DI - servicoHexagonix
 
     mov si, bufferArquivo
 
-    add si, bx                      ;; Mover SI para aonde BX aponta
+    add si, bx ;; Mover SI para aonde BX aponta
 
-    mov bx, 0                       ;; Iniciar em 0
+    mov bx, 0 ;; Iniciar em 0
 
 .obterNomeServico:
 
     inc bx
 
     cmp bx, 13
-    je .nomeShellInvalido           ;; Se nome de arquivo maior que 11, o nome é inválido
+    je .nomeShellInvalido ;; Se nome de arquivo maior que 11, o nome é inválido
 
     mov al, [ds:si+bx]
 
@@ -306,13 +306,13 @@ encontrarConfiguracaoInit:
 ;; Espaço - um espaço após o último caractere
 ;; # - Se usado após o último caractere do nome do serviço, marcar como comentário
 
-    cmp al, 10                     ;; Se encontrar outro delimitador, o nome foi carregado com sucesso
+    cmp al, 10 ;; Se encontrar outro delimitador, o nome foi carregado com sucesso
     je .nomeShellObtido
 
-    cmp al, ' '                     ;; Se encontrar outro delimitador, o nome foi carregado com sucesso
+    cmp al, ' ' ;; Se encontrar outro delimitador, o nome foi carregado com sucesso
     je .nomeShellObtido
 
-    cmp al, '#'                     ;; Se encontrar outro delimitador, o nome foi carregado com sucesso
+    cmp al, '#' ;; Se encontrar outro delimitador, o nome foi carregado com sucesso
     je .nomeShellObtido
 
 ;; Se não estiver pronto, armazenar o caractere obtido
@@ -398,4 +398,4 @@ obterShellPadrao:
 
 ;;************************************************************************************
 
-bufferArquivo:                  ;; Local onde o arquivo de configuração será aberto
+bufferArquivo: ;; Local onde o arquivo de configuração será aberto

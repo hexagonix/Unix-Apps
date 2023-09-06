@@ -235,8 +235,8 @@ verificarTema:
 
     jc .arquivoUsuarioAusente
 
-    mov si, bufferArquivo           ;; Aponta para o buffer com o conteúdo do arquivo
-    mov bx, 0FFFFh                  ;; Inicia na posição -1, para que se possa encontrar os delimitadores
+    mov si, bufferArquivo ;; Aponta para o buffer com o conteúdo do arquivo
+    mov bx, 0FFFFh ;; Inicia na posição -1, para que se possa encontrar os delimitadores
 
 .procurarEntreDelimitadores:
 
@@ -245,7 +245,7 @@ verificarTema:
     mov word[posicaoBX], bx
 
     cmp bx, tamanhoLimiteBusca
-    je .nomeTemaInvalido         ;; Caso nada seja encontrado até o tamanho limite, cancele a busca
+    je .nomeTemaInvalido ;; Caso nada seja encontrado até o tamanho limite, cancele a busca
 
     mov al, [ds:si+bx]
 
@@ -257,24 +257,24 @@ verificarTema:
     push ds
     pop es
 
-    mov di, escolhaTema             ;; O tema será copiado para ES:DI
+    mov di, escolhaTema ;; O tema será copiado para ES:DI
 
     mov si, bufferArquivo
 
-    add si, bx                      ;; Mover SI para aonde BX aponta
+    add si, bx ;; Mover SI para aonde BX aponta
 
-    mov bx, 0                       ;; Iniciar em 0
+    mov bx, 0 ;; Iniciar em 0
 
 .obterTema:
 
     inc bx
 
     cmp bx, 7
-    je .nomeTemaInvalido            ;; Se nome de usuário maior que 15, o mesmo é inválido
+    je .nomeTemaInvalido ;; Se nome de usuário maior que 15, o mesmo é inválido
 
     mov al, [ds:si+bx]
 
-    cmp al, '>'                     ;; Se encontrar outro delimitador, o nome de usuário foi carregado com sucesso
+    cmp al, '>' ;; Se encontrar outro delimitador, o nome de usuário foi carregado com sucesso
     je .temaObtido
 
 ;; Se não estiver pronto, armazenar o caractere obtido
@@ -311,9 +311,9 @@ verificarTema:
 
     popa
 
-    mov esi, vd1         ;; Abrir primeiro console virtual
+    mov esi, vd1 ;; Abrir primeiro console virtual
 
-    hx.syscall hx.open   ;; Abre o dispositivo
+    hx.syscall hx.open ;; Abre o dispositivo
 
     mov eax, PRETO
     mov ebx, BRANCO_ANDROMEDA
@@ -322,9 +322,9 @@ verificarTema:
 
     hx.syscall limparTela ;; Limpa seu conteúdo
 
-    mov esi, vd0          ;; Reabre o dispositivo de saída padrão
+    mov esi, vd0 ;; Reabre o dispositivo de saída padrão
 
-    hx.syscall hx.open    ;; Abre o dispositivo
+    hx.syscall hx.open ;; Abre o dispositivo
 
     mov eax, PRETO
     mov ebx, BRANCO_ANDROMEDA
@@ -337,9 +337,9 @@ verificarTema:
 
 .selecionarTemaEscuro:
 
-    mov esi, vd1         ;; Abrir primeiro console virtual
+    mov esi, vd1 ;; Abrir primeiro console virtual
 
-    hx.syscall hx.open   ;; Abre o dispositivo
+    hx.syscall hx.open ;; Abre o dispositivo
 
     mov eax, BRANCO_ANDROMEDA
     mov ebx, PRETO
@@ -348,16 +348,16 @@ verificarTema:
 
     hx.syscall limparTela ;; Limpa seu conteúdo
 
-    mov esi, vd0          ;; Reabre o console padrão
+    mov esi, vd0 ;; Reabre o console padrão
 
-    hx.syscall hx.open    ;; Abre o dispositivo
+    hx.syscall hx.open ;; Abre o dispositivo
 
     mov eax, BRANCO_ANDROMEDA
     mov ebx, PRETO
 
     hx.syscall definirCor
 
-    hx.syscall limparTela  ;; Limpa seu conteúdo
+    hx.syscall limparTela ;; Limpa seu conteúdo
 
 .nomeTemaInvalido:
 
@@ -422,8 +422,8 @@ match =Moderno, TIPOLOGIN
 
 verificarConsistencia:
 
-    call verificarTema             ;; Caso algum processo seja finalizado após alterar
-                                   ;; o plano de fundo padrão
+    call verificarTema ;; Caso algum processo seja finalizado após alterar
+                       ;; o plano de fundo padrão
 
     hx.syscall limparTela
 
@@ -451,4 +451,4 @@ checarBaseDados:
 
 enderecoCarregamento:
 
-bufferArquivo:                ;; Local onde o arquivo de configuração será aberto
+bufferArquivo: ;; Local onde o arquivo de configuração será aberto

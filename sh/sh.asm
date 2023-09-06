@@ -262,15 +262,15 @@ inicioShell:
 
     fputs sh.separador
 
-    mov al, byte[maxColunas]         ;; Máximo de caracteres para obter
+    mov al, byte[maxColunas] ;; Máximo de caracteres para obter
 
     sub al, 20
 
     hx.syscall obterString
 
-    hx.syscall cortarString           ;; Remover espaços em branco extras
+    hx.syscall cortarString ;; Remover espaços em branco extras
 
-    cmp byte[esi], 0                 ;; Nenhum comando inserido
+    cmp byte[esi], 0 ;; Nenhum comando inserido
     je .obterComando
 
 ;; Comparar com comandos internos disponíveis
@@ -402,12 +402,12 @@ executarShellScript:
 
     jc .proximoComando
 
-    mov eax, 0                     ;; Não passar argumentos
-    mov esi, sh.imagemDisco        ;; Nome do arquivo
+    mov eax, 0 ;; Não passar argumentos
+    mov esi, sh.imagemDisco ;; Nome do arquivo
 
     stc
 
-    hx.syscall iniciarProcesso     ;; Solicitar o carregamento do primeiro comando
+    hx.syscall iniciarProcesso ;; Solicitar o carregamento do primeiro comando
 
     jnc .proximoComando
 
@@ -419,7 +419,7 @@ executarShellScript:
 
     jmp .carregarImagem
 
-.naoEncontrado:                    ;; O serviço não pôde ser localizado
+.naoEncontrado: ;; O serviço não pôde ser localizado
 
     jmp inicioShell.obterComando
 
@@ -448,7 +448,7 @@ procurarComandos:
     push ds
     pop es
 
-    mov si, bufferArquivo           ;; Aponta para o buffer com o conteúdo do arquivo
+    mov si, bufferArquivo ;; Aponta para o buffer com o conteúdo do arquivo
     mov bx, word[sh.posicaoBX]
 
     jmp .procurarEntreDelimitadores
@@ -472,20 +472,20 @@ procurarComandos:
     push ds
     pop es
 
-    mov di, sh.imagemDisco          ;; O nome do shell será copiado para ES:DI
+    mov di, sh.imagemDisco ;; O nome do shell será copiado para ES:DI
 
     mov si, bufferArquivo
 
-    add si, bx                      ;; Mover SI para aonde BX aponta
+    add si, bx ;; Mover SI para aonde BX aponta
 
-    mov bx, 0                       ;; Iniciar em 0
+    mov bx, 0 ;; Iniciar em 0
 
 .obterComando:
 
     inc bx
 
     cmp bx, 13
-    je .nomeComandoInvalido           ;; Se nome de arquivo maior que 11, o nome é inválido
+    je .nomeComandoInvalido ;; Se nome de arquivo maior que 11, o nome é inválido
 
     mov al, [ds:si+bx]
 
@@ -495,13 +495,13 @@ procurarComandos:
 ;; Espaço - um espaço após o último caractere
 ;; # - Se usado após o último caractere do nome do serviço, marcar como comentário
 
-    cmp al, 10                     ;; Se encontrar outro delimitador, o nome foi carregado com sucesso
+    cmp al, 10 ;; Se encontrar outro delimitador, o nome foi carregado com sucesso
     je .nomeComandoObtido
 
-    cmp al, ' '                     ;; Se encontrar outro delimitador, o nome foi carregado com sucesso
+    cmp al, ' ' ;; Se encontrar outro delimitador, o nome foi carregado com sucesso
     je .nomeComandoObtido
 
-    cmp al, '#'                     ;; Se encontrar outro delimitador, o nome foi carregado com sucesso
+    cmp al, '#' ;; Se encontrar outro delimitador, o nome foi carregado com sucesso
     je .nomeComandoObtido
 
 ;; Se não estiver pronto, armazenar o caractere obtido
@@ -548,7 +548,7 @@ obterArgumentos:
 
 .loop:
 
-    lodsb           ;; mov AL, byte[ESI] & inc ESI
+    lodsb ;; mov AL, byte[ESI] & inc ESI
 
     cmp al, 0
     je .naoencontrado
@@ -577,7 +577,7 @@ obterArgumentos:
 
     mov ecx, eax
 
-    inc ecx         ;; Incluindo o último caractere (NULL)
+    inc ecx ;; Incluindo o último caractere (NULL)
 
     push es
 
@@ -587,7 +587,7 @@ obterArgumentos:
     mov esi, ebx
     mov edi, bufferArquivo
 
-    rep movsb       ;; Copiar (ECX) caracteres da string de ESI para EDI
+    rep movsb ;; Copiar (ECX) caracteres da string de ESI para EDI
 
     pop es
 
@@ -621,7 +621,7 @@ finalizarShell:
 
 ;;************************************************************************************
 ;;
-;; Dados, variáveis e constantes utilizadas pelo Shell
+;; Dados, variáveis e constantes utilizadas pelo shell
 ;;
 ;;************************************************************************************
 
@@ -691,4 +691,4 @@ linhaComando: dd 0
 
 ;;************************************************************************************
 
-bufferArquivo:  ;; Endereço para carregamento de arquivos
+bufferArquivo: ;; Endereço para carregamento de arquivos

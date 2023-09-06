@@ -127,7 +127,7 @@ iniciarExecucao:
 
     novaLinha
 
-    call salvarUsuarioAtual         ;; Salva o usuário da sessão atual
+    call salvarUsuarioAtual ;; Salva o usuário da sessão atual
 
     clc
 
@@ -141,7 +141,7 @@ iniciarExecucao:
 
     mov eax, 64
 
-    mov ebx, 1234h                  ;; Não queremos eco na senha!
+    mov ebx, 1234h ;; Não queremos eco na senha!
 
     hx.syscall obterString
 
@@ -178,33 +178,33 @@ iniciarExecucao:
 
 .carregarShell:
 
-    mov eax, 0                     ;; Não passar argumentos
-    mov esi, shellHexagonix        ;; Nome do arquivo
+    mov eax, 0 ;; Não passar argumentos
+    mov esi, shellHexagonix ;; Nome do arquivo
 
     stc
 
-    hx.syscall iniciarProcesso      ;; Solicitar o carregamento do shell do Hexagonix
+    hx.syscall iniciarProcesso ;; Solicitar o carregamento do shell do Hexagonix
 
     jnc .shellFinalizado
 
-.naoEncontrado:                    ;; O shell não pôde ser localizado
+.naoEncontrado: ;; O shell não pôde ser localizado
 
-   cmp byte[tentarShellPadrao], 0  ;; Verifica se já se tentou carregar o shell padrão do Hexagonix
-   je .tentarShellPadrao           ;; Se não, tente carregar o shell padrão do Hexagonix
+   cmp byte[tentarShellPadrao], 0 ;; Verifica se já se tentou carregar o shell padrão do Hexagonix
+   je .tentarShellPadrao ;; Se não, tente carregar o shell padrão do Hexagonix
 
-   hx.syscall encerrarProcesso      ;; Se sim, o shell padrão também não pode ser executado
+   hx.syscall encerrarProcesso ;; Se sim, o shell padrão também não pode ser executado
 
-.tentarShellPadrao:                ;; Tentar carregar o shell padrão do Hexagonix
+.tentarShellPadrao: ;; Tentar carregar o shell padrão do Hexagonix
 
-   call obterShellPadrao           ;; Solicitar a configuração do nome do shell padrão do Hexagonix
+   call obterShellPadrao ;; Solicitar a configuração do nome do shell padrão do Hexagonix
 
-   mov byte[tentarShellPadrao], 1  ;; Sinalizar a tentativa de carregamento do shell padrão do Hexagonix
+   mov byte[tentarShellPadrao], 1 ;; Sinalizar a tentativa de carregamento do shell padrão do Hexagonix
 
-   jmp .carregarShell              ;; Tentar carregar o shell padrão do Hexagonix
+   jmp .carregarShell ;; Tentar carregar o shell padrão do Hexagonix
 
-.shellFinalizado:                  ;; Tentar carregar o shell novamente
+.shellFinalizado: ;; Tentar carregar o shell novamente
 
-    call restaurarUsuario          ;; Restaura o usuário da sessão anterior
+    call restaurarUsuario ;; Restaura o usuário da sessão anterior
 
     jmp terminar
 
@@ -212,15 +212,15 @@ iniciarExecucao:
 
 limparTerminal:
 
-    mov esi, vd1          ;; Abrir o dispositivo de saída secundário em memória (Buffer)
+    mov esi, vd1 ;; Abrir o dispositivo de saída secundário em memória (Buffer)
 
-    hx.syscall hx.open    ;; Abre o dispositivo
+    hx.syscall hx.open ;; Abre o dispositivo
 
     hx.syscall limparTela ;; Limpa seu conteúdo
 
-    mov esi, vd0          ;; Reabre o dispositivo de saída padrão
+    mov esi, vd0 ;; Reabre o dispositivo de saída padrão
 
-    hx.syscall hx.open    ;; Abre o dispositivo
+    hx.syscall hx.open ;; Abre o dispositivo
 
     ret
 
@@ -284,8 +284,8 @@ encontrarNomeUsuario:
 
     jc .arquivoUsuarioAusente
 
-    mov si, bufferArquivo           ;; Aponta para o buffer com o conteúdo do arquivo
-    mov bx, 0FFFFh                  ;; Inicia na posição -1, para que se possa encontrar os delimitadores
+    mov si, bufferArquivo ;; Aponta para o buffer com o conteúdo do arquivo
+    mov bx, 0FFFFh ;; Inicia na posição -1, para que se possa encontrar os delimitadores
 
 .procurarEntreDelimitadores:
 
@@ -294,7 +294,7 @@ encontrarNomeUsuario:
     mov word[posicaoBX], bx
 
     cmp bx, tamanhoLimiteBusca
-    je .nomeUsuarioInvalido         ;; Caso nada seja encontrado até o tamanho limite, cancele a busca
+    je .nomeUsuarioInvalido ;; Caso nada seja encontrado até o tamanho limite, cancele a busca
 
     mov al, [ds:si+bx]
 
@@ -306,24 +306,24 @@ encontrarNomeUsuario:
     push ds
     pop es
 
-    mov di, usuario                 ;; O nome do usuário será copiado para ES:DI
+    mov di, usuario ;; O nome do usuário será copiado para ES:DI
 
     mov si, bufferArquivo
 
-    add si, bx                      ;; Mover SI para aonde BX aponta
+    add si, bx ;; Mover SI para aonde BX aponta
 
-    mov bx, 0                       ;; Iniciar em 0
+    mov bx, 0 ;; Iniciar em 0
 
 .obterNomeUsuario:
 
     inc bx
 
     cmp bx, 17
-    je .nomeUsuarioInvalido         ;; Se nome de usuário maior que 15, o mesmo é inválido
+    je .nomeUsuarioInvalido ;; Se nome de usuário maior que 15, o mesmo é inválido
 
     mov al, [ds:si+bx]
 
-    cmp al, '|'                     ;; Se encontrar outro delimitador, o nome de usuário foi carregado com sucesso
+    cmp al, '|' ;; Se encontrar outro delimitador, o nome de usuário foi carregado com sucesso
     je .nomeUsuarioObtido
 
 ;; Se não estiver pronto, armazenar o caractere obtido
@@ -453,13 +453,13 @@ encontrarSenhaUsuario:
     push ds
     pop es
 
-    mov di, senhaObtida      ;; A senha será copiada para ES:DI
+    mov di, senhaObtida ;; A senha será copiada para ES:DI
 
     mov si, bufferArquivo
 
-    add si, bx               ;; Mover SI para onde BX aponta
+    add si, bx ;; Mover SI para onde BX aponta
 
-    mov bx, 0                ;; Iniciar em 0
+    mov bx, 0 ;; Iniciar em 0
 
 .obterSenhaUsuario:
 
@@ -470,7 +470,7 @@ encontrarSenhaUsuario:
 
     mov al, [ds:si+bx]
 
-    cmp al, '&'              ;; Se encontrar outro delimitador, a senha foi carregada com sucesso
+    cmp al, '&' ;; Se encontrar outro delimitador, a senha foi carregada com sucesso
     je .senhaUsuarioObtida
 
 ;; Se não estiver pronto, armazenar o caractere obtido
@@ -525,8 +525,8 @@ encontrarShell:
 
     jc .arquivoConfiguracaoAusente
 
-    mov si, bufferArquivo           ;; Aponta para o buffer com o conteúdo do arquivo
-    mov bx, word [posicaoBX]        ;; Continua de onde a opção anterior parou
+    mov si, bufferArquivo ;; Aponta para o buffer com o conteúdo do arquivo
+    mov bx, word [posicaoBX] ;; Continua de onde a opção anterior parou
 
     dec bx
 
@@ -538,7 +538,7 @@ encontrarShell:
 
     cmp bx, tamanhoLimiteBusca
 
-    je .arquivoConfiguracaoAusente  ;; Caso nada seja encontrado até o tamanho limite, cancele a busca
+    je .arquivoConfiguracaoAusente ;; Caso nada seja encontrado até o tamanho limite, cancele a busca
 
     mov al, [ds:si+bx]
 
@@ -550,24 +550,24 @@ encontrarShell:
     push ds
     pop es
 
-    mov di, shellHexagonix   ;; O nome do shell será copiado para ES:DI - shellHexagonix
+    mov di, shellHexagonix ;; O nome do shell será copiado para ES:DI - shellHexagonix
 
     mov si, bufferArquivo
 
-    add si, bx               ;; Mover SI para aonde BX aponta
+    add si, bx ;; Mover SI para aonde BX aponta
 
-    mov bx, 0                ;; Iniciar em 0
+    mov bx, 0 ;; Iniciar em 0
 
 .obterNomeShell:
 
     inc bx
 
     cmp bx, 13
-    je .nomeShellInvalido    ;; Se nome de arquivo maior que 11, o nome é inválido
+    je .nomeShellInvalido ;; Se nome de arquivo maior que 11, o nome é inválido
 
     mov al, [ds:si+bx]
 
-    cmp al, '#'              ;; Se encontrar outro delimitador, o nome foi carregado com sucesso
+    cmp al, '#' ;; Se encontrar outro delimitador, o nome foi carregado com sucesso
     je .nomeShellObtido
 
 ;; Se não estiver pronto, armazenar o caractere obtido
@@ -752,4 +752,4 @@ codigoAnterior:              dd 0
 
 ;;************************************************************************************
 
-bufferArquivo:                ;; Local onde o arquivo de configuração será aberto
+bufferArquivo: ;; Local onde o arquivo de configuração será aberto

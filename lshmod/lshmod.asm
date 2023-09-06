@@ -362,7 +362,7 @@ manterArquivo:
 
     mov edi, nomeArquivo
 
-    rep movsb       ;; Copiar (ECX) caracteres de ESI para EDI
+    rep movsb ;; Copiar (ECX) caracteres de ESI para EDI
 
     pop eax
 
