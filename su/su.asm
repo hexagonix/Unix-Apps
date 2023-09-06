@@ -210,22 +210,6 @@ iniciarExecucao:
 
 ;;************************************************************************************
 
-limparTerminal:
-
-    mov esi, vd1 ;; Abrir o dispositivo de saída secundário em memória (Buffer)
-
-    hx.syscall hx.open ;; Abre o dispositivo
-
-    hx.syscall limparTela ;; Limpa seu conteúdo
-
-    mov esi, vd0 ;; Reabre o dispositivo de saída padrão
-
-    hx.syscall hx.open ;; Abre o dispositivo
-
-    ret
-
-;;************************************************************************************
-
 verificarUsuario:
 
     clc
@@ -701,7 +685,7 @@ terminar:
 ;;
 ;;************************************************************************************
 
-versaoSU equ "2.3.5.3"
+versaoSU equ "2.3.6"
 
 shellPadrao:
 db "sh", 0     ;; Nome do arquivo que contêm o shell padrão do Hexagonix
