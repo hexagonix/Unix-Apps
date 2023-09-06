@@ -103,7 +103,7 @@ tamanhoLimiteBusca = 32768
 
 ;;************************************************************************************
 
-versaoLOGIN equ "4.4.3"
+versaoLOGIN equ "4.5.0"
 
 shellPadrao:
 db "sh", 0     ;; Nome do arquivo que contêm o shell padrão do Hexagonix
@@ -331,22 +331,6 @@ match =SIM, UNIX
    je .tentarShellPadrao ;; Se não, tente carregar o shell padrão do Hexagonix
 
    jmp terminar ;; Se sim, o shell padrão também não pode ser executado
-
-;;************************************************************************************
-
-limparTerminal:
-
-    mov esi, vd1 ;; Abrir o primeiro console virtual
-
-    hx.syscall hx.open ;; Abre o dispositivo
-
-    hx.syscall limparTela ;; Limpa seu conteúdo
-
-    mov esi, vd0 ;; Reabre o console padrão
-
-    hx.syscall hx.open ;; Abre o dispositivo
-
-    ret
 
 ;;************************************************************************************
 
