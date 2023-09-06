@@ -1,15 +1,15 @@
 ;;*************************************************************************************************
 ;;
-;; 88                                                                                88              
-;; 88                                                                                ""              
-;; 88                                                                                                
-;; 88,dPPPba,   ,adPPPba, 8b,     ,d8 ,adPPPPba,  ,adPPPb,d8  ,adPPPba,  8b,dPPPba,  88 8b,     ,d8  
-;; 88P'    "88 a8P     88  `P8, ,8P'  ""     `P8 a8"    `P88 a8"     "8a 88P'   `"88 88  `P8, ,8P'   
-;; 88       88 8PP"""""""    )888(    ,adPPPPP88 8b       88 8b       d8 88       88 88    )888(     
-;; 88       88 "8b,   ,aa  ,d8" "8b,  88,    ,88 "8a,   ,d88 "8a,   ,a8" 88       88 88  ,d8" "8b,   
-;; 88       88  `"Pbbd8"' 8P'     `P8 `"8bbdP"P8  `"PbbdP"P8  `"PbbdP"'  88       88 88 8P'     `P8  
-;;                                               aa,    ,88                                         
-;;                                                "P8bbdP"       
+;; 88                                                                                88
+;; 88                                                                                ""
+;; 88
+;; 88,dPPPba,   ,adPPPba, 8b,     ,d8 ,adPPPPba,  ,adPPPb,d8  ,adPPPba,  8b,dPPPba,  88 8b,     ,d8
+;; 88P'    "88 a8P     88  `P8, ,8P'  ""     `P8 a8"    `P88 a8"     "8a 88P'   `"88 88  `P8, ,8P'
+;; 88       88 8PP"""""""    )888(    ,adPPPPP88 8b       88 8b       d8 88       88 88    )888(
+;; 88       88 "8b,   ,aa  ,d8" "8b,  88,    ,88 "8a,   ,d88 "8a,   ,a8" 88       88 88  ,d8" "8b,
+;; 88       88  `"Pbbd8"' 8P'     `P8 `"8bbdP"P8  `"PbbdP"P8  `"PbbdP"'  88       88 88 8P'     `P8
+;;                                               aa,    ,88
+;;                                                "P8bbdP"
 ;;
 ;;                     Sistema Operacional Hexagonix - Hexagonix Operating System
 ;;
@@ -19,7 +19,7 @@
 ;;*************************************************************************************************
 ;;
 ;; Português:
-;; 
+;;
 ;; O Hexagonix e seus componentes são licenciados sob licença BSD-3-Clause. Leia abaixo
 ;; a licença que governa este arquivo e verifique a licença de cada repositório para
 ;; obter mais informações sobre seus direitos e obrigações ao utilizar e reutilizar
@@ -38,10 +38,10 @@
 ;;
 ;; Copyright (c) 2015-2023, Felipe Miguel Nery Lunkes
 ;; All rights reserved.
-;; 
+;;
 ;; Redistribution and use in source and binary forms, with or without
 ;; modification, are permitted provided that the following conditions are met:
-;; 
+;;
 ;; 1. Redistributions of source code must retain the above copyright notice, this
 ;;    list of conditions and the following disclaimer.
 ;;
@@ -52,7 +52,7 @@
 ;; 3. Neither the name of the copyright holder nor the names of its
 ;;    contributors may be used to endorse or promote products derived from
 ;;    this software without specific prior written permission.
-;; 
+;;
 ;; THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 ;; AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
 ;; IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -72,7 +72,7 @@ use32
 
 include "HAPP.s" ;; Aqui está uma estrutura para o cabeçalho HAPP
 
-;; Instância | Estrutura | Arquitetura | Versão | Subversão | Entrada | Tipo  
+;; Instância | Estrutura | Arquitetura | Versão | Subversão | Entrada | Tipo
 cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, inicioAPP, 01h
 
 ;;************************************************************************************
@@ -84,26 +84,26 @@ include "macros.s"
 ;;************************************************************************************
 
 inicioAPP:
-    
+
     push ds
-    pop es          
-    
+    pop es
+
     mov [parametro], edi
-    
+
     call obterParametros
 
     mov edi, cowsay.parametroAjuda
     mov esi, [parametro]
-    
+
     hx.syscall compararPalavrasString
-    
+
     jc usoAplicativo
 
     mov edi, cowsay.parametroAjuda2
     mov esi, [parametro]
-    
+
     hx.syscall compararPalavrasString
-    
+
     jc usoAplicativo
 
     novaLinha
@@ -189,25 +189,25 @@ inicioAPP:
     mov esi, [perfilVaquinha]
 
     hx.syscall tamanhoString
-    
+
     mov ebx, eax
 
     mov al, byte[cowsay.extensaoCOW+0]
-    
+
     mov byte[esi+ebx+0], al
-    
+
     mov al, byte[cowsay.extensaoCOW+1]
-    
+
     mov byte[esi+ebx+1], al
-    
+
     mov al, byte[cowsay.extensaoCOW+2]
-    
+
     mov byte[esi+ebx+2], al
-    
+
     mov al, byte[cowsay.extensaoCOW+3]
-    
+
     mov byte[esi+ebx+3], al
-    
+
     mov byte[esi+ebx+4], 0      ;; Fim da string, será cortada aqui e nada após será relevante
 
     push esi
@@ -222,7 +222,7 @@ inicioAPP:
     hx.syscall hx.open
 
     jc .vaquinhaInterna
-    
+
     fputs bufferArquivo
 
     jmp .finalizar
@@ -244,14 +244,14 @@ obterParametros:
 
     mov esi, [parametro]
     mov [perfilVaquinha], esi
-        
+
     cmp byte[esi], 0
     je usoAplicativo
 
 ;; Então vamos lá. Algumas coisas serão feitas aqui para verificar parâmetros, como alteração
 ;; do personagem a ser exibido e os parâmetros a serem impressos na saída padrão
 
-;; Primeiro, vamos procurar por '"'. Isso indica que se trata de uma frase e que se deve pular a 
+;; Primeiro, vamos procurar por '"'. Isso indica que se trata de uma frase e que se deve pular a
 ;; busca por um parâmetro de alteração de personagem, que é o primeiro parâmetro. Deve-se usar
 ;; esse caractere para pular o carregamento de outro personagem em caso de frase. Senão, será
 ;; interpretado que a primeira palavra é o personagem a ser carregado do disco e a mensagem sairá
@@ -272,9 +272,9 @@ obterParametros:
 ;; palavra após o parâmetro de personagem? Se o usuário não inseriu o '"', assim será interpretado.
 
     mov al, ' ' ;; Vamos pesquisar se existe um espaço, que seria a indicação de duas ou mais palavras
-    
+
     hx.syscall encontrarCaractere ;; Solicitar o serviço de busca de caractere
-    
+
     jc .adicionarMensagem ;; Não temos mais de uma palavra, o que indica que não há troca de personagem
 
 ;; Até agora já validamos frases e palavras individuais, sem a necessidade de carregamento de um
@@ -284,12 +284,12 @@ obterParametros:
 ;; é o que será exibido ao usuário
 
     mov al, ' ' ;; Vamos procurar a posição em que ocorre a separação dos parâmetros
-    
+
     call encontrarCaractereCowsay ;; Essa função é do aplicativo, não da API do Sistema
-    
+
     mov [mensagemUsuario], esi ;; A string devidamente cortada e separada. O corte de nome de arquivo
                                ;; será feito mais adiante.
-    jmp .pronto                 
+    jmp .pronto
 
 ;; Um personagem externo deve ser carregado e após existe um palavra ou frase
 
@@ -298,7 +298,7 @@ obterParametros:
     mov byte[arquivoExterno], 01h ;; Marcar que um personagem externo deve ser carregado
 
     clc
-    
+
     ret
 
 ;; Bom, temos uma frase. Temos que remover os caracteres '"' da string a ser impressa.
@@ -312,7 +312,7 @@ obterParametros:
 
     hx.syscall cortarString ;; Cortar ela (trimming), para ter certeza das posições de caracteres
 
-;; Agora vamos fazer a remoção dos caracteres '"', lembrando que só serão removidos o primeiro e 
+;; Agora vamos fazer a remoção dos caracteres '"', lembrando que só serão removidos o primeiro e
 ;; último caracteres '"'. Qualquer um no interior da cadeia permanecerá, por enquanto.
 
     mov eax, 00h ;; Posição zero da cadeia cortada, primeiro '"'
@@ -349,7 +349,7 @@ obterParametros:
 
     ret
 
-;;************************************************************************************  
+;;************************************************************************************
 
 ;; Realiza a busca de um caractere específico na String fornecida
 ;;
@@ -365,29 +365,29 @@ obterParametros:
 encontrarCaractereCowsay:
 
     lodsb
-    
+
     cmp al, ' '
     je .pronto
-    
+
     jmp encontrarCaractereCowsay
-    
+
 .pronto:
 
     mov byte[esi-1], 0
-    
+
     ret
 
-;;************************************************************************************  
+;;************************************************************************************
 
 usoAplicativo:
 
     fputs cowsay.uso
-    
+
     jmp terminar
 
 ;;************************************************************************************
 
-terminar:   
+terminar:
 
     hx.syscall encerrarProcesso
 
@@ -434,5 +434,5 @@ mensagemUsuario:  dd ?
 arquivoExterno:   db 0
 tamanhoMensagem:  dd 0
 regES:            dw 0
-     
+
 bufferArquivo:

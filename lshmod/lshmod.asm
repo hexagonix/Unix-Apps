@@ -1,15 +1,15 @@
 ;;*************************************************************************************************
 ;;
-;; 88                                                                                88              
-;; 88                                                                                ""              
-;; 88                                                                                                
-;; 88,dPPPba,   ,adPPPba, 8b,     ,d8 ,adPPPPba,  ,adPPPb,d8  ,adPPPba,  8b,dPPPba,  88 8b,     ,d8  
-;; 88P'    "88 a8P     88  `P8, ,8P'  ""     `P8 a8"    `P88 a8"     "8a 88P'   `"88 88  `P8, ,8P'   
-;; 88       88 8PP"""""""    )888(    ,adPPPPP88 8b       88 8b       d8 88       88 88    )888(     
-;; 88       88 "8b,   ,aa  ,d8" "8b,  88,    ,88 "8a,   ,d88 "8a,   ,a8" 88       88 88  ,d8" "8b,   
-;; 88       88  `"Pbbd8"' 8P'     `P8 `"8bbdP"P8  `"PbbdP"P8  `"PbbdP"'  88       88 88 8P'     `P8  
-;;                                               aa,    ,88                                         
-;;                                                "P8bbdP"       
+;; 88                                                                                88
+;; 88                                                                                ""
+;; 88
+;; 88,dPPPba,   ,adPPPba, 8b,     ,d8 ,adPPPPba,  ,adPPPb,d8  ,adPPPba,  8b,dPPPba,  88 8b,     ,d8
+;; 88P'    "88 a8P     88  `P8, ,8P'  ""     `P8 a8"    `P88 a8"     "8a 88P'   `"88 88  `P8, ,8P'
+;; 88       88 8PP"""""""    )888(    ,adPPPPP88 8b       88 8b       d8 88       88 88    )888(
+;; 88       88 "8b,   ,aa  ,d8" "8b,  88,    ,88 "8a,   ,d88 "8a,   ,a8" 88       88 88  ,d8" "8b,
+;; 88       88  `"Pbbd8"' 8P'     `P8 `"8bbdP"P8  `"PbbdP"P8  `"PbbdP"'  88       88 88 8P'     `P8
+;;                                               aa,    ,88
+;;                                                "P8bbdP"
 ;;
 ;;                     Sistema Operacional Hexagonix - Hexagonix Operating System
 ;;
@@ -19,7 +19,7 @@
 ;;*************************************************************************************************
 ;;
 ;; Português:
-;; 
+;;
 ;; O Hexagonix e seus componentes são licenciados sob licença BSD-3-Clause. Leia abaixo
 ;; a licença que governa este arquivo e verifique a licença de cada repositório para
 ;; obter mais informações sobre seus direitos e obrigações ao utilizar e reutilizar
@@ -38,10 +38,10 @@
 ;;
 ;; Copyright (c) 2015-2023, Felipe Miguel Nery Lunkes
 ;; All rights reserved.
-;; 
+;;
 ;; Redistribution and use in source and binary forms, with or without
 ;; modification, are permitted provided that the following conditions are met:
-;; 
+;;
 ;; 1. Redistributions of source code must retain the above copyright notice, this
 ;;    list of conditions and the following disclaimer.
 ;;
@@ -52,7 +52,7 @@
 ;; 3. Neither the name of the copyright holder nor the names of its
 ;;    contributors may be used to endorse or promote products derived from
 ;;    this software without specific prior written permission.
-;; 
+;;
 ;; THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 ;; AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
 ;; IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -72,7 +72,7 @@ use32
 
 include "HAPP.s" ;; Aqui está uma estrutura para o cabeçalho HAPP
 
-;; Instância | Estrutura | Arquitetura | Versão | Subversão | Entrada | Tipo  
+;; Instância | Estrutura | Arquitetura | Versão | Subversão | Entrada | Tipo
 cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, inicioAPP, 01h
 
 ;;************************************************************************************
@@ -109,7 +109,7 @@ db " bytes.", 10, 0
 db 10, "<!> This is not an HBoot module image. Try another file.", 0
 .semArquivo:
 db 10, "<!> The requested file is not available on this volume.", 10, 10
-db "<!> Check the filename and try again.", 0  
+db "<!> Check the filename and try again.", 0
 .tipoArquitetura:
 db 10, 10, "> Target architecture: ", 0
 .verModulo:
@@ -143,55 +143,55 @@ nomeModulo: times 8   db 0
 ;;************************************************************************************
 
 inicioAPP:
-    
+
     push ds
-    pop es          
-    
+    pop es
+
     mov [parametro], edi
-    
+
     mov esi, [parametro]
-        
+
     cmp byte[esi], 0
     je usoAplicativo
-    
+
     mov edi, lshmod.parametroAjuda
     mov esi, [parametro]
-    
+
     hx.syscall compararPalavrasString
-    
+
     jc usoAplicativo
 
     mov edi, lshmod.parametroAjuda2
     mov esi, [parametro]
-    
+
     hx.syscall compararPalavrasString
-    
+
     jc usoAplicativo
 
     mov esi, [parametro]
-    
+
     hx.syscall cortarString
-    
+
     hx.syscall tamanhoString
-    
+
     cmp eax, 13
     jl .obterInformacoes
-    
+
     fputs lshmod.arquivoInvalido
-    
+
     jmp .fim
-    
+
 .obterInformacoes:
 
     hx.syscall arquivoExiste
 
     jc .semArquivo
-    
+
     push eax
     push esi
 
     fputs lshmod.infoArquivo
-    
+
     pop esi
 
     call manterArquivo
@@ -199,11 +199,11 @@ inicioAPP:
     imprimirString
 
     fputs lshmod.tamanhoArquivo
-    
-    pop eax 
-    
+
+    pop eax
+
     imprimirInteiro
-    
+
     fputs lshmod.bytes
 
 ;; Vamos verificar se a imagem é de fato uma imagem HBoot
@@ -219,8 +219,8 @@ inicioAPP:
 
     fputs lshmod.semArquivo
 
-    jmp .fim    
-    
+    jmp .fim
+
 .fim:
 
     jmp terminar
@@ -344,7 +344,7 @@ verificarArquivoHBootMod:
 usoAplicativo:
 
     fputs lshmod.uso
-    
+
     jmp terminar
 
 ;;************************************************************************************
@@ -363,7 +363,7 @@ manterArquivo:
     mov edi, nomeArquivo
 
     rep movsb       ;; Copiar (ECX) caracteres de ESI para EDI
-    
+
     pop eax
 
     pop esi
@@ -372,7 +372,7 @@ manterArquivo:
 
 ;;************************************************************************************
 
-terminar:   
+terminar:
 
     hx.syscall encerrarProcesso
 

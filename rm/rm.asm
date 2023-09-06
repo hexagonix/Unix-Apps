@@ -1,15 +1,15 @@
 ;;*************************************************************************************************
 ;;
-;; 88                                                                                88              
-;; 88                                                                                ""              
-;; 88                                                                                                
-;; 88,dPPPba,   ,adPPPba, 8b,     ,d8 ,adPPPPba,  ,adPPPb,d8  ,adPPPba,  8b,dPPPba,  88 8b,     ,d8  
-;; 88P'    "88 a8P     88  `P8, ,8P'  ""     `P8 a8"    `P88 a8"     "8a 88P'   `"88 88  `P8, ,8P'   
-;; 88       88 8PP"""""""    )888(    ,adPPPPP88 8b       88 8b       d8 88       88 88    )888(     
-;; 88       88 "8b,   ,aa  ,d8" "8b,  88,    ,88 "8a,   ,d88 "8a,   ,a8" 88       88 88  ,d8" "8b,   
-;; 88       88  `"Pbbd8"' 8P'     `P8 `"8bbdP"P8  `"PbbdP"P8  `"PbbdP"'  88       88 88 8P'     `P8  
-;;                                               aa,    ,88                                         
-;;                                                "P8bbdP"       
+;; 88                                                                                88
+;; 88                                                                                ""
+;; 88
+;; 88,dPPPba,   ,adPPPba, 8b,     ,d8 ,adPPPPba,  ,adPPPb,d8  ,adPPPba,  8b,dPPPba,  88 8b,     ,d8
+;; 88P'    "88 a8P     88  `P8, ,8P'  ""     `P8 a8"    `P88 a8"     "8a 88P'   `"88 88  `P8, ,8P'
+;; 88       88 8PP"""""""    )888(    ,adPPPPP88 8b       88 8b       d8 88       88 88    )888(
+;; 88       88 "8b,   ,aa  ,d8" "8b,  88,    ,88 "8a,   ,d88 "8a,   ,a8" 88       88 88  ,d8" "8b,
+;; 88       88  `"Pbbd8"' 8P'     `P8 `"8bbdP"P8  `"PbbdP"P8  `"PbbdP"'  88       88 88 8P'     `P8
+;;                                               aa,    ,88
+;;                                                "P8bbdP"
 ;;
 ;;                     Sistema Operacional Hexagonix - Hexagonix Operating System
 ;;
@@ -19,7 +19,7 @@
 ;;*************************************************************************************************
 ;;
 ;; Português:
-;; 
+;;
 ;; O Hexagonix e seus componentes são licenciados sob licença BSD-3-Clause. Leia abaixo
 ;; a licença que governa este arquivo e verifique a licença de cada repositório para
 ;; obter mais informações sobre seus direitos e obrigações ao utilizar e reutilizar
@@ -38,10 +38,10 @@
 ;;
 ;; Copyright (c) 2015-2023, Felipe Miguel Nery Lunkes
 ;; All rights reserved.
-;; 
+;;
 ;; Redistribution and use in source and binary forms, with or without
 ;; modification, are permitted provided that the following conditions are met:
-;; 
+;;
 ;; 1. Redistributions of source code must retain the above copyright notice, this
 ;;    list of conditions and the following disclaimer.
 ;;
@@ -52,7 +52,7 @@
 ;; 3. Neither the name of the copyright holder nor the names of its
 ;;    contributors may be used to endorse or promote products derived from
 ;;    this software without specific prior written permission.
-;; 
+;;
 ;; THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 ;; AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
 ;; IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -72,7 +72,7 @@ use32
 
 include "HAPP.s" ;; Aqui está uma estrutura para o cabeçalho HAPP
 
-;; Instância | Estrutura | Arquitetura | Versão | Subversão | Entrada | Tipo  
+;; Instância | Estrutura | Arquitetura | Versão | Subversão | Entrada | Tipo
 cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, inicioAPP, 01h
 
 ;;************************************************************************************
@@ -85,113 +85,113 @@ include "erros.s"
 ;;************************************************************************************
 
 inicioAPP:
-    
+
     push ds
-    pop es          
-    
+    pop es
+
     mov [parametro], edi
-    
+
     mov esi, [parametro]
-        
+
     cmp byte[esi], 0
     je semParametro
-    
+
     mov edi, rm.parametroAjuda
     mov esi, [parametro]
-    
+
     hx.syscall compararPalavrasString
-    
+
     jc usoAplicativo
 
     mov edi, rm.parametroAjuda2
     mov esi, [parametro]
-    
+
     hx.syscall compararPalavrasString
-    
+
     jc usoAplicativo
-    
+
     mov esi, [parametro]
-    
+
     hx.syscall arquivoExiste
-    
+
     jc .arquivoNaoEncontrado
-    
+
     novaLinha
-    
+
     fputs rm.confirmacao
-        
+
 .obterTeclas:
 
     hx.syscall aguardarTeclado
-    
+
     cmp al, 'y'
     je .deletar
-    
+
     cmp al, 'Y'
     je .deletar
-    
+
     cmp al, 'n'
     je .abortar
-    
+
     cmp al, 'N'
     je .abortar
 
-    jmp .obterTeclas        
-    
-    
+    jmp .obterTeclas
+
+
 .arquivoNaoEncontrado:
 
     fputs rm.naoEncontrado
-        
+
     jmp terminar
 
 .deletar:
 
     hx.syscall imprimirCaractere
-    
+
     mov esi, [parametro]
-    
+
     hx.syscall hx.unlink
-    
+
     jc .erroDeletando
-    
+
     ;; fputs rm.deletado
-        
+
     jmp terminar
 
 .abortar:
 
     hx.syscall imprimirCaractere
-    
+
     fputs rm.abortar
-        
+
     jmp terminar
-    
+
 .erroDeletando:
 
     push eax
 
     fputs rm.erroDeletando
-        
+
     pop eax
-    
+
     cmp eax, IO.operacaoNegada
     je .permissaoNegada
-    
+
     jmp terminar
 
 .permissaoNegada:
 
     fputs rm.permissaoNegada
-        
+
     jmp terminar
-    
+
 ;;************************************************************************************
 
 usoAplicativo:
 
     fputs rm.uso
-        
+
     jmp terminar
 
 ;;************************************************************************************
@@ -199,12 +199,12 @@ usoAplicativo:
 semParametro:
 
     fputs rm.semParametro
-        
+
     jmp terminar
 
 ;;************************************************************************************
 
-terminar:   
+terminar:
 
     hx.syscall encerrarProcesso
 
@@ -233,21 +233,21 @@ db "Are you sure you want to delete this file (y/N)? ", 0
 .deletado:
 db 10, "The requested file was successfully removed.", 0
 .erroDeletando:
-db 10, "An error occurred during the request. No files were removed.", 0  
+db 10, "An error occurred during the request. No files were removed.", 0
 .abortar:
-db 10, "The operation was aborted by the user.", 0  
+db 10, "The operation was aborted by the user.", 0
 .parametroAjuda:
-db "?", 0  
+db "?", 0
 .parametroAjuda2:
-db "--help", 0    
+db "--help", 0
 .semParametro:
 db 10, "A required filename is missing.", 10
 db "Use 'rm ?' for help with this utility.", 0
 .permissaoNegada:
 db "Only an administrative (or root) user can complete this action.", 10
-db "Login in this user to perform the desired operation.", 0                 
-    
+db "Login in this user to perform the desired operation.", 0
+
 parametro: dd ?
 regES:     dw 0
-     
+
 bufferArquivo:

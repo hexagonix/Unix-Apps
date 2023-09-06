@@ -1,15 +1,15 @@
 ;;*************************************************************************************************
 ;;
-;; 88                                                                                88              
-;; 88                                                                                ""              
-;; 88                                                                                                
-;; 88,dPPPba,   ,adPPPba, 8b,     ,d8 ,adPPPPba,  ,adPPPb,d8  ,adPPPba,  8b,dPPPba,  88 8b,     ,d8  
-;; 88P'    "88 a8P     88  `P8, ,8P'  ""     `P8 a8"    `P88 a8"     "8a 88P'   `"88 88  `P8, ,8P'   
-;; 88       88 8PP"""""""    )888(    ,adPPPPP88 8b       88 8b       d8 88       88 88    )888(     
-;; 88       88 "8b,   ,aa  ,d8" "8b,  88,    ,88 "8a,   ,d88 "8a,   ,a8" 88       88 88  ,d8" "8b,   
-;; 88       88  `"Pbbd8"' 8P'     `P8 `"8bbdP"P8  `"PbbdP"P8  `"PbbdP"'  88       88 88 8P'     `P8  
-;;                                               aa,    ,88                                         
-;;                                                "P8bbdP"       
+;; 88                                                                                88
+;; 88                                                                                ""
+;; 88
+;; 88,dPPPba,   ,adPPPba, 8b,     ,d8 ,adPPPPba,  ,adPPPb,d8  ,adPPPba,  8b,dPPPba,  88 8b,     ,d8
+;; 88P'    "88 a8P     88  `P8, ,8P'  ""     `P8 a8"    `P88 a8"     "8a 88P'   `"88 88  `P8, ,8P'
+;; 88       88 8PP"""""""    )888(    ,adPPPPP88 8b       88 8b       d8 88       88 88    )888(
+;; 88       88 "8b,   ,aa  ,d8" "8b,  88,    ,88 "8a,   ,d88 "8a,   ,a8" 88       88 88  ,d8" "8b,
+;; 88       88  `"Pbbd8"' 8P'     `P8 `"8bbdP"P8  `"PbbdP"P8  `"PbbdP"'  88       88 88 8P'     `P8
+;;                                               aa,    ,88
+;;                                                "P8bbdP"
 ;;
 ;;                     Sistema Operacional Hexagonix - Hexagonix Operating System
 ;;
@@ -19,7 +19,7 @@
 ;;*************************************************************************************************
 ;;
 ;; Português:
-;; 
+;;
 ;; O Hexagonix e seus componentes são licenciados sob licença BSD-3-Clause. Leia abaixo
 ;; a licença que governa este arquivo e verifique a licença de cada repositório para
 ;; obter mais informações sobre seus direitos e obrigações ao utilizar e reutilizar
@@ -38,10 +38,10 @@
 ;;
 ;; Copyright (c) 2015-2023, Felipe Miguel Nery Lunkes
 ;; All rights reserved.
-;; 
+;;
 ;; Redistribution and use in source and binary forms, with or without
 ;; modification, are permitted provided that the following conditions are met:
-;; 
+;;
 ;; 1. Redistributions of source code must retain the above copyright notice, this
 ;;    list of conditions and the following disclaimer.
 ;;
@@ -52,7 +52,7 @@
 ;; 3. Neither the name of the copyright holder nor the names of its
 ;;    contributors may be used to endorse or promote products derived from
 ;;    this software without specific prior written permission.
-;; 
+;;
 ;; THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 ;; AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
 ;; IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -66,13 +66,13 @@
 ;;
 ;; $HexagonixOS$
 
-use32       
+use32
 
 ;; Agora vamos criar um cabeçalho para a imagem HAPP final do aplicativo.
 
 include "HAPP.s" ;; Aqui está uma estrutura para o cabeçalho HAPP
 
-;; Instância | Estrutura | Arquitetura | Versão | Subversão | Entrada | Tipo  
+;; Instância | Estrutura | Arquitetura | Versão | Subversão | Entrada | Tipo
 cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, inicioAPP, 01h
 
 ;;************************************************************************************
@@ -80,8 +80,8 @@ cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, inicioAPP, 01h
 include "hexagon.s"
 include "console.s"
 include "macros.s"
-    
-;;************************************************************************************          
+
+;;************************************************************************************
 
 align 4
 
@@ -102,7 +102,7 @@ uname:
 ;; -o: sistema operacional
 
 .parametrosSistema:
-db " Unix" , 0 
+db " Unix" , 0
 .sistemaOperacional:
 db "Hexagonix", 0
 .usuario:
@@ -124,7 +124,7 @@ db "(build ", 0
 .fecharParenteses:
 db ")", 0
 .versao:
-db " version ", 0 
+db " version ", 0
 .arquiteturai386:
 db "i386", 0
 .arquiteturaamd64:
@@ -132,7 +132,7 @@ db "amd64", 0
 .hexagonix:
 db "Hexagonix", 0
 .parametroAjuda:
-db "?", 0  
+db "?", 0
 .parametroAjuda2:
 db "--help", 0
 .parametroExibirTudo:
@@ -150,15 +150,15 @@ db "-p", 0
 .parametroExibirPlataforma:
 db "-i", 0
 .parametroExibirVersao:
-db "-v", 0   
+db "-v", 0
 .parametroExibirSO:
-db "-o", 0   
+db "-o", 0
 .arquivoUnix:
 db "host.unx", 0
 .naoSuportado:
-db "Unknown architecture.", 0      
+db "Unknown architecture.", 0
 .plataformaPC:
-db "PC", 0  
+db "PC", 0
 .uso:
 db 10, "Usage: uname [parameter]", 10, 10
 db "Displays system information.", 10, 10
@@ -174,7 +174,7 @@ db " -i: System hardware platform.", 10
 db " -o: Name of running operating system.", 10, 10
 db "uname version ", versaoUNAME, 10, 10
 db "Copyright (C) 2017-", __stringano, " Felipe Miguel Nery Lunkes", 10
-db "All rights reserved.", 0                     
+db "All rights reserved.", 0
 ponto:
 db ".", 0
 
@@ -187,100 +187,100 @@ align 32
 inicioAPP: ;; Ponto de entrada do aplicativo
 
     mov [parametro], edi
-    
+
     mov edi, uname.parametroAjuda
     mov esi, [parametro]
-    
+
     hx.syscall compararPalavrasString
-    
+
     jc usoAplicativo
 
     mov edi, uname.parametroAjuda2
     mov esi, [parametro]
-    
+
     hx.syscall compararPalavrasString
-    
+
     jc usoAplicativo
 
 ;; -a
 
     mov edi, uname.parametroExibirTudo
     mov esi, [parametro]
-    
+
     hx.syscall compararPalavrasString
-    
+
     jc exibirTudo
 
 ;; -s
 
     mov edi, uname.parametroExibirNomeKernel
     mov esi, [parametro]
-    
+
     hx.syscall compararPalavrasString
-    
+
     jc exibirNomeKernel
 
 ;; -n
 
     mov edi, uname.parametroExibirHostname
     mov esi, [parametro]
-    
+
     hx.syscall compararPalavrasString
-    
+
     jc exibirHostname
 
 ;; -r
 
     mov edi, uname.parametroExibirLancamento
     mov esi, [parametro]
-    
+
     hx.syscall compararPalavrasString
-    
+
     jc exibirLancamento
 
 ;; -m
 
     mov edi, uname.parametroExibirTipo
     mov esi, [parametro]
-    
+
     hx.syscall compararPalavrasString
-    
+
     jc exibirArquitetura
 
 ;; -p
 
     mov edi, uname.parametroExibirArch
     mov esi, [parametro]
-    
+
     hx.syscall compararPalavrasString
-    
+
     jc exibirArquitetura
 
-;; -i 
+;; -i
 
     mov edi, uname.parametroExibirPlataforma
     mov esi, [parametro]
-    
+
     hx.syscall compararPalavrasString
-    
+
     jc exibirPlataforma
 
 ;; -v
 
     mov edi, uname.parametroExibirVersao
     mov esi, [parametro]
-    
+
     hx.syscall compararPalavrasString
-    
+
     jc exibirVersaoApenas
 
 ;; -o
 
     mov edi, uname.parametroExibirSO
     mov esi, [parametro]
-    
+
     hx.syscall compararPalavrasString
-    
+
     jc exibirInfoSistemaOperacional
 
     jmp exibirNomeKernel
@@ -289,13 +289,13 @@ inicioAPP: ;; Ponto de entrada do aplicativo
 
 exibirNomeKernel:
 
-    call espacoPadrao 
-    
+    call espacoPadrao
+
     hx.syscall hx.uname
-    
+
     imprimirString
 
-    jmp terminar 
+    jmp terminar
 
 ;;************************************************************************************
 
@@ -305,7 +305,7 @@ exibirHostname:
 
     call obterHostname
 
-    jmp terminar 
+    jmp terminar
 
 ;;************************************************************************************
 
@@ -315,7 +315,7 @@ exibirLancamento:
 
     call versaoHexagon
 
-    jmp terminar 
+    jmp terminar
 
 ;;************************************************************************************
 
@@ -326,21 +326,21 @@ exibirArquitetura:
     hx.syscall hx.uname
 
 ;; Em EDX temos a arquitetura
-    
+
     cmp edx, 01
     je .i386
 
     cmp edx, 02
-    je .x86_64 
+    je .x86_64
 
     fputs uname.naoSuportado
 
-    jmp .terminar 
+    jmp .terminar
 
 .i386:
 
     fputs uname.arquiteturai386
-    
+
     jmp .terminar
 
 .x86_64:
@@ -361,26 +361,26 @@ exibirPlataforma:
 
     fputs uname.plataformaPC
 
-    jmp terminar 
+    jmp terminar
 
 ;;************************************************************************************
 
 exibirTudo:
 
-    call espacoPadrao 
-    
+    call espacoPadrao
+
     fputs uname.sistemaOperacional
 
     fputs uname.espaco
-    
+
     call obterHostname
 
 .continuarHost:
 
     fputs uname.espaco
-        
+
     hx.syscall hx.uname
-    
+
     imprimirString
 
 ;; Para ficar de acordo com o padrão do FreeBSD, a mensagem "versao" não é exibida
@@ -388,12 +388,12 @@ exibirTudo:
     ;; fputs uname.versao
 
     fputs uname.espaco
-        
+
     call versaoHexagon
 
     fputs uname.espaco
-    
-    cmp edx, 01h 
+
+    cmp edx, 01h
     je .i386
 
     cmp edx, 02h
@@ -412,33 +412,33 @@ exibirTudo:
     jmp .continuar
 
 .continuar:
-    
+
     fputs uname.espaco
 
     fputs uname.hexagonix
-    
+
     jmp terminar
 
 ;;************************************************************************************
 
 exibirInfoSistemaOperacional:
 
-    call espacoPadrao 
-    
+    call espacoPadrao
+
     fputs uname.sistemaOperacional
-        
+
     jmp terminar
-    
+
 ;;************************************************************************************
 
 exibirVersaoApenas:
 
-    call espacoPadrao 
-    
+    call espacoPadrao
+
     hx.syscall hx.uname
-    
+
     imprimirString
-    
+
     fputs uname.espaco
 
     call versaoHexagon
@@ -446,37 +446,37 @@ exibirVersaoApenas:
     jmp terminar
 
 ;;************************************************************************************
-    
+
 ;; Solicita a versão do kernel, a decodifica e exibe para o usuário
-    
+
 versaoHexagon:
 
     hx.syscall hx.uname
-    
+
     push ecx
     push ebx
-    
+
     imprimirInteiro
-    
+
     fputs ponto
-        
+
     pop eax
-    
+
     imprimirInteiro
-    
+
     pop ecx
-    
+
     cmp ch, 0
     je .continuar
 
     push ecx
 
     fputs ponto
-        
-    pop ecx 
-    
+
+    pop ecx
+
     mov al, ch
-    
+
     hx.syscall imprimirCaractere
 
 .continuar:
@@ -486,8 +486,8 @@ versaoHexagon:
     fputs uname.buildHexagon
 
     hx.syscall hx.uname
-    
-    fputs edi 
+
+    fputs edi
 
     fputs uname.fecharParenteses
 
@@ -498,15 +498,15 @@ versaoHexagon:
 usoAplicativo:
 
     fputs uname.uso
-        
+
     jmp terminar
 
-;;************************************************************************************  
+;;************************************************************************************
 
-terminar:    
+terminar:
 
     hx.syscall encerrarProcesso
-    
+
 ;;*****************************************************************************
 
 espacoPadrao:
@@ -519,40 +519,40 @@ espacoPadrao:
 
 obterHostname:
 
-;; Vamos agora exibir o nome de host 
+;; Vamos agora exibir o nome de host
 
     mov edi, enderecoCarregamento
     mov esi, uname.arquivoUnix
-    
+
     hx.syscall hx.open
-    
+
     jc .arquivoNaoEncontrado ;; Se não for encontrado, exibir o padrão
 
-;; Se encontrado, exibir o nome de host definido 
+;; Se encontrado, exibir o nome de host definido
 
-    clc 
+    clc
 
     mov esi, enderecoCarregamento
 
     hx.syscall tamanhoString
 
-    mov edx, eax 
+    mov edx, eax
     dec edx
 
     mov al, 0
-    
+
     hx.syscall inserirCaractere
 
     fputs enderecoCarregamento
 
-    jmp .retornar 
+    jmp .retornar
 
 .arquivoNaoEncontrado:
 
-    stc 
+    stc
 
     fputs uname.maquina
-    
+
 .retornar:
 
     ret

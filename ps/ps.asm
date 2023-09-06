@@ -1,15 +1,15 @@
 ;;*************************************************************************************************
 ;;
-;; 88                                                                                88              
-;; 88                                                                                ""              
-;; 88                                                                                                
-;; 88,dPPPba,   ,adPPPba, 8b,     ,d8 ,adPPPPba,  ,adPPPb,d8  ,adPPPba,  8b,dPPPba,  88 8b,     ,d8  
-;; 88P'    "88 a8P     88  `P8, ,8P'  ""     `P8 a8"    `P88 a8"     "8a 88P'   `"88 88  `P8, ,8P'   
-;; 88       88 8PP"""""""    )888(    ,adPPPPP88 8b       88 8b       d8 88       88 88    )888(     
-;; 88       88 "8b,   ,aa  ,d8" "8b,  88,    ,88 "8a,   ,d88 "8a,   ,a8" 88       88 88  ,d8" "8b,   
-;; 88       88  `"Pbbd8"' 8P'     `P8 `"8bbdP"P8  `"PbbdP"P8  `"PbbdP"'  88       88 88 8P'     `P8  
-;;                                               aa,    ,88                                         
-;;                                                "P8bbdP"       
+;; 88                                                                                88
+;; 88                                                                                ""
+;; 88
+;; 88,dPPPba,   ,adPPPba, 8b,     ,d8 ,adPPPPba,  ,adPPPb,d8  ,adPPPba,  8b,dPPPba,  88 8b,     ,d8
+;; 88P'    "88 a8P     88  `P8, ,8P'  ""     `P8 a8"    `P88 a8"     "8a 88P'   `"88 88  `P8, ,8P'
+;; 88       88 8PP"""""""    )888(    ,adPPPPP88 8b       88 8b       d8 88       88 88    )888(
+;; 88       88 "8b,   ,aa  ,d8" "8b,  88,    ,88 "8a,   ,d88 "8a,   ,a8" 88       88 88  ,d8" "8b,
+;; 88       88  `"Pbbd8"' 8P'     `P8 `"8bbdP"P8  `"PbbdP"P8  `"PbbdP"'  88       88 88 8P'     `P8
+;;                                               aa,    ,88
+;;                                                "P8bbdP"
 ;;
 ;;                     Sistema Operacional Hexagonix - Hexagonix Operating System
 ;;
@@ -19,7 +19,7 @@
 ;;*************************************************************************************************
 ;;
 ;; Português:
-;; 
+;;
 ;; O Hexagonix e seus componentes são licenciados sob licença BSD-3-Clause. Leia abaixo
 ;; a licença que governa este arquivo e verifique a licença de cada repositório para
 ;; obter mais informações sobre seus direitos e obrigações ao utilizar e reutilizar
@@ -38,10 +38,10 @@
 ;;
 ;; Copyright (c) 2015-2023, Felipe Miguel Nery Lunkes
 ;; All rights reserved.
-;; 
+;;
 ;; Redistribution and use in source and binary forms, with or without
 ;; modification, are permitted provided that the following conditions are met:
-;; 
+;;
 ;; 1. Redistributions of source code must retain the above copyright notice, this
 ;;    list of conditions and the following disclaimer.
 ;;
@@ -52,7 +52,7 @@
 ;; 3. Neither the name of the copyright holder nor the names of its
 ;;    contributors may be used to endorse or promote products derived from
 ;;    this software without specific prior written permission.
-;; 
+;;
 ;; THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 ;; AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
 ;; IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -66,13 +66,13 @@
 ;;
 ;; $HexagonixOS$
 
-use32       
+use32
 
 ;; Agora vamos criar um cabeçalho para a imagem HAPP final do aplicativo.
 
 include "HAPP.s" ;; Aqui está uma estrutura para o cabeçalho HAPP
 
-;; Instância | Estrutura | Arquitetura | Versão | Subversão | Entrada | Tipo  
+;; Instância | Estrutura | Arquitetura | Versão | Subversão | Entrada | Tipo
 cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, inicioAPP, 01h
 
 
@@ -87,79 +87,79 @@ include "macros.s"
 inicioAPP: ;; Ponto de entrada do aplicativo
 
     mov [parametro], edi
-    
+
     novaLinha
-    
+
     mov edi, ps.parametroAjuda
     mov esi, [parametro]
-    
+
     hx.syscall compararPalavrasString
-    
+
     jc usoAplicativo
 
     mov edi, ps.parametroAjuda2
     mov esi, [parametro]
-    
+
     hx.syscall compararPalavrasString
-    
+
     jc usoAplicativo
-    
+
     mov edi, ps.parametroPID
     mov esi, [parametro]
-    
+
     hx.syscall compararPalavrasString
-    
+
     jc parametroPID
-    
+
     mov edi, ps.parametroMemoria
     mov esi, [parametro]
-    
+
     hx.syscall compararPalavrasString
-    
+
     jc parametroMemoria
-    
+
     mov edi, ps.parametroOutros
     mov esi, [parametro]
-    
+
     hx.syscall compararPalavrasString
-    
+
     jc parametroOutrosProcessos
-    
+
     jmp parametroMemoria
 
-;;************************************************************************************          
+;;************************************************************************************
 
 parametroPID:
-    
+
     hx.syscall hx.getpid
-    
+
     push eax
-    
+
     fputs ps.pid
-    
+
     pop eax
-    
+
     imprimirInteiro
-    
+
     novaLinha
     novaLinha
-    
+
     jmp parametroMemoria.linha
 
-;;************************************************************************************          
+;;************************************************************************************
 
 parametroMemoria:
 
 .linha:
-    
+
     fputs ps.usoMem
-    
+
     hx.syscall usoMemoria
-    
+
     imprimirInteiro
-    
+
     fputs ps.kbytes
-    
+
     jmp terminar
 
 ;;************************************************************************************
@@ -167,31 +167,31 @@ parametroMemoria:
 parametroOutrosProcessos:
 
     hx.syscall hx.getpid
-    
+
     push eax
-    
+
     fputs ps.numeroProcessos
-    
+
     pop eax
-    
+
     imprimirInteiro
-    
+
     fputs ps.processos
-        
+
     jmp terminar
-    
+
 ;;************************************************************************************
-    
+
 usoAplicativo:
 
     fputs ps.uso
-    
+
     jmp terminar
 
-;;************************************************************************************  
+;;************************************************************************************
 
-terminar:   
-    
+terminar:
+
     hx.syscall encerrarProcesso
 
 ;;************************************************************************************
@@ -201,7 +201,7 @@ versaoPS equ "1.1.5.1"
 parametro: dd ?
 
 ps:
-    
+
 .pid:
 db "PID of this process: ", 0
 .usoMem:
@@ -219,7 +219,7 @@ db "ps version ", versaoPS, 10, 10
 db "Copyright (C) 2017-", __stringano, " Felipe Miguel Nery Lunkes", 10
 db "All rights reserved.", 0
 .parametroAjuda:
-db "?", 0  
+db "?", 0
 .parametroAjuda2:
 db "--help", 0
 .parametroPID:
@@ -227,7 +227,7 @@ db "-t", 0
 .parametroOutros:
 db "-o", 0
 .parametroMemoria:
-db "-v", 0     
+db "-v", 0
 .numeroProcessos:
 db "There are currently ", 0
 .processos:

@@ -1,15 +1,15 @@
 ;;*************************************************************************************************
 ;;
-;; 88                                                                                88              
-;; 88                                                                                ""              
-;; 88                                                                                                
-;; 88,dPPPba,   ,adPPPba, 8b,     ,d8 ,adPPPPba,  ,adPPPb,d8  ,adPPPba,  8b,dPPPba,  88 8b,     ,d8  
-;; 88P'    "88 a8P     88  `P8, ,8P'  ""     `P8 a8"    `P88 a8"     "8a 88P'   `"88 88  `P8, ,8P'   
-;; 88       88 8PP"""""""    )888(    ,adPPPPP88 8b       88 8b       d8 88       88 88    )888(     
-;; 88       88 "8b,   ,aa  ,d8" "8b,  88,    ,88 "8a,   ,d88 "8a,   ,a8" 88       88 88  ,d8" "8b,   
-;; 88       88  `"Pbbd8"' 8P'     `P8 `"8bbdP"P8  `"PbbdP"P8  `"PbbdP"'  88       88 88 8P'     `P8  
-;;                                               aa,    ,88                                         
-;;                                                "P8bbdP"       
+;; 88                                                                                88
+;; 88                                                                                ""
+;; 88
+;; 88,dPPPba,   ,adPPPba, 8b,     ,d8 ,adPPPPba,  ,adPPPb,d8  ,adPPPba,  8b,dPPPba,  88 8b,     ,d8
+;; 88P'    "88 a8P     88  `P8, ,8P'  ""     `P8 a8"    `P88 a8"     "8a 88P'   `"88 88  `P8, ,8P'
+;; 88       88 8PP"""""""    )888(    ,adPPPPP88 8b       88 8b       d8 88       88 88    )888(
+;; 88       88 "8b,   ,aa  ,d8" "8b,  88,    ,88 "8a,   ,d88 "8a,   ,a8" 88       88 88  ,d8" "8b,
+;; 88       88  `"Pbbd8"' 8P'     `P8 `"8bbdP"P8  `"PbbdP"P8  `"PbbdP"'  88       88 88 8P'     `P8
+;;                                               aa,    ,88
+;;                                                "P8bbdP"
 ;;
 ;;                     Sistema Operacional Hexagonix - Hexagonix Operating System
 ;;
@@ -19,7 +19,7 @@
 ;;*************************************************************************************************
 ;;
 ;; Português:
-;; 
+;;
 ;; O Hexagonix e seus componentes são licenciados sob licença BSD-3-Clause. Leia abaixo
 ;; a licença que governa este arquivo e verifique a licença de cada repositório para
 ;; obter mais informações sobre seus direitos e obrigações ao utilizar e reutilizar
@@ -38,10 +38,10 @@
 ;;
 ;; Copyright (c) 2015-2023, Felipe Miguel Nery Lunkes
 ;; All rights reserved.
-;; 
+;;
 ;; Redistribution and use in source and binary forms, with or without
 ;; modification, are permitted provided that the following conditions are met:
-;; 
+;;
 ;; 1. Redistributions of source code must retain the above copyright notice, this
 ;;    list of conditions and the following disclaimer.
 ;;
@@ -52,7 +52,7 @@
 ;; 3. Neither the name of the copyright holder nor the names of its
 ;;    contributors may be used to endorse or promote products derived from
 ;;    this software without specific prior written permission.
-;; 
+;;
 ;; THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 ;; AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
 ;; IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -72,7 +72,7 @@ use32
 
 include "HAPP.s" ;; Aqui está uma estrutura para o cabeçalho HAPP
 
-;; Instância | Estrutura | Arquitetura | Versão | Subversão | Entrada | Tipo  
+;; Instância | Estrutura | Arquitetura | Versão | Subversão | Entrada | Tipo
 cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, inicioAPP, 01h
 
 ;;************************************************************************************
@@ -84,60 +84,60 @@ include "macros.s"
 ;;************************************************************************************
 
 inicioAPP:
-    
+
     push ds
-    pop es          
-    
+    pop es
+
     mov [parametro], edi
-    
+
     mov esi, [parametro]
-        
+
     cmp byte[esi], 0
     je usoAplicativo
-    
+
     mov edi, fileUnix.parametroAjuda
     mov esi, [parametro]
-    
+
     hx.syscall compararPalavrasString
-    
+
     jc usoAplicativo
 
     mov edi, fileUnix.parametroAjuda2
     mov esi, [parametro]
-    
+
     hx.syscall compararPalavrasString
-    
+
     jc usoAplicativo
-    
+
     mov esi, [parametro]
-    
+
     hx.syscall cortarString
-    
+
     hx.syscall tamanhoString
-    
+
     cmp eax, 13
     jl .obterInformacoes
-    
+
     fputs fileUnix.arquivoInvalido
-    
+
     jmp .fim
-    
+
 .obterInformacoes:
 
     hx.syscall arquivoExiste
 
     jc .semArquivo
-    
+
     push eax
 
     call manterArquivo
 
     fputs fileUnix.tamanhoArquivo
-    
-    pop eax 
-    
+
+    pop eax
+
     imprimirInteiro
-    
+
     fputs fileUnix.bytes
 
 ;; Primeiro vamos ver se se trata de uma imagem executável. Se sim, podemos pular todo o
@@ -147,8 +147,8 @@ inicioAPP:
 ;; de ser chamadas por outro processo no âmbito de sua execução podem apresentar outra extensão.
 ;; O próprio Hexagon é uma imagem HAPP mas apresenta extensão .SIS
 
-    call verificarArquivoHAPP 
-    
+    call verificarArquivoHAPP
+
     call verificarArquivoHBoot
 
 ;; Se não for uma imagem executável, tentar identificar pela extensão, sem verificar o conteúdo
@@ -159,7 +159,7 @@ inicioAPP:
     mov esi, nomeArquivo
 
     hx.syscall stringParaMaiusculo    ;; Iremos checar com base na extensão em maiúsculo
-    
+
     hx.syscall tamanhoString
 
     add esi, eax                     ;; Adicionar o tamanho do nome
@@ -167,51 +167,51 @@ inicioAPP:
     sub esi, 4                       ;; Subtrair 4 para manter apenas a extensão
 
     mov edi, fileUnix.extensaoUNX
-    
+
     hx.syscall compararPalavrasString  ;; Checar por extensão .UNX
-    
+
     jc .arquivoUNX
 
     mov edi, fileUnix.extensaoSIS
-    
+
     hx.syscall compararPalavrasString  ;; Checar por extensão .SIS
-    
+
     jc .arquivoSIS
 
     mov edi, fileUnix.extensaoTXT
-    
+
     hx.syscall compararPalavrasString  ;; Checar por extensão .TXT
-    
+
     jc .arquivoTXT
 
     mov edi, fileUnix.extensaoASM
-    
+
     hx.syscall compararPalavrasString  ;; Checar por extensão .ASM
-    
+
     jc .arquivoASM
 
     mov edi, fileUnix.extensaoCOW
-    
+
     hx.syscall compararPalavrasString  ;; Checar por extensão .COW
-    
+
     jc .arquivoCOW
 
     mov edi, fileUnix.extensaoMAN
-    
+
     hx.syscall compararPalavrasString  ;; Checar por extensão .MAN
-    
+
     jc .arquivoMAN
 
     mov edi, fileUnix.extensaoFNT
-    
+
     hx.syscall compararPalavrasString  ;; Checar por extensão .FNT
-    
+
     jc .arquivoFNT
 
     mov edi, fileUnix.extensaoCAN
-    
+
     hx.syscall compararPalavrasString  ;; Checar por extensão .CAN
-    
+
     jc .arquivoCAN
 
 ;; Checar agora com duas letras de extensão
@@ -221,9 +221,9 @@ inicioAPP:
     add esi, 2 ;; Adicionar 2 (seria uma remoção de 2) para manter apenas a extensão
 
     mov edi, fileUnix.extensaoS
-    
+
     hx.syscall compararPalavrasString  ;; Checar por extensão .S
-    
+
     jc .arquivoS
 
 .semExtensaoValida:
@@ -302,10 +302,10 @@ inicioAPP:
 
     fputs fileUnix.semArquivo
 
-    jmp .fim    
-    
+    jmp .fim
+
 .fim:
-    
+
     jmp terminar
 
 ;;************************************************************************************
@@ -378,7 +378,7 @@ verificarArquivoHBoot:
 usoAplicativo:
 
     fputs fileUnix.uso
-    
+
     jmp terminar
 
 ;;************************************************************************************
@@ -397,7 +397,7 @@ manterArquivo:
     mov edi, nomeArquivo
 
     rep movsb       ;; Copiar (ECX) caracteres de ESI para EDI
-    
+
     pop eax
 
     pop esi
@@ -406,7 +406,7 @@ manterArquivo:
 
 ;;************************************************************************************
 
-terminar:   
+terminar:
 
     hx.syscall encerrarProcesso
 
@@ -417,7 +417,7 @@ terminar:
 ;;                    Área de dados e variáveis do aplicativo
 ;;
 ;;************************************************************************************
-    
+
 versaoFILE equ "1.9.2.3"
 
 fileUnix:
@@ -435,7 +435,7 @@ db 10, "File size: ", 0
 .bytes:
 db " bytes.", 0
 .semArquivo:
-db 10, "The requested file is not available on this volume. Check the filename and try again.", 0  
+db 10, "The requested file is not available on this volume. Check the filename and try again.", 0
 .appValido:
 db 10, "This appears to be a Unix executable for Hexagon.", 0
 .arquivoHBoot:
@@ -447,7 +447,7 @@ db 10, "This appears to be a source file that contains an Assembly development l
 .arquivoSIS:
 db 10, "This appears to be a system file.", 0
 .arquivoUnix:
-db 10, "This appears to be a Unix environment data or configuration file.", 0               
+db 10, "This appears to be a Unix environment data or configuration file.", 0
 .arquivoMAN:
 db 10, "This appears to be a manual file.", 0
 .arquivoCOW:

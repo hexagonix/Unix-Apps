@@ -1,15 +1,15 @@
 ;;*************************************************************************************************
 ;;
-;; 88                                                                                88              
-;; 88                                                                                ""              
-;; 88                                                                                                
-;; 88,dPPPba,   ,adPPPba, 8b,     ,d8 ,adPPPPba,  ,adPPPb,d8  ,adPPPba,  8b,dPPPba,  88 8b,     ,d8  
-;; 88P'    "88 a8P     88  `P8, ,8P'  ""     `P8 a8"    `P88 a8"     "8a 88P'   `"88 88  `P8, ,8P'   
-;; 88       88 8PP"""""""    )888(    ,adPPPPP88 8b       88 8b       d8 88       88 88    )888(     
-;; 88       88 "8b,   ,aa  ,d8" "8b,  88,    ,88 "8a,   ,d88 "8a,   ,a8" 88       88 88  ,d8" "8b,   
-;; 88       88  `"Pbbd8"' 8P'     `P8 `"8bbdP"P8  `"PbbdP"P8  `"PbbdP"'  88       88 88 8P'     `P8  
-;;                                               aa,    ,88                                         
-;;                                                "P8bbdP"       
+;; 88                                                                                88
+;; 88                                                                                ""
+;; 88
+;; 88,dPPPba,   ,adPPPba, 8b,     ,d8 ,adPPPPba,  ,adPPPb,d8  ,adPPPba,  8b,dPPPba,  88 8b,     ,d8
+;; 88P'    "88 a8P     88  `P8, ,8P'  ""     `P8 a8"    `P88 a8"     "8a 88P'   `"88 88  `P8, ,8P'
+;; 88       88 8PP"""""""    )888(    ,adPPPPP88 8b       88 8b       d8 88       88 88    )888(
+;; 88       88 "8b,   ,aa  ,d8" "8b,  88,    ,88 "8a,   ,d88 "8a,   ,a8" 88       88 88  ,d8" "8b,
+;; 88       88  `"Pbbd8"' 8P'     `P8 `"8bbdP"P8  `"PbbdP"P8  `"PbbdP"'  88       88 88 8P'     `P8
+;;                                               aa,    ,88
+;;                                                "P8bbdP"
 ;;
 ;;                     Sistema Operacional Hexagonix - Hexagonix Operating System
 ;;
@@ -19,7 +19,7 @@
 ;;*************************************************************************************************
 ;;
 ;; Português:
-;; 
+;;
 ;; O Hexagonix e seus componentes são licenciados sob licença BSD-3-Clause. Leia abaixo
 ;; a licença que governa este arquivo e verifique a licença de cada repositório para
 ;; obter mais informações sobre seus direitos e obrigações ao utilizar e reutilizar
@@ -38,10 +38,10 @@
 ;;
 ;; Copyright (c) 2015-2023, Felipe Miguel Nery Lunkes
 ;; All rights reserved.
-;; 
+;;
 ;; Redistribution and use in source and binary forms, with or without
 ;; modification, are permitted provided that the following conditions are met:
-;; 
+;;
 ;; 1. Redistributions of source code must retain the above copyright notice, this
 ;;    list of conditions and the following disclaimer.
 ;;
@@ -52,7 +52,7 @@
 ;; 3. Neither the name of the copyright holder nor the names of its
 ;;    contributors may be used to endorse or promote products derived from
 ;;    this software without specific prior written permission.
-;; 
+;;
 ;; THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 ;; AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
 ;; IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -72,7 +72,7 @@ use32
 
 include "HAPP.s" ;; Aqui está uma estrutura para o cabeçalho HAPP
 
-;; Instância | Estrutura | Arquitetura | Versão | Subversão | Entrada | Tipo  
+;; Instância | Estrutura | Arquitetura | Versão | Subversão | Entrada | Tipo
 cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, inicioAPP, 01h
 
 ;;************************************************************************************
@@ -92,13 +92,13 @@ versaoFNT equ "0.6.6"
 fnt:
 
 .uso:
-db 10, "Usage: fnt [graphic font file]", 10, 10   
+db 10, "Usage: fnt [graphic font file]", 10, 10
 db "Changes the system font.", 10, 10
 db "fnt version ", versaoFNT, 10, 10
 db "Copyright (C) 2022-", __stringano, " Felipe Miguel Nery Lunkes", 10
 db "All rights reserved.", 0
 .nomeArquivo:
-db 10, "Font filename: ", 0    
+db 10, "Font filename: ", 0
 .nomeFonte:
 db "Filename: ", 0
 .falhaFormato:
@@ -123,7 +123,7 @@ db "zxcvbnm,./", 10, 10
 db "Hexagonix Operating System", 10, 0
 .tamanhoSuperior:
 db 10, "This font file exceeds the maximum size of 2 Kb.", 0
-.parametroAjuda: 
+.parametroAjuda:
 db "?", 0
 .parametroAjuda2:
 db "--help", 0
@@ -137,57 +137,57 @@ regES:            dw 0
 inicioAPP:
 
     mov [regES], es
-    
+
     push ds
-    pop es          
-    
+    pop es
+
     mov [parametro], edi
 
     mov esi, [parametro]
 
     cmp byte[esi], 0
     je usoAplicativo
-    
+
     mov edi, fnt.parametroAjuda
     mov esi, [parametro]
-    
+
     hx.syscall compararPalavrasString
-    
+
     jc usoAplicativo
 
     mov edi, fnt.parametroAjuda2
     mov esi, [parametro]
-    
+
     hx.syscall compararPalavrasString
-    
+
     jc usoAplicativo
-    
+
     fputs fnt.nomeArquivo
-    
+
     fputs [parametro]
-    
+
     mov esi, [parametro]
-    
+
     hx.syscall cortarString          ;; Remover espaços em branco extras
-    
+
     call validarFonte
 
     jc .erroFormato
 
     hx.syscall alterarFonte
-    
+
     jc .erroTexto
-    
+
     fputs fnt.sucesso
 
     fputs fnt.introducaoTeste
 
     fputs fnt.testeFonte
-    
+
     mov ebx, 00h
-    
+
     hx.syscall encerrarProcesso
-    
+
 .erroTexto:
 
     fputs fnt.falha
@@ -195,17 +195,17 @@ inicioAPP:
     jmp .erroFim
 
 .erroFormato:
-    
+
     fputs fnt.falhaFormato
 
     jmp .erroFim
 
 .erroFim:
-    
+
     mov ebx, 00h
-    
+
     jmp terminar
-    
+
 ;;************************************************************************************
 
 terminar:
@@ -213,13 +213,13 @@ terminar:
     mov ebx, 00h
 
     hx.syscall encerrarProcesso
-    
+
 ;;************************************************************************************
 
 usoAplicativo:
 
     fputs fnt.uso
-    
+
     jmp terminar
 
 ;;************************************************************************************
@@ -263,12 +263,12 @@ validarFonte:
 
 .continuar:
 
-    clc 
-    
+    clc
+
     ret
 
 .erroSemFonte:
-    
+
     fputs fnt.falha
 
     jmp terminar

@@ -1,15 +1,15 @@
 ;;*************************************************************************************************
 ;;
-;; 88                                                                                88              
-;; 88                                                                                ""              
-;; 88                                                                                                
-;; 88,dPPPba,   ,adPPPba, 8b,     ,d8 ,adPPPPba,  ,adPPPb,d8  ,adPPPba,  8b,dPPPba,  88 8b,     ,d8  
-;; 88P'    "88 a8P     88  `P8, ,8P'  ""     `P8 a8"    `P88 a8"     "8a 88P'   `"88 88  `P8, ,8P'   
-;; 88       88 8PP"""""""    )888(    ,adPPPPP88 8b       88 8b       d8 88       88 88    )888(     
-;; 88       88 "8b,   ,aa  ,d8" "8b,  88,    ,88 "8a,   ,d88 "8a,   ,a8" 88       88 88  ,d8" "8b,   
-;; 88       88  `"Pbbd8"' 8P'     `P8 `"8bbdP"P8  `"PbbdP"P8  `"PbbdP"'  88       88 88 8P'     `P8  
-;;                                               aa,    ,88                                         
-;;                                                "P8bbdP"       
+;; 88                                                                                88
+;; 88                                                                                ""
+;; 88
+;; 88,dPPPba,   ,adPPPba, 8b,     ,d8 ,adPPPPba,  ,adPPPb,d8  ,adPPPba,  8b,dPPPba,  88 8b,     ,d8
+;; 88P'    "88 a8P     88  `P8, ,8P'  ""     `P8 a8"    `P88 a8"     "8a 88P'   `"88 88  `P8, ,8P'
+;; 88       88 8PP"""""""    )888(    ,adPPPPP88 8b       88 8b       d8 88       88 88    )888(
+;; 88       88 "8b,   ,aa  ,d8" "8b,  88,    ,88 "8a,   ,d88 "8a,   ,a8" 88       88 88  ,d8" "8b,
+;; 88       88  `"Pbbd8"' 8P'     `P8 `"8bbdP"P8  `"PbbdP"P8  `"PbbdP"'  88       88 88 8P'     `P8
+;;                                               aa,    ,88
+;;                                                "P8bbdP"
 ;;
 ;;                     Sistema Operacional Hexagonix - Hexagonix Operating System
 ;;
@@ -19,7 +19,7 @@
 ;;*************************************************************************************************
 ;;
 ;; Português:
-;; 
+;;
 ;; O Hexagonix e seus componentes são licenciados sob licença BSD-3-Clause. Leia abaixo
 ;; a licença que governa este arquivo e verifique a licença de cada repositório para
 ;; obter mais informações sobre seus direitos e obrigações ao utilizar e reutilizar
@@ -38,10 +38,10 @@
 ;;
 ;; Copyright (c) 2015-2023, Felipe Miguel Nery Lunkes
 ;; All rights reserved.
-;; 
+;;
 ;; Redistribution and use in source and binary forms, with or without
 ;; modification, are permitted provided that the following conditions are met:
-;; 
+;;
 ;; 1. Redistributions of source code must retain the above copyright notice, this
 ;;    list of conditions and the following disclaimer.
 ;;
@@ -52,7 +52,7 @@
 ;; 3. Neither the name of the copyright holder nor the names of its
 ;;    contributors may be used to endorse or promote products derived from
 ;;    this software without specific prior written permission.
-;; 
+;;
 ;; THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 ;; AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
 ;; IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -72,7 +72,7 @@ use32
 
 include "HAPP.s" ;; Aqui está uma estrutura para o cabeçalho HAPP
 
-;; Instância | Estrutura | Arquitetura | Versão | Subversão | Entrada | Tipo  
+;; Instância | Estrutura | Arquitetura | Versão | Subversão | Entrada | Tipo
 cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, inicioAPP, 01h
 
 ;;************************************************************************************
@@ -84,68 +84,68 @@ include "log.s"
 
 ;;************************************************************************************
 
-inicioAPP:  
+inicioAPP:
 
     push ds
-    pop es          
-    
+    pop es
+
     mov [parametro], edi ;; Salvar os parâmetros da linha de comando para uso futuro
-    
+
     logSistema shutdown.Verbose.inicio, 00h, Log.Prioridades.p4
     logSistema shutdown.Verbose.estado, 00h, Log.Prioridades.p4
 
     mov esi, [parametro]
-    
+
     cmp byte[esi], 0
     je faltaArgumento
 
     mov edi, shutdown.parametroAjuda
     mov esi, [parametro]
-    
+
     hx.syscall compararPalavrasString
-    
+
     jc usoAplicativo
 
     mov edi, shutdown.parametroAjuda2
     mov esi, [parametro]
-    
+
     hx.syscall compararPalavrasString
-    
+
     jc usoAplicativo
 
     mov edi, shutdown.parametroDesligar
     mov esi, [parametro]
-    
+
     hx.syscall compararPalavrasString
-    
+
     jc iniciarDesligamento
 
     mov edi, shutdown.desligarAgora
     mov esi, [parametro]
-    
+
     hx.syscall compararPalavrasString
-    
+
     jc iniciarDesligamento
-    
+
     mov edi, shutdown.parametroReiniciar
     mov esi, [parametro]
-    
+
     hx.syscall compararPalavrasString
-    
+
     jc iniciarReinicio
 
     mov edi, shutdown.parDesligarSemEco
     mov esi, [parametro]
-    
+
     hx.syscall compararPalavrasString
-    
+
     jc iniciarDesligamentoSemEco
 
     mov edi, shutdown.parReiniciarSemEco
     mov esi, [parametro]
-    
+
     hx.syscall compararPalavrasString
-    
+
     jc iniciarReinicioSemEco
 
     jmp usoAplicativo
@@ -153,13 +153,13 @@ inicioAPP:
 ;;************************************************************************************
 
 iniciarDesligamento:
-    
+
     jmp desligarHexagon
 
 ;;************************************************************************************
 
 iniciarReinicio:
-    
+
     jmp reiniciarHexagon
 
 ;;************************************************************************************
@@ -191,7 +191,7 @@ iniciarReinicioSemEco:
     jmp terminar
 
 ;;************************************************************************************
-    
+
 desligarHexagon:
 
     logSistema shutdown.Verbose.parametroDesligar, 00h, Log.Prioridades.p4
@@ -223,7 +223,7 @@ reiniciarHexagon:
 prepararSistemaSemEco:
 
     mov ecx, 20000
-    
+
     hx.syscall causarAtraso
 
     ret
@@ -235,13 +235,13 @@ prepararSistema:
     fputs shutdown.msgHexagonix
 
     mov ecx, 10000
-    
+
     hx.syscall causarAtraso
 
     fputs shutdown.msgDiscos
 
     mov ecx, 10000
-    
+
     hx.syscall causarAtraso
 
     ret
@@ -251,7 +251,7 @@ prepararSistema:
 usoAplicativo:
 
     fputs shutdown.uso
-        
+
     jmp terminar
 
 ;;************************************************************************************
@@ -259,7 +259,7 @@ usoAplicativo:
 faltaArgumento:
 
     fputs shutdown.argumentos
-        
+
     jmp terminar
 
 ;;************************************************************************************
@@ -301,7 +301,7 @@ db "[Ok]", 0
 .msgFalha:
 db "[Fail]", 0
 .parametroAjuda:
-db "?", 0  
+db "?", 0
 .parametroAjuda2:
 db "--help", 0
 .argumentos:

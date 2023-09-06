@@ -1,15 +1,15 @@
 ;;*************************************************************************************************
 ;;
-;; 88                                                                                88              
-;; 88                                                                                ""              
-;; 88                                                                                                
-;; 88,dPPPba,   ,adPPPba, 8b,     ,d8 ,adPPPPba,  ,adPPPb,d8  ,adPPPba,  8b,dPPPba,  88 8b,     ,d8  
-;; 88P'    "88 a8P     88  `P8, ,8P'  ""     `P8 a8"    `P88 a8"     "8a 88P'   `"88 88  `P8, ,8P'   
-;; 88       88 8PP"""""""    )888(    ,adPPPPP88 8b       88 8b       d8 88       88 88    )888(     
-;; 88       88 "8b,   ,aa  ,d8" "8b,  88,    ,88 "8a,   ,d88 "8a,   ,a8" 88       88 88  ,d8" "8b,   
-;; 88       88  `"Pbbd8"' 8P'     `P8 `"8bbdP"P8  `"PbbdP"P8  `"PbbdP"'  88       88 88 8P'     `P8  
-;;                                               aa,    ,88                                         
-;;                                                "P8bbdP"       
+;; 88                                                                                88
+;; 88                                                                                ""
+;; 88
+;; 88,dPPPba,   ,adPPPba, 8b,     ,d8 ,adPPPPba,  ,adPPPb,d8  ,adPPPba,  8b,dPPPba,  88 8b,     ,d8
+;; 88P'    "88 a8P     88  `P8, ,8P'  ""     `P8 a8"    `P88 a8"     "8a 88P'   `"88 88  `P8, ,8P'
+;; 88       88 8PP"""""""    )888(    ,adPPPPP88 8b       88 8b       d8 88       88 88    )888(
+;; 88       88 "8b,   ,aa  ,d8" "8b,  88,    ,88 "8a,   ,d88 "8a,   ,a8" 88       88 88  ,d8" "8b,
+;; 88       88  `"Pbbd8"' 8P'     `P8 `"8bbdP"P8  `"PbbdP"P8  `"PbbdP"'  88       88 88 8P'     `P8
+;;                                               aa,    ,88
+;;                                                "P8bbdP"
 ;;
 ;;                     Sistema Operacional Hexagonix - Hexagonix Operating System
 ;;
@@ -19,7 +19,7 @@
 ;;*************************************************************************************************
 ;;
 ;; Português:
-;; 
+;;
 ;; O Hexagonix e seus componentes são licenciados sob licença BSD-3-Clause. Leia abaixo
 ;; a licença que governa este arquivo e verifique a licença de cada repositório para
 ;; obter mais informações sobre seus direitos e obrigações ao utilizar e reutilizar
@@ -38,10 +38,10 @@
 ;;
 ;; Copyright (c) 2015-2023, Felipe Miguel Nery Lunkes
 ;; All rights reserved.
-;; 
+;;
 ;; Redistribution and use in source and binary forms, with or without
 ;; modification, are permitted provided that the following conditions are met:
-;; 
+;;
 ;; 1. Redistributions of source code must retain the above copyright notice, this
 ;;    list of conditions and the following disclaimer.
 ;;
@@ -52,7 +52,7 @@
 ;; 3. Neither the name of the copyright holder nor the names of its
 ;;    contributors may be used to endorse or promote products derived from
 ;;    this software without specific prior written permission.
-;; 
+;;
 ;; THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 ;; AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
 ;; IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -67,25 +67,25 @@
 ;; $HexagonixOS$
 
 ;;************************************************************************************
-;;                                                                                  
-;;                          Daemon de login para Hexagonix                 
-;;                                                                   
-;;                 Copyright (c) 2015-2023 Felipe Miguel Nery Lunkes                
-;;                          Todos os direitos reservados.                    
-;;                                                                   
+;;
+;;                          Daemon de login para Hexagonix
+;;
+;;                 Copyright (c) 2015-2023 Felipe Miguel Nery Lunkes
+;;                          Todos os direitos reservados.
+;;
 ;;************************************************************************************
 
-use32       
+use32
 
 ;; Agora vamos criar um cabeçalho para a imagem HAPP final do aplicativo.
 
 include "HAPP.s" ;; Aqui está uma estrutura para o cabeçalho HAPP
 
-;; Instância | Estrutura | Arquitetura | Versão | Subversão | Entrada | Tipo  
+;; Instância | Estrutura | Arquitetura | Versão | Subversão | Entrada | Tipo
 cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, iniciologind, 01h
 
 ;;************************************************************************************
-                    
+
 include "hexagon.s"
 include "Estelar/estelar.s"
 include "macros.s"
@@ -120,7 +120,7 @@ logind:
 match =Moderno, TIPOLOGIN
 {
 
-.sobreSistema: 
+.sobreSistema:
 db 10,10
 db "  88                                                                                88", 10
 db "  88                                                                                ''", 10
@@ -151,7 +151,7 @@ db 10, "Hexagonix version ", 0
 .console:
 db " (vd0)", 0
 .semArquivoUnix:
-db 10, 10, "The user database was not found on the volume.", 10, 0        
+db 10, 10, "The user database was not found on the volume.", 10, 0
 .colcheteEsquerdo:
 db " [", 0
 .colcheteDireito:
@@ -169,7 +169,7 @@ db "oobe", 0
 
 escolhaTema: times 7  db 0
 
-;;************************************************************************************          
+;;************************************************************************************
 
 iniciologind: ;; Ponto de entrada
 
@@ -177,10 +177,10 @@ iniciologind: ;; Ponto de entrada
 ;; Para isso, ele deve checar se o PID é 3 (init=1 e login=2).
 
     hx.syscall obterPID
-    
+
     cmp eax, 03h
     je iniciarExecucao
-    
+
     hx.syscall encerrarProcesso
 
 iniciarExecucao:
@@ -203,130 +203,130 @@ iniciarExecucao:
 .continuar:
 
     call checarBaseDados
-    
+
 match =Moderno, TIPOLOGIN
 {
-     
+
     call verificarTema
 
     hx.syscall limparTela
 
-} 
+}
 
     call exibirInfoSistema
 
     jmp terminar
 
 ;;************************************************************************************
-    
+
 verificarTema:
 
     pusha
-    
+
     push es
 
     push ds
     pop es
-    
+
     mov esi, arquivo
     mov edi, bufferArquivo
-    
+
     hx.syscall hx.open
-    
+
     jc .arquivoUsuarioAusente
-    
+
     mov si, bufferArquivo           ;; Aponta para o buffer com o conteúdo do arquivo
     mov bx, 0FFFFh                  ;; Inicia na posição -1, para que se possa encontrar os delimitadores
-    
+
 .procurarEntreDelimitadores:
 
     inc bx
-    
+
     mov word[posicaoBX], bx
-    
+
     cmp bx, tamanhoLimiteBusca
     je .nomeTemaInvalido         ;; Caso nada seja encontrado até o tamanho limite, cancele a busca
-    
+
     mov al, [ds:si+bx]
-    
+
     cmp al, '<'
     jne .procurarEntreDelimitadores ;; O limitador inicial foi encontrado
-    
+
 ;; BX agora aponta para o primeiro caractere do nome de usuário resgatado do arquivo
-    
+
     push ds
     pop es
-    
+
     mov di, escolhaTema             ;; O tema será copiado para ES:DI
-    
+
     mov si, bufferArquivo
-    
+
     add si, bx                      ;; Mover SI para aonde BX aponta
-    
+
     mov bx, 0                       ;; Iniciar em 0
-    
+
 .obterTema:
 
     inc bx
-    
-    cmp bx, 7               
-    je .nomeTemaInvalido            ;; Se nome de usuário maior que 15, o mesmo é inválido     
-    
+
+    cmp bx, 7
+    je .nomeTemaInvalido            ;; Se nome de usuário maior que 15, o mesmo é inválido
+
     mov al, [ds:si+bx]
-    
+
     cmp al, '>'                     ;; Se encontrar outro delimitador, o nome de usuário foi carregado com sucesso
     je .temaObtido
-    
+
 ;; Se não estiver pronto, armazenar o caractere obtido
 
     stosb
-    
+
     jmp .obterTema
 
 .temaObtido:
 
     mov edi, escolhaTema
     mov esi, logind.temaClaro
-    
+
     hx.syscall compararPalavrasString
-    
+
     jc .selecionarTemaClaro
-    
+
     mov edi, escolhaTema
     mov esi, logind.temaEscuro
-    
+
     hx.syscall compararPalavrasString
-    
+
     jc .selecionarTemaEscuro
-    
+
     mov word bx, [posicaoBX]
-    
+
     mov si, bufferArquivo
-    
+
     jmp .procurarEntreDelimitadores
-    
+
 .selecionarTemaClaro:
-    
+
     pop es
-    
+
     popa
 
-    mov esi, vd1         ;; Abrir primeiro console virtual 
-    
+    mov esi, vd1         ;; Abrir primeiro console virtual
+
     hx.syscall hx.open   ;; Abre o dispositivo
-    
-    mov eax, PRETO 
+
+    mov eax, PRETO
     mov ebx, BRANCO_ANDROMEDA
 
     hx.syscall definirCor
 
     hx.syscall limparTela ;; Limpa seu conteúdo
-    
-    mov esi, vd0          ;; Reabre o dispositivo de saída padrão 
-    
+
+    mov esi, vd0          ;; Reabre o dispositivo de saída padrão
+
     hx.syscall hx.open    ;; Abre o dispositivo
 
-    mov eax, PRETO 
+    mov eax, PRETO
     mov ebx, BRANCO_ANDROMEDA
 
     hx.syscall definirCor
@@ -337,22 +337,22 @@ verificarTema:
 
 .selecionarTemaEscuro:
 
-    mov esi, vd1         ;; Abrir primeiro console virtual 
-    
+    mov esi, vd1         ;; Abrir primeiro console virtual
+
     hx.syscall hx.open   ;; Abre o dispositivo
-    
-    mov eax, BRANCO_ANDROMEDA 
+
+    mov eax, BRANCO_ANDROMEDA
     mov ebx, PRETO
 
     hx.syscall definirCor
 
     hx.syscall limparTela ;; Limpa seu conteúdo
-    
+
     mov esi, vd0          ;; Reabre o console padrão
-    
+
     hx.syscall hx.open    ;; Abre o dispositivo
 
-    mov eax, BRANCO_ANDROMEDA 
+    mov eax, BRANCO_ANDROMEDA
     mov ebx, PRETO
 
     hx.syscall definirCor
@@ -362,19 +362,19 @@ verificarTema:
 .nomeTemaInvalido:
 
     pop es
-    
+
     popa
-    
+
     ret
-    
+
 .arquivoUsuarioAusente:
 
     pop es
-    
+
     popa
-    
+
     fputs logind.semArquivoUnix
-    
+
     jmp terminar
 
 ;;************************************************************************************
@@ -382,12 +382,12 @@ verificarTema:
 exibirInfoSistema:
 
     fputs logind.sobreSistema
-    
+
     fputs logind.versaoSistema
 
     call obterVersaoDistribuicao
 
-    jc .erro 
+    jc .erro
 
     fputs versaoObtida
 
@@ -402,7 +402,7 @@ match =Moderno, TIPOLOGIN
 
 }
 
-    jmp .continuar 
+    jmp .continuar
 
 .erro:
 
@@ -415,7 +415,7 @@ match =Moderno, TIPOLOGIN
     fputs logind.console
 
     novaLinha
-    
+
     ret
 
 ;;************************************************************************************
@@ -431,13 +431,13 @@ verificarConsistencia:
 
 ;;************************************************************************************
 
-terminar:   
+terminar:
 
     hx.syscall encerrarProcesso
 
 ;;************************************************************************************
 
-checarBaseDados: 
+checarBaseDados:
 
     clc
 

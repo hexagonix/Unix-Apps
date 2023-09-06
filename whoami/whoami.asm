@@ -1,15 +1,15 @@
 ;;*************************************************************************************************
 ;;
-;; 88                                                                                88              
-;; 88                                                                                ""              
-;; 88                                                                                                
-;; 88,dPPPba,   ,adPPPba, 8b,     ,d8 ,adPPPPba,  ,adPPPb,d8  ,adPPPba,  8b,dPPPba,  88 8b,     ,d8  
-;; 88P'    "88 a8P     88  `P8, ,8P'  ""     `P8 a8"    `P88 a8"     "8a 88P'   `"88 88  `P8, ,8P'   
-;; 88       88 8PP"""""""    )888(    ,adPPPPP88 8b       88 8b       d8 88       88 88    )888(     
-;; 88       88 "8b,   ,aa  ,d8" "8b,  88,    ,88 "8a,   ,d88 "8a,   ,a8" 88       88 88  ,d8" "8b,   
-;; 88       88  `"Pbbd8"' 8P'     `P8 `"8bbdP"P8  `"PbbdP"P8  `"PbbdP"'  88       88 88 8P'     `P8  
-;;                                               aa,    ,88                                         
-;;                                                "P8bbdP"       
+;; 88                                                                                88
+;; 88                                                                                ""
+;; 88
+;; 88,dPPPba,   ,adPPPba, 8b,     ,d8 ,adPPPPba,  ,adPPPb,d8  ,adPPPba,  8b,dPPPba,  88 8b,     ,d8
+;; 88P'    "88 a8P     88  `P8, ,8P'  ""     `P8 a8"    `P88 a8"     "8a 88P'   `"88 88  `P8, ,8P'
+;; 88       88 8PP"""""""    )888(    ,adPPPPP88 8b       88 8b       d8 88       88 88    )888(
+;; 88       88 "8b,   ,aa  ,d8" "8b,  88,    ,88 "8a,   ,d88 "8a,   ,a8" 88       88 88  ,d8" "8b,
+;; 88       88  `"Pbbd8"' 8P'     `P8 `"8bbdP"P8  `"PbbdP"P8  `"PbbdP"'  88       88 88 8P'     `P8
+;;                                               aa,    ,88
+;;                                                "P8bbdP"
 ;;
 ;;                     Sistema Operacional Hexagonix - Hexagonix Operating System
 ;;
@@ -19,7 +19,7 @@
 ;;*************************************************************************************************
 ;;
 ;; Português:
-;; 
+;;
 ;; O Hexagonix e seus componentes são licenciados sob licença BSD-3-Clause. Leia abaixo
 ;; a licença que governa este arquivo e verifique a licença de cada repositório para
 ;; obter mais informações sobre seus direitos e obrigações ao utilizar e reutilizar
@@ -38,10 +38,10 @@
 ;;
 ;; Copyright (c) 2015-2023, Felipe Miguel Nery Lunkes
 ;; All rights reserved.
-;; 
+;;
 ;; Redistribution and use in source and binary forms, with or without
 ;; modification, are permitted provided that the following conditions are met:
-;; 
+;;
 ;; 1. Redistributions of source code must retain the above copyright notice, this
 ;;    list of conditions and the following disclaimer.
 ;;
@@ -52,7 +52,7 @@
 ;; 3. Neither the name of the copyright holder nor the names of its
 ;;    contributors may be used to endorse or promote products derived from
 ;;    this software without specific prior written permission.
-;; 
+;;
 ;; THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 ;; AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
 ;; IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -66,13 +66,13 @@
 ;;
 ;; $HexagonixOS$
 
-use32       
+use32
 
 ;; Agora vamos criar um cabeçalho para a imagem HAPP final do aplicativo.
 
 include "HAPP.s" ;; Aqui está uma estrutura para o cabeçalho HAPP
 
-;; Instância | Estrutura | Arquitetura | Versão | Subversão | Entrada | Tipo  
+;; Instância | Estrutura | Arquitetura | Versão | Subversão | Entrada | Tipo
 cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, inicioAPP, 01h
 
 ;;************************************************************************************
@@ -81,52 +81,52 @@ include "hexagon.s"
 include "console.s"
 include "macros.s"
 
-;;************************************************************************************          
+;;************************************************************************************
 
-inicioAPP: 
+inicioAPP:
 
     mov [linhaComando], edi
-    
+
     mov edi, whoami.parametroAjuda
     mov esi, [linhaComando]
-    
+
     hx.syscall compararPalavrasString
-    
+
     jc usoAplicativo
 
     mov edi, whoami.parametroAjuda2
     mov esi, [linhaComando]
-    
+
     hx.syscall compararPalavrasString
-    
+
     jc usoAplicativo
-        
+
     mov edi, whoami.parametroTudo
     mov esi, [linhaComando]
-    
+
     hx.syscall compararPalavrasString
-    
+
     jc usuarioEGrupo
-    
+
     mov edi, whoami.parametroUsuario
     mov esi, [linhaComando]
-    
+
     hx.syscall compararPalavrasString
-    
+
     jc exibirUsuario
 
     jmp exibirUsuario
-    
-;;************************************************************************************          
-    
+
+;;************************************************************************************
+
 exibirUsuario:
-  
+
     novaLinha
-    
+
     hx.syscall obterUsuario
-    
+
     imprimirString
-    
+
     jmp terminar
 
 ;;************************************************************************************
@@ -134,32 +134,32 @@ exibirUsuario:
 usuarioEGrupo:
 
     novaLinha
-    
+
     hx.syscall obterUsuario
-    
+
     push eax
-    
+
     imprimirString
-    
+
     fputs whoami.grupo
-        
+
     pop eax
-    
+
     imprimirInteiro
-    
+
     jmp terminar
-    
-;;************************************************************************************      
+
+;;************************************************************************************
 
 usoAplicativo:
 
     fputs whoami.uso
-        
-    jmp terminar
-    
-;;************************************************************************************  
 
-terminar:   
+    jmp terminar
+
+;;************************************************************************************
+
+terminar:
 
     hx.syscall encerrarProcesso
 
@@ -170,7 +170,7 @@ terminar:
 ;;                    Área de dados e variáveis do aplicativo
 ;;
 ;;************************************************************************************
-    
+
 linhaComando: dd 0
 
 versaoWHOAMI equ "1.1.3"
@@ -187,12 +187,12 @@ db "whoami version ", versaoWHOAMI, 10, 10
 db "Copyright (C) 2017-", __stringano, " Felipe Miguel Nery Lunkes", 10
 db "All rights reserved.", 0
 .parametroAjuda:
-db "?", 0  
+db "?", 0
 .parametroAjuda2:
-db "--help", 0 
+db "--help", 0
 .parametroTudo:
 db "-t", 0
 .parametroUsuario:
 db "-u", 0
 .grupo:
-db ", of the group ", 0              
+db ", of the group ", 0
