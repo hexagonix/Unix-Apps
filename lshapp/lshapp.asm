@@ -89,7 +89,7 @@ include "macros.s"
 ;;
 ;;************************************************************************************
 
-versaoLSHAPP equ "1.11.7"
+versaoLSHAPP equ "1.12.0"
 
 lshapp:
 
@@ -104,16 +104,16 @@ db 10, 10, "The filename is invalid. Please enter a valid filename.", 10, 0
 .infoArquivo:
 db 10, "Filename: ", 0
 .tamanhoArquivo:
-db 10, "File size: ", 0
+db 10, "> File size: ", 0
 .bytes:
-db " bytes.", 10, 0
+db " bytes.", 0
 .imagemInvalida:
 db 10, "<!> This is not a valid HAPP image. Try another file.", 0
 .semArquivo:
 db 10, 10, "<!> The requested file is not available on this volume.", 10, 10
 db "<!> Check the filename and try again.", 0
 .tipoArquitetura:
-db 10, 10, "> Target architecture: ", 0
+db 10, "> Target architecture: ", 0
 .verHexagon:
 db 10, "> Minimum version of Hexagon required to run: ", 0
 .camposVersaoHexagon:
@@ -135,13 +135,13 @@ db " -> [HAPP:entryPoint].", 0
 .tipoImagem:
 db 10, "> HAPP image format (type): ", 0
 .HAPPExec:
-db "(Exec)", 0
+db "Exec", 0
 .HAPPLibS:
-db "(LibS)", 0
+db "LibS", 0
 .HAPPLibD:
-db "(LibD)", 0
+db "LibD", 0
 .HAPPDesconhecido:
-db "(?)", 0
+db "?", 0
 .campoImagem:
 db " -> [HAPP:imageFormat].", 0
 .parametroAjuda:
@@ -207,33 +207,13 @@ inicioAPP:
 
     jc .semArquivo
 
-    push eax
-    push esi
-
-    fputs lshapp.infoArquivo
-
-    pop esi
-
     call manterArquivo
-
-    imprimirString
-
-    fputs lshapp.tamanhoArquivo
-
-    pop eax
-
-    imprimirInteiro
-
-    fputs lshapp.bytes
 
 ;; Primeiro vamos ver se se trata de uma imagem executável. Se sim, podemos pular todo o
 ;; restante do processamento. Isso garante que imagens executáveis sejam relatadas como
 ;; tal mesmo se tiverem diferentes extensões. O próprio Hexagon é uma imagem HAPP.
 
     call verificarArquivoHAPP
-
-;; Se não for uma imagem executável, tentar identificar pela extensão, sem verificar o conteúdo
-;; do arquivo
 
     jmp .fim
 
@@ -289,6 +269,26 @@ verificarArquivoHAPP:
 
     fputs lshapp.cabecalho
 
+;; Tamanho da imagem
+
+    mov esi, nomeArquivo
+
+    hx.syscall arquivoExiste
+
+    jc inicioAPP.semArquivo
+
+    push eax
+
+    fputs lshapp.tamanhoArquivo
+
+    pop eax
+
+    imprimirInteiro
+
+    fputs lshapp.bytes
+
+;; Tipo de arquitetura
+
     fputs lshapp.tipoArquitetura
 
     cmp byte[lshapp.arquitetura], 01h
@@ -320,6 +320,8 @@ verificarArquivoHAPP:
 
 .continuar:
 
+;; Versão do Hexagon necessária à execução
+
     fputs lshapp.campoArquitetura
 
     fputs lshapp.verHexagon
@@ -338,6 +340,8 @@ verificarArquivoHAPP:
 
     fputs lshapp.camposVersaoHexagon
 
+;; Ponto de entrada do código
+
     fputs lshapp.entradaCodigo
 
     mov eax, dword[lshapp.pontoEntrada]
@@ -345,6 +349,8 @@ verificarArquivoHAPP:
     imprimirHexadecimal
 
     fputs lshapp.campoEntrada
+
+;; Tipo de imagem HAPP
 
     fputs lshapp.tipoImagem
 
