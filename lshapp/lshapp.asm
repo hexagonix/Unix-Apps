@@ -89,7 +89,7 @@ include "macros.s"
 ;;
 ;;************************************************************************************
 
-versaoLSHAPP equ "1.12.0"
+versaoLSHAPP equ "1.12.1"
 
 lshapp:
 
@@ -102,7 +102,7 @@ db "All rights reserved.", 0
 .arquivoInvalido:
 db 10, 10, "The filename is invalid. Please enter a valid filename.", 10, 0
 .infoArquivo:
-db 10, "Filename: ", 0
+db 10, "> Filename: ", 0
 .tamanhoArquivo:
 db 10, "> File size: ", 0
 .bytes:
@@ -278,6 +278,13 @@ verificarArquivoHAPP:
     jc inicioAPP.semArquivo
 
     push eax
+    push esi
+
+    fputs lshapp.infoArquivo
+
+    pop esi 
+
+    fputs esi 
 
     fputs lshapp.tamanhoArquivo
 
