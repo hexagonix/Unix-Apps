@@ -282,9 +282,9 @@ verificarArquivoHAPP:
 
     fputs lshapp.infoArquivo
 
-    pop esi 
+    pop esi
 
-    fputs esi 
+    fputs esi
 
     fputs lshapp.tamanhoArquivo
 
