@@ -102,16 +102,7 @@ tamanhoLimiteBusca = 32768
 
 ;;************************************************************************************
 
-versaoLOGIND equ "1.7.4.1"
-
-arquivo:
-db "passwd", 0 ;; Nome do arquivo de configuração de login
-vd0:
-db "vd0", 0    ;; Console padrão
-vd1:
-db "vd1", 0    ;; Primeiro console virtual
-posicaoBX:
-dw 0           ;; Marcação da posição de busca no conteúdo do arquivo
+versaoLOGIND equ "1.7.5.0"
 
 align 4
 
@@ -146,6 +137,14 @@ db 0
 
 }
 
+.arquivo:
+db "passwd", 0 ;; Nome do arquivo de configuração de login
+.vd0:
+db "vd0", 0 ;; Console padrão
+.vd1:
+db "vd1", 0 ;; Primeiro console virtual
+.posicaoBX: ;; Marcação da posição de busca no conteúdo do arquivo
+dw 0
 .versaoSistema:
 db 10, "Hexagonix version ", 0
 .console:
@@ -166,6 +165,8 @@ db "[unknown]", 0
 db "logind version ", versaoLOGIND, ".", 0
 .OOBE:
 db "oobe", 0
+
+;; Buffers
 
 escolhaTema: times 7  db 0
 
@@ -228,7 +229,7 @@ verificarTema:
     push ds
     pop es
 
-    mov esi, arquivo
+    mov esi, logind.arquivo
     mov edi, bufferArquivo
 
     hx.syscall hx.open
@@ -242,7 +243,7 @@ verificarTema:
 
     inc bx
 
-    mov word[posicaoBX], bx
+    mov word[logind.posicaoBX], bx
 
     cmp bx, tamanhoLimiteBusca
     je .nomeTemaInvalido ;; Caso nada seja encontrado até o tamanho limite, cancele a busca
@@ -299,7 +300,7 @@ verificarTema:
 
     jc .selecionarTemaEscuro
 
-    mov word bx, [posicaoBX]
+    mov word bx, [logind.posicaoBX]
 
     mov si, bufferArquivo
 
@@ -311,7 +312,7 @@ verificarTema:
 
     popa
 
-    mov esi, vd1 ;; Abrir primeiro console virtual
+    mov esi, logind.vd1 ;; Abrir primeiro console virtual
 
     hx.syscall hx.open ;; Abre o dispositivo
 
@@ -322,7 +323,7 @@ verificarTema:
 
     hx.syscall limparTela ;; Limpa seu conteúdo
 
-    mov esi, vd0 ;; Reabre o dispositivo de saída padrão
+    mov esi, logind.vd0 ;; Reabre o dispositivo de saída padrão
 
     hx.syscall hx.open ;; Abre o dispositivo
 
@@ -337,7 +338,7 @@ verificarTema:
 
 .selecionarTemaEscuro:
 
-    mov esi, vd1 ;; Abrir primeiro console virtual
+    mov esi, logind.vd1 ;; Abrir primeiro console virtual
 
     hx.syscall hx.open ;; Abre o dispositivo
 
@@ -348,7 +349,7 @@ verificarTema:
 
     hx.syscall limparTela ;; Limpa seu conteúdo
 
-    mov esi, vd0 ;; Reabre o console padrão
+    mov esi, logind.vd0 ;; Reabre o console padrão
 
     hx.syscall hx.open ;; Abre o dispositivo
 
@@ -441,7 +442,7 @@ checarBaseDados:
 
     clc
 
-    mov esi, arquivo
+    mov esi, logind.arquivo
 
     hx.syscall arquivoExiste
 
