@@ -79,7 +79,7 @@
 ;;
 ;; Ficar atento à possíveis alterações na estrutura do arquivo utilizado por login.
 ;;
-;; O utilitário Unix su utiliza o mesmo arquivo 'usuario.unx' que login.
+;; O utilitário Unix su utiliza o mesmo arquivo 'passwd' que login.
 
 use32
 
@@ -261,7 +261,7 @@ encontrarNomeUsuario:
     push ds
     pop es
 
-    mov esi, arquivo
+    mov esi, su.arquivo
     mov edi, bufferArquivo
 
     hx.syscall hx.open
@@ -405,7 +405,7 @@ encontrarSenhaUsuario:
     push ds
     pop es
 
-    mov esi, arquivo
+    mov esi, su.arquivo
     mov edi, bufferArquivo
 
     hx.syscall hx.open
@@ -502,7 +502,7 @@ encontrarShell:
     push ds
     pop es
 
-    mov esi, arquivo
+    mov esi, su.arquivo
     mov edi, bufferArquivo
 
     hx.syscall hx.open
@@ -594,14 +594,14 @@ obterShellPadrao:
     push ds
     pop es
 
-    mov esi, shellPadrao
+    mov esi, su.shellPadrao
 
     hx.syscall tamanhoString
 
     push eax
 
     mov edi, shellHexagonix
-    mov esi, shellPadrao
+    mov esi, su.shellPadrao
 
     pop ecx
 
@@ -685,24 +685,7 @@ terminar:
 ;;
 ;;************************************************************************************
 
-versaoSU equ "2.3.6"
-
-shellPadrao:
-db "sh", 0     ;; Nome do arquivo que contêm o shell padrão do Hexagonix
-vd0:
-db "vd0", 0    ;; Console principal
-vd1:
-db "vd1", 0    ;; Console secundário
-arquivo:
-db "passwd", 0 ;; Nome do arquivo de gerenciamento de login
-tentarShellPadrao:          db 0 ;; Sinaliza a tentativa de se carregar o shell padrão
-shellHexagonix:    times 11 db 0 ;; Armazena o nome do shell à ser utilizado pelo sistema
-usuario:           times 15 db 0 ;; Nome de usuário obtido no arquivo
-senhaObtida:       times 64 db 0 ;; Senha obtida no arquivo
-parametros:                 db 0 ;; Se o aplicativo recebeu algum parâmetro
-ponto:
-db ".", 0
-posicaoBX: dw 0
+versaoSU equ "2.4.0"
 
 su:
 
@@ -729,10 +712,22 @@ db "--help", 0
 db "root", 0
 .falhaAutenticacao:
 db 10, "su: authentication failed.", 0
+.shellPadrao:
+db "sh", 0 ;; Nome do arquivo que contêm o shell padrão do Hexagonix
+.arquivo:
+db "passwd", 0 ;; Nome do arquivo de gerenciamento de login
 
-usuarioSolicitado:  times 17 db 0
-usuarioAnterior:    times 17 db 0
-codigoAnterior:              dd 0
+;; Buffers
+
+usuarioSolicitado:  times 17 db 0 ;; Buffer de usuário solicitado
+usuarioAnterior:    times 17 db 0 ;; Buffer do usuário anterior
+codigoAnterior:              dd 0 ;; Código do usuário anterior
+tentarShellPadrao:           db 0 ;; Sinaliza a tentativa de se carregar o shell padrão
+shellHexagonix:     times 11 db 0 ;; Armazena o nome do shell à ser utilizado pelo sistema
+usuario:            times 15 db 0 ;; Nome de usuário obtido no arquivo
+senhaObtida:        times 64 db 0 ;; Senha obtida no arquivo
+parametros:                  db 0 ;; Se o aplicativo recebeu algum parâmetro
+posicaoBX: dw 0
 
 ;;************************************************************************************
 
