@@ -223,14 +223,12 @@ definirCorPadrao:
 
 parametro: dd ?
 
-versaoTOP equ "1.2.4"
+versaoTOP equ "1.2.5"
 
 top:
 
 .inicio:
 db "Hexagonix process viewer", 10, 10, 0
-.pid:
-db "PID of this process: ", 0
 .usoMem:
 db 10, 10, "Memory usage: ", 0
 .memTotal:
@@ -252,8 +250,6 @@ db "All rights reserved.", 0
 db "?", 0
 .parametroAjuda2:
 db "--help", 0
-.processos:
-db " processes on the execution stack.", 0
 .processosCarregados:
 db "Processes present in the system execution stack: ", 10, 10, 0
 .numeroProcessos:
