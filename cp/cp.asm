@@ -267,7 +267,7 @@ usoAplicativo:
 ;;
 ;;************************************************************************************
 
-versaoCP equ "2.2.2"
+versaoCP equ "2.2.3"
 
 cp:
 
@@ -299,6 +299,5 @@ db "--help", 0
 parametros:     dd 0
 arquivoEntrada: dd ?
 arquivoSaida:   dd ?
-regES:          dw 0
 
 bufferArquivo:
