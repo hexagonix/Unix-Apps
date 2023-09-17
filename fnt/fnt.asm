@@ -87,7 +87,7 @@ include "macros.s"
 ;;
 ;;************************************************************************************
 
-versaoFNT equ "0.6.6"
+versaoFNT equ "0.6.7"
 
 fnt:
 
@@ -128,9 +128,8 @@ db "?", 0
 .parametroAjuda2:
 db "--help", 0
 
-parametro:        dd 0
-arquivoFonte:     dd ?
-regES:            dw 0
+parametro: dd 0
+regES:     dw 0
 
 ;;************************************************************************************
 
