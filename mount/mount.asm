@@ -319,7 +319,7 @@ usoAplicativo:
 ;;
 ;;************************************************************************************
 
-versaoMOUNT equ "2.5.2"
+versaoMOUNT equ "2.5.3"
 
 mount:
 
@@ -357,10 +357,6 @@ db 10, "Device not found or filesystem not supported.", 0
 db "The mount was refused by the system. This may be explained due to the fact that the current user", 10
 db "does not have administrative privileges, not being a root user (root).", 10, 10
 db "Only the root user (root) can perform mounts. Login in this user to perform the desired mount.", 0
-.parenteses1:
-db " (", 0
-.parenteses2:
-db ")", 0
 .FAT16:
 db "FAT16B", 0
 .FAT12:
@@ -373,4 +369,3 @@ db "unknown", 0
 parametros:    dd 0
 volume:        dd ?
 pontoMontagem: dd ?
-regES:         dw 0
