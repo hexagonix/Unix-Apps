@@ -354,9 +354,7 @@ encontrarCaractereLista:
 
 ;;************************************************************************************
 
-parametro: dd ?
-
-versaoHTOP equ "1.4.3"
+versaoHTOP equ "1.4.4"
 
 htop:
 
@@ -388,12 +386,15 @@ db "All rights reserved.", 0
 db "?", 0
 .parametroAjuda2:
 db "--help", 0
-.corFonte:            dd 0
-.corFundo:            dd 0
+.corFonte: dd 0
+.corFundo: dd 0
+
+;;************************************************************************************
 
 listaRemanescente: dd ?
 limiteExibicao:    dd 0
 numeroProcessos:   dd 0
 PIDs:              dd 0
 numeroPIDs:        dd 0
-processoAtual:      dd ' '
+processoAtual:     dd ' '
+parametro:         dd ?
