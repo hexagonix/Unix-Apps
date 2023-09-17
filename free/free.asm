@@ -167,7 +167,7 @@ terminar:
 
 ;;************************************************************************************
 
-versaoFREE equ "1.1.0"
+versaoFREE equ "1.1.1"
 
 free:
 
@@ -189,7 +189,6 @@ db "16", 0
 db "?", 0
 .parametroAjuda2:
 db "--help", 0
-.posicaoY:        db 0
+.posicaoY: db 0
 
 parametro: dd ?
-regES:     dw 0
