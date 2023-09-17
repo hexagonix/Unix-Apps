@@ -103,29 +103,16 @@ tamanhoLimiteBusca = 32768
 
 ;;************************************************************************************
 
-versaoLOGIN equ "4.5.0"
-
-shellPadrao:
-db "sh", 0     ;; Nome do arquivo que contêm o shell padrão do Hexagonix
-vd0:
-db "vd0", 0    ;; Console padrão
-vd1:
-db "vd1", 0    ;; Primeiro console virtual
-arquivo:
-db "passwd", 0 ;; Nome do arquivo de gerenciamento de login
-
-tentarShellPadrao: db 0          ;; Sinaliza a tentativa de se carregar o shell padrão
-shellHexagonix:    times 11 db 0 ;; Armazena o nome do shell à ser utilizado
-usuario:           times 15 db 0 ;; Nome de usuário obtido no arquivo
-senhaObtida:       times 64 db 0 ;; Senha obtida no arquivo
-parametros:        db 0          ;; Se o aplicativo recebeu algum parâmetro
-ponto:             db ".", 0     ;; Caractere de ponto
-posicaoBX:         dw 0          ;; Marcação da posição de busca no conteúdo do arquivo
+versaoLOGIN equ "4.5.1"
 
 login:
 
 ;; Mensagens gerais
 
+.shellPadrao:
+db "sh", 0 ;; Nome do arquivo que contêm o shell padrão do Hexagonix
+.arquivo:
+db "passwd", 0 ;; Nome do arquivo de gerenciamento de login
 .semArquivoUnix:
 db 10, 10, "The user database was not found on the volume.", 10, 0
 .solicitarUsuario:
@@ -168,12 +155,20 @@ db "Login attempt prevented by authentication failure.", 0
 .verboseLogout:
 db "Logout performed successfully.", 0
 
-;; Constantes e buffers
+;; Buffers
 
+tentarShellPadrao:          db 0 ;; Sinaliza a tentativa de se carregar o shell padrão
+shellHexagonix:    times 11 db 0 ;; Armazena o nome do shell à ser utilizado
+usuario:           times 15 db 0 ;; Nome de usuário obtido no arquivo
+senhaObtida:       times 64 db 0 ;; Senha obtida no arquivo
+parametros:                 db 0 ;; Se o aplicativo recebeu algum parâmetro
+posicaoBX:                  dw 0 ;; Marcação da posição de busca no conteúdo do arquivo
 usuarioSolicitado: times 17 db 0
 usuarioAnterior:   times 17 db 0
 codigoAnterior:             dd 0
 errado:                     db 0
+ponto:
+db ".", 0 ;; Caractere de ponto
 
 ;;************************************************************************************
 
@@ -372,7 +367,7 @@ encontrarNomeUsuario:
     push ds
     pop es
 
-    mov esi, arquivo
+    mov esi, login.arquivo
     mov edi, bufferArquivo
 
     hx.syscall hx.open
@@ -555,7 +550,7 @@ encontrarSenhaUsuario:
     push ds
     pop es
 
-    mov esi, arquivo
+    mov esi, login.arquivo
     mov edi, bufferArquivo
 
     hx.syscall hx.open
@@ -652,7 +647,7 @@ encontrarShell:
     push ds
     pop es
 
-    mov esi, arquivo
+    mov esi, login.arquivo
     mov edi, bufferArquivo
 
     hx.syscall hx.open
@@ -744,14 +739,14 @@ obterShellPadrao:
     push ds
     pop es
 
-    mov esi, shellPadrao
+    mov esi, login.shellPadrao
 
     hx.syscall tamanhoString
 
     push eax
 
     mov edi, shellHexagonix
-    mov esi, shellPadrao
+    mov esi, login.shellPadrao
 
     pop ecx
 
@@ -848,7 +843,7 @@ loginPadrao:
     hx.syscall definirUsuario
 
     mov eax, 0
-    mov esi, shellPadrao
+    mov esi, login.shellPadrao
 
     clc
 
@@ -866,7 +861,7 @@ checarBaseDados:
 
     clc
 
-    mov esi, arquivo
+    mov esi, login.arquivo
 
     hx.syscall arquivoExiste
 
