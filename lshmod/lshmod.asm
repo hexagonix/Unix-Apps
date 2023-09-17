@@ -87,7 +87,7 @@ include "macros.s"
 ;;
 ;;************************************************************************************
 
-versaoLSHMOD equ "0.6.6"
+versaoLSHMOD equ "0.6.7"
 
 lshmod:
 
@@ -137,7 +137,6 @@ db "--help", 0
 
 parametro:            dd ?
 nomeArquivo: times 13 db 0
-regES:                dw 0
 nomeModulo: times 8   db 0
 
 ;;************************************************************************************
