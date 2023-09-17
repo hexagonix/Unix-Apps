@@ -653,7 +653,7 @@ verificarArquivo:
 ;;
 ;;************************************************************************************
 
-versaoLS equ "3.2.3.1"
+versaoLS equ "3.2.3.2"
 
 ls:
 
@@ -693,18 +693,18 @@ db "?", 0
 db "--help", 0
 .parametroTudo:
 db "-a" ,0
-.exibirTudo:       db 0
-.corFonte:         dd 0
-.corFundo:         dd 0
-.corAPP:           dd 0
-.corSIS:           dd 0
-.corASM:           dd 0
-.corBIN:           dd 0
-.corUNX:           dd 0
-.corFNT:           dd 0
-.corOCL:           dd 0
-.corCOW:           dd 0
-.corMAN:           dd 0
+.exibirTudo: db 0
+.corFonte:   dd 0
+.corFundo:   dd 0
+.corAPP:     dd 0
+.corSIS:     dd 0
+.corASM:     dd 0
+.corBIN:     dd 0
+.corUNX:     dd 0
+.corFNT:     dd 0
+.corOCL:     dd 0
+.corCOW:     dd 0
+.corMAN:     dd 0
 
 parametro:         dd ?
 listaRemanescente: dd ?
