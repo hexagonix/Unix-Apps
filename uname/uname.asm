@@ -85,7 +85,7 @@ include "macros.s"
 
 align 4
 
-versaoUNAME equ "2.6.4.1"
+versaoUNAME equ "2.6.5.0"
 
 uname:
 
@@ -101,24 +101,12 @@ uname:
 ;; -i: plataforma de hardware
 ;; -o: sistema operacional
 
-.parametrosSistema:
-db " Unix" , 0
 .sistemaOperacional:
 db "Hexagonix", 0
-.usuario:
-db " ", 0
 .espaco:
 db " ", 0
 .maquina:
 db "Hexagonix-PC", 0
-.colcheteEsquerdo:
-db "[", 0
-.colcheteDireito:
-db "]", 0
-.pontoVirgula:
-db "; ", 0
-.nucleo:
-db " Kernel ", 0
 .buildHexagon:
 db "(build ", 0
 .fecharParenteses:
