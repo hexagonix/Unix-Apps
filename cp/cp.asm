@@ -267,7 +267,7 @@ usoAplicativo:
 ;;
 ;;************************************************************************************
 
-versaoCP equ "2.2.3"
+versaoCP equ "2.2.4"
 
 cp:
 
@@ -283,8 +283,7 @@ db "All rights reserved.", 0
 .fonteIndisponivel:
 db 10, "The source file cannot be found on this volume.", 0
 .destinoExistente:
-db 10, "A file with the given name already exists for the destination. Please remove the file with the same", 10
-db "destination name and try again.", 0
+db 10, "A file with the given name already exists for the destination. Please remove the file and try again.", 0
 .erroAbrindo:
 db 10, "An error occurred while trying to open the source file.", 0
 .erroSalvando:
