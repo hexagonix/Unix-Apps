@@ -85,7 +85,7 @@ include "macros.s"
 
 align 4
 
-versaoUNAME equ "2.6.5.0"
+versaoUNAME equ "2.6.6.0"
 
 uname:
 
@@ -142,7 +142,7 @@ db "-v", 0
 .parametroExibirSO:
 db "-o", 0
 .arquivoUnix:
-db "host.unx", 0
+db "host", 0
 .naoSuportado:
 db "Unknown architecture.", 0
 .plataformaPC:
