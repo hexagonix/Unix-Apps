@@ -161,7 +161,7 @@ terminar:
 ;;
 ;;************************************************************************************
 
-versaoHOSTNAME equ "1.1.6"
+versaoHOSTNAME equ "1.2.0"
 
 hostname:
 
@@ -178,7 +178,7 @@ db "?", 0
 .parametroAjuda2:
 db "--help", 0
 .arquivoUnix:
-db "host.unx", 0
+db "host", 0
 
 parametro: dd ?
 
