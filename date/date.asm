@@ -343,7 +343,7 @@ terminar:
 
 ;;************************************************************************************
 
-versaoDATE equ "1.2.5.1"
+versaoDATE equ "1.2.5.2"
 
 date:
 
@@ -381,13 +381,13 @@ db " of ", 0
 db " ", 0
 .fuso:
 db "GMT", 0
-.dia:             dd 0
-.mes:             dd 0
-.seculo:          dd 0
-.ano:             dd 0
-.hora:            dd 0
-.minuto:          dd 0
-.segundo:         dd 0
-.diaSemana:       dd 0
+.dia:       dd 0
+.mes:       dd 0
+.seculo:    dd 0
+.ano:       dd 0
+.hora:      dd 0
+.minuto:    dd 0
+.segundo:   dd 0
+.diaSemana: dd 0
 
-parametro:        dd ?
+parametro: dd ?
