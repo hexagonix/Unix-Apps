@@ -267,12 +267,12 @@ usoAplicativo:
 ;;
 ;;************************************************************************************
 
-versaoCP equ "2.2.4"
+versaoCP equ "2.2.5"
 
 cp:
 
 .naoEncontrado:
-db 10, "File not found. Please check file name and try again.", 0
+db 10, "File not found. Please check filename and try again.", 0
 .uso:
 db 10, "Usage: cp [input file] [output file]", 10, 10
 db "Performs a copy of a given file into another. Two file names are required, one being", 10
@@ -298,5 +298,7 @@ db "--help", 0
 parametros:     dd 0
 arquivoEntrada: dd ?
 arquivoSaida:   dd ?
+
+;;************************************************************************************
 
 bufferArquivo:
