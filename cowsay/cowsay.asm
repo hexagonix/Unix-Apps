@@ -393,7 +393,7 @@ terminar:
 
 ;;************************************************************************************
 
-versaoCOWSAY equ "2.1.7"
+versaoCOWSAY equ "2.2.0"
 
 cowsay:
 
@@ -428,11 +428,12 @@ db "             ||     ||", 0
 .extensaoCOW:
 db ".cow", 0
 
-parametro:        dd ?
-perfilVaquinha:   dd ?
-mensagemUsuario:  dd ?
-arquivoExterno:   db 0
-tamanhoMensagem:  dd 0
-regES:            dw 0
+parametro:       dd ?
+perfilVaquinha:  dd ?
+mensagemUsuario: dd ?
+arquivoExterno:  db 0
+tamanhoMensagem: dd 0
+
+;;************************************************************************************
 
 bufferArquivo:
