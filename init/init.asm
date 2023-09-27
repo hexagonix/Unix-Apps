@@ -92,22 +92,22 @@ include "log.s"
 
 ;;************************************************************************************
 
-versaoINIT equ "2.5.1"
+versaoINIT equ "2.5.2"
 
 tamanhoLimiteBusca = 32768 ;; Tamanho máximo do arquivo: 32 kbytes
 
-shellPadrao:
-db "sh", 0  ;; Nome do arquivo que contêm o shell padrão Unix
-vd0:
-db "vd0", 0 ;; Console principal
-vd1:
-db "vd1", 0 ;; Primeiro console virtual
-arquivo:
-db "rc", 0  ;; Nome do arquivo de configuração do init
-tentarShellPadrao:
-db 0        ;; Sinaliza a tentativa de se carregar o shell padrão
+shellPadrao: ;; Nome do arquivo que contêm o shell padrão Unix
+db "sh", 0
+vd0: ;; Console principal
+db "vd0", 0
+vd1: ;; Primeiro console virtual
+db "vd1", 0
+arquivo: ;; Nome do arquivo de configuração do init
+db "rc", 0
+tentarShellPadrao: ;; Sinaliza a tentativa de se carregar o shell padrão
+db 0
 servicoHexagonix: times 12 db 0 ;; Armazena o nome do shell à ser utilizado pelo sistema
-posicaoBX:                 dw 0 ;; Marcação da posição de busca no conteúdo do arquivo
+posicaoBX: dw 0 ;; Marcação da posição de busca no conteúdo do arquivo
 
 init:
 
@@ -132,9 +132,7 @@ db "Setting up consoles (vd0, vd1)...", 0
 
 ;;************************************************************************************
 
-;; Aqui temos o ponto de entrada do init
-
-initHexagonix: ;; Ponto de entrada do init
+initHexagonix: ;; Ponto de entrada
 
 ;; Primeiramente, devemos checar qual o PID do processo. Por padrão, init só deve ser executado
 ;; diretamente pelo Hexagon. Fora isso, ele não deve desempenhar sua função. Caso o PID seja
