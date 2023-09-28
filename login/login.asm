@@ -103,16 +103,16 @@ tamanhoLimiteBusca = 32768
 
 ;;************************************************************************************
 
-versaoLOGIN equ "4.5.1"
+versaoLOGIN equ "4.5.2"
 
 login:
 
 ;; Mensagens gerais
 
-.shellPadrao:
-db "sh", 0 ;; Nome do arquivo que contêm o shell padrão do Hexagonix
-.arquivo:
-db "passwd", 0 ;; Nome do arquivo de gerenciamento de login
+.shellPadrao: ;; Nome do arquivo que contêm o shell padrão do Hexagonix
+db "sh", 0
+.arquivo: ;; Nome do arquivo de gerenciamento de login
+db "passwd", 0
 .semArquivoUnix:
 db 10, 10, "The user database was not found on the volume.", 10, 0
 .solicitarUsuario:
@@ -167,8 +167,8 @@ usuarioSolicitado: times 17 db 0
 usuarioAnterior:   times 17 db 0
 codigoAnterior:             dd 0
 errado:                     db 0
-ponto:
-db ".", 0 ;; Caractere de ponto
+ponto: ;; Caractere de ponto
+db ".", 0
 
 ;;************************************************************************************
 
@@ -870,7 +870,5 @@ checarBaseDados:
     ret
 
 ;;************************************************************************************
-
-enderecoCarregamento:
 
 bufferArquivo: ;; Local onde o arquivo de configuração será aberto
