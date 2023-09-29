@@ -89,7 +89,7 @@ include "macros.s"
 ;;
 ;;************************************************************************************
 
-versaoLSHAPP equ "1.12.2"
+versaoLSHAPP equ "1.12.3"
 
 lshapp:
 
@@ -156,7 +156,7 @@ db ".", 0
 .subverMinima:  db 0
 .especieImagem: db 0
 
-parametro:            dd ?
+parametro: dd ?
 nomeArquivo: times 13 db 0
 
 ;;************************************************************************************
