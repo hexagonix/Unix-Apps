@@ -221,9 +221,7 @@ definirCorPadrao:
 
 ;;************************************************************************************
 
-parametro: dd ?
-
-versaoTOP equ "1.2.5"
+versaoTOP equ "1.2.6"
 
 top:
 
@@ -256,3 +254,5 @@ db "Processes present in the system execution stack: ", 10, 10, 0
 db 10, "Number of processes present in the execution stack: ", 0
 .corFonte: dd 0
 .corFundo: dd 0
+
+parametro: dd ?
