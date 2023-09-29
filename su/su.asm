@@ -685,7 +685,7 @@ terminar:
 ;;
 ;;************************************************************************************
 
-versaoSU equ "1.7.5.0"
+versaoSU equ "1.7.5.1"
 
 su:
 
@@ -712,21 +712,21 @@ db "--help", 0
 db "root", 0
 .falhaAutenticacao:
 db 10, "su: authentication failed.", 0
-.shellPadrao:
-db "sh", 0 ;; Nome do arquivo que contêm o shell padrão do Hexagonix
-.arquivo:
-db "passwd", 0 ;; Nome do arquivo de gerenciamento de login
+.shellPadrao: ;; Nome do arquivo que contêm o shell padrão do Hexagonix
+db "sh", 0
+.arquivo: ;; Nome do arquivo de gerenciamento de login
+db "passwd", 0
 
 ;; Buffers
 
 usuarioSolicitado:  times 17 db 0 ;; Buffer de usuário solicitado
 usuarioAnterior:    times 17 db 0 ;; Buffer do usuário anterior
-codigoAnterior:              dd 0 ;; Código do usuário anterior
-tentarShellPadrao:           db 0 ;; Sinaliza a tentativa de se carregar o shell padrão
 shellHexagonix:     times 11 db 0 ;; Armazena o nome do shell à ser utilizado pelo sistema
 usuario:            times 15 db 0 ;; Nome de usuário obtido no arquivo
 senhaObtida:        times 64 db 0 ;; Senha obtida no arquivo
-parametros:                  db 0 ;; Se o aplicativo recebeu algum parâmetro
+codigoAnterior:    dd 0 ;; Código do usuário anterior
+tentarShellPadrao: db 0 ;; Sinaliza a tentativa de se carregar o shell padrão
+parametros:        db 0 ;; Se o aplicativo recebeu algum parâmetro
 posicaoBX: dw 0
 
 ;;************************************************************************************
