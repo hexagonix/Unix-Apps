@@ -83,7 +83,7 @@ include "macros.s"
 
 ;;************************************************************************************
 
-versaoMAN equ "2.3.6"
+versaoMAN equ "2.3.7"
 
 versaoCoreUtils equ "Raava-CURRENT-6.2.1"
 versaoUnixUtils equ "Raava-CURRENT-6.2.1"
@@ -113,6 +113,8 @@ db "Press <q> to exit.", 0
 db ": manual not found for this utility.", 0
 .extensaoManual:
 db ".man", 0
+
+utilitario: dd ?
 
 ;;************************************************************************************
 
@@ -225,7 +227,5 @@ terminar:
     hx.syscall encerrarProcesso
 
 ;;*****************************************************************************
-
-utilitario: dd ?
 
 bufferArquivo:
