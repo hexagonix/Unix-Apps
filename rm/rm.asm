@@ -216,7 +216,7 @@ terminar:
 ;;
 ;;************************************************************************************
 
-versaoRM equ "1.1.4.2"
+versaoRM equ "1.1.4.3"
 
 rm:
 
@@ -248,7 +248,3 @@ db "Only an administrative (or root) user can complete this action.", 10
 db "Login in this user to perform the desired operation.", 0
 
 parametro: dd ?
-
-;;************************************************************************************
-
-bufferArquivo:
