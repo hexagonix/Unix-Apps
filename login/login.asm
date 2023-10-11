@@ -103,7 +103,7 @@ tamanhoLimiteBusca = 32768
 
 ;;************************************************************************************
 
-versaoLOGIN equ "4.6.0"
+versaoLOGIN equ "4.7.0"
 
 login:
 
@@ -167,6 +167,7 @@ usuarioSolicitado: times 17 db 0
 usuarioAnterior:   times 17 db 0
 codigoAnterior:             dd 0
 errado:                     db 0
+execucaoViaInit:            db 0
 ponto: ;; Caractere de ponto
 db ".", 0
 
@@ -195,6 +196,21 @@ loginHexagonix: ;; Ponto de entrada
     logSistema login.verboseLogin, 0, Log.Prioridades.p4
 
 iniciarExecucao:
+
+    hx.syscall hx.getpid
+
+    cmp eax, 02h
+    je .viaInit
+
+    mov byte [execucaoViaInit], 00h
+
+    jmp .continuarAposValidacao
+
+.viaInit:
+
+    mov byte [execucaoViaInit], 01h
+
+.continuarAposValidacao:
 
     call executarLogind
 
@@ -298,6 +314,8 @@ match =SIM, UNIX
 
     hx.syscall iniciarProcesso ;; Solicitar o carregamento do shell do Hexagonix
 
+    jc .tentarShellPadrao
+
     jmp .shellFinalizado
 
 .tentarShellPadrao: ;; Tentar carregar o shell padrão do Hexagonix
@@ -320,14 +338,12 @@ match =SIM, UNIX
 ;; Caso login tenha PID 2, significa que ele foi invocado via init. Desa forma, ele deve ficar residente,
 ;; neste momento. Se for PID 2, solicitar a entrada do usuário novamente
 
-    hx.syscall hx.getpid
-
-    cmp eax, 02h
-    je .execucaoInicial
-
     novaLinha
 
-    jmp terminar
+    cmp byte [execucaoViaInit], 01h
+    jne terminar
+
+    jmp .execucaoInicial
 
 .naoEncontrado: ;; O shell não pôde ser localizado
 
@@ -539,6 +555,20 @@ limparVariaveisUsuario:
     mov esi, 0
 
     mov edi, senhaObtida
+
+    pop ecx
+
+    rep movsb
+
+    mov esi, shellHexagonix
+
+    hx.syscall tamanhoString
+
+    push eax
+
+    mov esi, " "
+
+    mov edi, shellHexagonix
 
     pop ecx
 
