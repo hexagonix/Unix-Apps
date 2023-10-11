@@ -102,7 +102,7 @@ tamanhoLimiteBusca = 32768
 
 ;;************************************************************************************
 
-versaoLOGIND equ "1.7.5.1"
+versaoLOGIND equ "1.7.5.2"
 
 align 4
 
@@ -123,9 +123,9 @@ db "  88       88 '8b,   ,aa  ,d8' '8b,  88,    ,88 '8a,   ,d88 '8a,   ,a8' 88  
 db "  88       88  `'Pbbd8'' 8P'     `P8 `'8bbdP'P8  `'PbbdP'P8  `'PbbdP''  88       88 88 8P'     `P8", 10
 db "                                                 aa,    ,88", 10
 db "                                                  'P8bbdP'", 10, 10
-db "                                Hexagonix Operating System", 10, 10
-db "                  Copyright (C) 2015-", __stringano, " Felipe Miguel Nery Lunkes", 10
-db "                                    All rights reserved.", 10, 0
+db "                                  Hexagonix Operating System", 10, 10
+db "                       Copyright (C) 2015-", __stringano, " Felipe Miguel Nery Lunkes", 10
+db "                                     All rights reserved.", 10, 0
 
 }
 
