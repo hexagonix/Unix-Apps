@@ -83,9 +83,7 @@ include "macros.s"
 
 ;;************************************************************************************
 
-align 4
-
-versaoUNAME equ "2.6.6.0"
+versaoUNAME equ "2.6.6.1"
 
 uname:
 
@@ -169,8 +167,6 @@ db ".", 0
 parametro: dd ?
 
 ;;************************************************************************************
-
-align 32
 
 inicioAPP: ;; Ponto de entrada do aplicativo
 
