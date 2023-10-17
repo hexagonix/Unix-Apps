@@ -73,7 +73,7 @@ use32
 include "HAPP.s" ;; Aqui está uma estrutura para o cabeçalho HAPP
 
 ;; Instância | Estrutura | Arquitetura | Versão | Subversão | Entrada | Tipo
-cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, inicioAPP, 01h
+cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 5, inicioAPP, 01h
 
 ;;************************************************************************************
 
@@ -83,7 +83,7 @@ include "macros.s"
 
 ;;************************************************************************************
 
-versaoUNAME equ "2.6.6.1"
+versaoUNAME equ "2.6.7.0"
 
 uname:
 
@@ -450,18 +450,16 @@ versaoHexagon:
 
     pop ecx
 
-    cmp ch, 0
+    cmp ecx, 0
     je .continuar
 
     push ecx
 
     fputs ponto
 
-    pop ecx
+    pop eax
 
-    mov al, ch
-
-    hx.syscall imprimirCaractere
+    imprimirInteiro
 
 .continuar:
 
