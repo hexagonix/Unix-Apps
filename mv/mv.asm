@@ -73,7 +73,7 @@ use32
 include "HAPP.s" ;; Aqui está uma estrutura para o cabeçalho HAPP
 
 ;; Instância | Estrutura | Arquitetura | Versão | Subversão | Entrada | Tipo
-cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 5, inicioAPP, 01h
+cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, inicioAPP, 01h
 
 ;;************************************************************************************
 
@@ -244,7 +244,7 @@ usoAplicativo:
 ;;
 ;;************************************************************************************
 
-versaoMV equ "0.0.1"
+versaoMV equ "0.0.2"
 
 mv:
 
