@@ -87,7 +87,7 @@ include "macros.s"
 ;;
 ;;************************************************************************************
 
-versaoLSHMOD equ "0.6.8"
+versaoLSHMOD equ "0.7.0"
 
 lshmod:
 
@@ -100,18 +100,18 @@ db "All rights reserved.", 0
 .arquivoInvalido:
 db 10, "The file name is invalid. Please enter a valid filename.", 0
 .infoArquivo:
-db 10, "Filename: ", 0
+db 10, "> Filename: ", 0
 .tamanhoArquivo:
-db 10, "File size: ", 0
+db 10, "> File size: ", 0
 .bytes:
-db " bytes.", 10, 0
+db " bytes.", 0
 .imagemInvalida:
 db 10, "<!> This is not an HBoot module image. Try another file.", 0
 .semArquivo:
 db 10, "<!> The requested file is not available on this volume.", 10, 10
 db "<!> Check the filename and try again.", 0
 .tipoArquitetura:
-db 10, 10, "> Target architecture: ", 0
+db 10, "> Target architecture: ", 0
 .verModulo:
 db 10, "> Module version: ", 0
 .ponto:
@@ -186,24 +186,7 @@ inicioAPP:
 
     jc .semArquivo
 
-    push eax
-    push esi
-
-    fputs lshmod.infoArquivo
-
-    pop esi
-
     call manterArquivo
-
-    imprimirString
-
-    fputs lshmod.tamanhoArquivo
-
-    pop eax
-
-    imprimirInteiro
-
-    fputs lshmod.bytes
 
 ;; Vamos verificar se a imagem é de fato uma imagem HBoot
 
@@ -269,11 +252,34 @@ verificarArquivoHBootMod:
 
     mov dword[nomeModulo+8], 0
 
-    mov esi, nomeModulo
-
-    hx.syscall cortarString
-
     fputs lshmod.cabecalho
+
+;; Vamos obter o tamanho da imagem
+
+    mov esi, nomeArquivo
+
+    hx.syscall arquivoExiste
+
+    jc inicioAPP.semArquivo
+
+    push eax
+    push esi
+
+    fputs lshmod.infoArquivo
+
+    pop esi
+
+    fputs esi
+
+    fputs lshmod.tamanhoArquivo
+
+    pop eax
+
+    imprimirInteiro
+
+    fputs lshmod.bytes
+
+;; Tipo de arquitetura
 
     fputs lshmod.tipoArquitetura
 
@@ -327,8 +333,6 @@ verificarArquivoHBootMod:
     fputs lshmod.entradaCodigo
 
     fputs nomeModulo
-
-    fputs lshmod.ponto
 
     ret
 
