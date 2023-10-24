@@ -602,7 +602,7 @@ finalizarShell:
 ;; Ela deve ser utilizada para identificar para qual versão do Hexagonix o hash foi
 ;; desenvolvido.
 
-versaoHASH equ "0.9.1.3"
+versaoHASH equ "0.9.1.4"
 
 tamanhoLimiteBusca = 32768
 
@@ -615,7 +615,7 @@ db "shrc", 0
 .imagemInvalida:
 db ": unable to load image. Unsupported executable format.", 0
 .limiteProcessos:
-db 10, 10, "There is no memory available to run the requested application.", 10
+db "There is no available process slot to run the requested application.", 10
 db "First try to terminate applications or their instances, and try again.", 0
 .ponto:
 db ".", 0
