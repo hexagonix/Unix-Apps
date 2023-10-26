@@ -92,16 +92,16 @@ include "log.s"
 
 ;;************************************************************************************
 
-versaoINIT equ "2.5.2"
+versaoINIT equ "2.6.0"
 
 tamanhoLimiteBusca = 32768 ;; Tamanho máximo do arquivo: 32 kbytes
 
 shellPadrao: ;; Nome do arquivo que contêm o shell padrão Unix
 db "sh", 0
-vd0: ;; Console principal
-db "vd0", 0
-vd1: ;; Primeiro console virtual
-db "vd1", 0
+tty0: ;; Console principal
+db "tty0", 0
+tty1: ;; Primeiro console virtual
+db "tty1", 0
 arquivo: ;; Nome do arquivo de configuração do init
 db "rc", 0
 tentarShellPadrao: ;; Sinaliza a tentativa de se carregar o shell padrão
@@ -128,7 +128,7 @@ db "An unhandled error was encountered.", 0
 .registrandoComponentes:
 db "Starting service...", 0
 .configurarConsole:
-db "Setting up consoles (vd0, vd1)...", 0
+db "Setting up consoles (tty0, tty1)...", 0
 
 ;;************************************************************************************
 
@@ -229,11 +229,11 @@ limparTerminal:
 
     logSistema init.configurarConsole, 0, Log.Prioridades.p5
 
-    mov esi, vd1 ;; Abrir o primeiro console virtual
+    mov esi, tty1 ;; Abrir o primeiro console virtual
 
     hx.syscall hx.open ;; Abre o dispositivo
 
-    mov esi, vd0 ;; Reabre o console padrão
+    mov esi, tty0 ;; Reabre o console padrão
 
     hx.syscall hx.open ;; Abre o dispositivo
 
