@@ -102,7 +102,7 @@ tamanhoLimiteBusca = 32768
 
 ;;************************************************************************************
 
-versaoLOGIND equ "1.7.5.2"
+versaoLOGIND equ "1.8.0"
 
 align 4
 
@@ -139,16 +139,16 @@ db 0
 
 .arquivo:
 db "passwd", 0 ;; Nome do arquivo de configuração de login
-.vd0:
-db "vd0", 0 ;; Console padrão
-.vd1:
-db "vd1", 0 ;; Primeiro console virtual
+.tty0:
+db "tty0", 0 ;; Console padrão
+.tty1:
+db "tty1", 0 ;; Primeiro console virtual
 .posicaoBX: ;; Marcação da posição de busca no conteúdo do arquivo
 dw 0
 .versaoSistema:
 db 10, "Hexagonix version ", 0
 .console:
-db " (vd0)", 0
+db " (tty0)", 0
 .semArquivoUnix:
 db 10, 10, "The user database was not found on the volume.", 10, 0
 .colcheteEsquerdo:
@@ -312,7 +312,7 @@ verificarTema:
 
     popa
 
-    mov esi, logind.vd1 ;; Abrir primeiro console virtual
+    mov esi, logind.tty1 ;; Abrir primeiro console virtual
 
     hx.syscall hx.open ;; Abre o dispositivo
 
@@ -323,7 +323,7 @@ verificarTema:
 
     hx.syscall limparTela ;; Limpa seu conteúdo
 
-    mov esi, logind.vd0 ;; Reabre o dispositivo de saída padrão
+    mov esi, logind.tty0 ;; Reabre o dispositivo de saída padrão
 
     hx.syscall hx.open ;; Abre o dispositivo
 
@@ -338,7 +338,7 @@ verificarTema:
 
 .selecionarTemaEscuro:
 
-    mov esi, logind.vd1 ;; Abrir primeiro console virtual
+    mov esi, logind.tty1 ;; Abrir primeiro console virtual
 
     hx.syscall hx.open ;; Abre o dispositivo
 
@@ -349,7 +349,7 @@ verificarTema:
 
     hx.syscall limparTela ;; Limpa seu conteúdo
 
-    mov esi, logind.vd0 ;; Reabre o console padrão
+    mov esi, logind.tty0 ;; Reabre o console padrão
 
     hx.syscall hx.open ;; Abre o dispositivo
 
