@@ -112,7 +112,7 @@ inicioAPP:
 
 realizarLimpeza:
 
-    mov esi, vd1 ;; Abrir o primeiro console virtual
+    mov esi, tty1 ;; Abrir o primeiro console virtual
 
     hx.syscall hx.open ;; Abre o dispositivo
 
@@ -120,7 +120,7 @@ realizarLimpeza:
 
     hx.syscall limparTela ;; Limpa seu conteúdo
 
-    mov esi, vd0 ;; Reabre o console principal
+    mov esi, tty0 ;; Reabre o console principal
 
     hx.syscall hx.open ;; Abre o dispositivo
 
@@ -156,7 +156,7 @@ usoAplicativo:
 ;;
 ;;************************************************************************************
 
-versaoCLEAR equ "1.2.2.2"
+versaoCLEAR equ "1.3.0.0"
 
 clear:
 
@@ -164,7 +164,7 @@ clear:
 db 10, "Error opening a console.", 10, 10, 0
 .uso:
 db 10, "Usage: clear", 10, 10
-db "Clears the contents of the console (vd0) and virtual consoles.", 10, 10
+db "Clears the contents of the console (tty0) and virtual consoles.", 10, 10
 db "clear version ", versaoCLEAR, 10, 10
 db "Copyright (C) 2017-", __stringano, " Felipe Miguel Nery Lunkes", 10
 db "All rights reserved.", 0
@@ -173,7 +173,7 @@ db "?", 0
 .parametroAjuda2:
 db "--help", 0
 
-vd0: db "vd0", 0 ;; Console principal
-vd1: db "vd1", 0 ;; Primeiro console virtual
+tty0: db "tty0", 0 ;; Console principal
+tty1: db "tty1", 0 ;; Primeiro console virtual
 
 parametro: dd ?
