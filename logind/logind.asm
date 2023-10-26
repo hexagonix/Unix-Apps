@@ -90,6 +90,7 @@ include "hexagon.s"
 include "Estelar/estelar.s"
 include "macros.s"
 include "log.s"
+include "dev.s"
 include "verUtils.s"
 
 tamanhoLimiteBusca = 32768
@@ -102,7 +103,7 @@ tamanhoLimiteBusca = 32768
 
 ;;************************************************************************************
 
-versaoLOGIND equ "1.8.0"
+versaoLOGIND equ "1.8.1"
 
 align 4
 
@@ -139,10 +140,6 @@ db 0
 
 .arquivo:
 db "passwd", 0 ;; Nome do arquivo de configuração de login
-.tty0:
-db "tty0", 0 ;; Console padrão
-.tty1:
-db "tty1", 0 ;; Primeiro console virtual
 .posicaoBX: ;; Marcação da posição de busca no conteúdo do arquivo
 dw 0
 .versaoSistema:
@@ -312,7 +309,7 @@ verificarTema:
 
     popa
 
-    mov esi, logind.tty1 ;; Abrir primeiro console virtual
+    mov esi, Hexagon.LibASM.Dev.video.tty1 ;; Abrir primeiro console virtual
 
     hx.syscall hx.open ;; Abre o dispositivo
 
@@ -323,7 +320,7 @@ verificarTema:
 
     hx.syscall limparTela ;; Limpa seu conteúdo
 
-    mov esi, logind.tty0 ;; Reabre o dispositivo de saída padrão
+    mov esi, Hexagon.LibASM.Dev.video.tty0 ;; Reabre o dispositivo de saída padrão
 
     hx.syscall hx.open ;; Abre o dispositivo
 
@@ -338,7 +335,7 @@ verificarTema:
 
 .selecionarTemaEscuro:
 
-    mov esi, logind.tty1 ;; Abrir primeiro console virtual
+    mov esi, Hexagon.LibASM.Dev.video.tty1 ;; Abrir primeiro console virtual
 
     hx.syscall hx.open ;; Abre o dispositivo
 
@@ -349,7 +346,7 @@ verificarTema:
 
     hx.syscall limparTela ;; Limpa seu conteúdo
 
-    mov esi, logind.tty0 ;; Reabre o console padrão
+    mov esi, Hexagon.LibASM.Dev.video.tty0 ;; Reabre o console padrão
 
     hx.syscall hx.open ;; Abre o dispositivo
 
