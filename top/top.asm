@@ -94,8 +94,6 @@ inicioAPP: ;; Ponto de entrada do aplicativo
     mov dword[top.corFonte], eax
     mov dword[top.corFundo], ebx
 
-;;************************************************************************************
-
     novaLinha
 
     mov edi, top.parametroAjuda
@@ -117,32 +115,6 @@ inicioAPP: ;; Ponto de entrada do aplicativo
 exibirProcessos:
 
     fputs top.inicio
-
-    fputs top.processosCarregados
-
-    hx.syscall obterProcessos
-
-    push eax
-
-    mov eax, VERMELHO
-
-    call definirCorTexto
-
-    imprimirString
-
-    call definirCorPadrao
-
-    novaLinha
-
-    fputs top.numeroProcessos
-
-    mov eax, VERMELHO
-
-    call definirCorTexto
-
-    pop eax
-
-    imprimirInteiro
 
     call definirCorPadrao
 
@@ -175,6 +147,62 @@ exibirProcessos:
     call definirCorPadrao
 
     fputs top.mbytes
+
+    novaLinha
+
+    hx.syscall obterProcessos
+
+    mov [listaRemanescente], esi
+    mov dword[numeroPIDs], eax
+
+    push eax
+
+    pop ebx
+
+    xor ecx, ecx
+    xor edx, edx
+
+    push eax
+
+    mov edx, eax
+
+    mov dword[numeroProcessos], 00h
+
+    fputs top.cabecalho
+
+    inc dword[PIDs]
+
+.loopProcessos:
+
+    push ds
+    pop es
+
+    call lerListaProcessos
+
+    fputs [processoAtual]
+
+    call colocarEspaco
+
+    mov eax, [PIDs]
+
+    imprimirInteiro
+
+    mov al, 10
+
+    hx.syscall imprimirCaractere
+
+    cmp dword[numeroPIDs], 01h
+    je .continuar
+
+    inc dword[numeroProcessos]
+    inc dword[PIDs]
+    dec dword[numeroPIDs]
+
+    jmp .loopProcessos
+
+.continuar:
+
+    call definirCorPadrao
 
     jmp terminar
 
@@ -221,14 +249,121 @@ definirCorPadrao:
 
 ;;************************************************************************************
 
-versaoTOP equ "1.2.6"
+colocarEspaco:
+
+    push ecx
+    push ebx
+    push eax
+
+    push ds
+    pop es
+
+    mov esi, [processoAtual]
+
+    hx.syscall tamanhoString
+
+    mov ebx, 17
+
+    sub ebx, eax
+
+    mov ecx, ebx
+
+.loopEspaco:
+
+    mov al, ' '
+
+    hx.syscall imprimirCaractere
+
+    dec ecx
+
+    cmp ecx, 0
+    je .terminado
+
+    jmp .loopEspaco
+
+.terminado:
+
+    pop eax
+    pop ebx
+    pop ecx
+
+    ret
+
+;;************************************************************************************
+
+;; Obtem os parâmetros necessários para o funcionamento do programa, diretamente da linha
+;; de comando fornecida pelo Sistema
+
+lerListaProcessos:
+
+    push ds
+    pop es
+
+    mov esi, [listaRemanescente]
+    mov [processoAtual], esi
+
+    mov al, ' '
+
+    hx.syscall encontrarCaractere
+
+    jc .pronto
+
+    mov al, ' '
+
+    call encontrarCaractereLista
+
+    hx.syscall cortarString
+
+    mov [listaRemanescente], esi
+
+    jmp .pronto
+
+.pronto:
+
+    clc
+
+    ret
+
+;;************************************************************************************
+
+;; Realiza a busca de um caractere específico na String fornecida
+;;
+;; Entrada:
+;;
+;; ESI - String à ser verificada
+;; AL  - Caractere para procurar
+;;
+;; Saída:
+;;
+;; ESI - Posição do caractere na String fornecida
+
+encontrarCaractereLista:
+
+    lodsb
+
+    cmp al, ' '
+    je .pronto
+
+    jmp encontrarCaractereLista
+
+.pronto:
+
+    mov byte[esi-1], 0
+
+    ret
+
+;;************************************************************************************
+
+versaoTOP equ "1.4.5"
 
 top:
 
 .inicio:
 db "Hexagonix process viewer", 10, 10, 0
+.pid:
+db "PID of this process: ", 0
 .usoMem:
-db 10, 10, "Memory usage: ", 0
+db "Memory usage: ", 0
 .memTotal:
 db 10, "Total installed memory identified: ", 0
 .bytes:
@@ -237,9 +372,12 @@ db " bytes used by running processes.", 0
 db " kbytes.", 0
 .mbytes:
 db " megabytes.", 0
+.cabecalho:
+db 10, "Process        | PID", 10
+db "---------------|----", 10, 10, 0
 .uso:
 db "Usage: top", 10, 10
-db "Displays the processes loaded in the Hexagonix execution stack.", 10, 10
+db "Displays processes loaded on the system.", 10, 10
 db "Kernel processes are filtered and not displayed in this list.", 10, 10
 db "top version ", versaoTOP, 10, 10
 db "Copyright (C) 2017-", __stringano, " Felipe Miguel Nery Lunkes", 10
@@ -248,11 +386,15 @@ db "All rights reserved.", 0
 db "?", 0
 .parametroAjuda2:
 db "--help", 0
-.processosCarregados:
-db "Processes present in the system execution stack: ", 10, 10, 0
-.numeroProcessos:
-db 10, "Number of processes present in the execution stack: ", 0
 .corFonte: dd 0
 .corFundo: dd 0
 
-parametro: dd ?
+;;************************************************************************************
+
+listaRemanescente: dd ?
+limiteExibicao:    dd 0
+numeroProcessos:   dd 0
+PIDs:              dd 0
+numeroPIDs:        dd 0
+processoAtual:     dd ' '
+parametro:         dd ?
