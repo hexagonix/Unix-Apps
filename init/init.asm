@@ -89,25 +89,24 @@ cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, initHexagonix, 01h
 include "hexagon.s"
 include "macros.s"
 include "log.s"
+include "dev.s"
 
 ;;************************************************************************************
 
-versaoINIT equ "2.6.0"
+versaoINIT equ "2.6.1"
 
 tamanhoLimiteBusca = 32768 ;; Tamanho máximo do arquivo: 32 kbytes
 
 shellPadrao: ;; Nome do arquivo que contêm o shell padrão Unix
 db "sh", 0
-tty0: ;; Console principal
-db "tty0", 0
-tty1: ;; Primeiro console virtual
-db "tty1", 0
 arquivo: ;; Nome do arquivo de configuração do init
 db "rc", 0
 tentarShellPadrao: ;; Sinaliza a tentativa de se carregar o shell padrão
 db 0
-servicoHexagonix: times 12 db 0 ;; Armazena o nome do shell à ser utilizado pelo sistema
-posicaoBX: dw 0 ;; Marcação da posição de busca no conteúdo do arquivo
+servicoHexagonix:
+times 12 db 0 ;; Armazena o nome do shell à ser utilizado pelo sistema
+posicaoBX: ;; Marcação da posição de busca no conteúdo do arquivo
+dw 0
 
 init:
 
@@ -229,11 +228,11 @@ limparTerminal:
 
     logSistema init.configurarConsole, 0, Log.Prioridades.p5
 
-    mov esi, tty1 ;; Abrir o primeiro console virtual
+    mov esi, Hexagon.LibASM.Dev.video.tty1 ;; Abrir o primeiro console virtual
 
     hx.syscall hx.open ;; Abre o dispositivo
 
-    mov esi, tty0 ;; Reabre o console padrão
+    mov esi, Hexagon.LibASM.Dev.video.tty0 ;; Reabre o console padrão
 
     hx.syscall hx.open ;; Abre o dispositivo
 
