@@ -80,6 +80,7 @@ cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, inicioAPP, 01h
 include "hexagon.s"
 include "console.s"
 include "macros.s"
+include "dev.s"
 
 ;;************************************************************************************
 
@@ -112,7 +113,7 @@ inicioAPP:
 
 realizarLimpeza:
 
-    mov esi, tty1 ;; Abrir o primeiro console virtual
+    mov esi, Hexagon.LibASM.Dev.video.tty1 ;; Abrir o primeiro console virtual
 
     hx.syscall hx.open ;; Abre o dispositivo
 
@@ -120,7 +121,7 @@ realizarLimpeza:
 
     hx.syscall limparTela ;; Limpa seu conteúdo
 
-    mov esi, tty0 ;; Reabre o console principal
+    mov esi, Hexagon.LibASM.Dev.video.tty0 ;; Reabre o console principal
 
     hx.syscall hx.open ;; Abre o dispositivo
 
@@ -156,7 +157,7 @@ usoAplicativo:
 ;;
 ;;************************************************************************************
 
-versaoCLEAR equ "1.3.0.0"
+versaoCLEAR equ "1.3.1"
 
 clear:
 
@@ -172,8 +173,5 @@ db "All rights reserved.", 0
 db "?", 0
 .parametroAjuda2:
 db "--help", 0
-
-tty0: db "tty0", 0 ;; Console principal
-tty1: db "tty1", 0 ;; Primeiro console virtual
 
 parametro: dd ?
