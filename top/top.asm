@@ -174,7 +174,7 @@ exibirProcessos:
 
 .loopProcessos:
 
-    push ds
+    push ds ;; Segmento de dados do modo usuário (seletor 38h)
     pop es
 
     call lerListaProcessos
@@ -255,7 +255,7 @@ colocarEspaco:
     push ebx
     push eax
 
-    push ds
+    push ds ;; Segmento de dados do modo usuário (seletor 38h)
     pop es
 
     mov esi, [processoAtual]
@@ -296,7 +296,7 @@ colocarEspaco:
 
 lerListaProcessos:
 
-    push ds
+    push ds ;; Segmento de dados do modo usuário (seletor 38h)
     pop es
 
     mov esi, [listaRemanescente]

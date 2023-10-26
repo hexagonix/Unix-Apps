@@ -143,7 +143,7 @@ nomeModulo: times 8   db 0
 
 inicioAPP:
 
-    push ds
+    push ds ;; Segmento de dados do modo usuário (seletor 38h)
     pop es
 
     mov [parametro], edi

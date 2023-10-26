@@ -137,7 +137,7 @@ inicioAPP:
 
     mov [regES], es
 
-    push ds
+    push ds ;; Segmento de dados do modo usuário (seletor 38h)
     pop es
 
     mov [parametro], edi

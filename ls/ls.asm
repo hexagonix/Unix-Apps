@@ -87,7 +87,7 @@ include "macros.s"
 
 inicioAPP:
 
-    push ds
+    push ds ;; Segmento de dados do modo usuário (seletor 38h)
     pop es
 
     mov [parametro], edi ;; Salvar os parâmetros da linha de comando para uso futuro
@@ -191,7 +191,7 @@ listar:
 
 .loopArquivos:
 
-    push ds
+    push ds ;; Segmento de dados do modo usuário (seletor 38h)
     pop es
 
     push ebx
@@ -527,7 +527,7 @@ colocarEspaco:
     push ebx
     push eax
 
-    push ds
+    push ds ;; Segmento de dados do modo usuário (seletor 38h)
     pop es
 
     mov esi, [arquivoAtual]
@@ -568,7 +568,7 @@ colocarEspaco:
 
 lerListaArquivos:
 
-    push ds
+    push ds ;; Segmento de dados do modo usuário (seletor 38h)
     pop es
 
     mov esi, [listaRemanescente]

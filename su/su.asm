@@ -258,7 +258,7 @@ encontrarNomeUsuario:
 
     push es
 
-    push ds
+    push ds ;; Segmento de dados do modo usuário (seletor 38h)
     pop es
 
     mov esi, su.arquivo
@@ -287,7 +287,7 @@ encontrarNomeUsuario:
 
 ;; BX agora aponta para o primeiro caractere do nome de usuário resgatado do arquivo
 
-    push ds
+    push ds ;; Segmento de dados do modo usuário (seletor 38h)
     pop es
 
     mov di, usuario ;; O nome do usuário será copiado para ES:DI
@@ -373,7 +373,7 @@ limparVariavel:
 
     push es
 
-    push ds
+    push ds ;; Segmento de dados do modo usuário (seletor 38h)
     pop es
 
     mov esi, usuario
@@ -402,7 +402,7 @@ encontrarSenhaUsuario:
 
     push es
 
-    push ds
+    push ds ;; Segmento de dados do modo usuário (seletor 38h)
     pop es
 
     mov esi, su.arquivo
@@ -434,7 +434,7 @@ encontrarSenhaUsuario:
 
 ;; BX agora aponta para o primeiro caractere da senha recuperada do arquivo
 
-    push ds
+    push ds ;; Segmento de dados do modo usuário (seletor 38h)
     pop es
 
     mov di, senhaObtida ;; A senha será copiada para ES:DI
@@ -499,7 +499,7 @@ encontrarShell:
 
     push es
 
-    push ds
+    push ds ;; Segmento de dados do modo usuário (seletor 38h)
     pop es
 
     mov esi, su.arquivo
@@ -531,7 +531,7 @@ encontrarShell:
 
 ;; BX agora aponta para o primeira caractere do nome do shell resgatado do arquivo
 
-    push ds
+    push ds ;; Segmento de dados do modo usuário (seletor 38h)
     pop es
 
     mov di, shellHexagonix ;; O nome do shell será copiado para ES:DI - shellHexagonix
@@ -591,7 +591,7 @@ obterShellPadrao:
 
     push es
 
-    push ds
+    push ds ;; Segmento de dados do modo usuário (seletor 38h)
     pop es
 
     mov esi, su.shellPadrao
@@ -617,7 +617,7 @@ salvarUsuarioAtual:
 
     push es
 
-    push ds
+    push ds ;; Segmento de dados do modo usuário (seletor 38h)
     pop es
 
     hx.syscall obterUsuario

@@ -246,7 +246,7 @@ encontrarConfiguracaoInit:
 
     push es
 
-    push ds
+    push ds ;; Segmento de dados do modo usuário (seletor 38h)
     pop es
 
     mov esi, arquivo
@@ -277,7 +277,7 @@ encontrarConfiguracaoInit:
 
 ;; BX agora aponta para o primeira caractere do nome do shell resgatado do arquivo
 
-    push ds
+    push ds ;; Segmento de dados do modo usuário (seletor 38h)
     pop es
 
     mov di, servicoHexagonix ;; O nome do shell será copiado para ES:DI - servicoHexagonix
@@ -353,7 +353,7 @@ obterShellPadrao:
 
     push es
 
-    push ds
+    push ds ;; Segmento de dados do modo usuário (seletor 38h)
     pop es
 
     mov esi, servicoHexagonix
@@ -373,7 +373,7 @@ obterShellPadrao:
 
     push es
 
-    push ds
+    push ds ;; Segmento de dados do modo usuário (seletor 38h)
     pop es
 
     mov esi, shellPadrao

@@ -223,7 +223,7 @@ verificarTema:
 
     push es
 
-    push ds
+    push ds ;; Segmento de dados do modo usuário (seletor 38h)
     pop es
 
     mov esi, logind.arquivo
@@ -252,7 +252,7 @@ verificarTema:
 
 ;; BX agora aponta para o primeiro caractere do nome de usuário resgatado do arquivo
 
-    push ds
+    push ds ;; Segmento de dados do modo usuário (seletor 38h)
     pop es
 
     mov di, escolhaTema ;; O tema será copiado para ES:DI

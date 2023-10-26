@@ -165,7 +165,7 @@ inicioShell:
 
     push es
 
-    push ds
+    push ds ;; Segmento de dados do modo usuário (seletor 38h)
     pop es
 
     mov esi, hash.usuarioNormal
@@ -189,7 +189,7 @@ inicioShell:
 
     push es
 
-    push ds
+    push ds ;; Segmento de dados do modo usuário (seletor 38h)
     pop es
 
     mov esi, hash.usuarioRoot
@@ -416,7 +416,7 @@ procurarComandos:
 
     push es
 
-    push ds
+    push ds ;; Segmento de dados do modo usuário (seletor 38h)
     pop es
 
     mov si, bufferArquivo ;; Aponta para o buffer com o conteúdo do arquivo
@@ -440,7 +440,7 @@ procurarComandos:
 
 ;; BX agora aponta para o primeira caractere do nome do shell resgatado do arquivo
 
-    push ds
+    push ds ;; Segmento de dados do modo usuário (seletor 38h)
     pop es
 
     mov di, hash.imagemDisco ;; O nome do shell será copiado para ES:DI
@@ -552,7 +552,7 @@ obterArgumentos:
 
     push es
 
-    push ds
+    push ds ;; Segmento de dados do modo usuário (seletor 38h)
     pop es
 
     mov esi, ebx

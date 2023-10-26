@@ -86,7 +86,7 @@ include "log.s"
 
 inicioAPP:
 
-    push ds
+    push ds ;; Segmento de dados do modo usuário (seletor 38h)
     pop es
 
     mov [parametro], edi ;; Salvar os parâmetros da linha de comando para uso futuro
