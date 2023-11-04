@@ -103,7 +103,7 @@ tamanhoLimiteBusca = 32768
 
 ;;************************************************************************************
 
-versaoLOGIN equ "4.7.0"
+versaoLOGIN equ "4.7.1"
 
 login:
 
@@ -168,8 +168,6 @@ usuarioAnterior:   times 17 db 0
 codigoAnterior:             dd 0
 errado:                     db 0
 execucaoViaInit:            db 0
-ponto: ;; Caractere de ponto
-db ".", 0
 
 ;;************************************************************************************
 
