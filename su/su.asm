@@ -685,7 +685,7 @@ terminar:
 ;;
 ;;************************************************************************************
 
-versaoSU equ "1.7.5.1"
+versaoSU equ "1.7.5.2"
 
 su:
 
@@ -719,15 +719,21 @@ db "passwd", 0
 
 ;; Buffers
 
-usuarioSolicitado:  times 17 db 0 ;; Buffer de usuário solicitado
-usuarioAnterior:    times 17 db 0 ;; Buffer do usuário anterior
-shellHexagonix:     times 11 db 0 ;; Armazena o nome do shell à ser utilizado pelo sistema
-usuario:            times 15 db 0 ;; Nome de usuário obtido no arquivo
-senhaObtida:        times 64 db 0 ;; Senha obtida no arquivo
+usuarioSolicitado: ;; Buffer de usuário solicitado
+times 17 db 0
+usuarioAnterior: ;; Buffer do usuário anterior
+times 17 db 0
+shellHexagonix: ;; Armazena o nome do shell à ser utilizado pelo sistema
+times 11 db 0
+usuario: ;; Nome de usuário obtido no arquivo
+times 15 db 0
+senhaObtida: ;; Senha obtida no arquivo
+times 64 db 0
+
 codigoAnterior:    dd 0 ;; Código do usuário anterior
 tentarShellPadrao: db 0 ;; Sinaliza a tentativa de se carregar o shell padrão
-parametros:        db 0 ;; Se o aplicativo recebeu algum parâmetro
-posicaoBX: dw 0
+parametros: db 0 ;; Se o aplicativo recebeu algum parâmetro
+posicaoBX:  dw 0
 
 ;;************************************************************************************
 
