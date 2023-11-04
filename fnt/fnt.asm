@@ -87,7 +87,7 @@ include "macros.s"
 ;;
 ;;************************************************************************************
 
-versaoFNT equ "0.6.7"
+versaoFNT equ "0.6.8"
 
 fnt:
 
@@ -129,13 +129,10 @@ db "?", 0
 db "--help", 0
 
 parametro: dd 0
-regES:     dw 0
 
 ;;************************************************************************************
 
 inicioAPP:
-
-    mov [regES], es
 
     push ds ;; Segmento de dados do modo usuário (seletor 38h)
     pop es
