@@ -304,6 +304,8 @@ inicioShell:
 
     fputs hash.limiteProcessos
 
+    clc
+
     jmp .obterComando
 
 .imagemHAPPInvalida:
@@ -602,7 +604,7 @@ finalizarShell:
 ;; Ela deve ser utilizada para identificar para qual versão do Hexagonix o hash foi
 ;; desenvolvido.
 
-versaoHASH equ "0.9.1.4"
+versaoHASH equ "0.9.2.0"
 
 tamanhoLimiteBusca = 32768
 
