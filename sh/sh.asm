@@ -333,6 +333,8 @@ inicioShell:
 
     fputs sh.limiteProcessos
 
+    clc
+
     jmp .obterComando
 
 .imagemHAPPInvalida:
@@ -631,7 +633,7 @@ finalizarShell:
 ;; Ela deve ser utilizada para identificar para qual versão do Hexagonix o sh foi
 ;; desenvolvido.
 
-versaoSH equ "1.7.1.4"
+versaoSH equ "1.7.2.0"
 
 tamanhoLimiteBusca = 32768
 
