@@ -103,7 +103,7 @@ tamanhoLimiteBusca = 32768
 
 ;;************************************************************************************
 
-versaoLOGIND equ "1.8.1"
+versaoLOGIND equ "1.9.0"
 
 align 4
 
@@ -184,6 +184,30 @@ iniciologind: ;; Ponto de entrada
 iniciarExecucao:
 
     logSistema logind.verboseLogind, 0, Log.Prioridades.p4
+
+;; Agora vamos inicializar o console virtual tty1, limpando seu conteúdo e definindo suas
+;; propriedades gráficas. Primeiro, devemos salvar a posição do cursor no console atual,
+;; uma vez que ele terá sua posição reiniciada com a limpeza do console. Essa etapa tira essa
+;; complexidade do Hexagon, reduzindo possíveis bugs e permitindo expandir para outros consoles
+;; no futuro sem precisar alterar algo no kernel.
+
+    hx.syscall obterCursor
+
+    push edx ;; Salvar posição atual do console
+
+    mov esi, Hexagon.LibASM.Dev.video.tty1 ;; Reabre o console padrão
+
+    hx.syscall hx.open ;; Abre o dispositivo
+
+    hx.syscall limparTela
+
+    mov esi, Hexagon.LibASM.Dev.video.tty0 ;; Reabre o console padrão
+
+    hx.syscall hx.open ;; Abre o dispositivo
+
+    pop edx ;; Restaurar posição do console
+
+    hx.syscall definirCursor
 
 .verificarOOBE:
 
