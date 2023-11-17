@@ -348,7 +348,7 @@ listar:
     cmp byte[ls.exibirTudo], 01h
     jne .pularExibicao
 
-    mov eax, LAVANDA_SURPRESA
+    mov eax, HEXAGONIX_BLOSSOM_LAVANDA
 
     call definirCorArquivo
 
@@ -365,7 +365,7 @@ listar:
     cmp byte[ls.exibirTudo], 01h
     jne .pularExibicao
 
-    mov eax, VERDE_PASTEL
+    mov eax, HEXAGONIX_BLOSSOM_VERDE
 
     call definirCorArquivo
 
@@ -399,7 +399,7 @@ listar:
     cmp byte[ls.exibirTudo], 01h
     jne .pularExibicao
 
-    mov eax, TURQUESA_ESCURO
+    mov eax, HEXAGONIX_BLOSSOM_AZUL_PO
 
     call definirCorArquivo
 
@@ -419,7 +419,7 @@ listar:
 
     pop esi
 
-    mov eax, VERDE_FLORESTA
+    mov eax, HEXAGONIX_BLOSSOM_VERDE_CLARO
 
     call definirCorArquivo
 
@@ -653,7 +653,7 @@ verificarArquivo:
 ;;
 ;;************************************************************************************
 
-versaoLS equ "3.2.3.2"
+versaoLS equ "3.2.4.0"
 
 ls:
 
