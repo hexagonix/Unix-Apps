@@ -103,7 +103,7 @@ tamanhoLimiteBusca = 32768
 
 ;;************************************************************************************
 
-versaoLOGIND equ "1.9.0"
+versaoLOGIND equ "1.9.1"
 
 align 4
 
@@ -195,7 +195,7 @@ iniciarExecucao:
 
     push edx ;; Salvar posição atual do console
 
-    mov esi, Hexagon.LibASM.Dev.video.tty1 ;; Reabre o console padrão
+    mov esi, Hexagon.LibASM.Dev.video.tty1 ;; Abre o console secundário
 
     hx.syscall hx.open ;; Abre o dispositivo
 
