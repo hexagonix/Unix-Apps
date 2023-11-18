@@ -103,7 +103,7 @@ tamanhoLimiteBusca = 32768
 
 ;;************************************************************************************
 
-versaoLOGIN equ "4.7.1"
+versaoLOGIN equ "4.8.0"
 
 login:
 
@@ -314,6 +314,8 @@ match =SIM, UNIX
 
     jc .tentarShellPadrao
 
+    hx.syscall travar
+
     jmp .shellFinalizado
 
 .tentarShellPadrao: ;; Tentar carregar o shell padrão do Hexagonix
@@ -325,6 +327,8 @@ match =SIM, UNIX
    jmp .carregarShell ;; Tentar carregar o shell padrão do Hexagonix
 
 .shellFinalizado: ;; Tentar carregar o shell novamente
+
+    hx.syscall travar
 
 ;; Verificar a consistência da interface. Caso algum processo seja encerrado antes de retornar
 ;; as propriedades de tema ao padrão, retorne para as condições presentes nas configurações,
