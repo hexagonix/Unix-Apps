@@ -103,7 +103,7 @@ tamanhoLimiteBusca = 32768
 
 ;;************************************************************************************
 
-versaoLOGIN equ "4.8.0"
+versaoLOGIN equ "4.8.1"
 
 login:
 
@@ -157,17 +157,23 @@ db "Logout performed successfully.", 0
 
 ;; Buffers
 
-tentarShellPadrao:          db 0 ;; Sinaliza a tentativa de se carregar o shell padrão
-shellHexagonix:    times 11 db 0 ;; Armazena o nome do shell à ser utilizado
-usuario:           times 15 db 0 ;; Nome de usuário obtido no arquivo
-senhaObtida:       times 64 db 0 ;; Senha obtida no arquivo
-parametros:                 db 0 ;; Se o aplicativo recebeu algum parâmetro
-posicaoBX:                  dw 0 ;; Marcação da posição de busca no conteúdo do arquivo
-usuarioSolicitado: times 17 db 0
-usuarioAnterior:   times 17 db 0
-codigoAnterior:             dd 0
-errado:                     db 0
-execucaoViaInit:            db 0
+tentarShellPadrao: db 0 ;; Sinaliza a tentativa de se carregar o shell padrão
+codigoAnterior:    dd 0
+errado:            db 0
+execucaoViaInit:   db 0
+parametros:        db 0 ;; Se o aplicativo recebeu algum parâmetro
+posicaoBX:         dw 0 ;; Marcação da posição de busca no conteúdo do arquivo
+
+shellHexagonix: ;; Armazena o nome do shell à ser utilizado
+times 11 db 0
+usuario: ;; Nome de usuário obtido no arquivo
+times 15 db 0
+senhaObtida: ;; Senha obtida no arquivo
+times 64 db 0
+usuarioSolicitado:
+times 17 db 0
+usuarioAnterior:
+times 17 db 0
 
 ;;************************************************************************************
 
