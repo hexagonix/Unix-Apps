@@ -103,7 +103,7 @@ tamanhoLimiteBusca = 32768
 
 ;;************************************************************************************
 
-versaoLOGIND equ "1.9.1"
+versaoLOGIND equ "1.10.0"
 
 align 4
 
@@ -143,7 +143,7 @@ db "passwd", 0 ;; Nome do arquivo de configuração de login
 .posicaoBX: ;; Marcação da posição de busca no conteúdo do arquivo
 dw 0
 .versaoSistema:
-db 10, "Hexagonix version ", 0
+db 10, "Hexagonix ", 0
 .console:
 db " (tty0)", 0
 .semArquivoUnix:
