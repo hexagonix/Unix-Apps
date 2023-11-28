@@ -604,7 +604,7 @@ finalizarShell:
 ;; Ela deve ser utilizada para identificar para qual versão do Hexagonix o hash foi
 ;; desenvolvido.
 
-versaoHASH equ "0.9.2.0"
+versaoHASH equ "0.9.2.1"
 
 tamanhoLimiteBusca = 32768
 
@@ -640,9 +640,12 @@ db 10, "Shell script not found.", 0
 .argumentoNecessario:
 db 10, "An argument is necessary.", 0
 
-.imagemDisco: times 12 db 0 ;; Armazena o nome do shell à ser utilizado pelo sistema
-.posicaoBX:            dw 0 ;; Marcação da posição de busca no conteúdo do arquivo
-.prompt:      times 8  db 0 ;; Armazena # ou $
+.posicaoBX: dw 0 ;; Marcação da posição de busca no conteúdo do arquivo
+
+.imagemDisco: ;; Armazena o nome do shell à ser utilizado pelo sistema
+times 12 db 0 
+.prompt: ;; Armazena # ou $
+times 8  db 0 
 
 ;;**************************
 
