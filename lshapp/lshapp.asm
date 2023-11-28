@@ -89,7 +89,7 @@ include "macros.s"
 ;;
 ;;************************************************************************************
 
-versaoLSHAPP equ "1.12.3"
+versaoLSHAPP equ "1.12.4"
 
 lshapp:
 
@@ -157,7 +157,9 @@ db ".", 0
 .especieImagem: db 0
 
 parametro: dd ?
-nomeArquivo: times 13 db 0
+
+nomeArquivo: 
+times 13 db 0
 
 ;;************************************************************************************
 
