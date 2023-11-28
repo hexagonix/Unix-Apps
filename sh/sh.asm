@@ -676,9 +676,9 @@ db 10, "An argument is necessary.", 0
 .imagemDisco: ;; Armazena o nome do shell à ser utilizado pelo sistema
 times 12 db 0
 .nomeUsuario: ;; Armazena o nome de usuário
-times 64 db 0 
+times 64 db 0
 .separador: ;; Armazena # ou $
-times 8 db 0 
+times 8 db 0
 
 ;;**************************
 
