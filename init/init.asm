@@ -93,7 +93,7 @@ include "dev.s"
 
 ;;************************************************************************************
 
-versaoINIT equ "2.6.1"
+versaoINIT equ "2.6.2"
 
 tamanhoLimiteBusca = 32768 ;; Tamanho máximo do arquivo: 32 kbytes
 
@@ -101,12 +101,10 @@ shellPadrao: ;; Nome do arquivo que contêm o shell padrão Unix
 db "sh", 0
 arquivo: ;; Nome do arquivo de configuração do init
 db "rc", 0
-tentarShellPadrao: ;; Sinaliza a tentativa de se carregar o shell padrão
-db 0
+tentarShellPadrao: db 0 ;; Sinaliza a tentativa de se carregar o shell padrão
+posicaoBX: dw 0 ;; Marcação da posição de busca no conteúdo do arquivo
 servicoHexagonix:
 times 12 db 0 ;; Armazena o nome do shell à ser utilizado pelo sistema
-posicaoBX: ;; Marcação da posição de busca no conteúdo do arquivo
-dw 0
 
 init:
 
