@@ -103,7 +103,7 @@ tamanhoLimiteBusca = 32768
 
 ;;************************************************************************************
 
-versaoLOGIND equ "1.10.0"
+versaoLOGIND equ "1.10.1"
 
 align 4
 
@@ -133,8 +133,7 @@ db "                                     All rights reserved.", 10, 0
 match =Hexagonix, TIPOLOGIN
 {
 
-.sobreSistema:
-db 0
+.sobreSistema: db 0
 
 }
 
@@ -165,7 +164,8 @@ db "oobe", 0
 
 ;; Buffers
 
-escolhaTema: times 7 db 0
+escolhaTema: ;; Buffer para o tema definido pelo usuário
+times 7 db 0
 
 ;;************************************************************************************
 
