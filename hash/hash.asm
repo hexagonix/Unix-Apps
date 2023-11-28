@@ -643,9 +643,9 @@ db 10, "An argument is necessary.", 0
 .posicaoBX: dw 0 ;; Marcação da posição de busca no conteúdo do arquivo
 
 .imagemDisco: ;; Armazena o nome do shell à ser utilizado pelo sistema
-times 12 db 0 
+times 12 db 0
 .prompt: ;; Armazena # ou $
-times 8  db 0 
+times 8  db 0
 
 ;;**************************
 
