@@ -250,7 +250,7 @@ inicioShell:
 
 .obterComando:
 
-    clc 
+    clc
 
     novaLinha
 
@@ -299,7 +299,7 @@ inicioShell:
 
 .entradaCarregamentoImagem:
 
-    clc 
+    clc
 
     push esi
     push edi
@@ -325,7 +325,7 @@ inicioShell:
 
     imprimirString
 
-    fputs sh.comandoNaoEncontrado 
+    fputs sh.comandoNaoEncontrado
 
     jmp .obterComando
 
@@ -351,7 +351,7 @@ inicioShell:
 
     fputs sh.imagemInvalida
 
-    clc 
+    clc
 
     jmp .obterComando
 
