@@ -250,6 +250,8 @@ inicioShell:
 
 .obterComando:
 
+    clc 
+
     novaLinha
 
     hx.syscall obterCursor
@@ -275,7 +277,7 @@ inicioShell:
 
 ;; Comparar com comandos internos disponíveis
 
-    ;; Comando SAIR
+    ;; Comando EXIT
 
     mov edi, comandos.sair
 
@@ -291,13 +293,13 @@ inicioShell:
 
     jc executarShellScript ;; Iniciar a execução de arquivo em lote
 
-;;************************************************************************************
-
-;; Tentar carregar um programa
+;; Tentar carregar uma imagem
 
     call obterArgumentos ;; Separar comando e argumentos
 
 .entradaCarregamentoImagem:
+
+    clc 
 
     push esi
     push edi
@@ -306,7 +308,7 @@ inicioShell:
 
 .falhaExecutando:
 
-;; Agora o erro enviado pelo Sistema será analisado, para que o Shell conheça
+;; Agora o erro enviado pelo sistema será analisado, para que o Shell conheça
 ;; sua natureza
 
     cmp eax, Hexagon.limiteProcessos ;; Limite de processos em execução atingido
@@ -323,7 +325,7 @@ inicioShell:
 
     imprimirString
 
-    fputs sh.comandoNaoEncontrado
+    fputs sh.comandoNaoEncontrado 
 
     jmp .obterComando
 
@@ -348,6 +350,8 @@ inicioShell:
     imprimirString
 
     fputs sh.imagemInvalida
+
+    clc 
 
     jmp .obterComando
 
@@ -629,11 +633,11 @@ finalizarShell:
 
 ;; TODO: melhorar suporta a script de shell
 
-;; A versão do sh é independente da versão do restante do Sistema.
+;; A versão do sh é independente da versão do restante do sistema.
 ;; Ela deve ser utilizada para identificar para qual versão do Hexagonix o sh foi
 ;; desenvolvido.
 
-versaoSH equ "1.7.2.1"
+versaoSH equ "1.7.3.0"
 
 tamanhoLimiteBusca = 32768
 
