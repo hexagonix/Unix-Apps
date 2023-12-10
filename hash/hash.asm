@@ -225,6 +225,8 @@ inicioShell:
 
 .obterComando:
 
+    clc
+
     novaLinha
 
     hx.syscall obterCursor
@@ -246,7 +248,7 @@ inicioShell:
 
 ;; Comparar com comandos internos disponíveis
 
-    ;; Comando SAIR
+    ;; Comando EXIT
 
     mov edi, comandos.sair
 
@@ -262,9 +264,7 @@ inicioShell:
 
     jc executarShellScript ;; Iniciar a execução de arquivo em lote
 
-;;************************************************************************************
-
-;; Tentar carregar um programa
+;; Tentar carregar uma imagem
 
     call obterArgumentos ;; Separar comando e argumentos
 
@@ -319,6 +319,8 @@ inicioShell:
     imprimirString
 
     fputs hash.imagemInvalida
+
+    clc
 
     jmp .obterComando
 
@@ -604,7 +606,7 @@ finalizarShell:
 ;; Ela deve ser utilizada para identificar para qual versão do Hexagonix o hash foi
 ;; desenvolvido.
 
-versaoHASH equ "0.9.2.1"
+versaoHASH equ "0.9.3.0"
 
 tamanhoLimiteBusca = 32768
 
