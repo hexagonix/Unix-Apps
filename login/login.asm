@@ -103,7 +103,7 @@ tamanhoLimiteBusca = 32768
 
 ;;************************************************************************************
 
-versaoLOGIN equ "4.8.1"
+versaoLOGIN equ "4.9.0"
 
 login:
 
@@ -132,7 +132,7 @@ db "--help", 0
 .usuarioROOT:
 db "root", 0
 .dadosErrados:
-db 10, "Authentication failed.", 10, 0
+db 10, 10, "Authentication failed.", 10, 0
 .logind:
 db "logind", 0
 
@@ -218,16 +218,16 @@ iniciarExecucao:
 
     call executarLogind
 
-    call limparVariaveisUsuario
-
-    clc
-
     cmp byte[errado], 1
     jne .execucaoInicial
 
-    logSistema login.verboseLoginRecusado, 0, Log.Prioridades.p4
+;; Não precisamos executar o logind novamente
 
-.continuar:
+.continuarAposLoginRecusado:
+
+    clc
+
+    logSistema login.verboseLoginRecusado, 0, Log.Prioridades.p4
 
     fputs login.dadosErrados
 
@@ -267,24 +267,26 @@ iniciarExecucao:
 
     hx.syscall cortarString
 
+    cmp byte[errado], 1
+    jne .continuarProcessamento
+
+    jmp .loginRecusado
+
+.continuarProcessamento:
+
     mov edi, senhaObtida
 
     hx.syscall compararPalavrasString
 
     jc .loginAceito
 
+.loginRecusado:
+
     logSistema login.verboseLoginRecusado, 00h, Log.Prioridades.p4
-
-match =SIM, UNIX
-{
-
-    novaLinha
-
-}
 
     mov byte[errado], 1
 
-    jmp iniciarExecucao
+    jmp iniciarExecucao.continuarAposLoginRecusado
 
 .semUsuario:
 
@@ -393,6 +395,8 @@ registrarUsuario:
 
 encontrarNomeUsuario:
 
+    clc
+
     pusha
 
     push es
@@ -490,9 +494,9 @@ encontrarNomeUsuario:
 
     mov byte[errado], 1
 
-    logSistema login.verboseLoginRecusado, 00h, Log.Prioridades.p4
+    clc
 
-    jmp loginHexagonix
+    ret
 
 .arquivoUsuarioAusente:
 
@@ -546,7 +550,7 @@ limparVariaveisUsuario:
 
     push eax
 
-    mov esi, 0
+    mov esi, ' '
 
     mov edi, usuario
 
@@ -560,7 +564,7 @@ limparVariaveisUsuario:
 
     push eax
 
-    mov esi, 0
+    mov esi, ' '
 
     mov edi, senhaObtida
 
@@ -669,7 +673,9 @@ encontrarSenhaUsuario:
 
     popa
 
-    stc
+    mov byte[errado], 1
+
+    clc
 
     ret
 
