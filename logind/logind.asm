@@ -103,9 +103,7 @@ tamanhoLimiteBusca = 32768
 
 ;;************************************************************************************
 
-versaoLOGIND equ "1.11.0"
-
-align 4
+versaoLOGIND equ "1.11.1"
 
 logind:
 
