@@ -103,7 +103,7 @@ tamanhoLimiteBusca = 32768
 
 ;;************************************************************************************
 
-versaoLOGIN equ "4.9.0"
+versaoLOGIN equ "4.9.1"
 
 login:
 
@@ -132,7 +132,7 @@ db "--help", 0
 .usuarioROOT:
 db "root", 0
 .dadosErrados:
-db 10, 10, "Authentication failed.", 10, 0
+db 10, "Login incorrect", 0
 .logind:
 db "logind", 0
 
