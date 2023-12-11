@@ -103,7 +103,7 @@ tamanhoLimiteBusca = 32768
 
 ;;************************************************************************************
 
-versaoLOGIND equ "1.10.1"
+versaoLOGIND equ "1.11.0"
 
 align 4
 
@@ -412,17 +412,6 @@ exibirInfoSistema:
     jc .erro
 
     fputs versaoObtida
-
-match =Moderno, TIPOLOGIN
-{
-
-    fputs logind.colcheteEsquerdo
-
-    fputs codigoObtido
-
-    fputs logind.colcheteDireito
-
-}
 
     jmp .continuar
 
