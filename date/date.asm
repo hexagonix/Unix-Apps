@@ -68,12 +68,12 @@
 
 use32
 
-;; Agora vamos criar um cabeçalho para a imagem HAPP final do aplicativo.
+;; Now let's create a HAPP header for the application
 
-include "HAPP.s" ;; Aqui está uma estrutura para o cabeçalho HAPP
+include "HAPP.s" ;; Here is a structure for the HAPP header
 
-;; Instância | Estrutura | Arquitetura | Versão | Subversão | Entrada | Tipo
-cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, inicioAPP, 01h
+;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
+cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, applicationStart, 01h
 
 ;;************************************************************************************
 
@@ -83,311 +83,310 @@ include "macros.s"
 
 ;;************************************************************************************
 
-inicioAPP:
+applicationStart:
 
-    push ds ;; Segmento de dados do modo usuário (seletor 38h)
+    push ds ;; User mode data segment (38h selector)
     pop es
 
-    mov [parametro], edi
+    mov [parameters], edi
 
-    mov esi, [parametro]
+    mov esi, [parameters]
 
-    mov edi, date.parametroAjuda
-    mov esi, [parametro]
-
-    hx.syscall compararPalavrasString
-
-    jc usoAplicativo
-
-    mov edi, date.parametroAjuda2
-    mov esi, [parametro]
+    mov edi, date.helpParameter
+    mov esi, [parameters]
 
     hx.syscall compararPalavrasString
 
-    jc usoAplicativo
+    jc applicationUsage
 
-    novaLinha
+    mov edi, date.helpParameter2
+    mov esi, [parameters]
 
-    call processarBCD ;; Fazer a conversão de BCD para caractere imrprimível
+    hx.syscall compararPalavrasString
 
-    fputs date.dia
+    jc applicationUsage
 
-    fputs date.espaco
+    putNewLine
 
-    fputs date.mes
+    call processBCD ;; Convert BCD to printable character
 
-    fputs date.espaco
+    fputs date.day
 
-    fputs date.hora
+    fputs date.espace
 
-    fputs date.sepHora
+    fputs date.month
 
-    fputs date.minuto
+    fputs date.espace
 
-    fputs date.sepHora
+    fputs date.hour
 
-    fputs date.segundo
+    fputs date.sepHour
 
-    fputs date.espaco
+    fputs date.minute
 
-    fputs date.fuso
+    fputs date.sepHour
 
-    fputs date.espaco
+    fputs date.second
 
-    fputs date.seculo
+    fputs date.espace
 
-    fputs date.ano
+    fputs date.timezone
+
+    fputs date.espace
+
+    fputs date.century
+
+    fputs date.year
 
 match =SIM, DIASEMANA
 {
 
-;; Vamos verificar agora o dia da semana
+;; Now let's check the day of the week
 
-    mov eax, date.diaSemana
+    mov eax, date.weekDay
 
     cmp byte[eax], '1'
-    je .domingo
+    je .sunday
 
     cmp byte[eax], '2'
-    je .segunda
+    je .monday
 
     cmp byte[eax], '3'
-    je .terca
+    je .tuesday
 
     cmp byte[eax], '4'
-    je .quarta
+    je .wednesday
 
     cmp byte[eax], '5'
-    je .quinta
+    je .thursday
 
     cmp byte[eax], '6'
-    je .sexta
+    je .friday
 
     cmp byte[eax], '7'
-    je .sabado
+    je .saturday
 
-    jmp .desconhecido
+    jmp .unknown
 
-.domingo:
+.sunday:
 
-    fputs date.domingo
+    fputs date.sunday
 
-    jmp .continuar
+    jmp .continue
 
-.segunda:
+.monday:
 
-    fputs date.segunda
+    fputs date.monday
 
-    jmp .continuar
+    jmp .continue
 
-.terca:
+.tuesday:
 
-    fputs date.terca
+    fputs date.tuesday
 
-    jmp .continuar
+    jmp .continue
 
-.quarta:
+.wednesday:
 
-    fputs date.quarta
+    fputs date.wednesday
 
-    jmp .continuar
+    jmp .continue
 
-.quinta:
+.thursday:
 
-    fputs date.quinta
+    fputs date.thursday
 
-    jmp .continuar
+    jmp .continue
 
-.sexta:
+.friday:
 
-    fputs date.sexta
+    fputs date.friday
 
-    jmp .continuar
+    jmp .continue
 
-.sabado:
+.saturday:
 
-    fputs date.sabado
+    fputs date.saturday
 
-    jmp .continuar
+    jmp .continue
 
-.desconhecido:
+.unknown:
 
 }
 
-.continuar:
+.continue:
 
-    jmp terminar
+    jmp finish
 
 ;;************************************************************************************
 
-processarBCD:
+processBCD:
 
-;; Primeiro, vamos solicitar informações do relógio em tempo real
+;; First, let's request real-time clock information
 
-;; Vamos processar o dia
+;; Let's process the day
 
     hx.syscall hx.date
 
-    call BCDParaASCII
+    call BCDToASCII
 
-    mov word[date.dia], ax
-    mov byte[date.dia+15], 0
+    mov word[date.day], ax
+    mov byte[date.day+15], 0
 
-;; Vamos processar o mês
+;; Let's process the month
 
     hx.syscall hx.date
 
     mov eax, ebx
 
-    call BCDParaASCII
+    call BCDToASCII
 
-    mov word[date.mes], ax
-    mov byte[date.mes+15], 0
+    mov word[date.month], ax
+    mov byte[date.month+15], 0
 
-;; Vamos processar o século (primeiros dois dígitos do ano)
+;; Let's process the century (first two digits of the year)
 
     hx.syscall hx.date
 
     mov eax, ecx
 
-    call BCDParaASCII
+    call BCDToASCII
 
-    mov word[date.seculo], ax
-    mov byte[date.seculo+15], 0
+    mov word[date.century], ax
+    mov byte[date.century+15], 0
 
-;; Vamos processar o ano
+;; Let's process the year
 
     hx.syscall hx.date
 
     mov eax, edx
 
-    call BCDParaASCII
+    call BCDToASCII
 
-    mov word[date.ano], ax
-    mov byte[date.ano+15], 0
+    mov word[date.year], ax
+    mov byte[date.year+15], 0
 
-;; Vamos processar o dia da semana
+;; Let's process the day of the week
 
     hx.syscall hx.date
 
     mov eax, esi
 
-    call BCDParaASCII
+    call BCDToASCII
 
-    mov word[date.diaSemana], ax
-    mov byte[date.diaSemana+15], 0
+    mov word[date.weekDay], ax
+    mov byte[date.weekDay+15], 0
 
-;; Vamos processar a hora
+;; Let's process the hour
 
     hx.syscall hx.time
 
     mov eax, eax
 
-    call BCDParaASCII
+    call BCDToASCII
 
-    mov word[date.hora], ax
-    mov byte[date.hora+15], 0
+    mov word[date.hour], ax
+    mov byte[date.hour+15], 0
 
-;; Vamos processar os minutos
+;; Let's process the minutes
 
     hx.syscall hx.time
 
     mov eax, ebx
 
-    call BCDParaASCII
+    call BCDToASCII
 
-    mov word[date.minuto], ax
-    mov byte[date.minuto+15], 0
+    mov word[date.minute], ax
+    mov byte[date.minute+15], 0
 
-;; Vamos processar os segundos
+;; Let's process the seconds
 
     hx.syscall hx.time
 
     mov eax, ecx
 
-    call BCDParaASCII
+    call BCDToASCII
 
-    mov word[date.segundo], ax
-    mov byte[date.segundo+15], 0
+    mov word[date.second], ax
+    mov byte[date.second+15], 0
 
     ret
 
 ;;************************************************************************************
 
-;; Realiza a conversão de um número BCD para um caractere ASCII que pode ser
-;; imprimível
+;; Performs conversion from a BCD number to an ASCII character that can be displayed
 
-BCDParaASCII:
+BCDToASCII:
 
     mov ah, al
-    and ax, 0xF00F ;; Mascarar bits
-    shr ah, 4      ;; Deslocar para direita AH para obter BCD desempacotado
-    or ax, 0x3030  ;; Combinar com 30 para obter ASCII
-    xchg ah, al    ;; Trocar por convenção ASCII
+    and ax, 0xF00F ;; Mask bits
+    shr ah, 4      ;; Shift right AH to get unwrapped BCD
+    or ax, 0x3030  ;; Match 30 to get ASCII
+    xchg ah, al    ;; Swap for ASCII convention
 
     ret
 
 ;;************************************************************************************
 
-usoAplicativo:
+applicationUsage:
 
-    fputs date.uso
+    fputs date.use
 
-    jmp terminar
+    jmp finish
 
 ;;************************************************************************************
 
-terminar:
+finish:
 
     hx.syscall encerrarProcesso
 
 ;;************************************************************************************
 
-versaoDATE equ "1.2.5.3"
+VERSION equ "1.3.0"
 
 date:
 
-.uso:
+.use:
 db 10, "Usage: date", 10, 10
 db "Display system date and time.", 10, 10
-db "date version ", versaoDATE, 10, 10
+db "date version ", VERSION, 10, 10
 db "Copyright (C) 2020-", __stringano, " Felipe Miguel Nery Lunkes", 10
 db "All rights reserved.", 0
-.domingo:
+.sunday:
 db " (Sunday)", 0
-.segunda:
+.monday:
 db " (Monday)", 0
-.terca:
+.tuesday:
 db " (Tuesday)", 0
-.quarta:
+.wednesday:
 db " (Wednesday)", 0
-.quinta:
+.thursday:
 db " (Thursday)", 0
-.sexta:
+.friday:
 db " (Friday)", 0
-.sabado:
+.saturday:
 db " (Saturday)", 0
-.parametroAjuda:
+.helpParameter:
 db "?", 0
-.parametroAjuda2:
+.helpParameter2:
 db "--help", 0
-.sepData:
+.setDate:
 db "/", 0
-.sepHora:
+.sepHour:
 db ":", 0
-.espacamento:
+.spacing:
 db " of ", 0
-.espaco:
+.espace:
 db " ", 0
-.fuso:
+.timezone:
 db "GMT", 0
-.dia:       dd 0
-.mes:       dd 0
-.seculo:    dd 0
-.ano:       dd 0
-.hora:      dd 0
-.minuto:    dd 0
-.segundo:   dd 0
-.diaSemana: dd 0
+.day:     dd 0
+.month:   dd 0
+.century: dd 0
+.year:    dd 0
+.hour:    dd 0
+.minute:  dd 0
+.second:  dd 0
+.weekDay: dd 0
 
-parametro: dd ?
+parameters: dd ?
