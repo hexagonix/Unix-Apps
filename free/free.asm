@@ -68,12 +68,12 @@
 
 use32
 
-;; Agora vamos criar um cabeçalho para a imagem HAPP final do aplicativo.
+;; Now let's create a HAPP header for the application
 
-include "HAPP.s" ;; Aqui está uma estrutura para o cabeçalho HAPP
+include "HAPP.s" ;; Here is a structure for the HAPP header
 
-;; Instância | Estrutura | Arquitetura | Versão | Subversão | Entrada | Tipo
-cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, inicioAPP, 01h
+;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
+cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, applicationStart, 01h
 
 ;;************************************************************************************
 
@@ -83,36 +83,36 @@ include "macros.s"
 
 ;;************************************************************************************
 
-inicioAPP:
+applicationStart:
 
-    push ds ;; Segmento de dados do modo usuário (seletor 38h)
+    push ds ;; User mode data segment (38h selector)
     pop es
 
-    mov [parametro], edi
+    mov [parameters], edi
 
-    mov esi, [parametro]
+    mov esi, [parameters]
 
-    mov edi, free.parametroAjuda
-    mov esi, [parametro]
-
-    hx.syscall compararPalavrasString
-
-    jc usoAplicativo
-
-    mov edi, free.parametroAjuda2
-    mov esi, [parametro]
+    mov edi, free.helpParameter
+    mov esi, [parameters]
 
     hx.syscall compararPalavrasString
 
-    jc usoAplicativo
+    jc applicationUsage
 
-    novaLinha
+    mov edi, free.helpParameter2
+    mov esi, [parameters]
 
-    fputs free.memoria
+    hx.syscall compararPalavrasString
+
+    jc applicationUsage
+
+    putNewLine
+
+    fputs free.memory
 
     hx.syscall obterCursor
 
-    mov byte[free.posicaoY], dh
+    mov byte[free.positionY], dh
 
     hx.syscall usoMemoria
 
@@ -124,24 +124,24 @@ inicioAPP:
 
     hx.syscall usoMemoria
 
-    gotoxy 20, [free.posicaoY]
+    gotoxy 20, [free.positionY]
 
     imprimirInteiro
 
     fputs free.kbytes
 
-    gotoxy 40, [free.posicaoY]
+    gotoxy 40, [free.positionY]
 
     hx.syscall usoMemoria
 
-;; Agora vaos transformar bytes em megabytes
+;; Now let's transform bytes into megabytes
 
     mov ecx, edx
 
     shr ecx, 10
     shr ecx, 10
 
-;; Pronto, agora imprimir este valor em megabytes
+;; Okay, now print this value in megabytes
 
     mov eax, ecx
 
@@ -149,46 +149,52 @@ inicioAPP:
 
     fputs free.megabytes
 
-    jmp terminar
+    jmp finish
 
 ;;************************************************************************************
 
-usoAplicativo:
+applicationUsage:
 
-    fputs free.uso
+    fputs free.use
 
-    jmp terminar
+    jmp finish
 
 ;;************************************************************************************
 
-terminar:
+finish:
 
     hx.syscall encerrarProcesso
 
 ;;************************************************************************************
 
-versaoFREE equ "1.1.1"
+;;************************************************************************************
+;;
+;;                        Application variables and data
+;;
+;;************************************************************************************
+
+VERSION equ "1.2.0"
 
 free:
 
-.uso:
+.use:
 db 10, "Usage: free", 10, 10
 db "Display information about system memory usage.", 10, 10
-db "free version ", versaoFREE, 10, 10
+db "free version ", VERSION, 10, 10
 db "Copyright (C) 2020-", __stringano, " Felipe Miguel Nery Lunkes", 10
 db "All rights reserved.", 0
-.memoria:
+.memory:
 db "Installed memory  | Used memory       | Reserved memory", 10, 0
 .kbytes:
 db " bytes           ", 0
 .megabytes:
 db " megabytes        ", 0
-.reservado:
+.reserved:
 db "16", 0
-.parametroAjuda:
+.helpParameter:
 db "?", 0
-.parametroAjuda2:
+.helpParameter2:
 db "--help", 0
-.posicaoY: db 0
+.positionY: db 0
 
-parametro: dd ?
+parameters: dd ?
