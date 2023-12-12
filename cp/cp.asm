@@ -68,12 +68,12 @@
 
 use32
 
-;; Agora vamos criar um cabeçalho para a imagem HAPP final do aplicativo.
+;; Now let's create a HAPP header for the application
 
-include "HAPP.s" ;; Aqui está uma estrutura para o cabeçalho HAPP
+include "HAPP.s" ;; Here is a structure for the HAPP header
 
-;; Instância | Estrutura | Arquitetura | Versão | Subversão | Entrada | Tipo
-cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, inicioAPP, 01h
+;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
+cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, applicationStart, 01h
 
 ;;************************************************************************************
 
@@ -83,141 +83,140 @@ include "macros.s"
 
 ;;************************************************************************************
 
-inicioAPP:
+applicationStart:
 
-    push ds ;; Segmento de dados do modo usuário (seletor 38h)
+    push ds ;; User mode data segment (38h selector)
     pop es
 
-    mov [parametros], edi
+    mov [parameters], edi
 
-    call obterParametros
+    call getParameters
 
-    jc  usoAplicativo
+    jc  applicationUsage
 
     push esi
     push edi
 
-    mov edi, cp.parametroAjuda
-    mov esi, [parametros]
+    mov edi, cp.helpParameter
+    mov esi, [parameters]
 
     hx.syscall compararPalavrasString
 
-    jc usoAplicativo
+    jc applicationUsage
 
-    mov edi, cp.parametroAjuda2
-    mov esi, [parametros]
+    mov edi, cp.helpParameter2
+    mov esi, [parameters]
 
     hx.syscall compararPalavrasString
 
-    jc usoAplicativo
+    jc applicationUsage
 
     pop edi
     pop esi
 
-    mov esi, [arquivoEntrada]
+    mov esi, [inputFile]
 
     hx.syscall arquivoExiste
 
-    jc fonteNaoEncontrado
+    jc inputFileNotFound
 
-    mov esi, [arquivoSaida]
+    mov esi, [outputFile]
 
     hx.syscall arquivoExiste
 
-    jnc destinoPresente
+    jnc outputPresent
 
-;; Agora vamos abrir o arquivo fonte para cópia
+;; Now let's open the source file for copying
 
-    mov esi, [arquivoEntrada]
-    mov edi, bufferArquivo
+    mov esi, [inputFile]
+    mov edi, appFileBuffer
 
     hx.syscall hx.open
 
-    jc erroAoAbrir
+    jc openError
 
-    mov esi, [arquivoEntrada]
+    mov esi, [inputFile]
 
     hx.syscall arquivoExiste
 
-;; Salvar arquivo no disco
+;; Save file
 
-    mov esi, [arquivoSaida]
-    mov edi, bufferArquivo
+    mov esi, [outputFile]
+    mov edi, appFileBuffer
 
     hx.syscall salvarArquivo
 
-    jc erroAoSalvar
+    jc saveError
 
-;; Sucesso ao salvar
+;; Saving success
 
-    jmp terminar
-
-;;************************************************************************************
-
-erroAoSalvar:
-
-    fputs cp.erroSalvando
-
-    jmp terminar
+    jmp finish
 
 ;;************************************************************************************
 
-erroAoAbrir:
+saveError:
 
-    fputs cp.erroAbrindo
+    fputs cp.saveError
 
-    jmp terminar
-
-;;************************************************************************************
-
-fonteNaoEncontrado:
-
-    fputs cp.fonteIndisponivel
-
-    jmp terminar
+    jmp finish
 
 ;;************************************************************************************
 
-destinoPresente:
+openError:
 
-    fputs cp.destinoExistente
+    fputs cp.openError
 
-    jmp terminar
+    jmp finish
 
 ;;************************************************************************************
 
-terminar:
+inputFileNotFound:
+
+    fputs cp.sourceNotFound
+
+    jmp finish
+
+;;************************************************************************************
+
+outputPresent:
+
+    fputs cp.outputAlreadyExists
+
+    jmp finish
+
+;;************************************************************************************
+
+finish:
 
     hx.syscall encerrarProcesso
 
 ;;************************************************************************************
 
-;; Obtem os parâmetros necessários para o funcionamento do programa, diretamente da linha
-;; de comando fornecida pelo Sistema
+;; Get the necessary parameters directly from the command line
 
-obterParametros:
+getParameters:
 
-    mov esi, [parametros]
-    mov [arquivoEntrada], esi
+    mov esi, [parameters]
+    mov [inputFile], esi
 
     cmp byte[esi], 0
-    je usoAplicativo
+    je applicationUsage
 
     mov al, ' '
 
     hx.syscall encontrarCaractere
 
-    jc usoAplicativo
+    jc applicationUsage
 
     mov al, ' '
 
-    call encontrarCaractereCP
+    call findCharacterCP
 
-    mov [arquivoSaida], esi
+    mov [outputFile], esi
 
-    jmp .pronto
+    jmp .done
 
-.pronto:
+.done:
 
     clc
 
@@ -225,27 +224,27 @@ obterParametros:
 
 ;;************************************************************************************
 
-;; Realiza a busca de um caractere específico na String fornecida
+;; Searches for a specific character in the given String
 ;;
-;; Entrada:
+;; Input:
 ;;
-;; ESI - String à ser verificada
-;; AL  - Caractere para procurar
+;; ESI - String to be checked
+;; AL  - Character to search for
 ;;
-;; Saída:
+;; Output:
 ;;
-;; ESI - Posição do caractere na String fornecida
+;; ESI - Character position in the given String
 
-encontrarCaractereCP:
+findCharacterCP:
 
     lodsb
 
     cmp al, ' '
-    je .pronto
+    je .done
 
-    jmp encontrarCaractereCP
+    jmp findCharacterCP
 
-.pronto:
+.done:
 
     mov byte[esi-1], 0
 
@@ -253,52 +252,51 @@ encontrarCaractereCP:
 
 ;;************************************************************************************
 
-usoAplicativo:
+applicationUsage:
 
-    fputs cp.uso
+    fputs cp.use
 
-    jmp terminar
+    jmp finish
 
 ;;************************************************************************************
 
 ;;************************************************************************************
 ;;
-;;                    Área de dados e variáveis do aplicativo
+;;                        Application variables and data
 ;;
 ;;************************************************************************************
 
-versaoCP equ "2.2.5"
+VERSION equ "2.3.0"
 
 cp:
 
-.naoEncontrado:
 db 10, "File not found. Please check filename and try again.", 0
-.uso:
+.use:
 db 10, "Usage: cp [input file] [output file]", 10, 10
 db "Performs a copy of a given file into another. Two file names are required, one being", 10
 db "for input and another for output.", 10, 10
-db "cp version ", versaoCP, 10, 10
+db "cp version ", VERSION, 10, 10
 db "Copyright (C) 2017-", __stringano, " Felipe Miguel Nery Lunkes", 10
 db "All rights reserved.", 0
-.fonteIndisponivel:
+.sourceNotFound:
 db 10, "The source file cannot be found on this volume.", 0
-.destinoExistente:
+.outputAlreadyExists:
 db 10, "A file with the given name already exists for the destination. Please remove the file and try again.", 0
-.erroAbrindo:
+.openError:
 db 10, "An error occurred while trying to open the source file.", 0
-.erroSalvando:
+.saveError:
 db 10, "An error occurred while requesting to save the file.", 10
 db "This could be due to write protection, volume removal, out of storage or because the system is busy.", 10
 db "Please try again later.", 0
-.parametroAjuda:
+.helpParameter:
 db "?", 0
-.parametroAjuda2:
+.helpParameter2:
 db "--help", 0
 
-parametros:     dd 0
-arquivoEntrada: dd ?
-arquivoSaida:   dd ?
+parameters: dd 0
+inputFile:  dd ?
+outputFile: dd ?
 
 ;;************************************************************************************
 
-bufferArquivo:
+appFileBuffer:
