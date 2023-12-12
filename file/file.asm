@@ -68,12 +68,12 @@
 
 use32
 
-;; Agora vamos criar um cabeçalho para a imagem HAPP final do aplicativo.
+;; Now let's create a HAPP header for the application
 
-include "HAPP.s" ;; Aqui está uma estrutura para o cabeçalho HAPP
+include "HAPP.s" ;; Here is a structure for the HAPP header
 
-;; Instância | Estrutura | Arquitetura | Versão | Subversão | Entrada | Tipo
-cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, inicioAPP, 01h
+;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
+cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, applicationStart, 01h
 
 ;;************************************************************************************
 
@@ -83,56 +83,56 @@ include "macros.s"
 
 ;;************************************************************************************
 
-inicioAPP:
+applicationStart:
 
-    push ds ;; Segmento de dados do modo usuário (seletor 38h)
+    push ds ;; User mode data segment (38h selector)
     pop es
 
-    mov [parametro], edi
+    mov [parameters], edi
 
-    mov esi, [parametro]
+    mov esi, [parameters]
 
     cmp byte[esi], 0
-    je usoAplicativo
+    je applicationUsage
 
-    mov edi, fileUnix.parametroAjuda
-    mov esi, [parametro]
-
-    hx.syscall compararPalavrasString
-
-    jc usoAplicativo
-
-    mov edi, fileUnix.parametroAjuda2
-    mov esi, [parametro]
+    mov edi, fileUnix.helpParameter
+    mov esi, [parameters]
 
     hx.syscall compararPalavrasString
 
-    jc usoAplicativo
+    jc applicationUsage
 
-    mov esi, [parametro]
+    mov edi, fileUnix.helpParameter2
+    mov esi, [parameters]
+
+    hx.syscall compararPalavrasString
+
+    jc applicationUsage
+
+    mov esi, [parameters]
 
     hx.syscall cortarString
 
     hx.syscall tamanhoString
 
     cmp eax, 13
-    jl .obterInformacoes
+    jl .getInfo
 
     fputs fileUnix.arquivoInvalido
 
-    jmp .fim
+    jmp .end
 
-.obterInformacoes:
+.getInfo:
 
     hx.syscall arquivoExiste
 
-    jc .semArquivo
+    jc .fileNotFound
 
     push eax
 
-    call manterArquivo
+    call saveFileName
 
-    fputs fileUnix.tamanhoArquivo
+    fputs fileUnix.fileSize
 
     pop eax
 
@@ -140,250 +140,249 @@ inicioAPP:
 
     fputs fileUnix.bytes
 
-;; Primeiro vamos ver se se trata de uma imagem executável. Se sim, podemos pular todo o
-;; restante do processamento. Isso garante que imagens executáveis sejam relatadas como
-;; tal mesmo se tiverem diferentes extensões, visto que cada shell pode procurar por um
-;; tipo de extensão específico/preferido além de .APP. Imagens acessórias que necessitam
-;; de ser chamadas por outro processo no âmbito de sua execução podem apresentar outra extensão.
-;; O próprio Hexagon é uma imagem HAPP mas apresenta extensão .SIS
+;; First let's see if it is an executable image. If yes, we can skip all the rest of the
+;; processing. This ensures that executable images are reported as such even if they have
+;; different extensions, as each shell can look for a specific/preferred extension type other
+;; than .APP. Accessory images that need to be called by another process during its execution
+;; may have another extension. The Hexagon itself is a HAPP image
 
-    call verificarArquivoHAPP
+    call verifyHAPPFile
 
-    call verificarArquivoHBoot
+    call verifyHBootFile
 
-;; Se não for uma imagem executável, tentar identificar pela extensão, sem verificar o conteúdo
-;; do arquivo
+;; If it is not an executable image, try to identify it by extension, without checking the
+;; file contents
 
-.continuar:
+.continue:
 
-    mov esi, nomeArquivo
+    mov esi, fileName
 
-    hx.syscall stringParaMaiusculo ;; Iremos checar com base na extensão em maiúsculo
+    hx.syscall stringParaMaiusculo ;; We will check based on the capitalized extension
 
     hx.syscall tamanhoString
 
-    add esi, eax ;; Adicionar o tamanho do nome
+    add esi, eax ;; Add name length
 
-    sub esi, 4 ;; Subtrair 4 para manter apenas a extensão
+    sub esi, 4 ;; Subtract 4 to keep only the extension
 
-    mov edi, fileUnix.extensaoUNX
+    mov edi, fileUnix.extensionUNX
 
-    hx.syscall compararPalavrasString ;; Checar por extensão .UNX
+    hx.syscall compararPalavrasString ;; Check for .UNX extension
 
-    jc .arquivoUNX
+    jc .fileUNX
 
-    mov edi, fileUnix.extensaoSIS
+    mov edi, fileUnix.extensionSIS
 
-    hx.syscall compararPalavrasString ;; Checar por extensão .SIS
+    hx.syscall compararPalavrasString ;; Check for .SIS extension
 
-    jc .arquivoSIS
+    jc .fileSIS
 
-    mov edi, fileUnix.extensaoTXT
+    mov edi, fileUnix.extensionTXT
 
-    hx.syscall compararPalavrasString ;; Checar por extensão .TXT
+    hx.syscall compararPalavrasString ;; Check for .TXT extension
 
-    jc .arquivoTXT
+    jc .fileTXT
 
-    mov edi, fileUnix.extensaoASM
+    mov edi, fileUnix.extensionASM
 
-    hx.syscall compararPalavrasString ;; Checar por extensão .ASM
+    hx.syscall compararPalavrasString ;; Check for .ASM extension
 
-    jc .arquivoASM
+    jc .fileASM
 
-    mov edi, fileUnix.extensaoCOW
+    mov edi, fileUnix.extensionCOW
 
-    hx.syscall compararPalavrasString ;; Checar por extensão .COW
+    hx.syscall compararPalavrasString ;; Check for .COW extension
 
-    jc .arquivoCOW
+    jc .fileCOW
 
-    mov edi, fileUnix.extensaoMAN
+    mov edi, fileUnix.extensionMAN
 
-    hx.syscall compararPalavrasString ;; Checar por extensão .MAN
+    hx.syscall compararPalavrasString ;; Check for .MAN extension
 
-    jc .arquivoMAN
+    jc .fileMAN
 
-    mov edi, fileUnix.extensaoFNT
+    mov edi, fileUnix.extensionFNT
 
-    hx.syscall compararPalavrasString ;; Checar por extensão .FNT
+    hx.syscall compararPalavrasString ;; Check for .FNT extension
 
-    jc .arquivoFNT
+    jc .fileFNT
 
-    mov edi, fileUnix.extensaoCAN
+    mov edi, fileUnix.extensionCAN
 
-    hx.syscall compararPalavrasString ;; Checar por extensão .CAN
+    hx.syscall compararPalavrasString ;; Check for .CAN extension
 
-    jc .arquivoCAN
+    jc .fileCAN
 
-;; Checar agora com duas letras de extensão
+;; Check now with two letters in length
 
-;; Checar agora com uma única letra de extensão
+;; Check now with a single letter extension
 
-    add esi, 2 ;; Adicionar 2 (seria uma remoção de 2) para manter apenas a extensão
+    add esi, 2 ;; Add 2 (would be a removal of 2) to keep just the extension
 
-    mov edi, fileUnix.extensaoS
+    mov edi, fileUnix.extensionS
 
-    hx.syscall compararPalavrasString ;; Checar por extensão .S
+    hx.syscall compararPalavrasString ;; Check for .S extension
 
-    jc .arquivoS
+    jc .fileS
 
-.semExtensaoValida:
+.noValidExtension:
 
-    fputs fileUnix.arquivoPadrao
+    fputs fileUnix.defaultFile
 
-    jmp .fim
+    jmp .end
 
-.aplicativo:
+.application:
 
-    fputs fileUnix.appValido
+    fputs fileUnix.validApplication
 
-    jmp .fim
+    jmp .end
 
-.arquivoHBoot:
+.fileHBoot:
 
-    fputs fileUnix.arquivoHBoot
+    fputs fileUnix.fileHBoot
 
-    jmp .fim
+    jmp .end
 
-.arquivoUNX:
+.fileUNX:
 
-    fputs fileUnix.arquivoUnix
+    fputs fileUnix.fileUnix
 
-    jmp .fim
+    jmp .end
 
-.arquivoTXT:
+.fileTXT:
 
-    fputs fileUnix.arquivoTXT
+    fputs fileUnix.fileTXT
 
-    jmp .fim
+    jmp .end
 
-.arquivoFNT:
+.fileFNT:
 
-    fputs fileUnix.arquivoFNT
+    fputs fileUnix.fileFNT
 
-    jmp .fim
+    jmp .end
 
-.arquivoCAN:
+.fileCAN:
 
-    fputs fileUnix.arquivoCAN
+    fputs fileUnix.fileCAN
 
-    jmp .fim
+    jmp .end
 
-.arquivoCOW:
+.fileCOW:
 
-    fputs fileUnix.arquivoCOW
+    fputs fileUnix.fileCOW
 
-    jmp .fim
+    jmp .end
 
-.arquivoMAN:
+.fileMAN:
 
-    fputs fileUnix.arquivoMAN
+    fputs fileUnix.fileMAN
 
-    jmp .fim
+    jmp .end
 
-.arquivoSIS:
+.fileSIS:
 
-    fputs fileUnix.arquivoSIS
+    fputs fileUnix.fileSIS
 
-    jmp .fim
+    jmp .end
 
-.arquivoASM:
+.fileASM:
 
-    fputs fileUnix.arquivoASM
+    fputs fileUnix.fileASM
 
-    jmp .fim
+    jmp .end
 
-.arquivoS:
+.fileS:
 
-    fputs fileUnix.arquivoLibASM
+    fputs fileUnix.fileLibASM
 
-    jmp .fim
+    jmp .end
 
-.semArquivo:
+.fileNotFound:
 
-    fputs fileUnix.semArquivo
+    fputs fileUnix.fileNotFound
 
-    jmp .fim
+    jmp .end
 
-.fim:
+.end:
 
-    jmp terminar
+    jmp finish
 
 ;;************************************************************************************
 
-verificarArquivoHAPP:
+verifyHAPPFile:
 
-    mov esi, nomeArquivo
-    mov edi, bufferArquivo
+    mov esi, fileName
+    mov edi, appFileBuffer
 
     hx.syscall hx.open
 
-    jc inicioAPP.semArquivo
+    jc applicationStart.fileNotFound
 
-    mov edi, bufferArquivo
+    mov edi, appFileBuffer
 
     cmp byte[edi+0], "H"
-    jne .naoHAPP
+    jne .notHAPP
 
     cmp byte[edi+1], "A"
-    jne .naoHAPP
+    jne .notHAPP
 
     cmp byte[edi+2], "P"
-    jne .naoHAPP
+    jne .notHAPP
 
     cmp byte[edi+3], "P"
-    jne .naoHAPP
+    jne .notHAPP
 
-    jmp inicioAPP.aplicativo
+    jmp applicationStart.application
 
-.naoHAPP:
+.notHAPP:
 
     ret
 
 ;;************************************************************************************
 
-verificarArquivoHBoot:
+verifyHBootFile:
 
-    mov esi, nomeArquivo
-    mov edi, bufferArquivo
+    mov esi, fileName
+    mov edi, appFileBuffer
 
     hx.syscall hx.open
 
-    jc inicioAPP.semArquivo
+    jc applicationStart.fileNotFound
 
-    mov edi, bufferArquivo
+    mov edi, appFileBuffer
 
     cmp byte[edi+0], "H"
-    jne .naoHBoot
+    jne .notHBoot
 
     cmp byte[edi+1], "B"
-    jne .naoHBoot
+    jne .notHBoot
 
     cmp byte[edi+2], "O"
-    jne .naoHBoot
+    jne .notHBoot
 
     cmp byte[edi+3], "O"
-    jne .naoHBoot
+    jne .notHBoot
 
     cmp byte[edi+4], "T"
-    jne .naoHBoot
+    jne .notHBoot
 
-    jmp inicioAPP.arquivoHBoot
+    jmp applicationStart.fileHBoot
 
-.naoHBoot:
+.notHBoot:
 
     ret
 
 ;;************************************************************************************
 
-usoAplicativo:
+applicationUsage:
 
-    fputs fileUnix.uso
+    fputs fileUnix.use
 
-    jmp terminar
+    jmp finish
 
 ;;************************************************************************************
 
-manterArquivo:
+saveFileName:
 
     push esi
     push eax
@@ -394,9 +393,9 @@ manterArquivo:
 
     mov ecx, eax
 
-    mov edi, nomeArquivo
+    mov edi, fileName
 
-    rep movsb ;; Copiar (ECX) caracteres de ESI para EDI
+    rep movsb ;; Copy (ECX) characters from ESI to EDI
 
     pop eax
 
@@ -406,7 +405,7 @@ manterArquivo:
 
 ;;************************************************************************************
 
-terminar:
+finish:
 
     hx.syscall encerrarProcesso
 
@@ -414,84 +413,84 @@ terminar:
 
 ;;************************************************************************************
 ;;
-;;                    Área de dados e variáveis do aplicativo
+;;                        Application variables and data
 ;;
-;;************************************************************************************
+;;*********************************************************************
 
-versaoFILE equ "1.9.2.6"
+VERSION equ "1.10.0"
 
 fileUnix:
 
-.uso:
+.use:
 db 10, "Usage: file [file]", 10, 10
 db "Retrieve information from the file and send it to the console.", 10, 10
-db "file version ", versaoFILE, 10, 10
+db "file version ", VERSION, 10, 10
 db "Copyright (C) 2017-", __stringano, " Felipe Miguel Nery Lunkes", 10
 db "All rights reserved.", 0
 .arquivoInvalido:
 db 10, "The file name is invalid. Please enter a valid filename.", 0
-.tamanhoArquivo:
+.fileSize:
 db 10, "File size: ", 0
 .bytes:
 db " bytes.", 0
-.semArquivo:
+.fileNotFound:
 db 10, "The requested file is not available on this volume. Check the filename and try again.", 0
-.appValido:
+.validApplication:
 db 10, "This appears to be a Unix executable for Hexagon.", 0
-.arquivoHBoot:
+.fileHBoot:
 db 10, "This appears to be an executable in HBoot format (HBoot or HBoot module).", 0
-.arquivoASM:
+.fileASM:
 db 10, "This appears to be an Assembly source file.", 0
-.arquivoLibASM:
+.fileLibASM:
 db 10, "This appears to be a source file that contains an Assembly development library.", 0
-.arquivoSIS:
+.fileSIS:
 db 10, "This appears to be a system file.", 0
-.arquivoUnix:
+.fileUnix:
 db 10, "This appears to be a Unix environment data or configuration file.", 0
-.arquivoMAN:
+.fileMAN:
 db 10, "This appears to be a manual file.", 0
-.arquivoCOW:
+.fileCOW:
 db 10, "This appears to be a database file from the cowsay utility.", 0
-.arquivoTXT:
+.fileTXT:
 db 10, "This appears to be a UTF-8 text file.", 0
-.arquivoFNT:
+.fileFNT:
 db 10, "This appears to be a Hexagon display font file.", 0
-.arquivoCAN:
+.fileCAN:
 db 10, "This appears to be a Hexagonix config plugin file.", 0
-.arquivoPadrao:
+.defaultFile:
 db 10, "This appears to be a data file.", 0
-.parametroAjuda:
+.helpParameter:
 db "?", 0
-.parametroAjuda2:
+.helpParameter2:
 db "--help", 0
-.extensaoSIS:
+.extensionSIS:
 db ".SIS", 0
-.extensaoASM:
+.extensionASM:
 db ".ASM", 0
-.extensaoBIN:
+.extensionBIN:
 db ".BIN", 0
-.extensaoUNX:
+.extensionUNX:
 db ".UNX", 0
-.extensaoFNT:
+.extensionFNT:
 db ".FNT", 0
-.extensaoOCL:
+.extensionOCL:
 db ".OCL", 0
-.extensaoMAN:
+.extensionMAN:
 db ".MAN", 0
-.extensaoCOW:
+.extensionCOW:
 db ".COW", 0
-.extensaoTXT:
+.extensionTXT:
 db ".TXT", 0
-.extensaoCAN:
+.extensionCAN:
 db ".CAN", 0
-.extensaoS:
+.extensionS:
 db ".S", 0
 
-parametro: dd ?
+parameters: dd ?
 
-nomeArquivo:
+fileName:
 times 13 db 0
 
 ;;************************************************************************************
 
-bufferArquivo:
+appFileBuffer:
