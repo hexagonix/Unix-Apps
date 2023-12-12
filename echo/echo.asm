@@ -68,12 +68,12 @@
 
 use32
 
-;; Agora vamos criar um cabeçalho para a imagem HAPP final do aplicativo.
+;; Now let's create a HAPP header for the application
 
-include "HAPP.s" ;; Aqui está uma estrutura para o cabeçalho HAPP
+include "HAPP.s" ;; Here is a structure for the HAPP header
 
-;; Instância | Estrutura | Arquitetura | Versão | Subversão | Entrada | Tipo
-cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, inicioAPP, 01h
+;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
+cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, applicationStart, 01h
 
 ;;************************************************************************************
 
@@ -83,49 +83,49 @@ include "macros.s"
 
 ;;************************************************************************************
 
-inicioAPP:
+applicationStart:
 
-    push ds ;; Segmento de dados do modo usuário (seletor 38h)
+    push ds ;; User mode data segment (38h selector)
     pop es
 
-    mov [parametro], edi
+    mov [parameters], edi
 
-    mov esi, [parametro]
+    mov esi, [parameters]
 
     cmp byte[esi], 0
-    je usoAplicativo
+    je applicationUsage
 
-    mov edi, echo.parametroAjuda
-    mov esi, [parametro]
-
-    hx.syscall compararPalavrasString
-
-    jc usoAplicativo
-
-    mov edi, echo.parametroAjuda2
-    mov esi, [parametro]
+    mov edi, echo.helpParameter
+    mov esi, [parameters]
 
     hx.syscall compararPalavrasString
 
-    jc usoAplicativo
+    jc applicationUsage
 
-    novaLinha
+    mov edi, echo.helpParameter2
+    mov esi, [parameters]
 
-    fputs [parametro]
+    hx.syscall compararPalavrasString
 
-    jmp terminar
+    jc applicationUsage
+
+    putNewLine
+
+    fputs [parameters]
+
+    jmp finish
 
 ;;************************************************************************************
 
-usoAplicativo:
+applicationUsage:
 
-    fputs echo.uso
+    fputs echo.use
 
-    jmp terminar
+    jmp finish
 
 ;;************************************************************************************
 
-terminar:
+finish:
 
     hx.syscall encerrarProcesso
 
@@ -133,23 +133,23 @@ terminar:
 
 ;;************************************************************************************
 ;;
-;;                    Área de dados e variáveis do aplicativo
+;;                        Application variables and data
 ;;
 ;;************************************************************************************
 
-versaoECHO equ "1.1.3.3"
+VERSION equ "1.2.0"
 
 echo:
 
-.uso:
+.use:
 db 10, 10, "Usage: echo [message]", 10, 10
 db "Send the contents of a message to the console.", 10, 10
-db "echo version ", versaoECHO, 10, 10
+db "echo version ", VERSION, 10, 10
 db "Copyright (C) 2017-", __stringano, " Felipe Miguel Nery Lunkes", 10
 db "All rights reserved.", 0
-.parametroAjuda:
+.helpParameter:
 db "?", 0
-.parametroAjuda2:
+.helpParameter2:
 db "--help", 0
 
-parametro: dd ?
+parameters: dd ?
