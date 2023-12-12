@@ -68,12 +68,12 @@
 
 use32
 
-;; Agora vamos criar um cabeçalho para a imagem HAPP final do aplicativo.
+;; Now let's create a HAPP header for the application
 
-include "HAPP.s" ;; Aqui está uma estrutura para o cabeçalho HAPP
+include "HAPP.s" ;; Here is a structure for the HAPP header
 
-;; Instância | Estrutura | Arquitetura | Versão | Subversão | Entrada | Tipo
-cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, inicioAPP, 01h
+;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
+cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, applicationStart, 01h
 
 ;;************************************************************************************
 
@@ -83,39 +83,39 @@ include "macros.s"
 
 ;;************************************************************************************
 
-inicioAPP:
+applicationStart:
 
-    push ds ;; Segmento de dados do modo usuário (seletor 38h)
+    push ds ;; User mode data segment (38h selector)
     pop es
 
-    mov [parametro], edi
+    mov [parameters], edi
 
-    mov esi, [parametro]
+    mov esi, [parameters]
 
     cmp byte[esi], 0
-    jne usoAplicativo
+    jne applicationUsage
 
-    mov edi, arch.parametroAjuda
-    mov esi, [parametro]
-
-    hx.syscall compararPalavrasString
-
-    jc usoAplicativo
-
-    mov edi, arch.parametroAjuda2
-    mov esi, [parametro]
+    mov edi, arch.helpParameter
+    mov esi, [parameters]
 
     hx.syscall compararPalavrasString
 
-    jc usoAplicativo
+    jc applicationUsage
 
-.solicitarHexagon:
+    mov edi, arch.helpParameter2
+    mov esi, [parameters]
 
-    novaLinha
+    hx.syscall compararPalavrasString
+
+    jc applicationUsage
+
+.requestHexagon:
+
+    putNewLine
 
     hx.syscall hx.uname
 
-;; Em EDX temos a arquitetura
+;; In EDX we have the architecture
 
     cmp edx, 01
     je .i386
@@ -123,37 +123,37 @@ inicioAPP:
     cmp edx, 02
     je .x86_64
 
-    fputs arch.naoSuportado
+    fputs arch.notSupported
 
-    jmp .terminar
+    jmp .finish
 
 .i386:
 
     fputs arch.i386
 
-    jmp .terminar
+    jmp .finish
 
 .x86_64:
 
     fputs arch.x86_64
 
-    jmp .terminar
+    jmp .finish
 
-.terminar:
+.finish:
 
-    jmp terminar
-
-;;************************************************************************************
-
-usoAplicativo:
-
-    fputs arch.uso
-
-    jmp terminar
+    jmp finish
 
 ;;************************************************************************************
 
-terminar:
+applicationUsage:
+
+    fputs arch.use
+
+    jmp finish
+
+;;************************************************************************************
+
+finish:
 
     hx.syscall encerrarProcesso
 
@@ -161,30 +161,30 @@ terminar:
 
 ;;************************************************************************************
 ;;
-;;                    Área de dados e variáveis do aplicativo
+;;                        Application variables and data
 ;;
 ;;************************************************************************************
 
-versaoARCH equ "1.2.5"
+VERSION equ "1.3.0"
 
 arch:
 
-.uso:
+.use:
 db 10, "Usage: arch", 10
 db "This utility does not accept arguments.", 10, 10
 db "Displays the architecture of this system and device.", 10, 10
-db "arch version ", versaoARCH, 10, 10
+db "arch version ", VERSION, 10, 10
 db "Copyright (C) 2021-", __stringano, " Felipe Miguel Nery Lunkes", 10
 db "All rights reserved.", 0
-.naoSuportado:
+.notSupported:
 db 10, "Unknown architecture.", 0
 .i386:
 db "i386", 0
 .x86_64:
 db "x86_64", 0
-.parametroAjuda:
+.helpParameter:
 db "?", 0
-.parametroAjuda2:
+.helpParameter2:
 db "--help", 0
 
-parametro: dd ?
+parameters: dd ?
