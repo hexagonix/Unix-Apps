@@ -68,12 +68,12 @@
 
 use32
 
-;; Agora vamos criar um cabeçalho para a imagem HAPP final do aplicativo.
+;; Now let's create a HAPP header for the application
 
-include "HAPP.s" ;; Aqui está uma estrutura para o cabeçalho HAPP
+include "HAPP.s" ;; Here is a structure for the HAPP header
 
-;; Instância | Estrutura | Arquitetura | Versão | Subversão | Entrada | Tipo
-cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, inicioAPP, 01h
+;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
+cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, applicationStart, 01h
 
 ;;************************************************************************************
 
@@ -84,94 +84,94 @@ include "dev.s"
 
 ;;************************************************************************************
 
-inicioAPP:
+applicationStart:
 
-    push ds ;; Segmento de dados do modo usuário (seletor 38h)
+    push ds ;; User mode data segment (38h selector)
     pop es
 
-    mov [parametro], edi
+    mov [parameters], edi
 
-    mov esi, [parametro]
+    mov esi, [parameters]
 
-    mov edi, clear.parametroAjuda
-    mov esi, [parametro]
-
-    hx.syscall compararPalavrasString
-
-    jc usoAplicativo
-
-    mov edi, clear.parametroAjuda2
-    mov esi, [parametro]
+    mov edi, clear.helpParameter
+    mov esi, [parameters]
 
     hx.syscall compararPalavrasString
 
-    jc usoAplicativo
+    jc applicationUsage
 
-    jmp realizarLimpeza
+    mov edi, clear.helpParameter2
+    mov esi, [parameters]
+
+    hx.syscall compararPalavrasString
+
+    jc applicationUsage
+
+    jmp performCleaning
 
 ;;************************************************************************************
 
-realizarLimpeza:
+performCleaning:
 
-    mov esi, Hexagon.LibASM.Dev.video.tty1 ;; Abrir o primeiro console virtual
+    mov esi, Hexagon.LibASM.Dev.video.tty1 ;; Open the first virtual console
 
-    hx.syscall hx.open ;; Abre o dispositivo
+    hx.syscall hx.open ;; Open the device
 
-    jc .erro
+    jc .error
 
-    hx.syscall limparTela ;; Limpa seu conteúdo
+    hx.syscall limparTela ;; Clean your content
 
-    mov esi, Hexagon.LibASM.Dev.video.tty0 ;; Reabre o console principal
+    mov esi, Hexagon.LibASM.Dev.video.tty0 ;; Reopen the main console
 
-    hx.syscall hx.open ;; Abre o dispositivo
+    hx.syscall hx.open ;; Open the device
 
     hx.syscall limparTela
 
-    jmp terminar
+    jmp finish
 
-.erro:
+.error:
 
-    fputs clear.erro
+    fputs clear.error
 
-    jmp terminar
+    jmp finish
 
 ;;************************************************************************************
 
-terminar:
+finish:
 
     hx.syscall encerrarProcesso
 
 ;;************************************************************************************
 
-usoAplicativo:
+applicationUsage:
 
-    fputs clear.uso
+    fputs clear.use
 
-    jmp terminar
+    jmp finish
 
 ;;************************************************************************************
 
 ;;************************************************************************************
 ;;
-;;                    Área de dados e variáveis do aplicativo
+;;                        Application variables and data
 ;;
 ;;************************************************************************************
 
-versaoCLEAR equ "1.3.1"
+VERSION equ "1.4.0"
 
 clear:
 
-.erro:
+.error:
 db 10, "Error opening a console.", 10, 10, 0
-.uso:
+.use:
 db 10, "Usage: clear", 10, 10
 db "Clears the contents of the console (tty0) and virtual consoles.", 10, 10
-db "clear version ", versaoCLEAR, 10, 10
+db "clear version ", VERSION, 10, 10
 db "Copyright (C) 2017-", __stringano, " Felipe Miguel Nery Lunkes", 10
 db "All rights reserved.", 0
-.parametroAjuda:
+.helpParameter:
 db "?", 0
-.parametroAjuda2:
+.helpParameter2:
 db "--help", 0
 
-parametro: dd ?
+parameters: dd ?
