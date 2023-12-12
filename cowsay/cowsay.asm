@@ -68,12 +68,12 @@
 
 use32
 
-;; Agora vamos criar um cabeçalho para a imagem HAPP final do aplicativo.
+;; Now let's create a HAPP header for the application
 
-include "HAPP.s" ;; Aqui está uma estrutura para o cabeçalho HAPP
+include "HAPP.s" ;; Here is a structure for the HAPP header
 
-;; Instância | Estrutura | Arquitetura | Versão | Subversão | Entrada | Tipo
-cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, inicioAPP, 01h
+;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
+cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, applicationStart, 01h
 
 ;;************************************************************************************
 
@@ -83,295 +83,301 @@ include "macros.s"
 
 ;;************************************************************************************
 
-inicioAPP:
+applicationStart:
 
-    push ds ;; Segmento de dados do modo usuário (seletor 38h)
+    push ds ;; User mode data segment (38h selector)
     pop es
 
-    mov [parametro], edi
+    mov [parameters], edi
 
-    call obterParametros
+    call getParameters
 
-    mov edi, cowsay.parametroAjuda
-    mov esi, [parametro]
-
-    hx.syscall compararPalavrasString
-
-    jc usoAplicativo
-
-    mov edi, cowsay.parametroAjuda2
-    mov esi, [parametro]
+    mov edi, cowsay.helpParameter
+    mov esi, [parameters]
 
     hx.syscall compararPalavrasString
 
-    jc usoAplicativo
+    jc applicationUsage
 
-    novaLinha
+    mov edi, cowsay.helpParameter2
+    mov esi, [parameters]
 
-    mov esi, [mensagemUsuario]
+    hx.syscall compararPalavrasString
+
+    jc applicationUsage
+
+    putNewLine
+
+    mov esi, [userMessage]
 
     hx.syscall tamanhoString
 
-    mov dword[tamanhoMensagem], eax
+    mov dword[userMessageSize], eax
 
     mov ecx, eax
     add ecx, 4
 
-.loopBalaoSuperior:
+.loopTopBubble:
 
-    fputs cowsay.linhaSuperior
+    fputs cowsay.topLine
 
-    loop .loopBalaoSuperior
+    loop .loopTopBubble
 
-.lateralEsquerda:
+.leftSide:
 
-    novaLinha
+    putNewLine
 
-    fputs cowsay.barra
+    fputs cowsay.bar
 
-    mov ecx, dword[tamanhoMensagem]
+    mov ecx, dword[userMessageSize]
     add ecx, 2
 
-.loopEspacoSuperior:
+.loopTopSpace:
 
-    fputs cowsay.espaco
+    fputs cowsay.espace
 
-    loop .loopEspacoSuperior
+    loop .loopTopSpace
 
-    fputs cowsay.barra
+    fputs cowsay.bar
 
-    novaLinha
+    putNewLine
 
-.mensagem:
+.message:
 
-    fputs cowsay.barra
+    fputs cowsay.bar
 
-    fputs cowsay.espaco
+    fputs cowsay.espace
 
-    fputs [mensagemUsuario]
+    fputs [userMessage]
 
-    fputs cowsay.espaco
+    fputs cowsay.espace
 
-    fputs cowsay.barra
+    fputs cowsay.bar
 
-    novaLinha
+    putNewLine
 
-    fputs cowsay.barra
+    fputs cowsay.bar
 
-    mov ecx, dword[tamanhoMensagem]
+    mov ecx, dword[userMessageSize]
     add ecx, 2
 
-.loopEspacoInferior:
+.loopBottomSpace:
 
-    fputs cowsay.espaco
+    fputs cowsay.espace
 
-    loop .loopEspacoInferior
+    loop .loopBottomSpace
 
-    fputs cowsay.barra
+    fputs cowsay.bar
 
-    novaLinha
+    putNewLine
 
-    mov ecx, dword[tamanhoMensagem]
+    mov ecx, dword[userMessageSize]
 
     add ecx, 4
 
-.loopBalaoInferior:
+.loopBottomBubble:
 
-    fputs cowsay.linhaInferior
+    fputs cowsay.bottomLine
 
-    loop .loopBalaoInferior
+    loop .loopBottomBubble
 
-    novaLinha
+    putNewLine
 
-    cmp byte[arquivoExterno], 0
-    je .vaquinhaInterna
+    cmp byte[externalFile], 0
+    je .innerCow
 
-    mov esi, [perfilVaquinha]
+    mov esi, [cowProfile]
 
     hx.syscall tamanhoString
 
     mov ebx, eax
 
-    mov al, byte[cowsay.extensaoCOW+0]
+    mov al, byte[cowsay.extensionCOW+0]
 
     mov byte[esi+ebx+0], al
 
-    mov al, byte[cowsay.extensaoCOW+1]
+    mov al, byte[cowsay.extensionCOW+1]
 
     mov byte[esi+ebx+1], al
 
-    mov al, byte[cowsay.extensaoCOW+2]
+    mov al, byte[cowsay.extensionCOW+2]
 
     mov byte[esi+ebx+2], al
 
-    mov al, byte[cowsay.extensaoCOW+3]
+    mov al, byte[cowsay.extensionCOW+3]
 
     mov byte[esi+ebx+3], al
 
-    mov byte[esi+ebx+4], 0 ;; Fim da string, será cortada aqui e nada após será relevante
+    mov byte[esi+ebx+4], 0 ;; End of string, will be cut here and nothing after will be relevant
 
     push esi
 
     hx.syscall arquivoExiste
-    jc .vaquinhaInterna
+
+    jc .innerCow
 
     pop esi
 
-    mov edi, bufferArquivo
+    mov edi, appFileBuffer
 
     hx.syscall hx.open
 
-    jc .vaquinhaInterna
+    jc .innerCow
 
-    fputs bufferArquivo
+    fputs appFileBuffer
 
-    jmp .finalizar
+    jmp .finish
 
-.vaquinhaInterna:
+.innerCow:
 
-    fputs cowsay.vaquinha
+    fputs cowsay.cow
 
-.finalizar:
+.finish:
 
-    jmp terminar
+    jmp finish
 
 ;;************************************************************************************
 
-;; Obtem os parâmetros necessários para o funcionamento do programa, diretamente da linha
-;; de comando fornecida pelo Sistema
+;; Obtains the necessary parameters, directly from the command line
 
-obterParametros:
+getParameters:
 
-    mov esi, [parametro]
-    mov [perfilVaquinha], esi
+    mov esi, [parameters]
+    mov [cowProfile], esi
 
     cmp byte[esi], 0
-    je usoAplicativo
+    je applicationUsage
 
-;; Então vamos lá. Algumas coisas serão feitas aqui para verificar parâmetros, como alteração
-;; do personagem a ser exibido e os parâmetros a serem impressos na saída padrão
+;; So let's go. Some things will be done here to check parameters, like changing
+;; of the character to be displayed and the parameters to be sended to output
 
-;; Primeiro, vamos procurar por '"'. Isso indica que se trata de uma frase e que se deve pular a
-;; busca por um parâmetro de alteração de personagem, que é o primeiro parâmetro. Deve-se usar
-;; esse caractere para pular o carregamento de outro personagem em caso de frase. Senão, será
-;; interpretado que a primeira palavra é o personagem a ser carregado do disco e a mensagem sairá
-;; picada, mesmo se não existir o personagem em um arquivo .COW no disco. Então, isso tudo será
-;; validado agora.
 
-;; Primeiro, vamos validar se temos uma frase aqui
+;; First, let's look for '"'. This indicates that it is a sentence and that you should skip the
+;; searches for a character change parameter, which is the first parameter.
+;; You must use this character to skip loading another character in the case of a sentence.
+;; Otherwise, it will be interpreted that the first word is the character to be loaded from disk
+;; and the message will be chopped up, even if the character does not exist in a .COW file on
+;; disk. So, this will all be validated now.
 
-    mov al, '"' ;; Vamos pesquisar pelo marcador de frase
+;; First, let's validate that we have a sentence here
 
-    clc ;; Limpar o Carry
+    mov al, '"' ;; Let's search for the sentence marker
 
-    hx.syscall encontrarCaractere ;; Solicitar o serviço de busca de caractere
+    clc ;; Clean the Carry
 
-    jnc .semArquivoExterno ;; Foi identificado um marcador de frase. Pular carregamento de personagem
+    hx.syscall encontrarCaractere ;; Request character search service
 
-;; Tudo bem, não temos uma frase. Temos mais de um parâmetro, o que poderia identificar uma única
-;; palavra após o parâmetro de personagem? Se o usuário não inseriu o '"', assim será interpretado.
+    jnc .withoutExternalFile ;; A sentence marker was identified. Skip character load
 
-    mov al, ' ' ;; Vamos pesquisar se existe um espaço, que seria a indicação de duas ou mais palavras
+;; Okay, we don't have a sentence. We have more than one parameter, what could identify a single
+;; word after the character parameter? If the user did not enter the '"', it will be interpreted
+;; as such.
 
-    hx.syscall encontrarCaractere ;; Solicitar o serviço de busca de caractere
+    mov al, ' ' ;; Let's search if there is a space, which would indicate two or more words
 
-    jc .adicionarMensagem ;; Não temos mais de uma palavra, o que indica que não há troca de personagem
+    hx.syscall encontrarCaractere ;; Request character search service
 
-;; Até agora já validamos frases e palavras individuais, sem a necessidade de carregamento de um
-;; personagem diretamente do disco. Se chegamos até aqui, isso quer dizer que existe mais de uma
-;; palavra e o usuário não especificou se tratar de uma frase, com o caractere '"'. Dessa forma,
-;; deve-se separar o primeiro parâmetro, que corresponde ao personagem, do restante da string, que
-;; é o que será exibido ao usuário
+;; We don't have more than one word, which indicates that there is no character chang
 
-    mov al, ' ' ;; Vamos procurar a posição em que ocorre a separação dos parâmetros
+    jc .addMessage
 
-    call encontrarCaractereCowsay ;; Essa função é do aplicativo, não da API do Sistema
+;; So far we have validated individual phrases and words, without the need to load a character
+;; directly from disk. If we got this far, it means that there is more than one word and the user
+;; did not specify that it was a phrase, with the character '"'. Therefore, the first parameter,
+;; which corresponds to the character, must be separated from the rest of the string, which is
+;; what will be displayed to the user
 
-    mov [mensagemUsuario], esi ;; A string devidamente cortada e separada. O corte de nome de arquivo
-                               ;; será feito mais adiante.
-    jmp .pronto
+    mov al, ' ' ;; Let's look for the position where the separation of the parameters occurs
 
-;; Um personagem externo deve ser carregado e após existe um palavra ou frase
+    call findCharacterCowsay ;; This function belongs to the application, not the system API
 
-.pronto:
+;; The string properly cut and separated. File name trimming will be done later.
 
-    mov byte[arquivoExterno], 01h ;; Marcar que um personagem externo deve ser carregado
+    mov [userMessage], esi
+    jmp .done
+
+;; An external character must be loaded and after it there is a word or sentence
+
+.done:
+
+    mov byte[externalFile], 01h ;; Mark that an external character should be loaded
 
     clc
 
     ret
 
-;; Bom, temos uma frase. Temos que remover os caracteres '"' da string a ser impressa.
-;; Vamos lá!
+;; Well, we have a sentence. We have to remove the '"' characters from the string to be printed.
 
-.semArquivoExterno:
+.withoutExternalFile:
 
-    clc ;; Limpar Carry
+    clc ;; Clear the Carry
 
-    mov esi, [perfilVaquinha] ;; Vamos pegar a string de parâmetro fornecida pelo Sistema
+    mov esi, [cowProfile] ;; Let's take the parameter string provided by the system
 
-    hx.syscall cortarString ;; Cortar ela (trimming), para ter certeza das posições de caracteres
+    hx.syscall cortarString ;; Cut it (trimming) to be sure of the character positions
 
-;; Agora vamos fazer a remoção dos caracteres '"', lembrando que só serão removidos o primeiro e
-;; último caracteres '"'. Qualquer um no interior da cadeia permanecerá, por enquanto.
+;; Now let's remove the '"' characters, remembering that only the first and last '"' characters
+;; will be removed. Anyone inside the chain will remain, for now.
 
-    mov eax, 00h ;; Posição zero da cadeia cortada, primeiro '"'
+    mov eax, 00h ;; Position zero of the cut string, first '"'
 
-    hx.syscall removerCaractereString ;; Sistema, remova, por favor
+    hx.syscall removerCaractereString ;; Remove the character
 
-    hx.syscall tamanhoString ;; Agora, qual o tamanho da cadeia residual?
+    hx.syscall tamanhoString ;; Now, how long is the residual chain?
 
-    dec eax ;; O último caractere é sempre o terminador, então recue um. Este é o último '"'
+    dec eax ;; The last character is always the terminator, so indent one. This is the last '"'
 
-    hx.syscall removerCaractereString ;; Sistema, remova, por favor
+    hx.syscall removerCaractereString ;; Remove the character
 
-    mov [mensagemUsuario], esi ;; A mensagem está pronta para ser exibida
+    mov [userMessage], esi ;; The message is ready to be displayed
 
-    mov byte[arquivoExterno], 00h ;; Marcar como utilização do personagem interno
+    mov byte[externalFile], 00h ;; Mark as use of internal character
 
     ret
 
-;; Agora, o caso de uma palavra ter sido passada como parâmetro. Isso quer dizer que, mesmo que
-;; faça referência a um personagem externo, ignorar. Nesse caso, pelo menos dois termos devem
-;; ser passados. O que adiante carregar um personagem se não existe uma mensagem? Então, ignorar
-;; o personagem e interpretar como uma única palavra a ser exibida. Basicamente, o parâmetro inicial
-;; será transportado para o espaço de memória destinado à mensagem devidamente pronta para a exibição
+;; Now, the case of a word being passed as a parameter.
+;; This means that, even if it references an external character, ignore it.
+;; In this case, at least two terms must be passed. What's the point of carrying a character if
+;; there is no message?
+;; So, ignore the character and interpret it as a single word to be displayed. Basically, the
+;; initial parameter will be transported to the memory space allocated to the message properly
+;; ready for display
 
-.adicionarMensagem:
+.addMessage:
 
     clc
 
-    mov esi, [perfilVaquinha]
+    mov esi, [cowProfile]
 
-    mov [mensagemUsuario], esi ;; A mensagem está pronta para ser exibida
+    mov [userMessage], esi ;; The message is ready to be displayed
 
-    mov byte[arquivoExterno], 00h ;; Marcar como utilização do personagem interno
+    mov byte[externalFile], 00h ;; Mark as use of internal character
 
     ret
 
 ;;************************************************************************************
 
-;; Realiza a busca de um caractere específico na String fornecida
+;; Searches for a specific character in the given String
 ;;
-;; Entrada:
+;; Input:
 ;;
-;; ESI - String à ser verificada
-;; AL  - Caractere para procurar
+;; ESI - String to be checked
+;; AL  - Character to search for
 ;;
-;; Saída:
+;; Output:
 ;;
-;; ESI - Posição do caractere na String fornecida
+;; ESI - Character position in the given String
 
-encontrarCaractereCowsay:
+findCharacterCowsay:
 
     lodsb
 
     cmp al, ' '
-    je .pronto
+    je .done
 
-    jmp encontrarCaractereCowsay
+    jmp findCharacterCowsay
 
-.pronto:
+.done:
 
     mov byte[esi-1], 0
 
@@ -379,61 +385,61 @@ encontrarCaractereCowsay:
 
 ;;************************************************************************************
 
-usoAplicativo:
+applicationUsage:
 
-    fputs cowsay.uso
+    fputs cowsay.use
 
-    jmp terminar
+    jmp finish
 
 ;;************************************************************************************
 
-terminar:
+finish:
 
     hx.syscall encerrarProcesso
 
 ;;************************************************************************************
 
-versaoCOWSAY equ "2.2.0"
+VERSION equ "2.3.0"
 
 cowsay:
 
-.uso:
+.use:
 db 10, "Usage: cowsay [profile] [message]", 10, 10
 db "Display a message to the user.", 10, 10
 db "You can change the entity that displays the message.", 10
 db "This change must be requested BEFORE the message.", 10
 db 'In the case of a sentence, the character " must appear before and after the sentence.', 10, 10
-db "cowsay version ", versaoCOWSAY, 10, 10
+db "cowsay version ", VERSION, 10, 10
 db "Copyright (C) 2020-", __stringano, " Felipe Miguel Nery Lunkes", 10
 db "All rights reserved.", 0
-.parametroAjuda:
+.helpParameter:
 db "?", 0
-.parametroAjuda2:
+.helpParameter2:
 db "--help", 0
-.espaco:
+.espace:
 db " ", 0
-.barra:
+.bar:
 db "|", 0
-.linhaSuperior:
+.topLine:
 db "_", 0
-.linhaInferior:
+.bottomLine:
 db "-", 0
-.vaquinha:
+.cow:
 db "   \", 10
 db "    \   ^__^", 10
 db "     \  (oo)\_______", 10
 db "        (__)\       )\/\", 10
 db "             ||----w |", 10
 db "             ||     ||", 0
-.extensaoCOW:
+.extensionCOW:
 db ".cow", 0
 
-parametro:       dd ?
-perfilVaquinha:  dd ?
-mensagemUsuario: dd ?
-arquivoExterno:  db 0
-tamanhoMensagem: dd 0
+parameters:      dd ?
+cowProfile:      dd ?
+userMessage:     dd ?
+externalFile:    db 0
+userMessageSize: dd 0
 
 ;;************************************************************************************
 
-bufferArquivo:
+appFileBuffer:
