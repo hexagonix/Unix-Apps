@@ -68,12 +68,12 @@
 
 use32
 
-;; Agora vamos criar um cabeçalho para a imagem HAPP final do aplicativo.
+;; Now let's create a HAPP header for the application
 
-include "HAPP.s" ;; Aqui está uma estrutura para o cabeçalho HAPP
+include "HAPP.s" ;; Here is a structure for the HAPP header
 
-;; Instância | Estrutura | Arquitetura | Versão | Subversão | Entrada | Tipo
-cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, inicioAPP, 01h
+;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
+cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, applicationStart, 01h
 
 ;;************************************************************************************
 
@@ -83,33 +83,33 @@ include "macros.s"
 
 ;;************************************************************************************
 ;;
-;; Dados do aplicativo
+;;                        Application variables and data
 ;;
 ;;************************************************************************************
 
-versaoFNT equ "0.6.8"
+VERSION equ "0.7.0"
 
 fnt:
 
-.uso:
+.use:
 db 10, "Usage: fnt [graphic font file]", 10, 10
 db "Changes the system font.", 10, 10
-db "fnt version ", versaoFNT, 10, 10
+db "fnt version ", VERSION, 10, 10
 db "Copyright (C) 2022-", __stringano, " Felipe Miguel Nery Lunkes", 10
 db "All rights reserved.", 0
-.nomeArquivo:
+.fileName:
 db 10, "Font filename: ", 0
-.nomeFonte:
+.fontFileName:
 db "Filename: ", 0
-.falhaFormato:
+.invalidFormat:
 db 10, "The file does not contain a font in Hexagon format.", 0
-.sucesso:
+.success:
 db 10, 10, "Font changed successfully.", 0
-.falha:
+.error:
 db 10, "File not found.", 0
-.introducaoTeste:
+.testIntro:
 db 10, "Font preview: ", 0
-.testeFonte:
+.fontTest:
 db 10, 10
 db "Hexagonix Operating System", 10, 10
 db "1234567890-=", 10
@@ -121,166 +121,165 @@ db "asdfghjkl;'\", 10
 db "ZXCVBNM<>?", 10
 db "zxcvbnm,./", 10, 10
 db "Hexagonix Operating System", 10, 0
-.tamanhoSuperior:
+.biggerSize:
 db 10, "This font file exceeds the maximum size of 2 Kb.", 0
-.parametroAjuda:
+.helpParameter:
 db "?", 0
-.parametroAjuda2:
+.helpParameter2:
 db "--help", 0
 
-parametro: dd 0
+parameters: dd 0
 
 ;;************************************************************************************
 
-inicioAPP:
+applicationStart:
 
-    push ds ;; Segmento de dados do modo usuário (seletor 38h)
+    push ds ;; User mode data segment (38h selector)
     pop es
 
-    mov [parametro], edi
+    mov [parameters], edi
 
-    mov esi, [parametro]
+    mov esi, [parameters]
 
     cmp byte[esi], 0
-    je usoAplicativo
+    je applicationUsage
 
-    mov edi, fnt.parametroAjuda
-    mov esi, [parametro]
-
-    hx.syscall compararPalavrasString
-
-    jc usoAplicativo
-
-    mov edi, fnt.parametroAjuda2
-    mov esi, [parametro]
+    mov edi, fnt.helpParameter
+    mov esi, [parameters]
 
     hx.syscall compararPalavrasString
 
-    jc usoAplicativo
+    jc applicationUsage
 
-    fputs fnt.nomeArquivo
+    mov edi, fnt.helpParameter2
+    mov esi, [parameters]
 
-    fputs [parametro]
+    hx.syscall compararPalavrasString
 
-    mov esi, [parametro]
+    jc applicationUsage
 
-    hx.syscall cortarString ;; Remover espaços em branco extras
+    fputs fnt.fileName
 
-    call validarFonte
+    fputs [parameters]
 
-    jc .erroFormato
+    mov esi, [parameters]
+
+    hx.syscall cortarString ;; Remove extra spaces
+
+    call validateFont
+
+    jc .formatError
 
     hx.syscall alterarFonte
 
-    jc .erroTexto
+    jc .textError
 
-    fputs fnt.sucesso
+    fputs fnt.success
 
-    fputs fnt.introducaoTeste
+    fputs fnt.testIntro
 
-    fputs fnt.testeFonte
-
-    mov ebx, 00h
-
-    hx.syscall encerrarProcesso
-
-.erroTexto:
-
-    fputs fnt.falha
-
-    jmp .erroFim
-
-.erroFormato:
-
-    fputs fnt.falhaFormato
-
-    jmp .erroFim
-
-.erroFim:
-
-    mov ebx, 00h
-
-    jmp terminar
-
-;;************************************************************************************
-
-terminar:
+    fputs fnt.fontTest
 
     mov ebx, 00h
 
     hx.syscall encerrarProcesso
 
+.textError:
+
+    fputs fnt.error
+
+    jmp .endError
+
+.formatError:
+
+    fputs fnt.invalidFormat
+
+    jmp .endError
+
+.endError:
+
+    mov ebx, 00h
+
+    jmp finish
+
 ;;************************************************************************************
 
-usoAplicativo:
+finish:
 
-    fputs fnt.uso
+    mov ebx, 00h
 
-    jmp terminar
+    hx.syscall encerrarProcesso
 
 ;;************************************************************************************
 
-validarFonte:
+applicationUsage:
 
-    mov esi, [parametro]
-    mov edi, bufferArquivo
+    fputs fnt.use
+
+    jmp finish
+
+;;************************************************************************************
+
+validateFont:
+
+    mov esi, [parameters]
+    mov edi, appFileBuffer
 
     hx.syscall hx.open
 
-    jc .erroSemFonte
+    jc .withoutFontError
 
-    mov edi, bufferArquivo
+    mov edi, appFileBuffer
 
     cmp byte[edi+0], "H"
-    jne .naoHFNT
+    jne .notHFNT
 
     cmp byte[edi+1], "F"
-    jne .naoHFNT
+    jne .notHFNT
 
     cmp byte[edi+2], "N"
-    jne .naoHFNT
+    jne .notHFNT
 
     cmp byte[edi+3], "T"
-    jne .naoHFNT
+    jne .notHFNT
 
-.verificarTamanho:
+.validateSize:
 
     hx.syscall arquivoExiste
 
-;; Em EAX, o tamanho do arquivo. Ele não deve ser maior que 2000 bytes, o que poderia
-;; sobrescrever dados na memória do Hexagon
+;; In EAX, the file size. It must not be larger than 2000 bytes
 
     mov ebx, 2000
 
     cmp eax, ebx
-    jng .continuar
+    jng .continue
 
-    jmp .tamanhoSuperior
+    jmp .biggerSize
 
-.continuar:
+.continue:
 
     clc
 
     ret
 
-.erroSemFonte:
+.withoutFontError:
 
-    fputs fnt.falha
+    fputs fnt.error
 
-    jmp terminar
+    jmp finish
 
-.naoHFNT:
+.notHFNT:
 
     stc
 
     ret
 
-.tamanhoSuperior:
+.biggerSize:
 
-    fputs fnt.tamanhoSuperior
+    fputs fnt.biggerSize
 
-    jmp terminar
+    jmp finish
 
 ;;************************************************************************************
 
-bufferArquivo:
+appFileBuffer:
