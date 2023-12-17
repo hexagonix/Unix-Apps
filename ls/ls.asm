@@ -68,16 +68,14 @@
 
 use32
 
-;; Agora vamos criar um cabeçalho para a imagem HAPP final do aplicativo.
+;; Now let's create a HAPP header for the application
 
-include "HAPP.s" ;; Aqui está uma estrutura para o cabeçalho HAPP
+include "HAPP.s" ;; Here is a structure for the HAPP header
 
-;; Instância | Estrutura | Arquitetura | Versão | Subversão | Entrada | Tipo
-cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, inicioAPP, 01h
+;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
+cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, applicationStart, 01h
 
 ;;************************************************************************************
-
-align 4
 
 include "hexagon.s"
 include "console.s"
@@ -85,102 +83,101 @@ include "macros.s"
 
 ;;************************************************************************************
 
-inicioAPP:
+applicationStart:
 
-    push ds ;; Segmento de dados do modo usuário (seletor 38h)
+    push ds ;; User mode data segment (38h selector)
     pop es
 
-    mov [parametro], edi ;; Salvar os parâmetros da linha de comando para uso futuro
-
-;;************************************************************************************
+    mov [parameters], edi ;; Save command line parameters for future use
 
     hx.syscall obterCor
 
-    mov dword[ls.corFonte], eax
-    mov dword[ls.corFundo], ebx
+    mov dword[ls.fontColor], eax
+    mov dword[ls.backgroundColor], ebx
 
-;; A resolução em uso será verificada, para que o aplicativo se adapte ao tamanho da saída e à quantidade de informações
-;; que podem ser exibidas por linha. Desta forma, ele pode exibir um número menor de arquivos com menor resolução e um
-;; número maior por linha caso a resolução permita.
+;; The resolution in use will be checked, so the application adapts to the size of the output and
+;; the amount of information that can be displayed per line.
+;; This way, it can display a smaller number of files with lower resolution and a larger number
+;;  per line if the resolution allows it.
 
-verificarResolucao:
+checkResolution:
 
     hx.syscall obterResolucao
 
     cmp eax, 1
-    je .modoGrafico1
+    je .graphicsMode1
 
     cmp eax, 2
-    je .modoGrafico2
+    je .graphicsMode2
 
-;; Podem ser exibidos (n+1) arquivos, visto que o contador inicia a contagem de zero. Utilizar essa informação
-;; para implementações futuras no aplicativo.
+;; (n+1) files can be displayed, as the counter starts counting from zero.
+;; Use this information for future implementations in the application.
 
-.modoGrafico1:
+.graphicsMode1:
 
-    mov dword[limiteExibicao], 5h ;; Podem ser exibidos 6 arquivos por linha (n+1)
+    mov dword[displayLimit], 5h ;; 6 files can be displayed per line (n+1)
 
-    jmp verificarParametros
+    jmp checkParameters
 
-.modoGrafico2:
+.graphicsMode2:
 
-    mov dword[limiteExibicao], 7h ;; Podem ser exibidos 8 arquivos por linha (n+1)
+    mov dword[displayLimit], 7h ;; 8 files can be displayed per line (n+1)
 
-    jmp verificarParametros
+    jmp checkParameters
 
 ;;************************************************************************************
 
-;; Agora os parâmetros serão verificados e as ações necessárias serão tomadas
+;; Now the parameters will be checked and necessary actions will be taken
 
-verificarParametros:
+checkParameters:
 
-    mov esi, [parametro]
+    mov esi, [parameters]
 
-    mov edi, ls.parametroAjuda
-    mov esi, [parametro]
-
-    hx.syscall compararPalavrasString
-
-    jc usoAplicativo
-
-    mov edi, ls.parametroAjuda2
-    mov esi, [parametro]
+    mov edi, ls.helpParameter
+    mov esi, [parameters]
 
     hx.syscall compararPalavrasString
 
-    jc usoAplicativo
+    jc applicationUsage
 
-    mov edi, ls.parametroTudo
-    mov esi, [parametro]
+    mov edi, ls.helpParameter2
+    mov esi, [parameters]
 
     hx.syscall compararPalavrasString
 
-    jc configurarExibicao
+    jc applicationUsage
+
+    mov edi, ls.parameterAllFiles
+    mov esi, [parameters]
+
+    hx.syscall compararPalavrasString
+
+    jc configureDisplay
 
     cmp byte[esi], 0
-    je listar
+    je list
 
-    jmp verificarArquivo
-
-;;************************************************************************************
-
-configurarExibicao:
-
-    mov byte[ls.exibirTudo], 01h
-
-    jmp listar
+    jmp checkFile
 
 ;;************************************************************************************
 
-listar:
+configureDisplay:
 
-    novaLinha
+    mov byte[ls.listAll], 01h
 
-    hx.syscall listarArquivos ;; Obter arquivos em ESI
+    jmp list
 
-    jc .erroLista
+;;************************************************************************************
 
-    mov [listaRemanescente], esi
+list:
+
+    putNewLine
+
+    hx.syscall listarArquivos ;; Get files in ESI
+
+    jc .listError
+
+    mov [remainingList], esi
 
     push eax
 
@@ -189,320 +186,320 @@ listar:
     xor ecx, ecx
     xor edx, edx
 
-.loopArquivos:
+.loopFiles:
 
-    push ds ;; Segmento de dados do modo usuário (seletor 38h)
+    push ds ;; User mode data segment (38h selector)
     pop es
 
     push ebx
     push ecx
 
-    call lerListaArquivos
+    call readFileList
 
     push esi
 
     sub esi, 5
 
-    mov edi, ls.extensaoAPP
+    mov edi, ls.extensionAPP
 
-    hx.syscall compararPalavrasString ;; Checar por extensão .APP
+    hx.syscall compararPalavrasString ;; Check for .APP extension
 
-    jc .aplicativo
+    jc .application
 
-    mov edi, ls.extensaoSIS
-
-    hx.syscall compararPalavrasString
-
-    jc .sistema
-
-    mov edi, ls.extensaoASM
+    mov edi, ls.extensionSIS
 
     hx.syscall compararPalavrasString
 
-    jc .fonteASM
+    jc .system
 
-    mov edi, ls.extensaoBIN
-
-    hx.syscall compararPalavrasString
-
-    jc .arquivoBIN
-
-    mov edi, ls.extensaoUNX
+    mov edi, ls.extensionASM
 
     hx.syscall compararPalavrasString
 
-    jc .arquivoUNX
+    jc .fileASM
 
-    mov edi, ls.extensaoFNT
-
-    hx.syscall compararPalavrasString
-
-    jc .arquivoFNT
-
-    mov edi, ls.extensaoOCL
+    mov edi, ls.extensionBIN
 
     hx.syscall compararPalavrasString
 
-    jc .arquivoOCL
+    jc .fileBIN
 
-    mov edi, ls.extensaoMOD
-
-    hx.syscall compararPalavrasString
-
-    jc .arquivoMOD
-
-    mov edi, ls.extensaoCOW
+    mov edi, ls.extensionUNX
 
     hx.syscall compararPalavrasString
 
-    jc .arquivoCOW
+    jc .fileUNX
 
-    mov edi, ls.extensaoMAN
+    mov edi, ls.extensionFNT
 
     hx.syscall compararPalavrasString
 
-    jc .arquivoMAN
+    jc .fileFNT
 
-    jmp .arquivoComum
+    mov edi, ls.extensionOCL
 
-.aplicativo:
+    hx.syscall compararPalavrasString
+
+    jc .fileOCL
+
+    mov edi, ls.extensionMOD
+
+    hx.syscall compararPalavrasString
+
+    jc .fileMOD
+
+    mov edi, ls.extensionCOW
+
+    hx.syscall compararPalavrasString
+
+    jc .fileCOW
+
+    mov edi, ls.extensionMAN
+
+    hx.syscall compararPalavrasString
+
+    jc .fileMAN
+
+    jmp .commonFile
+
+.application:
 
     pop esi
 
     mov eax, VERDE_FLORESTA
 
-    call definirCorArquivo
+    call setFileColor
 
-    fputs [arquivoAtual]
+    fputs [currentFile]
 
-    call definirCorPadrao
+    call setDefaultColor
 
-    jmp .continuar
+    jmp .continue
 
-.sistema:
+.system:
 
     pop esi
 
     mov eax, AZUL_MEDIO
 
-    call definirCorArquivo
+    call setFileColor
 
-    fputs [arquivoAtual]
+    fputs [currentFile]
 
-    call definirCorPadrao
+    call setDefaultColor
 
-    jmp .continuar
+    jmp .continue
 
-.fonteASM:
+.fileASM:
 
     pop esi
 
     mov eax, VERMELHO
 
-    call definirCorArquivo
+    call setFileColor
 
-    fputs [arquivoAtual]
+    fputs [currentFile]
 
-    call definirCorPadrao
+    call setDefaultColor
 
-    jmp .continuar
+    jmp .continue
 
-.arquivoBIN:
+.fileBIN:
 
     pop esi
 
     mov eax, VIOLETA_ESCURO
 
-    call definirCorArquivo
+    call setFileColor
 
-    fputs [arquivoAtual]
+    fputs [currentFile]
 
-    call definirCorPadrao
+    call setDefaultColor
 
-    jmp .continuar
+    jmp .continue
 
-.arquivoUNX:
+.fileUNX:
 
     pop esi
 
     mov eax, MARROM_PERU
 
-    call definirCorArquivo
+    call setFileColor
 
-    fputs [arquivoAtual]
+    fputs [currentFile]
 
-    call definirCorPadrao
+    call setDefaultColor
 
-    jmp .continuar
+    jmp .continue
 
-.arquivoOCL: ;; Obrigatoriamente, não deve ser exibido
-
-    pop esi
-
-    jmp .pularExibicao
-
-.arquivoMOD:
+.fileOCL: ;; It must not be displayed
 
     pop esi
 
-    cmp byte[ls.exibirTudo], 01h
-    jne .pularExibicao
+    jmp .skipFile
+
+.fileMOD:
+
+    pop esi
+
+    cmp byte[ls.listAll], 01h
+    jne .skipFile
 
     mov eax, HEXAGONIX_BLOSSOM_LAVANDA
 
-    call definirCorArquivo
+    call setFileColor
 
-    fputs [arquivoAtual]
+    fputs [currentFile]
 
-    call definirCorPadrao
+    call setDefaultColor
 
-    jmp .continuar
+    jmp .continue
 
-.arquivoCOW: ;; Obrigatoriamente, não deve ser exibido
+.fileCOW: ;; It must not be displayed
 
     pop esi
 
-    cmp byte[ls.exibirTudo], 01h
-    jne .pularExibicao
+    cmp byte[ls.listAll], 01h
+    jne .skipFile
 
     mov eax, HEXAGONIX_BLOSSOM_VERDE
 
-    call definirCorArquivo
+    call setFileColor
 
-    fputs [arquivoAtual]
+    fputs [currentFile]
 
-    call definirCorPadrao
+    call setDefaultColor
 
-    jmp .continuar
+    jmp .continue
 
-.arquivoMAN:
+.fileMAN:
 
     pop esi
 
-    cmp byte[ls.exibirTudo], 01h
-    jne .pularExibicao
+    cmp byte[ls.listAll], 01h
+    jne .skipFile
 
     mov eax, TOMATE
 
-    call definirCorArquivo
+    call setFileColor
 
-    fputs [arquivoAtual]
+    fputs [currentFile]
 
-    call definirCorPadrao
+    call setDefaultColor
 
-    jmp .continuar
+    jmp .continue
 
-.arquivoFNT:
+.fileFNT:
 
     pop esi
 
-    cmp byte[ls.exibirTudo], 01h
-    jne .pularExibicao
+    cmp byte[ls.listAll], 01h
+    jne .skipFile
 
     mov eax, HEXAGONIX_BLOSSOM_AZUL_PO
 
-    call definirCorArquivo
+    call setFileColor
 
-    fputs [arquivoAtual]
+    fputs [currentFile]
 
-    call definirCorPadrao
+    call setDefaultColor
 
-    jmp .continuar
+    jmp .continue
 
-.pularExibicao:
+.skipFile:
 
     dec edx
 
-    jmp .semEspaco
+    jmp .withoutSpace
 
-.arquivoComum:
+.commonFile:
 
     pop esi
 
     mov eax, HEXAGONIX_BLOSSOM_VERDE_CLARO
 
-    call definirCorArquivo
+    call setFileColor
 
-    fputs [arquivoAtual]
+    fputs [currentFile]
 
-    call definirCorPadrao
+    call setDefaultColor
 
-    jmp .continuar
+    jmp .continue
 
-.continuar:
+.continue:
 
-    call colocarEspaco
+    call putSpace
 
-.semEspaco:
+.withoutSpace:
 
     pop ecx
     pop ebx
 
     cmp ecx, ebx
-    je .terminado
+    je .finished
 
-    cmp edx, [limiteExibicao]
-    je .criarNovaLinha
+    cmp edx, [displayLimit]
+    je .createNewLine
 
     inc ecx
     inc edx
 
-    jmp .loopArquivos
+    jmp .loopFiles
 
-.criarNovaLinha:
+.createNewLine:
 
     xor edx, edx
 
-;; Correção para não adicionar linhas a mais
+;; Correction to not add more lines
 
     add ecx, 1
 
-;; Continuar
+;; Continue
 
-    novaLinha
+    putNewLine
 
-    jmp .loopArquivos
+    jmp .loopFiles
 
-.terminado:
+.finished:
 
-    cmp edx, 1h  ;; Verifica se existe algum arquivo solitário em uma linha
-    jl terminar
+    cmp edx, 1h  ;; Checks if there is any lone file in a line
+    jl finish
 
-    ;; novaLinha
+    ;; putNewLine
 
-    jmp terminar
+    jmp finish
 
-.erroLista:
+.listError:
 
-    fputs ls.erroLista
+    fputs ls.listError
 
-    jmp terminar
-
-;;************************************************************************************
-
-usoAplicativo:
-
-    fputs ls.uso
-
-    jmp terminar
+    jmp finish
 
 ;;************************************************************************************
 
-terminar:
+applicationUsage:
+
+    fputs ls.use
+
+    jmp finish
+
+;;************************************************************************************
+
+finish:
 
     hx.syscall encerrarProcesso
 
 ;;************************************************************************************
 
-;; Função única para definir a cor de representação de determinado arquivo
+;; Function to set the representation color of a given file
 ;;
-;; Entrada:
+;; Input:
 ;;
-;; EAX - Cor do texto
+;; EAX - Text color
 
-definirCorArquivo:
+setFileColor:
 
-    mov ebx, dword[ls.corFundo]
+    mov ebx, dword[ls.backgroundColor]
 
     hx.syscall definirCor
 
@@ -510,10 +507,10 @@ definirCorArquivo:
 
 ;;************************************************************************************
 
-definirCorPadrao:
+setDefaultColor:
 
-    mov eax, dword[ls.corFonte]
-    mov ebx, dword[ls.corFundo]
+    mov eax, dword[ls.fontColor]
+    mov ebx, dword[ls.backgroundColor]
 
     hx.syscall definirCor
 
@@ -521,16 +518,16 @@ definirCorPadrao:
 
 ;;************************************************************************************
 
-colocarEspaco:
+putSpace:
 
     push ecx
     push ebx
     push eax
 
-    push ds ;; Segmento de dados do modo usuário (seletor 38h)
+    push ds ;; User mode data segment (38h selector)
     pop es
 
-    mov esi, [arquivoAtual]
+    mov esi, [currentFile]
 
     hx.syscall tamanhoString
 
@@ -540,7 +537,7 @@ colocarEspaco:
 
     mov ecx, ebx
 
-.loopEspaco:
+.loopSpace:
 
     mov al, ' '
 
@@ -549,11 +546,11 @@ colocarEspaco:
     dec ecx
 
     cmp ecx, 0
-    je .terminado
+    je .finished
 
-    jmp .loopEspaco
+    jmp .loopSpace
 
-.terminado:
+.finished:
 
     pop eax
     pop ebx
@@ -563,32 +560,31 @@ colocarEspaco:
 
 ;;************************************************************************************
 
-;; Obtem os parâmetros necessários para o funcionamento do programa, diretamente da linha
-;; de comando fornecida pelo Sistema
+;; Get parameters directly from the command line
 
-lerListaArquivos:
+readFileList:
 
-    push ds ;; Segmento de dados do modo usuário (seletor 38h)
+    push ds ;; User mode data segment (38h selector)
     pop es
 
-    mov esi, [listaRemanescente]
-    mov [arquivoAtual], esi
+    mov esi, [remainingList]
+    mov [currentFile], esi
 
     mov al, ' '
 
     hx.syscall encontrarCaractere
 
-    jc .pronto
+    jc .done
 
     mov al, ' '
 
-    call encontrarCaractereListaArquivos
+    call findCharacterFileList
 
-    mov [listaRemanescente], esi
+    mov [remainingList], esi
 
-    jmp .pronto
+    jmp .done
 
-.pronto:
+.done:
 
     clc
 
@@ -596,27 +592,27 @@ lerListaArquivos:
 
 ;;************************************************************************************
 
-;; Realiza a busca de um caractere específico na String fornecida
+;; Searches for a specific character in the given String
 ;;
-;; Entrada:
+;; Input:
 ;;
-;; ESI - String à ser verificada
-;; AL  - Caractere para procurar
+;; ESI - String to be checked
+;; AL  - Character to search for
 ;;
-;; Saída:
+;; Output:
 ;;
-;; ESI - Posição do caractere na String fornecida
+;; ESI - Character position in the given String
 
-encontrarCaractereListaArquivos:
+findCharacterFileList:
 
     lodsb
 
     cmp al, ' '
-    je .pronto
+    je .done
 
-    jmp encontrarCaractereListaArquivos
+    jmp findCharacterFileList
 
-.pronto:
+.done:
 
     mov byte[esi-1], 0
 
@@ -624,89 +620,92 @@ encontrarCaractereListaArquivos:
 
 ;;************************************************************************************
 
-verificarArquivo:
+checkFile:
 
-    mov esi, [parametro]
+    mov esi, [parameters]
 
     hx.syscall arquivoExiste
 
-    jc terminar
+    jc finish
 
-    novaLinha
-    novaLinha
+    putNewLine
+    putNewLine
 
-    mov esi, [parametro]
+    mov esi, [parameters]
 
     hx.syscall stringParaMaiusculo
 
-    mov [parametro], esi
+    mov [parameters], esi
 
     imprimirString
 
-    jmp terminar
+    jmp finish
 
 ;;************************************************************************************
 
 ;;************************************************************************************
 ;;
-;;                    Área de dados e variáveis do aplicativo
+;;                        Application variables and data
 ;;
 ;;************************************************************************************
 
-versaoLS equ "3.2.4.0"
+VERSION equ "3.3.0"
 
 ls:
 
-.extensaoAPP:
+.extensionAPP:
 db ".APP", 0
-.extensaoSIS:
+.extensionSIS:
 db ".SIS", 0
-.extensaoASM:
+.extensionASM:
 db ".ASM", 0
-.extensaoBIN:
+.extensionBIN:
 db ".BIN", 0
-.extensaoUNX:
+.extensionUNX:
 db ".UNX", 0
-.extensaoFNT:
+.extensionFNT:
 db ".FNT", 0
-.extensaoOCL:
+.extensionOCL:
 db ".OCL", 0
-.extensaoCOW:
+.extensionCOW:
 db ".COW", 0
-.extensaoMAN:
+.extensionMAN:
 db ".MAN", 0
-.extensaoMOD:
+.extensionMOD:
 db ".MOD", 0
-.erroLista:
+.listError:
 db 10, "Error listing the files present on the volume.", 0
-.uso:
+.use:
 db 10, "Usage: ls", 10, 10
 db "Lists and displays the files present on the current volume, sorting them by type.", 10, 10
 db "Available parameters:", 10, 10
 db "-a - List all files available on the volume.", 10, 10
-db "ls version ", versaoLS, 10, 10
+db "ls version ", VERSION, 10, 10
 db "Copyright (C) 2017-", __stringano, " Felipe Miguel Nery Lunkes", 10
 db "All rights reserved.", 0
-.parametroAjuda:
+.helpParameter:
 db "?", 0
-.parametroAjuda2:
+.helpParameter2:
 db "--help", 0
-.parametroTudo:
+.parameterAllFiles:
 db "-a" ,0
-.exibirTudo: db 0
-.corFonte:   dd 0
-.corFundo:   dd 0
-.corAPP:     dd 0
-.corSIS:     dd 0
-.corASM:     dd 0
-.corBIN:     dd 0
-.corUNX:     dd 0
-.corFNT:     dd 0
-.corOCL:     dd 0
-.corCOW:     dd 0
-.corMAN:     dd 0
+.listAll:
+db 0
+.fontColor:
+dd 0
+.backgroundColor:
+dd 0
+.colorAPP: dd 0
+.colorSIS: dd 0
+.colorASM: dd 0
+.colorBIN: dd 0
+.colorUNX: dd 0
+.colorFNT: dd 0
+.colorOCL: dd 0
+.colorCOW: dd 0
+.colorMAN: dd 0
 
-parametro:         dd ?
-listaRemanescente: dd ?
-limiteExibicao:    dd 0
-arquivoAtual:      dd ' '
+parameters:    dd ?
+remainingList: dd ?
+displayLimit:  dd 0
+currentFile:   dd ' '
