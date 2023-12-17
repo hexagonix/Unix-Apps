@@ -77,12 +77,13 @@
 
 use32
 
-;; Agora vamos criar um cabeçalho para a imagem HAPP final do aplicativo.
+;; Now let's create a HAPP header for the application
 
-include "HAPP.s" ;; Aqui está uma estrutura para o cabeçalho HAPP
+include "HAPP.s" ;; Here is a structure for the HAPP header
 
-;; Instância | Estrutura | Arquitetura | Versão | Subversão | Entrada | Tipo
-cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, iniciologind, 01h
+;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
+cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, daemonStart, 01h
+
 
 ;;************************************************************************************
 
@@ -93,24 +94,24 @@ include "log.s"
 include "dev.s"
 include "verUtils.s"
 
-tamanhoLimiteBusca = 32768
+searchSizeLimit = 32768
 
 ;;************************************************************************************
 ;;
-;;                    Área de dados e variáveis do aplicativo
+;;                        Application variables and data
 ;;
 ;;************************************************************************************
 
 ;;************************************************************************************
 
-versaoLOGIND equ "1.11.1"
+VERSION equ "1.12.0"
 
 logind:
 
 match =Moderno, TIPOLOGIN
 {
 
-.sobreSistema:
+.aboutSystem:
 db 10,10
 db "  88                                                                                88", 10
 db "  88                                                                                ''", 10
@@ -131,83 +132,83 @@ db "                                     All rights reserved.", 10, 0
 match =Hexagonix, TIPOLOGIN
 {
 
-.sobreSistema: db 0
+.aboutSystem: db 0
 
 }
 
-.arquivo:
-db "passwd", 0 ;; Nome do arquivo de configuração de login
-.posicaoBX: ;; Marcação da posição de busca no conteúdo do arquivo
+.file:
+db "passwd", 0 ;; Login configuration filename
+.positionBX: ;; Marking the search position in the file content
 dw 0
-.versaoSistema:
+.systemVersion:
 db 10, "Hexagonix ", 0
 .console:
 db " (tty0)", 0
-.semArquivoUnix:
+.fileNotFound:
 db 10, 10, "The user database was not found on the volume.", 10, 0
-.colcheteEsquerdo:
+.leftBracket:
 db " [", 0
-.colcheteDireito:
+.rightBracket:
 db "]", 0
-.temaClaro:
+.lightTheme:
 db "light", 0
-.temaEscuro:
+.darkTheme:
 db "dark", 0
-.semVersao:
+.unknownVersion:
 db "[unknown]", 0
 .verboseLogind:
-db "logind version ", versaoLOGIND, ".", 0
+db "logind version ", VERSION, ".", 0
 .OOBE:
 db "oobe", 0
 
 ;; Buffers
 
-escolhaTema: ;; Buffer para o tema definido pelo usuário
+themeChosen: ;; Buffer for user-defined theme
 times 7 db 0
 
 ;;************************************************************************************
 
-iniciologind: ;; Ponto de entrada
+daemonStart: ;; Entry point
 
-;; O logind é um daemon que só deve ser utilizado durante a inicialização.
-;; Para isso, ele deve checar se o PID é 3 (init=1 e login=2).
+;; logind is a daemon that should only be used during startup.
+;; To do this, it must check if the PID is 3 (init=1 and login=2).
 
     hx.syscall obterPID
 
     cmp eax, 03h
-    je iniciarExecucao
+    je startProcessing
 
     hx.syscall encerrarProcesso
 
-iniciarExecucao:
+startProcessing:
 
     logSistema logind.verboseLogind, 0, Log.Prioridades.p4
 
-;; Agora vamos inicializar o console virtual tty1, limpando seu conteúdo e definindo suas
-;; propriedades gráficas. Primeiro, devemos salvar a posição do cursor no console atual,
-;; uma vez que ele terá sua posição reiniciada com a limpeza do console. Essa etapa tira essa
-;; complexidade do Hexagon, reduzindo possíveis bugs e permitindo expandir para outros consoles
-;; no futuro sem precisar alterar algo no kernel.
+;; Now let's initialize the tty1 virtual console, clearing its contents and setting
+;; its graphical properties. First, we must save the cursor position in the current console,
+;; since it will have its position reset when the console is cleared.
+;; This step takes this complexity out of Hexagon, reducing possible bugs and allowing expand to
+;; other consoles in the future without having to change anything in the kernel.
 
     hx.syscall obterCursor
 
-    push edx ;; Salvar posição atual do console
+    push edx ;; Save current console position
 
-    mov esi, Hexagon.LibASM.Dev.video.tty1 ;; Abre o console secundário
+    mov esi, Hexagon.LibASM.Dev.video.tty1 ;; Open the secondary console
 
-    hx.syscall hx.open ;; Abre o dispositivo
+    hx.syscall hx.open ;; Open the device
 
     hx.syscall limparTela
 
-    mov esi, Hexagon.LibASM.Dev.video.tty0 ;; Reabre o console padrão
+    mov esi, Hexagon.LibASM.Dev.video.tty0 ;; Reopen the default console
 
-    hx.syscall hx.open ;; Abre o dispositivo
+    hx.syscall hx.open ;; Open the device
 
     pop edx ;; Restaurar posição do console
 
     hx.syscall definirCursor
 
-.verificarOOBE:
+.verifyOOBE:
 
     mov esi, logind.OOBE
 
@@ -218,168 +219,168 @@ iniciarExecucao:
 
     hx.syscall iniciarProcesso
 
-    jc .continuar
+    jc .continue
 
-.continuar:
+.continue:
 
-    call checarBaseDados
+    call checkDatabase
 
 match =Moderno, TIPOLOGIN
 {
 
-    call verificarTema
+    call verifyTheme
 
     hx.syscall limparTela
 
 }
 
-    call exibirInfoSistema
+    call displaySystemInfo
 
-    jmp terminar
+    jmp finish
 
 ;;************************************************************************************
 
-verificarTema:
+verifyTheme:
 
     pusha
 
     push es
 
-    push ds ;; Segmento de dados do modo usuário (seletor 38h)
+    push ds ;; User mode data segment (38h selector)
     pop es
 
-    mov esi, logind.arquivo
-    mov edi, bufferArquivo
+    mov esi, logind.file
+    mov edi, appFileBuffer
 
     hx.syscall hx.open
 
-    jc .arquivoUsuarioAusente
+    jc .fileNotFound
 
-    mov si, bufferArquivo ;; Aponta para o buffer com o conteúdo do arquivo
-    mov bx, 0FFFFh ;; Inicia na posição -1, para que se possa encontrar os delimitadores
+    mov si, appFileBuffer ;; Points to the buffer with the file contents
+    mov bx, 0FFFFh ;; Starts at position -1, so you can find the delimiters
 
-.procurarEntreDelimitadores:
+.searchBetweenDelimiters:
 
     inc bx
 
-    mov word[logind.posicaoBX], bx
+    mov word[logind.positionBX], bx
 
-    cmp bx, tamanhoLimiteBusca
-    je .nomeTemaInvalido ;; Caso nada seja encontrado até o tamanho limite, cancele a busca
+    cmp bx, searchSizeLimit
+    je .invalidThemeName ;; If nothing is found within the size limit, cancel the search
 
     mov al, [ds:si+bx]
 
     cmp al, '<'
-    jne .procurarEntreDelimitadores ;; O limitador inicial foi encontrado
+    jne .searchBetweenDelimiters ;; The initial limiter has been found
 
-;; BX agora aponta para o primeiro caractere do nome de usuário resgatado do arquivo
+;; BX now points to the first character of the username retrieved from the file
 
-    push ds ;; Segmento de dados do modo usuário (seletor 38h)
+    push ds ;; User mode data segment (38h selector)
     pop es
 
-    mov di, escolhaTema ;; O tema será copiado para ES:DI
+    mov di, themeChosen ;; The theme will be copied to ES:DI
 
-    mov si, bufferArquivo
+    mov si, appFileBuffer
 
-    add si, bx ;; Mover SI para aonde BX aponta
+    add si, bx ;; Move SI to where BX points
 
-    mov bx, 0 ;; Iniciar em 0
+    mov bx, 0 ;; Start at 0
 
-.obterTema:
+.getTheme:
 
     inc bx
 
     cmp bx, 7
-    je .nomeTemaInvalido ;; Se nome de usuário maior que 15, o mesmo é inválido
+    je .invalidThemeName ;; If username is greater than 7, it is invalid
 
     mov al, [ds:si+bx]
 
-    cmp al, '>' ;; Se encontrar outro delimitador, o nome de usuário foi carregado com sucesso
-    je .temaObtido
+    cmp al, '>' ;; If another delimiter is found, the username was loaded successfully
+    je .themeObtained
 
-;; Se não estiver pronto, armazenar o caractere obtido
+;; If not ready, store the obtained character
 
     stosb
 
-    jmp .obterTema
+    jmp .getTheme
 
-.temaObtido:
+.themeObtained:
 
-    mov edi, escolhaTema
-    mov esi, logind.temaClaro
-
-    hx.syscall compararPalavrasString
-
-    jc .selecionarTemaClaro
-
-    mov edi, escolhaTema
-    mov esi, logind.temaEscuro
+    mov edi, themeChosen
+    mov esi, logind.lightTheme
 
     hx.syscall compararPalavrasString
 
-    jc .selecionarTemaEscuro
+    jc .selectLightTheme
 
-    mov word bx, [logind.posicaoBX]
+    mov edi, themeChosen
+    mov esi, logind.darkTheme
 
-    mov si, bufferArquivo
+    hx.syscall compararPalavrasString
 
-    jmp .procurarEntreDelimitadores
+    jc .selectDarkTheme
 
-.selecionarTemaClaro:
+    mov word bx, [logind.positionBX]
+
+    mov si, appFileBuffer
+
+    jmp .searchBetweenDelimiters
+
+.selectLightTheme:
 
     pop es
 
     popa
 
-    mov esi, Hexagon.LibASM.Dev.video.tty1 ;; Abrir primeiro console virtual
+    mov esi, Hexagon.LibASM.Dev.video.tty1 ;; Open first virtual console
 
-    hx.syscall hx.open ;; Abre o dispositivo
+    hx.syscall hx.open ;; Open the device
+
+    mov eax, HEXAGONIX_CLASSICO_PRETO
+    mov ebx, HEXAGONIX_CLASSICO_BRANCO
+
+    hx.syscall definirCor
+
+    hx.syscall limparTela ;; Clean the console
+
+    mov esi, Hexagon.LibASM.Dev.video.tty0 ;; Reopens the standard console
+
+    hx.syscall hx.open ;; Open the device
 
     mov eax, PRETO
     mov ebx, BRANCO_ANDROMEDA
 
     hx.syscall definirCor
 
-    hx.syscall limparTela ;; Limpa seu conteúdo
-
-    mov esi, Hexagon.LibASM.Dev.video.tty0 ;; Reabre o dispositivo de saída padrão
-
-    hx.syscall hx.open ;; Abre o dispositivo
-
-    mov eax, PRETO
-    mov ebx, BRANCO_ANDROMEDA
-
-    hx.syscall definirCor
-
-    hx.syscall limparTela ;; Limpa seu conteúdo
+    hx.syscall limparTela ;; Clean the console
 
     ret
 
-.selecionarTemaEscuro:
+.selectDarkTheme:
 
-    mov esi, Hexagon.LibASM.Dev.video.tty1 ;; Abrir primeiro console virtual
+    mov esi, Hexagon.LibASM.Dev.video.tty1 ;; Open first virtual console
 
-    hx.syscall hx.open ;; Abre o dispositivo
+    hx.syscall hx.open ;; Open the device
+
+    mov eax, HEXAGONIX_BLOSSOM_AMARELO
+    mov ebx, HEXAGONIX_BLOSSOM_CINZA
+
+    hx.syscall definirCor
+
+    hx.syscall limparTela ;; Clean the console
+
+    mov esi, Hexagon.LibASM.Dev.video.tty0 ;; Reopens the standard console
+
+    hx.syscall hx.open ;; Open the console
 
     mov eax, BRANCO_ANDROMEDA
     mov ebx, PRETO
 
     hx.syscall definirCor
 
-    hx.syscall limparTela ;; Limpa seu conteúdo
+    hx.syscall limparTela ;; Clean the console
 
-    mov esi, Hexagon.LibASM.Dev.video.tty0 ;; Reabre o console padrão
-
-    hx.syscall hx.open ;; Abre o dispositivo
-
-    mov eax, BRANCO_ANDROMEDA
-    mov ebx, PRETO
-
-    hx.syscall definirCor
-
-    hx.syscall limparTela ;; Limpa seu conteúdo
-
-.nomeTemaInvalido:
+.invalidThemeName:
 
     pop es
 
@@ -387,52 +388,53 @@ verificarTema:
 
     ret
 
-.arquivoUsuarioAusente:
+.fileNotFound:
 
     pop es
 
     popa
 
-    fputs logind.semArquivoUnix
+    fputs logind.fileNotFound
 
-    jmp terminar
+    jmp finish
 
 ;;************************************************************************************
 
-exibirInfoSistema:
+displaySystemInfo:
 
-    fputs logind.sobreSistema
+    fputs logind.aboutSystem
 
-    fputs logind.versaoSistema
+    fputs logind.systemVersion
 
     call obterVersaoDistribuicao
 
-    jc .erro
+    jc .error
 
     fputs versaoObtida
 
-    jmp .continuar
+    jmp .continue
 
-.erro:
+.error:
 
-    fputs logind.semVersao
+    fputs logind.unknownVersion
 
-    jmp .continuar
+    jmp .continue
 
-.continuar:
+.continue:
 
     fputs logind.console
 
-    novaLinha
+    putNewLine
 
     ret
 
 ;;************************************************************************************
 
-verificarConsistencia:
+checkConsistency:
 
-    call verificarTema ;; Caso algum processo seja finalizado após alterar
-                       ;; o plano de fundo padrão
+;; If any process is terminated after changing the default background
+
+    call verifyTheme
 
     hx.syscall limparTela
 
@@ -440,17 +442,17 @@ verificarConsistencia:
 
 ;;************************************************************************************
 
-terminar:
+finish:
 
     hx.syscall encerrarProcesso
 
 ;;************************************************************************************
 
-checarBaseDados:
+checkDatabase:
 
     clc
 
-    mov esi, logind.arquivo
+    mov esi, logind.file
 
     hx.syscall arquivoExiste
 
@@ -460,4 +462,4 @@ checarBaseDados:
 
 enderecoCarregamento:
 
-bufferArquivo: ;; Local onde o arquivo de configuração será aberto
+appFileBuffer: ;; Location where the configuration file will be opened
