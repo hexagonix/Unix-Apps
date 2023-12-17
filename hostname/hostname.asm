@@ -68,12 +68,12 @@
 
 use32
 
-;; Agora vamos criar um cabeçalho para a imagem HAPP final do aplicativo.
+;; Now let's create a HAPP header for the application
 
-include "HAPP.s" ;; Aqui está uma estrutura para o cabeçalho HAPP
+include "HAPP.s" ;; Here is a structure for the HAPP header
 
-;; Instância | Estrutura | Arquitetura | Versão | Subversão | Entrada | Tipo
-cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, inicioAPP, 01h
+;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
+cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, applicationStart, 01h
 
 ;;************************************************************************************
 
@@ -83,42 +83,42 @@ include "macros.s"
 
 ;;************************************************************************************
 
-inicioAPP:
+applicationStart:
 
-    push ds ;; Segmento de dados do modo usuário (seletor 38h)
+    push ds ;; User mode data segment (38h selector)
     pop es
 
-    mov [parametro], edi
+    mov [parameters], edi
 
-    mov esi, [parametro]
+    mov esi, [parameters]
 
     cmp byte[esi], 0
-    jne usoAplicativo
+    jne applicationUsage
 
-    mov edi, hostname.parametroAjuda
-    mov esi, [parametro]
-
-    hx.syscall compararPalavrasString
-
-    jc usoAplicativo
-
-    mov edi, hostname.parametroAjuda2
-    mov esi, [parametro]
+    mov edi, hostname.helpParameter
+    mov esi, [parameters]
 
     hx.syscall compararPalavrasString
 
-    jc usoAplicativo
+    jc applicationUsage
 
-    mov edi, bufferArquivo
-    mov esi, hostname.arquivoUnix
+    mov edi, hostname.helpParameter2
+    mov esi, [parameters]
+
+    hx.syscall compararPalavrasString
+
+    jc applicationUsage
+
+    mov edi, appFileBuffer
+    mov esi, hostname.fileUnix
 
     hx.syscall hx.open
 
-    jc .arquivoNaoEncontrado
+    jc .fileNotFound
 
-    novaLinha
+    putNewLine
 
-    mov esi, bufferArquivo
+    mov esi, appFileBuffer
 
     hx.syscall tamanhoString
 
@@ -129,27 +129,27 @@ inicioAPP:
 
     hx.syscall inserirCaractere
 
-    fputs bufferArquivo
+    fputs appFileBuffer
 
-    jmp terminar
+    jmp finish
 
-.arquivoNaoEncontrado:
+.fileNotFound:
 
-    fputs hostname.naoEncontrado
+    fputs hostname.notFound
 
-    jmp terminar
-
-;;************************************************************************************
-
-usoAplicativo:
-
-    fputs hostname.uso
-
-    jmp terminar
+    jmp finish
 
 ;;************************************************************************************
 
-terminar:
+applicationUsage:
+
+    fputs hostname.use
+
+    jmp finish
+
+;;************************************************************************************
+
+finish:
 
     hx.syscall encerrarProcesso
 
@@ -157,31 +157,31 @@ terminar:
 
 ;;************************************************************************************
 ;;
-;;                    Área de dados e variáveis do aplicativo
+;;                        Application variables and data
 ;;
 ;;************************************************************************************
 
-versaoHOSTNAME equ "1.2.0"
+VERSION equ "1.3.0"
 
 hostname:
 
-.naoEncontrado:
+.notFound:
 db 10, "Host file not found. Check that it has been set.", 0
-.uso:
+.use:
 db 10, "Usage: hostname", 10, 10
 db "Displays the hostname defined for this device.", 10, 10
-db "hostname version ", versaoHOSTNAME, 10, 10
+db "hostname version ", VERSION, 10, 10
 db "Copyright (C) 2021-", __stringano, " Felipe Miguel Nery Lunkes", 10
 db "All rights reserved.", 0
-.parametroAjuda:
+.helpParameter:
 db "?", 0
-.parametroAjuda2:
+.helpParameter2:
 db "--help", 0
-.arquivoUnix:
+.fileUnix:
 db "host", 0
 
-parametro: dd ?
+parameters: dd ?
 
 ;;************************************************************************************
 
-bufferArquivo:
+appFileBuffer:
