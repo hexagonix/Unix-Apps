@@ -68,12 +68,12 @@
 
 use32
 
-;; Agora vamos criar um cabeçalho para a imagem HAPP final do aplicativo.
+;; Now let's create a HAPP header for the application
 
-include "HAPP.s" ;; Aqui está uma estrutura para o cabeçalho HAPP
+include "HAPP.s" ;; Here is a structure for the HAPP header
 
-;; Instância | Estrutura | Arquitetura | Versão | Subversão | Entrada | Tipo
-cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, inicioAPP, 01h
+;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
+cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, applicationStart, 01h
 
 ;;************************************************************************************
 
@@ -83,163 +83,163 @@ include "macros.s"
 
 ;;************************************************************************************
 ;;
-;;                    Área de dados e variáveis do aplicativo
+;;                        Application variables and data
 ;;
 ;;************************************************************************************
 
-versaoLSHMOD equ "0.7.1"
+VERSION equ "0.8.0"
 
 lshmod:
 
-.uso:
+.use:
 db 10, "Usage: lshmod [file]", 10, 10
 db "Retrieve information from an HBoot image or module.", 10, 10
-db "lshmod version ", versaoLSHMOD, 10, 10
+db "lshmod version ", VERSION, 10, 10
 db "Copyright (C) 2022-", __stringano, " Felipe Miguel Nery Lunkes", 10
 db "All rights reserved.", 0
-.arquivoInvalido:
+.invalidFile:
 db 10, "The file name is invalid. Please enter a valid filename.", 0
-.infoArquivo:
+.fileInfo:
 db 10, "> Filename: ", 0
-.tamanhoArquivo:
+.fileSize:
 db 10, "> File size: ", 0
 .bytes:
 db " bytes.", 0
-.imagemInvalida:
+.invalidImage:
 db 10, "<!> This is not an HBoot module image. Try another file.", 0
-.semArquivo:
+.fileNotFound:
 db 10, "<!> The requested file is not available on this volume.", 10, 10
 db "<!> Check the filename and try again.", 0
-.tipoArquitetura:
+.archType:
 db 10, "> Target architecture: ", 0
-.verModulo:
+.modVersion:
 db 10, "> Module version: ", 0
-.ponto:
+.dot:
 db ".", 0
-.cabecalho:
+.header:
 db 10, "<+> This file contains a valid HBoot image or HBoot module.", 0
 .i386:
 db "i386", 0
 .amd64:
 db "amd64", 0
-.arquiteturaInvalida:
+.invalidArch:
 db "unknown", 0
-.entradaCodigo:
+.imageInternalName:
 db 10, "> Internal name of the HBoot image or module: ", 0
-.parametroAjuda:
+.helpParameter:
 db "?", 0
-.parametroAjuda2:
+.helpParameter2:
 db "--help", 0
-.nomeMod:     dd 0
-.arquitetura: db 0
-.verMod:      db 0
-.subverMod:   db 0
+.modName:      dd 0
+.architecture: db 0
+.verMod:       db 0
+.subverMod:    db 0
 
-parametro: dd ?
+parameters: dd ?
 
-nomeArquivo:
+filename:
 times 13 db 0
-nomeModulo:
+moduleInternalName:
 times 8   db 0
 
 ;;************************************************************************************
 
-inicioAPP:
+applicationStart:
 
-    push ds ;; Segmento de dados do modo usuário (seletor 38h)
+    push ds ;; User mode data segment (38h selector)
     pop es
 
-    mov [parametro], edi
+    mov [parameters], edi
 
-    mov esi, [parametro]
+    mov esi, [parameters]
 
     cmp byte[esi], 0
-    je usoAplicativo
+    je applicationUsage
 
-    mov edi, lshmod.parametroAjuda
-    mov esi, [parametro]
-
-    hx.syscall compararPalavrasString
-
-    jc usoAplicativo
-
-    mov edi, lshmod.parametroAjuda2
-    mov esi, [parametro]
+    mov edi, lshmod.helpParameter
+    mov esi, [parameters]
 
     hx.syscall compararPalavrasString
 
-    jc usoAplicativo
+    jc applicationUsage
 
-    mov esi, [parametro]
+    mov edi, lshmod.helpParameter2
+    mov esi, [parameters]
+
+    hx.syscall compararPalavrasString
+
+    jc applicationUsage
+
+    mov esi, [parameters]
 
     hx.syscall cortarString
 
     hx.syscall tamanhoString
 
     cmp eax, 13
-    jl .obterInformacoes
+    jl .getInformation
 
-    fputs lshmod.arquivoInvalido
+    fputs lshmod.invalidFile
 
-    jmp .fim
+    jmp .end
 
-.obterInformacoes:
+.getInformation:
 
     hx.syscall arquivoExiste
 
-    jc .semArquivo
+    jc .fileNotFound
 
-    call manterArquivo
+    call saveFilename
 
-;; Vamos verificar se a imagem é de fato uma imagem HBoot
+;; Let's check if the image is in fact an HBoot image
 
-    call verificarArquivoHBootMod
+    call checkFileByHeader
 
-;; Se não for uma imagem executável, tentar identificar pela extensão, sem verificar o conteúdo
-;; do arquivo
+;; If it is not an executable image, try to identify it by the extension, without
+;; checking the content of the file
 
-    jmp .fim
+    jmp .end
 
-.semArquivo:
+.fileNotFound:
 
-    fputs lshmod.semArquivo
+    fputs lshmod.fileNotFound
 
-    jmp .fim
+    jmp .end
 
-.fim:
+.end:
 
-    jmp terminar
+    jmp finish
 
 ;;************************************************************************************
 
-verificarArquivoHBootMod:
+checkFileByHeader:
 
-    mov esi, nomeArquivo
-    mov edi, bufferArquivo
+    mov esi, filename
+    mov edi, appFileBuffer
 
     hx.syscall hx.open
 
-    jc inicioAPP.semArquivo
+    jc applicationStart.fileNotFound
 
-    mov edi, bufferArquivo
+    mov edi, appFileBuffer
 
     cmp byte[edi+0], "H"
-    jne .naoHBootMod
+    jne .invalidHeader
 
     cmp byte[edi+1], "B"
-    jne .naoHBootMod
+    jne .invalidHeader
 
     cmp byte[edi+2], "O"
-    jne .naoHBootMod
+    jne .invalidHeader
 
     cmp byte[edi+3], "O"
-    jne .naoHBootMod
+    jne .invalidHeader
 
     cmp byte[edi+4], "T"
-    jne .naoHBootMod
+    jne .invalidHeader
 
     mov dh, byte[edi+5]
-    mov byte[lshmod.arquitetura], dh
+    mov byte[lshmod.architecture], dh
 
     mov dh, byte[edi+6]
     mov byte[lshmod.verMod], dh
@@ -248,33 +248,33 @@ verificarArquivoHBootMod:
     mov byte[lshmod.subverMod], dh
 
     mov esi, dword[edi+8]
-    mov dword[nomeModulo+0], esi
+    mov dword[moduleInternalName+0], esi
 
     mov esi, dword[edi+12]
-    mov dword[nomeModulo+4], esi
+    mov dword[moduleInternalName+4], esi
 
-    mov dword[nomeModulo+8], 0
+    mov dword[moduleInternalName+8], 0
 
-    fputs lshmod.cabecalho
+    fputs lshmod.header
 
-;; Vamos obter o tamanho da imagem
+;; Let's get the image size
 
-    mov esi, nomeArquivo
+    mov esi, filename
 
     hx.syscall arquivoExiste
 
-    jc inicioAPP.semArquivo
+    jc applicationStart.fileNotFound
 
     push eax
     push esi
 
-    fputs lshmod.infoArquivo
+    fputs lshmod.fileInfo
 
     pop esi
 
     fputs esi
 
-    fputs lshmod.tamanhoArquivo
+    fputs lshmod.fileSize
 
     pop eax
 
@@ -282,80 +282,80 @@ verificarArquivoHBootMod:
 
     fputs lshmod.bytes
 
-;; Tipo de arquitetura
+;; Architecture
 
-    fputs lshmod.tipoArquitetura
+    fputs lshmod.archType
 
-    cmp byte[lshmod.arquitetura], 01h
+    cmp byte[lshmod.architecture], 01h
     je .i386
 
-    cmp byte[lshmod.arquitetura], 02h
+    cmp byte[lshmod.architecture], 02h
     je .amd64
 
-    cmp byte[lshmod.arquitetura], 02h
-    jg .arquiteturaInvalida
+    cmp byte[lshmod.architecture], 02h
+    jg .invalidArch
 
 .i386:
 
     fputs lshmod.i386
 
-    jmp .continuar
+    jmp .continue
 
 .amd64:
 
     fputs lshmod.amd64
 
-    jmp .continuar
+    jmp .continue
 
-.arquiteturaInvalida:
+.invalidArch:
 
-    fputs lshmod.arquiteturaInvalida
+    fputs lshmod.invalidArch
 
-    jmp .continuar
+    jmp .continue
 
-.continuar:
+.continue:
 
-    fputs lshmod.ponto
+    fputs lshmod.dot
 
-    fputs lshmod.verModulo
+    fputs lshmod.modVersion
 
     mov dh, byte[lshmod.verMod]
     movzx eax, dh
 
     imprimirInteiro
 
-    fputs lshmod.ponto
+    fputs lshmod.dot
 
     mov dh, byte[lshmod.subverMod]
     movzx eax, dh
 
     imprimirInteiro
 
-    fputs lshmod.ponto
+    fputs lshmod.dot
 
-    fputs lshmod.entradaCodigo
+    fputs lshmod.imageInternalName
 
-    fputs nomeModulo
+    fputs moduleInternalName
 
     ret
 
-.naoHBootMod:
+.invalidHeader:
 
-    fputs lshmod.imagemInvalida
+    fputs lshmod.invalidImage
 
     ret
 
 ;;************************************************************************************
 
-usoAplicativo:
+applicationUsage:
 
-    fputs lshmod.uso
+    fputs lshmod.use
 
-    jmp terminar
+    jmp finish
 
 ;;************************************************************************************
 
-manterArquivo:
+saveFilename:
 
     push esi
     push eax
@@ -366,9 +366,9 @@ manterArquivo:
 
     mov ecx, eax
 
-    mov edi, nomeArquivo
+    mov edi, filename
 
-    rep movsb ;; Copiar (ECX) caracteres de ESI para EDI
+    rep movsb ;; Copy (ECX) characters from ESI to EDI
 
     pop eax
 
@@ -378,10 +378,10 @@ manterArquivo:
 
 ;;************************************************************************************
 
-terminar:
+finish:
 
     hx.syscall encerrarProcesso
 
 ;;************************************************************************************
 
-bufferArquivo:
+appFileBuffer:
