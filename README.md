@@ -53,6 +53,7 @@ Diversos utilitários no padrão Unix estão incluidos até o momento. São eles
 * ls
 * man
 * mount
+* mv
 * ps
 * rm
 * sh
@@ -64,7 +65,6 @@ Diversos utilitários no padrão Unix estão incluidos até o momento. São eles
 
 Outros utilitários são exclusivos do Hexagonix. São eles:
 
-* htop (versão alternativa de top)
 * hash (shell alternativo)
 * lshapp (lê e exibe informações de imagens HAPP)
 * lshmod (lê e exibe informações de imagens HBoot)
@@ -104,6 +104,7 @@ Several Unix-standard utilities are included so far. Are they:
 * ls
 * man
 * mount
+* mv
 * ps
 * rm
 * sh
@@ -115,7 +116,6 @@ Several Unix-standard utilities are included so far. Are they:
 
 Other utilities are exclusive to Hexagonix. Are they:
 
-* htop (alternate version of top)
 * hash (alternate shell)
 * lshapp (reads and displays information from HAPP images)
 * lshmod (reads and displays information from HBoot images)
