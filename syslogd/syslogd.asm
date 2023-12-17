@@ -68,12 +68,12 @@
 
 use32
 
-;; Agora vamos criar um cabeçalho para a imagem HAPP final do aplicativo.
+;; Now let's create a HAPP header for the application
 
-include "HAPP.s" ;; Aqui está uma estrutura para o cabeçalho HAPP
+include "HAPP.s" ;; Here is a structure for the HAPP header
 
-;; Instância | Estrutura | Arquitetura | Versão | Subversão | Entrada | Tipo
-cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, inicioAPP, 01h
+;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
+cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, applicationStart, 01h
 
 ;;************************************************************************************
 
@@ -86,87 +86,86 @@ include "log.s"
 
 ;;************************************************************************************
 ;;
-;;                    Área de dados e variáveis do aplicativo
+;;                        Application variables and data
 ;;
 ;;************************************************************************************
 
-versaoSYSLOGD equ "0.7"
+VERSION equ "0.8"
 
 syslogd:
 
-.uso:
+.use:
 db 10, "Usage: syslogd [message]", 10, 10
 db "Send a message from Hexagonix components and utilities to the system log.", 10, 10
-db "syslogd version ", versaoSYSLOGD, 10, 10
+db "syslogd version ", VERSION, 10, 10
 db "Copyright (C) 2022-", __stringano, " Felipe Miguel Nery Lunkes", 10
 db "All rights reserved.", 0
-.parametroAjuda:
+.helpParameter:
 db "?", 0
-.parametroAjuda2:
+.helpParameter2:
 db "--help", 0
 
-parametro: dd ? ;; Endereço do parâmetro
+parameters: dd ?
 
 ;;************************************************************************************
 
-;; Syslogd é responsável por receber logs de utilitários, publicá-los no serviço de
-;; mensagens oferecido pelo Hexagon e, futuramente, salvar esses logs em arquivos
-;; de texto editáveis
+;; Syslogd is responsible for receiving utility logs, publishing them in the messaging
+;; service offered by Hexagon and, in the future, saving these logs in editable text files
 
-inicioAPP:
+applicationStart:
 
-    push ds ;; Segmento de dados do modo usuário (seletor 38h)
+    push ds ;; User mode data segment (38h selector)
     pop es
 
-    mov [parametro], edi
+    mov [parameters], edi
 
-    mov esi, [parametro]
+    mov esi, [parameters]
 
     cmp byte[esi], 0
-    je terminar
+    je finish
 
-    mov edi, syslogd.parametroAjuda
-    mov esi, [parametro]
-
-    hx.syscall compararPalavrasString
-
-    jc usoAplicativo
-
-    mov edi, syslogd.parametroAjuda2
-    mov esi, [parametro]
+    mov edi, syslogd.helpParameter
+    mov esi, [parameters]
 
     hx.syscall compararPalavrasString
 
-    jc usoAplicativo
+    jc applicationUsage
 
-    logSistema [parametro], 0, Log.Prioridades.p4
+    mov edi, syslogd.helpParameter2
+    mov esi, [parameters]
 
-    jmp terminar
+    hx.syscall compararPalavrasString
+
+    jc applicationUsage
+
+    logSistema [parameters], 0, Log.Prioridades.p4
+
+    jmp finish
 
 ;;************************************************************************************
 
-usoAplicativo:
+applicationUsage:
 
-    fputs syslogd.uso
+    fputs syslogd.use
 
-    jmp terminar
+    jmp finish
 
 ;;************************************************************************************
 
-terminar:
+finish:
 
     hx.syscall encerrarProcesso
 
 ;;************************************************************************************
 
-enviarMensagensHexagon:
+sendMessagesHexagon:
 
 ;;************************************************************************************
 
-processarMensagem:
+processMessage:
 
 ;;************************************************************************************
 
-adicionarArquivo:
+addToFile:
 
 ;;************************************************************************************
