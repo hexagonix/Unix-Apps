@@ -77,11 +77,11 @@
 
 use32
 
-;; Agora vamos criar um cabeçalho para a imagem HAPP final do aplicativo.
+;; Now let's create a HAPP header for the application
 
-include "HAPP.s" ;; Aqui está uma estrutura para o cabeçalho HAPP
+include "HAPP.s" ;; Here is a structure for the HAPP header
 
-;; Instância | Estrutura | Arquitetura | Versão | Subversão | Entrada | Tipo
+;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
 cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, loginHexagonix, 01h
 
 ;;************************************************************************************
@@ -91,155 +91,159 @@ include "console.s"
 include "macros.s"
 include "log.s"
 
-tamanhoLimiteBusca = 32768
+searchSizeLimit = 32768
 
 ;;************************************************************************************
 
 ;;************************************************************************************
 ;;
-;;                    Área de dados e variáveis do aplicativo
+;;                        Application variables and data
 ;;
 ;;************************************************************************************
 
 ;;************************************************************************************
 
-versaoLOGIN equ "4.9.1"
+VERSION equ "4.10.0"
 
 login:
 
-;; Mensagens gerais
-
-.shellPadrao: ;; Nome do arquivo que contêm o shell padrão do Hexagonix
+.defaultShell: ;; Name of the file containing the default Hexagonix shell
 db "sh", 0
-.arquivo: ;; Nome do arquivo de gerenciamento de login
+.file: ;; Login management filename
 db "passwd", 0
-.semArquivoUnix:
+.fileNotFound:
 db 10, 10, "The user database was not found on the volume.", 10, 0
-.solicitarUsuario:
+.requestUser:
 db 10, "Login: ", 0
-.solicitarSenha:
+.requestPassword:
 db 10, "Password: ", 0
-.uso:
+.use:
 db 10, 10, "Usage: login [user]", 10, 10
 db "Log in a registered user.", 10, 10
-db "login version ", versaoLOGIN, 10, 10
+db "login version ", VERSION, 10, 10
 db "Copyright (C) 2017-", __stringano, " Felipe Miguel Nery Lunkes", 10
 db "All rights reserved.", 10, 0
-.parametroAjuda:
+.helpParameter:
 db "?", 0
-.parametroAjuda2:
+.helpParameter2:
 db "--help", 0
-.usuarioROOT:
+.rootUser:
 db "root", 0
-.dadosErrados:
+.wrongData:
 db 10, "Login incorrect", 0
 .logind:
 db "logind", 0
 
-;; Mensagens de verbose
+;; Verbose Messages
 
 .verboseLogin:
-db "login version ", versaoLOGIN, ".", 0
-.verboseProcurarArquivo:
+db "login version ", VERSION, ".", 0
+.verboseFindFile:
 db "Searching user database in /...", 0
-.verboseArquivoEncontrado:
+.verboseFileFound:
 db "The user database was found.", 0
-.verboseArquivoAusente:
+.verboseFileNotFound:
 db "The user database was not found. The default shell will run (sh.app).", 0
-.verboseErro:
+.verboseError:
 db "An unhandled error was encountered.", 0
-.verboseLoginAceito:
+.verboseLoginAccept:
 db "Login accepted.", 0
-.verboseLoginRecusado:
+.verboseLoginRefused:
 db "Login attempt prevented by authentication failure.", 0
 .verboseLogout:
 db "Logout performed successfully.", 0
 
 ;; Buffers
 
-tentarShellPadrao: db 0 ;; Sinaliza a tentativa de se carregar o shell padrão
-codigoAnterior:    dd 0
-errado:            db 0
-execucaoViaInit:   db 0
-parametros:        db 0 ;; Se o aplicativo recebeu algum parâmetro
-posicaoBX:         dw 0 ;; Marcação da posição de busca no conteúdo do arquivo
+tryDefaultShell: ;; Signals an attempt to load the default shell
+db 0
+previousCode:
+dd 0
+wrong:
+db 0
+startedByInit:
+db 0
+parameters: ;; If the application received any parameters
+db 0
+positionBX: ;; Marking the search position in the file content
+dw 0
 
-shellHexagonix: ;; Armazena o nome do shell à ser utilizado
+hexagonixShell: ;; Stores the name of the shell to be used
 times 11 db 0
-usuario: ;; Nome de usuário obtido no arquivo
+user: ;; Username obtained from the file
 times 15 db 0
-senhaObtida: ;; Senha obtida no arquivo
+passwordObtained:;; Password obtained from the file
 times 64 db 0
-usuarioSolicitado:
+requestedUser:
 times 17 db 0
-usuarioAnterior:
+previousUser:
 times 17 db 0
 
 ;;************************************************************************************
 
-loginHexagonix: ;; Ponto de entrada
+loginHexagonix: ;; Entry point
 
-    mov [usuarioSolicitado], edi
+    mov [requestedUser], edi
 
-    mov edi, login.parametroAjuda
-    mov esi, [usuarioSolicitado]
-
-    hx.syscall compararPalavrasString
-
-    jc usoAplicativo
-
-    mov edi, login.parametroAjuda2
-    mov esi, [usuarioSolicitado]
+    mov edi, login.helpParameter
+    mov esi, [requestedUser]
 
     hx.syscall compararPalavrasString
 
-    jc usoAplicativo
+    jc applicationUsage
 
-    call checarBaseDados
+    mov edi, login.helpParameter2
+    mov esi, [requestedUser]
+
+    hx.syscall compararPalavrasString
+
+    jc applicationUsage
+
+    call checkDatabase
 
     logSistema login.verboseLogin, 0, Log.Prioridades.p4
 
-iniciarExecucao:
+startProcessing:
 
     hx.syscall hx.getpid
 
     cmp eax, 02h
     je .viaInit
 
-    mov byte [execucaoViaInit], 00h
+    mov byte [startedByInit], 00h
 
-    jmp .continuarAposValidacao
+    jmp .continueAfterValidation
 
 .viaInit:
 
-    mov byte [execucaoViaInit], 01h
+    mov byte [startedByInit], 01h
 
-.continuarAposValidacao:
+.continueAfterValidation:
 
-    call executarLogind
+    call runLogind
 
-    cmp byte[errado], 1
-    jne .execucaoInicial
+    cmp byte[wrong], 1
+    jne .initialRun
 
-;; Não precisamos executar o logind novamente
+;; We don't need to run logind again
 
-.continuarAposLoginRecusado:
+.continueAfterLoginRefused:
 
     clc
 
-    logSistema login.verboseLoginRecusado, 0, Log.Prioridades.p4
+    logSistema login.verboseLoginRefused, 0, Log.Prioridades.p4
 
-    fputs login.dadosErrados
+    fputs login.wrongData
 
-    mov byte[errado], 0
+    mov byte[wrong], 0
 
-.execucaoInicial:
+.initialRun:
 
-    logSistema login.verboseProcurarArquivo, 0, Log.Prioridades.p4
+    logSistema login.verboseFindFile, 0, Log.Prioridades.p4
 
-    call limparVariaveisUsuario
+    call clearUserVariables
 
-    fputs login.solicitarUsuario
+    fputs login.requestUser
 
     mov eax, 15
 
@@ -249,143 +253,141 @@ iniciarExecucao:
 
     hx.syscall cortarString
 
-    mov [usuarioSolicitado], esi
+    mov [requestedUser], esi
 
-    call encontrarNomeUsuario
+    call findUserName
 
-    jc .semUsuario
+    jc .withoutUser
 
-    call encontrarSenhaUsuario
+    call findUserPassword
 
-    fputs login.solicitarSenha
+    fputs login.requestPassword
 
     mov eax, 64
 
-    mov ebx, 1234h ;; Não queremos eco na senha!
+    mov ebx, 1234h ;; We don't want to echo the password!
 
     hx.syscall obterString
 
     hx.syscall cortarString
 
-    cmp byte[errado], 1
-    jne .continuarProcessamento
+    cmp byte[wrong], 1
+    jne .continueProcessing
 
-    jmp .loginRecusado
+    jmp .loginRefused
 
-.continuarProcessamento:
+.continueProcessing:
 
-    mov edi, senhaObtida
+    mov edi, passwordObtained
 
     hx.syscall compararPalavrasString
 
-    jc .loginAceito
+    jc .loginAccepted
 
-.loginRecusado:
+.loginRefused:
 
-    logSistema login.verboseLoginRecusado, 00h, Log.Prioridades.p4
+    logSistema login.verboseLoginRefused, 00h, Log.Prioridades.p4
 
-    mov byte[errado], 1
+    mov byte[wrong], 1
 
-    jmp iniciarExecucao.continuarAposLoginRecusado
+    jmp startProcessing.continueAfterLoginRefused
 
-.semUsuario:
+.withoutUser:
 
-    cmp byte[parametros], 0
-    je terminar
+    cmp byte[parameters], 0
+    je finish
 
-.loginAceito:
+.loginAccepted:
 
-    logSistema login.verboseLoginAceito, 0, Log.Prioridades.p4
+    logSistema login.verboseLoginAccept, 0, Log.Prioridades.p4
 
-    call registrarUsuario
+    call registerUser
 
-    call encontrarShell
+    call findUserShell
 
     hx.syscall destravar
 
-.carregarShell:
+.startShell:
 
     clc
 
-    mov esi, shellHexagonix
+    mov esi, hexagonixShell
 
     hx.syscall arquivoExiste
 
-    jc .naoEncontrado
+    jc .notFound
 
-    mov eax, 0 ;; Não passar argumentos
-    mov esi, shellHexagonix ;; Nome do arquivo
+    mov eax, 0 ;; Do not pass arguments
+    mov esi, hexagonixShell ;; Filename
 
     clc
 
-    hx.syscall iniciarProcesso ;; Solicitar o carregamento do shell do Hexagonix
+    hx.syscall iniciarProcesso ;; Request to run the Hexagonix shell
 
-    jc .tentarShellPadrao
-
-    hx.syscall travar
-
-    jmp .shellFinalizado
-
-.tentarShellPadrao: ;; Tentar carregar o shell padrão do Hexagonix
-
-   call obterShellPadrao ;; Solicitar a configuração do nome do shell padrão do Hexagonix
-
-   mov byte[tentarShellPadrao], 1 ;; Sinalizar a tentativa de carregamento do shell padrão do Hexagonix
-
-   jmp .carregarShell ;; Tentar carregar o shell padrão do Hexagonix
-
-.shellFinalizado: ;; Tentar carregar o shell novamente
+    jc .tryDefaultShell
 
     hx.syscall travar
 
-;; Verificar a consistência da interface. Caso algum processo seja encerrado antes de retornar
-;; as propriedades de tema ao padrão, retorne para as condições presentes nas configurações,
-;; mantendo a consistência do sistema
+    jmp .shellFinished
+
+.tryDefaultShell: ;; Try loading the default Hexagonix shell
+
+   call getDefaultShell ;; Configure Hexagonix default shell name
+
+   mov byte[tryDefaultShell], 1 ;; Try loading the default Hexagonix shell
+
+   jmp .startShell ;; Try loading the default Hexagonix shell
+
+.shellFinished: ;; Try loading the shell again
+
+    hx.syscall travar
 
     logSistema login.verboseLogout, 0, Log.Prioridades.p4
 
-;; Aqui vamos implementar uma mudança na forma como o login deve interpretar o encerramento do shell.
-;; Caso login tenha PID 2, significa que ele foi invocado via init. Desa forma, ele deve ficar residente,
-;; neste momento. Se for PID 2, solicitar a entrada do usuário novamente
+;; Here we will implement a change in the way login should interpret shell exit.
+;; If login has PID 2, it means it was invoked via init. Therefore, he must remain
+;;  a resident at this time. If PID 2, request user input again
 
-    novaLinha
+    putNewLine
 
-    cmp byte [execucaoViaInit], 01h
-    jne terminar
+    cmp byte [startedByInit], 01h
+    jne finish
 
-    jmp .execucaoInicial
+    jmp .initialRun
 
-.naoEncontrado: ;; O shell não pôde ser localizado
+.notFound: ;; The shell could not be located
 
-   cmp byte[tentarShellPadrao], 0 ;; Verifica se já se tentou carregar o shell padrão do Hexagonix
-   je .tentarShellPadrao ;; Se não, tente carregar o shell padrão do Hexagonix
+;; Check if you have already tried to load the default Hexagonix shell
 
-   jmp terminar ;; Se sim, o shell padrão também não pode ser executado
+   cmp byte[tryDefaultShell], 0
+   je .tryDefaultShell ;; If not, try loading the default Hexagonix shell
+
+   jmp finish ;; If yes, the default shell cannot be run either
 
 ;;************************************************************************************
 
-registrarUsuario:
+registerUser:
 
     clc
 
-    mov esi, login.usuarioROOT
-    mov edi, usuario
+    mov esi, login.rootUser
+    mov edi, user
 
     hx.syscall compararPalavrasString
 
     jc .root
 
-    mov eax, 555 ;; Código de um usuário comum
+    mov eax, 555 ;; Common user code
 
-    jmp .registrar
+    jmp .register
 
 .root:
 
-    mov eax, 777 ;; Código de um usuário raiz
+    mov eax, 777 ;; Root user code
 
-.registrar:
+.register:
 
-    mov esi, usuario
+    mov esi, user
 
     hx.syscall definirUsuario
 
@@ -393,7 +395,7 @@ registrarUsuario:
 
 ;;************************************************************************************
 
-encontrarNomeUsuario:
+findUserName:
 
     clc
 
@@ -401,82 +403,82 @@ encontrarNomeUsuario:
 
     push es
 
-    push ds ;; Segmento de dados do modo usuário (seletor 38h)
+    push ds ;; User mode data segment (38h selector)
     pop es
 
-    mov esi, login.arquivo
-    mov edi, bufferArquivo
+    mov esi, login.file
+    mov edi, appFileBuffer
 
     hx.syscall hx.open
 
-    jc .arquivoUsuarioAusente
+    jc .userFileNotFound
 
-    mov si, bufferArquivo ;; Aponta para o buffer com o conteúdo do arquivo
-    mov bx, 0FFFFh ;; Inicia na posição -1, para que se possa encontrar os delimitadores
+    mov si, appFileBuffer ;; Points to the buffer with the file contents
+    mov bx, 0FFFFh ;; Starts at position -1, so you can find the delimiters
 
-.procurarEntreDelimitadores:
+.searchBetweenDelimiters:
 
     inc bx
 
-    mov word[posicaoBX], bx
+    mov word[positionBX], bx
 
-    cmp bx, tamanhoLimiteBusca
-    je .nomeUsuarioInvalido ;; Caso nada seja encontrado até o tamanho limite, cancele a busca
+    cmp bx, searchSizeLimit
+    je .invalidUserName ;; If nothing is found within the size limit, cancel the search
 
     mov al, [ds:si+bx]
 
     cmp al, '@'
-    jne .procurarEntreDelimitadores ;; O limitador inicial foi encontrado
+    jne .searchBetweenDelimiters ;; The initial delimiter has been found
 
-;; BX agora aponta para o primeiro caractere do nome de usuário resgatado do arquivo
+;; BX now points to the first character of the username retrieved from the file
 
-    push ds ;; Segmento de dados do modo usuário (seletor 38h)
+    push ds ;; User mode data segment (38h selector)
     pop es
 
-    mov di, usuario ;; O nome do usuário será copiado para ES:DI
+    mov di, user ;; The username will be copied to ES:DI
 
-    mov si, bufferArquivo
+    mov si, appFileBuffer
 
-    add si, bx ;; Mover SI para aonde BX aponta
+    add si, bx ;; Move SI to where BX points
 
-    mov bx, 0 ;; Iniciar em 0
+    mov bx, 0 ;; Start at 0
 
-.obterNomeUsuario:
+.getUserName:
 
     inc bx
 
     cmp bx, 17
-    je .nomeUsuarioInvalido ;; Se nome de usuário maior que 15, o mesmo é inválido
+    je .invalidUserName ;; If username is greater than 15, it is invalid
 
     mov al, [ds:si+bx]
 
-    cmp al, '|' ;; Se encontrar outro delimitador, o nome de usuário foi carregado com sucesso
-    je .nomeUsuarioObtido
+    cmp al, '|' ;; If another delimiter is found, the username was loaded successfully
+    je .userNameObtained
 
-;; Se não estiver pronto, armazenar o caractere obtido
+;; If not ready, store the obtained character
 
     stosb
 
-    jmp .obterNomeUsuario
+    jmp .getUserName
 
-.nomeUsuarioObtido:
+.userNameObtained:
 
-    mov edi, usuario
-    mov esi, [usuarioSolicitado]
+    mov edi, user
+    mov esi, [requestedUser]
 
     hx.syscall compararPalavrasString
 
-    jc .obtido
+    jc .obtained
 
-    call limparVariavel
+    call clearVariable
 
-    mov word bx, [posicaoBX]
+    mov word bx, [positionBX]
 
-    mov si, bufferArquivo
+    mov si, appFileBuffer
 
-    jmp .procurarEntreDelimitadores
+    jmp .searchBetweenDelimiters
 
-.obtido:
+.obtained:
 
     pop es
 
@@ -486,38 +488,38 @@ encontrarNomeUsuario:
 
     ret
 
-.nomeUsuarioInvalido:
+.invalidUserName:
 
     pop es
 
     popa
 
-    mov byte[errado], 1
+    mov byte[wrong], 1
 
     clc
 
     ret
 
-.arquivoUsuarioAusente:
+.userFileNotFound:
 
     pop es
 
     popa
 
-    fputs login.semArquivoUnix
+    fputs login.fileNotFound
 
-    jmp terminar
+    jmp finish
 
 ;;************************************************************************************
 
-limparVariavel:
+clearVariable:
 
     push es
 
-    push ds ;; Segmento de dados do modo usuário (seletor 38h)
+    push ds ;; User mode data segment (38h selector)
     pop es
 
-    mov esi, usuario
+    mov esi, user
 
     hx.syscall tamanhoString
 
@@ -525,7 +527,7 @@ limparVariavel:
 
     mov esi, 0
 
-    mov edi, usuario
+    mov edi, user
 
     pop ecx
 
@@ -537,14 +539,14 @@ limparVariavel:
 
 ;;************************************************************************************
 
-limparVariaveisUsuario:
+clearUserVariables:
 
     push es
 
-    push ds ;; Segmento de dados do modo usuário (seletor 38h)
+    push ds ;; User mode data segment (38h selector)
     pop es
 
-    mov esi, usuario
+    mov esi, user
 
     hx.syscall tamanhoString
 
@@ -552,13 +554,13 @@ limparVariaveisUsuario:
 
     mov esi, ' '
 
-    mov edi, usuario
+    mov edi, user
 
     pop ecx
 
     rep movsb
 
-    mov esi, usuarioSolicitado
+    mov esi, requestedUser
 
     hx.syscall tamanhoString
 
@@ -566,13 +568,13 @@ limparVariaveisUsuario:
 
     mov esi, ' '
 
-    mov edi, senhaObtida
+    mov edi, passwordObtained
 
     pop ecx
 
     rep movsb
 
-    mov esi, shellHexagonix
+    mov esi, hexagonixShell
 
     hx.syscall tamanhoString
 
@@ -580,7 +582,7 @@ limparVariaveisUsuario:
 
     mov esi, " "
 
-    mov edi, shellHexagonix
+    mov edi, hexagonixShell
 
     pop ecx
 
@@ -592,74 +594,74 @@ limparVariaveisUsuario:
 
 ;;************************************************************************************
 
-encontrarSenhaUsuario:
+findUserPassword:
 
     pusha
 
     push es
 
-    push ds ;; Segmento de dados do modo usuário (seletor 38h)
+    push ds ;; User mode data segment (38h selector)
     pop es
 
-    mov esi, login.arquivo
-    mov edi, bufferArquivo
+    mov esi, login.file
+    mov edi, appFileBuffer
 
     hx.syscall hx.open
 
-    jc .arquivoUsuarioAusente
+    jc .userFileNotFound
 
-    mov si, bufferArquivo    ;; Aponta para o buffer com o conteúdo do arquivo
-    mov bx, word [posicaoBX] ;; Continua de onde a opção anterior parou
+    mov si, appFileBuffer    ;; Points to the buffer with the file contents
+    mov bx, word [positionBX] ;; Continua de onde a opção anterior parou
 
     dec bx
 
-.procurarEntreDelimitadores:
+.searchBetweenDelimiters:
 
     inc bx
 
-    mov word[posicaoBX], bx
+    mov word[positionBX], bx
 
-    cmp bx, tamanhoLimiteBusca
+    cmp bx, searchSizeLimit
 
-    je .senhaUsuarioInvalida ;; Caso nada seja encontrado até o tamanho limite, cancele a busca
+    je .invalidUserPassword ;; If nothing is found within the size limit, cancel the search
 
     mov al, [ds:si+bx]
 
     cmp al, '|'
-    jne .procurarEntreDelimitadores ;; O limitador inicial foi encontrado
+    jne .searchBetweenDelimiters ;; The initial delimiter has been found
 
-;; BX agora aponta para o primeiro caractere da senha recuperada do arquivo
+;; BX now points to the first character of the password retrieved from the file
 
-    push ds ;; Segmento de dados do modo usuário (seletor 38h)
+    push ds ;; User mode data segment (38h selector)
     pop es
 
-    mov di, senhaObtida ;; A senha será copiada para ES:DI
+    mov di, passwordObtained ;; The password will be copied to ES:DI
 
-    mov si, bufferArquivo
+    mov si, appFileBuffer
 
-    add si, bx ;; Mover SI para onde BX aponta
+    add si, bx ;; Move SI to where BX points
 
-    mov bx, 0 ;; Iniciar em 0
+    mov bx, 0 ;; Start at 0
 
-.obterSenhaUsuario:
+.getUserPassword:
 
     inc bx
 
     cmp bx, 66
-    je .senhaUsuarioInvalida ;; Se senha maior que 66, a mesma é inválida
+    je .invalidUserPassword ;; If password greater than 66, it is invalid
 
     mov al, [ds:si+bx]
 
-    cmp al, '&' ;; Se encontrar outro delimitador, a senha foi carregada com sucesso
-    je .senhaUsuarioObtida
+    cmp al, '&' ;; If another delimiter is found, the password has been loaded successfully
+    je .userPasswordObtained
 
-;; Se não estiver pronto, armazenar o caractere obtido
+;; If not ready, store the obtained character
 
     stosb
 
-    jmp .obterSenhaUsuario
+    jmp .getUserPassword
 
-.senhaUsuarioObtida:
+.userPasswordObtained:
 
     pop es
 
@@ -667,98 +669,98 @@ encontrarSenhaUsuario:
 
     ret
 
-.senhaUsuarioInvalida:
+.invalidUserPassword:
 
     pop es
 
     popa
 
-    mov byte[errado], 1
+    mov byte[wrong], 1
 
     clc
 
     ret
 
-.arquivoUsuarioAusente:
+.userFileNotFound:
 
     pop es
 
     popa
 
-    fputs login.semArquivoUnix
+    fputs login.fileNotFound
 
-    jmp terminar
+    jmp finish
 
 ;;************************************************************************************
 
-encontrarShell:
+findUserShell:
 
     pusha
 
     push es
 
-    push ds ;; Segmento de dados do modo usuário (seletor 38h)
+    push ds ;; User mode data segment (38h selector)
     pop es
 
-    mov esi, login.arquivo
-    mov edi, bufferArquivo
+    mov esi, login.file
+    mov edi, appFileBuffer
 
     hx.syscall hx.open
 
-    jc .arquivoConfiguracaoAusente
+    jc .configurationFileNotFound
 
-    mov si, bufferArquivo   ;; Aponta para o buffer com o conteúdo do arquivo
-    mov bx, word[posicaoBX] ;; Continua de onde a opção anterior parou
+    mov si, appFileBuffer   ;; Points to the buffer with the file contents
+    mov bx, word[positionBX] ;; Continue where the previous option left off
 
     dec bx
 
-.procurarEntreDelimitadores:
+.searchBetweenDelimiters:
 
     inc bx
 
-    mov word[posicaoBX], bx
+    mov word[positionBX], bx
 
-    cmp bx, tamanhoLimiteBusca
+    cmp bx, searchSizeLimit
 
-    je .arquivoConfiguracaoAusente  ;; Caso nada seja encontrado até o tamanho limite, cancele a busca
+    je .configurationFileNotFound  ;; If nothing is found within the size limit, cancel the search
 
     mov al, [ds:si+bx]
 
     cmp al, '&'
-    jne .procurarEntreDelimitadores ;; O limitador inicial foi encontrado
+    jne .searchBetweenDelimiters ;; The initial limiter has been found
 
-;; BX agora aponta para o primeiro caractere do nome do shell resgatado do arquivo
+;; BX now points to the first character of the shell name retrieved from the file
 
-    push ds ;; Segmento de dados do modo usuário (seletor 38h)
+    push ds ;; User mode data segment (38h selector)
     pop es
 
-    mov di, shellHexagonix ;; O nome do shell será copiado para ES:DI - shellHexagonix
+    mov di, hexagonixShell ;; The shell name will be copied to ES:DI - hexagonixShell
 
-    mov si, bufferArquivo
+    mov si, appFileBuffer
 
-    add si, bx ;; Mover SI para aonde BX aponta
+    add si, bx ;; Move SI to where BX points
 
-    mov bx, 0 ;; Iniciar em 0
+    mov bx, 0 ;; Start at 0
 
-.obterNomeShell:
+.getShellName:
 
     inc bx
 
     cmp bx, 13
-    je .nomeShellInvalido ;; Se nome de arquivo maior que 11, o nome é inválido
+    je .invalidShellName ;; If file name greater than 11, the name is invalid
 
     mov al, [ds:si+bx]
 
-    cmp al, '#' ;; Se encontrar outro delimitador, o nome foi carregado com sucesso
-    je .nomeShellObtido
+    cmp al, '#' ;; If another delimiter is found, the name was loaded successfully
+    je .shellNameObtained
 
-;; Se não estiver pronto, armazenar o caractere obtido
+;; If not ready, store the obtained character
 
     stosb
 
-    jmp .obterNomeShell
+    jmp .getShellName
 
-.nomeShellObtido:
+.shellNameObtained:
 
     pop es
 
@@ -766,40 +768,40 @@ encontrarShell:
 
     ret
 
-.nomeShellInvalido:
+.invalidShellName:
 
     pop es
 
     popa
 
-    jmp obterShellPadrao
+    jmp getDefaultShell
 
 
-.arquivoConfiguracaoAusente:
+.configurationFileNotFound:
 
     pop es
 
     popa
 
-    jmp obterShellPadrao
+    jmp getDefaultShell
 
 ;;************************************************************************************
 
-obterShellPadrao:
+getDefaultShell:
 
     push es
 
-    push ds ;; Segmento de dados do modo usuário (seletor 38h)
+    push ds ;; User mode data segment (38h selector)
     pop es
 
-    mov esi, login.shellPadrao
+    mov esi, login.defaultShell
 
     hx.syscall tamanhoString
 
     push eax
 
-    mov edi, shellHexagonix
-    mov esi, login.shellPadrao
+    mov edi, hexagonixShell
+    mov esi, login.defaultShell
 
     pop ecx
 
@@ -811,11 +813,11 @@ obterShellPadrao:
 
 ;;************************************************************************************
 
-salvarUsuarioAtual:
+saveCurrentUser:
 
     push es
 
-    push ds ;; Segmento de dados do modo usuário (seletor 38h)
+    push ds ;; User mode data segment (38h selector)
     pop es
 
     hx.syscall obterUsuario
@@ -828,7 +830,7 @@ salvarUsuarioAtual:
 
     push eax
 
-    mov edi, usuarioAnterior
+    mov edi, previousUser
 
     pop ecx
 
@@ -838,16 +840,16 @@ salvarUsuarioAtual:
 
     hx.syscall obterUsuario
 
-    mov [codigoAnterior], eax
+    mov [previousCode], eax
 
     ret
 
 ;;************************************************************************************
 
-restaurarUsuario:
+restoreUser:
 
-    mov esi, usuarioAnterior
-    mov eax, [codigoAnterior]
+    mov esi, previousUser
+    mov eax, [previousCode]
 
     hx.syscall definirUsuario
 
@@ -855,73 +857,73 @@ restaurarUsuario:
 
 ;;************************************************************************************
 
-usoAplicativo:
+applicationUsage:
 
-    fputs login.uso
+    fputs login.use
 
-    jmp terminar
+    jmp finish
 
 ;;************************************************************************************
 
-executarLogind:
+runLogind:
 
-    mov eax, 0 ;; Não passar argumentos
-    mov esi, login.logind ;; Nome do arquivo
+    mov eax, 0 ;; Do not pass arguments
+    mov esi, login.logind ;; File name
 
     clc
 
-    hx.syscall iniciarProcesso ;; Solicitar o carregamento do daemon de login
+    hx.syscall iniciarProcesso ;; Request login daemon loading
 
     ret
 
 ;;************************************************************************************
 
-terminar:
+finish:
 
     hx.syscall encerrarProcesso
 
 ;;************************************************************************************
 
-loginPadrao:
+defaultLogin:
 
-;; Se o arquivo de banco de dados de usuários não for encontrado, devemos
-;; iniciar um shell padrão do sistema, logado como root.
+;; If the user database file is not found, we must start a standard system shell,
+;; logged in as root.
 
-;; Primeiro, logar como root
+;; First, log in as root
 
-    mov eax, 777 ;; Código de um usuário raiz
+    mov eax, 777 ;; Root user code
 
-    mov esi, login.usuarioROOT
+    mov esi, login.rootUser
 
     hx.syscall definirUsuario
 
     mov eax, 0
-    mov esi, login.shellPadrao
+    mov esi, login.defaultShell
 
     clc
 
     hx.syscall iniciarProcesso
 
-    je terminar
+    je finish
 
 ;;************************************************************************************
 
-;; Primeiramente, devemos checar a base da dados de usuários. Se a base de
-;; dados não estiver disponível, o sistema deve ser logado com usuário root
-;; e o shell padrão deve ser iniciado.
+;; First, we must check the user database.
+;; If the database is not available, the system must be logged in with the root user
+;; and the default shell must be started.
 
-checarBaseDados:
+checkDatabase:
 
     clc
 
-    mov esi, login.arquivo
+    mov esi, login.file
 
     hx.syscall arquivoExiste
 
-    jc loginPadrao
+    jc defaultLogin
 
     ret
 
 ;;************************************************************************************
 
-bufferArquivo: ;; Local onde o arquivo de configuração será aberto
+appFileBuffer: ;; Location where the configuration file will be opened
