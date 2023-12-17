@@ -77,11 +77,11 @@
 
 use32
 
-;; Agora vamos criar um cabeçalho para a imagem HAPP final do aplicativo.
+;; Now let's create a HAPP header for the application
 
-include "HAPP.s" ;; Aqui está uma estrutura para o cabeçalho HAPP
+include "HAPP.s" ;; Here is a structure for the HAPP header
 
-;; Instância | Estrutura | Arquitetura | Versão | Subversão | Entrada | Tipo
+;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
 cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, initHexagonix, 01h
 
 ;;************************************************************************************
@@ -93,274 +93,281 @@ include "dev.s"
 
 ;;************************************************************************************
 
-versaoINIT equ "2.6.2"
+VERSION equ "2.7.0"
 
-tamanhoLimiteBusca = 32768 ;; Tamanho máximo do arquivo: 32 kbytes
+searchSizeLimit = 32768 ;; Maximum file size: 32 kbytes
 
-shellPadrao: ;; Nome do arquivo que contêm o shell padrão Unix
+defaultShell: ;; Name of the file containing the default Unix shell
 db "sh", 0
-arquivo: ;; Nome do arquivo de configuração do init
+rcFile: ;; init configuration file name
 db "rc", 0
-tentarShellPadrao: db 0 ;; Sinaliza a tentativa de se carregar o shell padrão
-posicaoBX: dw 0 ;; Marcação da posição de busca no conteúdo do arquivo
-servicoHexagonix:
-times 12 db 0 ;; Armazena o nome do shell à ser utilizado pelo sistema
+tryDefaultShell: ;; Signals an attempt to load the default shell
+db 0
+positionBX: ;; Marking the search position in the file content
+dw 0
+hexagonixService: ;; Stores the name of the shell to be used by the system
+times 12 db 0
 
 init:
 
-.inicioInit:
-db "init version ", versaoINIT, ".", 0
-.iniciandoSistema:
+.startInit:
+db "init version ", VERSION, ".", 0
+.startingSystem:
 db "The system is coming up. Please wait.", 0
-.sistemaPronto:
+.systemReady:
 db "The system is ready.", 0
-.procurarArquivo:
+.searchFile:
 db "Looking for /rc...", 0
-.arquivoEncontrado:
+.fileFound:
 db "Configuration file (/rc) found.", 0
-.arquivoAusente:
+.fileNotFound:
 db "Configuration file (/rc) not found. The default shell will be executed (sh).", 0
-.erroGeral:
+.generalError:
 db "An unhandled error was encountered.", 0
-.registrandoComponentes:
+.registeringComponents:
 db "Starting service...", 0
-.configurarConsole:
+.setupConsole:
 db "Setting up consoles (tty0, tty1)...", 0
 
 ;;************************************************************************************
 
-initHexagonix: ;; Ponto de entrada
+initHexagonix: ;; Entry point
 
-;; Primeiramente, devemos checar qual o PID do processo. Por padrão, init só deve ser executado
-;; diretamente pelo Hexagon. Fora isso, ele não deve desempenhar sua função. Caso o PID seja
-;; diferente de 1, o init deve ser finalizado. Caso seja 1, prosseguir com o processo de
-;; inicialização do ambiente de usuário do Hexagonix
+;; First, we must check the PID of the process. By default, init should only be run directly by
+;; Hexagon. If the PID is different from 1, init must be terminated.
+;; If 1, continue with the Hexagonix user environment initialization process
 
     hx.syscall hx.getpid
 
     cmp eax, 01h
-    je .configurarTerminal ;; O PID é 1? Prosseguir
+    je .configureConsole ;; Is PID 1? Proceed
 
-    hx.syscall encerrarProcesso ;; Não é? Finalizar agora
+    hx.syscall encerrarProcesso ;; It is not? Finish now
 
-;; Configura o terminal do Hexagonix
+;; Configure the Hexagonix terminal
 
-.configurarTerminal:
+.configureConsole:
 
-    logSistema init.inicioInit, 0, Log.Prioridades.p5
-    logSistema init.iniciandoSistema, 0, Log.Prioridades.p5
+    logSistema init.startInit, 0, Log.Prioridades.p5
+    logSistema init.startingSystem, 0, Log.Prioridades.p5
 
-;; Agora, o buffer de memória do double buffering deve ser limpo. Isto evita que memória
-;; poluída seja utilizada como base para a exibição, quando um aplicativo é fechado de forma forçada.
-;; Nesta situação, o sistema descarrega o buffer de memória, atualizando o vídeo com seu conteúdo.
-;; Essa etapa também pode ser realizada pelo gerenciador de sessão, posteriormente.
+;; Now the double buffering memory buffer must be cleared.
+;; This prevents polluted memory from being used as the basis for display when an application is
+;; forcefully closed.
+;; In this situation, the system updates the memory buffer, updating the console with its content.
+;; This step can also be performed by the session manager later.
 
-    call limparTerminal
+    call clearConsole
 
-;; Aqui poderão ser adicionadas rotinas de configuração do Hexagonix
+;; Hexagonix configuration routines can be added here
 
-iniciarExecucao:
+startProcessing:
 
-    hx.syscall travar ;; Impede que o usuário mate o processo de login com uma tecla especial
+    hx.syscall travar ;; Prevents the user from killing the login process with a special key
 
-;; Agora o init irá verificar a existência do arquivo de configuração de inicialização.
-;; Caso este arquivo esteja presente, o init irá buscar a declaração de uma imagem para ser utilizada
-;; com o sistema, assim como declarações de configuração do Hexagonix. Caso este arquivo não seja
-;; encontrado, o init irá carregar o shell padrão. O padrão é o utilitário de login do Hexagonix.
+;; Now init will check the existence of the rc configuration file.
+;; If this file is present, init will look for the declaration of an image to be used with the
+;; system, as well as Hexagonix configuration declarations.
+;; If this file is not found, init will load the default shell. The default is the Hexagonix login
+;; utility.
 
-    logSistema init.procurarArquivo, 0, Log.Prioridades.p4
+    logSistema init.searchFile, 0, Log.Prioridades.p4
 
-    mov word[posicaoBX], 0FFFFh ;; Inicia na posição -1, para que se possa encontrar os delimitadores
+    mov word[positionBX], 0FFFFh ;; Starts at position -1, so you can find the delimiters
 
-    call encontrarConfiguracaoInit
+    call findConfigurationFile
 
-    logSistema init.sistemaPronto, 0, Log.Prioridades.p5
+    logSistema init.systemReady, 0, Log.Prioridades.p5
 
-.carregarServico:
+.loadService:
 
-    logSistema init.registrandoComponentes, 0, Log.Prioridades.p4
+    logSistema init.registeringComponents, 0, Log.Prioridades.p4
 
-    mov esi, servicoHexagonix
+    mov esi, hexagonixService
 
     hx.syscall arquivoExiste
 
-    jc .proximoServico
+    jc .nextService
 
-    mov eax, 0 ;; Não passar argumentos
-    mov esi, servicoHexagonix ;; Nome do arquivo
+    mov eax, 0 ;; Do not pass arguments
+    mov esi, hexagonixService ;; Service name
 
     stc
 
-    hx.syscall iniciarProcesso ;; Solicitar o carregamento do primeiro serviço
+    hx.syscall iniciarProcesso ;; Request loading of the service
 
-    jnc .proximoServico
+    jnc .nextService
 
-.proximoServico:
+.nextService:
 
     clc
 
-    call encontrarConfiguracaoInit
+    call findConfigurationFile
 
-    jmp .carregarServico
+    jmp .loadService
 
-.naoEncontrado: ;; O serviço não pôde ser localizado
+.serviceNotFound: ;; The service could not be located
 
-    cmp byte[tentarShellPadrao], 0 ;; Verifica se já se tentou carregar o shell padrão do Hexagonix
-    je .tentarShellPadrao          ;; Se não, tente carregar o shell padrão do Hexagonix
+;; Check if you have already tried to load the default Hexagonix shell
 
-    hx.syscall encerrarProcesso ;; Se sim, o shell padrão também não pode ser executado
+    cmp byte[tryDefaultShell], 0
+    je .tryDefaultShell          ;; If not, try loading the default Hexagonix shell
 
-.tentarShellPadrao: ;; Tentar carregar o shell padrão do Hexagonix
+    hx.syscall encerrarProcesso ;; If yes, the default shell cannot be run either
 
-    call obterShellPadrao ;; Solicitar a configuração do nome do shell padrão do Hexagonix
+.tryDefaultShell: ;; Try loading the default Hexagonix shell
 
-    mov byte[tentarShellPadrao], 1 ;; Sinalizar a tentativa de carregamento do shell padrão do Hexagonix
+    call findDefaultShell ;; Configure Hexagonix default shell name
 
-    hx.syscall destravar ;; O shell pode ser terminado utilizando uma tecla especial
+    mov byte[tryDefaultShell], 1 ;; Try loading the default Hexagonix shell
 
-    jmp .carregarServico ;; Tentar carregar o shell padrão do Hexagonix
+    hx.syscall destravar ;; The shell can be terminated using a special key
+
+    jmp .loadService ;; Try loading the default Hexagonix shell
 
 ;;************************************************************************************
 
-limparTerminal:
+clearConsole:
 
-    logSistema init.configurarConsole, 0, Log.Prioridades.p5
+    logSistema init.setupConsole, 0, Log.Prioridades.p5
 
-    mov esi, Hexagon.LibASM.Dev.video.tty1 ;; Abrir o primeiro console virtual
+    mov esi, Hexagon.LibASM.Dev.video.tty1 ;; Open the first virtual console
 
-    hx.syscall hx.open ;; Abre o dispositivo
+    hx.syscall hx.open ;; Open the device
 
-    mov esi, Hexagon.LibASM.Dev.video.tty0 ;; Reabre o console padrão
+    mov esi, Hexagon.LibASM.Dev.video.tty0 ;; Reopen the default console
 
-    hx.syscall hx.open ;; Abre o dispositivo
+    hx.syscall hx.open ;; Open the device
 
     ret
 
 ;;************************************************************************************
 
-encontrarConfiguracaoInit:
+findConfigurationFile:
 
     pusha
 
     push es
 
-    push ds ;; Segmento de dados do modo usuário (seletor 38h)
+    push ds ;; User mode data segment (38h selector)
     pop es
 
-    mov esi, arquivo
-    mov edi, bufferArquivo
+    mov esi, rcFile
+    mov edi, appFileBuffer
 
     hx.syscall hx.open
 
-    jc .arquivoConfiguracaoAusente
+    jc .rcFileNotFound
 
-    mov si, bufferArquivo ;; Aponta para o buffer com o conteúdo do arquivo
-    mov bx, word[posicaoBX]
+    mov si, appFileBuffer ;; Points to the buffer with the file contents
+    mov bx, word[positionBX]
 
-    jmp .procurarEntreDelimitadores
+    jmp .searchBetweenDelimiters
 
-.procurarEntreDelimitadores:
+.searchBetweenDelimiters:
 
     inc bx
 
-    mov word[posicaoBX], bx
+    mov word[positionBX], bx
 
-    cmp bx, tamanhoLimiteBusca
-    je iniciarExecucao.tentarShellPadrao ;; Caso nada seja encontrado até o tamanho limite, cancele a busca
+;; If nothing is found within the size limit, cancel the search
+
+    cmp bx, searchSizeLimit
+    je startProcessing.tryDefaultShell
 
     mov al, [ds:si+bx]
 
     cmp al, ':'
-    jne .procurarEntreDelimitadores ;; O limitador inicial foi encontrado
+    jne .searchBetweenDelimiters ;; The initial delimiter has been found
 
-;; BX agora aponta para o primeira caractere do nome do shell resgatado do arquivo
+;; BX now points to the first character of the shell name retrieved from the file
 
-    push ds ;; Segmento de dados do modo usuário (seletor 38h)
+    push ds ;; User mode data segment (38h selector)
     pop es
 
-    mov di, servicoHexagonix ;; O nome do shell será copiado para ES:DI - servicoHexagonix
+    mov di, hexagonixService ;; The shell name will be copied to ES:DI - hexagonixService
 
-    mov si, bufferArquivo
+    mov si, appFileBuffer
 
-    add si, bx ;; Mover SI para aonde BX aponta
+    add si, bx ;; Move SI to where BX points
 
-    mov bx, 0 ;; Iniciar em 0
+    mov bx, 0 ;; Start at 0
 
-.obterNomeServico:
+.getServiceName:
 
     inc bx
 
     cmp bx, 13
-    je .nomeShellInvalido ;; Se nome de arquivo maior que 11, o nome é inválido
+    je .invalidServiceName ;; If file name greater than 11, the name is invalid
 
     mov al, [ds:si+bx]
 
-;; Agora vamos procurar os limitadores finais do nome de um serviço, que podem ser:
+;; Now let's look for the final delimiters of a service name, which could be:
 ;;
-;; EOL - nova linha (10)
-;; Espaço - um espaço após o último caractere
-;; # - Se usado após o último caractere do nome do serviço, marcar como comentário
+;; EOL - new line (10)
+;; Space - a space after the last character
+;; # - If used after the last character of the service name, mark as a comment
 
-    cmp al, 10 ;; Se encontrar outro delimitador, o nome foi carregado com sucesso
-    je .nomeShellObtido
+    cmp al, 10 ;; If another delimiter is found, the name was loaded successfully
+    je .serviceNameObtained
 
-    cmp al, ' ' ;; Se encontrar outro delimitador, o nome foi carregado com sucesso
-    je .nomeShellObtido
+    cmp al, ' ' ;; If another delimiter is found, the name was loaded successfully
+    je .serviceNameObtained
 
-    cmp al, '#' ;; Se encontrar outro delimitador, o nome foi carregado com sucesso
-    je .nomeShellObtido
+    cmp al, '#' ;; If another delimiter is found, the name was loaded successfully
+    je .serviceNameObtained
 
-;; Se não estiver pronto, armazenar o caractere obtido
+;; If not ready, store the obtained character
 
     stosb
 
-    jmp .obterNomeServico
+    jmp .getServiceName
 
-.nomeShellObtido:
+.serviceNameObtained:
 
     pop es
 
     popa
 
-    logSistema init.arquivoEncontrado, 0, Log.Prioridades.p4
+    logSistema init.fileFound, 0, Log.Prioridades.p4
 
     ret
 
-.nomeShellInvalido:
+.invalidServiceName:
 
     pop es
 
     popa
 
-    jmp obterShellPadrao
+    jmp findDefaultShell
 
 
-.arquivoConfiguracaoAusente:
+.rcFileNotFound:
 
     pop es
 
     popa
 
-    logSistema init.arquivoAusente, 0, Log.Prioridades.p4
+    logSistema init.fileNotFound, 0, Log.Prioridades.p4
 
-    jmp obterShellPadrao
+    jmp findDefaultShell
 
 ;;************************************************************************************
 
-obterShellPadrao:
+findDefaultShell:
 
     push es
 
-    push ds ;; Segmento de dados do modo usuário (seletor 38h)
+    push ds ;; User mode data segment (38h selector)
     pop es
 
-    mov esi, servicoHexagonix
+    mov esi, hexagonixService
 
     hx.syscall tamanhoString
 
     push eax
 
-    mov edi, servicoHexagonix
+    mov edi, hexagonixService
     mov esi, ' '
 
     pop ecx
@@ -371,17 +378,17 @@ obterShellPadrao:
 
     push es
 
-    push ds ;; Segmento de dados do modo usuário (seletor 38h)
+    push ds ;; User mode data segment (38h selector)
     pop es
 
-    mov esi, shellPadrao
+    mov esi, defaultShell
 
     hx.syscall tamanhoString
 
     push eax
 
-    mov edi, servicoHexagonix
-    mov esi, shellPadrao
+    mov edi, hexagonixService
+    mov esi, defaultShell
 
     pop ecx
 
@@ -393,4 +400,4 @@ obterShellPadrao:
 
 ;;************************************************************************************
 
-bufferArquivo: ;; Local onde o arquivo de configuração será aberto
+appFileBuffer: ;; Location where the configuration file will be opened
