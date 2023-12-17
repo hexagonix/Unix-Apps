@@ -68,12 +68,12 @@
 
 use32
 
-;; Agora vamos criar um cabeçalho para a imagem HAPP final do aplicativo.
+;; Now let's create a HAPP header for the application
 
-include "HAPP.s" ;; Aqui está uma estrutura para o cabeçalho HAPP
+include "HAPP.s" ;; Here is a structure for the HAPP header
 
-;; Instância | Estrutura | Arquitetura | Versão | Subversão | Entrada | Tipo
-cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, inicioAPP, 01h
+;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
+cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, applicationStart, 01h
 
 ;;************************************************************************************
 
@@ -84,127 +84,126 @@ include "erros.s"
 
 ;;************************************************************************************
 
-inicioAPP:
+applicationStart:
 
-    push ds ;; Segmento de dados do modo usuário (seletor 38h)
+    push ds ;; User mode data segment (38h selector)
     pop es
 
-    mov [parametro], edi
+    mov [parameters], edi
 
-    mov esi, [parametro]
+    mov esi, [parameters]
 
     cmp byte[esi], 0
-    je semParametro
+    je withoutParameter
 
-    mov edi, rm.parametroAjuda
-    mov esi, [parametro]
-
-    hx.syscall compararPalavrasString
-
-    jc usoAplicativo
-
-    mov edi, rm.parametroAjuda2
-    mov esi, [parametro]
+    mov edi, rm.helpParameter
+    mov esi, [parameters]
 
     hx.syscall compararPalavrasString
 
-    jc usoAplicativo
+    jc applicationUsage
 
-    mov esi, [parametro]
+    mov edi, rm.helpParameter2
+    mov esi, [parameters]
+
+    hx.syscall compararPalavrasString
+
+    jc applicationUsage
+
+    mov esi, [parameters]
 
     hx.syscall arquivoExiste
 
-    jc .arquivoNaoEncontrado
+    jc .fileNotFound
 
-    novaLinha
+    putNewLine
 
-    fputs rm.confirmacao
+    fputs rm.confimation
 
-.obterTeclas:
+.getConfirmationKeys:
 
     hx.syscall aguardarTeclado
 
     cmp al, 'y'
-    je .deletar
+    je .safeDelete
 
     cmp al, 'Y'
-    je .deletar
+    je .safeDelete
 
     cmp al, 'n'
-    je .abortar
+    je .cancel
 
     cmp al, 'N'
-    je .abortar
+    je .cancel
 
-    jmp .obterTeclas
+    jmp .getConfirmationKeys
 
+.fileNotFound:
 
-.arquivoNaoEncontrado:
+    fputs rm.fileNotFound
 
-    fputs rm.naoEncontrado
+    jmp finish
 
-    jmp terminar
-
-.deletar:
+.safeDelete:
 
     hx.syscall imprimirCaractere
 
-    mov esi, [parametro]
+    mov esi, [parameters]
 
     hx.syscall hx.unlink
 
-    jc .erroDeletando
+    jc .unlinkError
 
-    ;; fputs rm.deletado
+    ;; fputs rm.unlinking
 
-    jmp terminar
+    jmp finish
 
-.abortar:
+.cancel:
 
     hx.syscall imprimirCaractere
 
-    fputs rm.abortar
+    fputs rm.cancel
 
-    jmp terminar
+    jmp finish
 
-.erroDeletando:
+.unlinkError:
 
     push eax
 
-    fputs rm.erroDeletando
+    fputs rm.unlinkError
 
     pop eax
 
     cmp eax, IO.operacaoNegada
-    je .permissaoNegada
+    je .permissionDenied
 
-    jmp terminar
+    jmp finish
 
-.permissaoNegada:
+.permissionDenied:
 
-    fputs rm.permissaoNegada
+    fputs rm.permissionDenied
 
-    jmp terminar
-
-;;************************************************************************************
-
-usoAplicativo:
-
-    fputs rm.uso
-
-    jmp terminar
+    jmp finish
 
 ;;************************************************************************************
 
-semParametro:
+applicationUsage:
 
-    fputs rm.semParametro
+    fputs rm.use
 
-    jmp terminar
+    jmp finish
 
 ;;************************************************************************************
 
-terminar:
+withoutParameter:
+
+    fputs rm.withoutParameter
+
+    jmp finish
+
+;;************************************************************************************
+
+finish:
 
     hx.syscall encerrarProcesso
 
@@ -212,39 +211,39 @@ terminar:
 
 ;;************************************************************************************
 ;;
-;;                    Área de dados e variáveis do aplicativo
+;;                        Application variables and data
 ;;
 ;;************************************************************************************
 
-versaoRM equ "1.1.4.3"
+VERSION equ "1.2.0"
 
 rm:
 
-.naoEncontrado:
+.fileNotFound:
 db 10, "File not found.", 0
-.uso:
+.use:
 db 10, "Usage: rm [file]", 10, 10
 db "Requests to delete a file on the current volume.", 10, 10
-db "rm version ", versaoRM, 10, 10
+db "rm version ", VERSION, 10, 10
 db "Copyright (C) 2017-", __stringano, " Felipe Miguel Nery Lunkes", 10
 db "All rights reserved.", 0
-.confirmacao:
+.confimation:
 db "Are you sure you want to delete this file (y/N)? ", 0
-.deletado:
+.unlinking:
 db 10, "The requested file was successfully removed.", 0
-.erroDeletando:
+.unlinkError:
 db 10, "An error occurred during the request. No files were removed.", 0
-.abortar:
+.cancel:
 db 10, "The operation was aborted by the user.", 0
-.parametroAjuda:
+.helpParameter:
 db "?", 0
-.parametroAjuda2:
+.helpParameter2:
 db "--help", 0
-.semParametro:
+.withoutParameter:
 db 10, "A required filename is missing.", 10
 db "Use 'rm ?' for help with this utility.", 0
-.permissaoNegada:
+.permissionDenied:
 db "Only an administrative (or root) user can complete this action.", 10
 db "Login in this user to perform the desired operation.", 0
 
-parametro: dd ?
+parameters: dd ?
