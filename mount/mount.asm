@@ -68,12 +68,12 @@
 
 use32
 
-;; Agora vamos criar um cabeçalho para a imagem HAPP final do aplicativo.
+;; Now let's create a HAPP header for the application
 
-include "HAPP.s" ;; Aqui está uma estrutura para o cabeçalho HAPP
+include "HAPP.s" ;; Here is a structure for the HAPP header
 
-;; Instância | Estrutura | Arquitetura | Versão | Subversão | Entrada | Tipo
-cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, inicioAPP, 01h
+;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
+cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, applicationStart, 01h
 
 ;;************************************************************************************
 
@@ -84,63 +84,63 @@ include "erros.s"
 
 ;;************************************************************************************
 
-inicioAPP:
+applicationStart:
 
-    push ds ;; Segmento de dados do modo usuário (seletor 38h)
+    push ds ;; User mode data segment (38h selector)
     pop es
 
-    mov [parametros], edi
+    mov [parameters], edi
 
     mov esi, edi
 
     cmp byte[esi], 0
-    je exibirMontagens
+    je displayMounts
 
-    call obterParametros
+    call getParameters
 
-    jc  usoAplicativo
+    jc  applicationUsage
 
-    mov edi, mount.parametroAjuda
-    mov esi, [parametros]
-
-    hx.syscall compararPalavrasString
-
-    jc usoAplicativo
-
-    mov edi, mount.dispositivoPadrao
-    mov esi, [pontoMontagem]
+    mov edi, mount.helpParameter
+    mov esi, [parameters]
 
     hx.syscall compararPalavrasString
 
-    jc .realizarMontagem
+    jc applicationUsage
 
-    jmp erroPontoMontagem
+    mov edi, mount.defaultPath
+    mov esi, [mountPoint]
 
-.realizarMontagem:
+    hx.syscall compararPalavrasString
+
+    jc .mountFilesysten
+
+    jmp mountPointError
+
+.mountFilesysten:
 
     fputs mount.volume
 
     fputs [volume]
 
-    fputs mount.pontoMontagem
+    fputs mount.mountPoint
 
-    fputs [pontoMontagem]
+    fputs [mountPoint]
 
-    fputs mount.fecharColchete
+    fputs mount.closeBracket
 
     mov esi, [volume]
 
     hx.syscall hx.open
 
-    jc erroAbertura
+    jc openingError
 
-    jmp terminar
+    jmp finish
 
 ;;************************************************************************************
 
-exibirMontagens:
+displayMounts:
 
-    novaLinha
+    putNewLine
 
     hx.syscall obterDisco
 
@@ -149,11 +149,11 @@ exibirMontagens:
 
     imprimirString
 
-    fputs mount.infoVolume
+    fputs mount.volumeInformation
 
-    fputs mount.dispositivoPadrao
+    fputs mount.defaultPath
 
-    fputs mount.tipoFS
+    fputs mount.filesystemType
 
     pop eax
 
@@ -166,31 +166,31 @@ exibirMontagens:
     cmp ah, 06h
     je .fat16
 
-    fputs mount.desconhecido
+    fputs mount.unknownFilesystem
 
-    jmp .continuar
+    jmp .continue
 
 .fat12:
 
     fputs mount.FAT12
 
-    jmp .continuar
+    jmp .continue
 
 .fat16_32:
 
     fputs mount.FAT16_32
 
-    jmp .continuar
+    jmp .continue
 
 .fat16:
 
     fputs mount.FAT16
 
-    jmp .continuar
+    jmp .continue
 
-.continuar:
+.continue:
 
-    fputs mount.rotuloVolume
+    fputs mount.filesystemLabel
 
     pop edi
 
@@ -200,76 +200,75 @@ exibirMontagens:
 
     imprimirString
 
-    jmp terminar
+    jmp finish
 
 ;;************************************************************************************
 
-erroPontoMontagem:
+mountPointError:
 
-    fputs mount.erroPontoMontagem
+    fputs mount.mountPointError
 
-    jmp terminar
+    jmp finish
 
 ;;************************************************************************************
 
-erroAbertura:
+openingError:
 
     cmp eax, IO.operacaoNegada
-    je .operacaoNegada
+    je .operationDenied
 
     cmp eax, IO.naoEncontrado
-    je .naoEncontrado
+    je .notFound
 
-    fputs mount.erroAbrindo
+    fputs mount.openingError
 
-    jmp terminar
+    jmp finish
 
-.operacaoNegada:
+.operationDenied:
 
-    fputs mount.operacaoNegada
+    fputs mount.operationDenied
 
-    jmp terminar
+    jmp finish
 
-.naoEncontrado:
+.notFound:
 
-    fputs mount.naoEncontrado
+    fputs mount.notFound
 
-    jmp terminar
+    jmp finish
 
 ;;************************************************************************************
 
-terminar:
+finish:
 
     hx.syscall encerrarProcesso
 
 ;;************************************************************************************
 
-;; Obtem os parâmetros necessários para o funcionamento do programa, diretamente da linha
-;; de comando fornecida pelo Sistema
+;; Get parameters directly from the command line
 
-obterParametros:
+getParameters:
 
-    mov esi, [parametros]
+    mov esi, [parameters]
     mov [volume], esi
 
     cmp byte[esi], 0
-    je usoAplicativo
+    je applicationUsage
 
     mov al, ' '
 
     hx.syscall encontrarCaractere
 
-    jc usoAplicativo
+    jc applicationUsage
 
     mov al, ' '
 
-    call encontrarCaractereCP
+    call findCharacterMount
 
-    mov [pontoMontagem], esi
+    mov [mountPoint], esi
 
-    jmp .pronto
+    jmp .done
 
-.pronto:
+.done:
 
     clc
 
@@ -277,27 +276,27 @@ obterParametros:
 
 ;;************************************************************************************
 
-;; Realiza a busca de um caractere específico na String fornecida
+;; Searches for a specific character in the given String
 ;;
-;; Entrada:
+;; Input:
 ;;
-;; ESI - String à ser verificada
-;; AL  - Caractere para procurar
+;; ESI - String to be checked
+;; AL  - Character to search for
 ;;
-;; Saída:
+;; Output:
 ;;
-;; ESI - Posição do caractere na String fornecida
+;; ESI - Character position in the given String
 
-encontrarCaractereCP:
+findCharacterMount:
 
     lodsb
 
     cmp al, ' '
-    je .pronto
+    je .done
 
-    jmp encontrarCaractereCP
+    jmp findCharacterMount
 
-.pronto:
+.done:
 
     mov byte[esi-1], 0
 
@@ -305,55 +304,55 @@ encontrarCaractereCP:
 
 ;;************************************************************************************
 
-usoAplicativo:
+applicationUsage:
 
-    fputs mount.uso
+    fputs mount.use
 
-    jmp terminar
+    jmp finish
 
 ;;************************************************************************************
 
 ;;************************************************************************************
 ;;
-;;                    Área de dados e variáveis do aplicativo
+;;                        Application variables and data
 ;;
 ;;************************************************************************************
 
-versaoMOUNT equ "2.5.3"
+VERSION equ "2.6.0"
 
 mount:
 
 .volume:
 db 10, "Mounting [", 0
-.pontoMontagem:
+.mountPoint:
 db "] on [", 0
-.fecharColchete:
+.closeBracket:
 db "]...", 0
-.uso:
+.use:
 db 10, "Usage: mount [volume] [mount point]", 10, 10
 db "Performs mounting a volume to a file system mount point.", 10, 10
 db "If no parameter is provided, the mounting points will be displayed.", 10, 10
-db "mount version ", versaoMOUNT, 10, 10
+db "mount version ", VERSION, 10, 10
 db "Copyright (C) 2017-", __stringano, " Felipe Miguel Nery Lunkes", 10
 db "All rights reserved.", 0
-.erroAbrindo:
+.openingError:
 db 10, "Error mounting volume at specified mount point.", 10
 db "Try to enter a valid name or reference of an attached volume.", 0
-.parametroAjuda:
+.helpParameter:
 db "?", 0
-.dispositivoPadrao:
+.defaultPath:
 db "/", 0
-.erroPontoMontagem:
+.mountPointError:
 db 10, "Please enter a valid mount point for this volume and file system.", 0
-.infoVolume:
+.volumeInformation:
 db " on ", 0
-.rotuloVolume:
+.filesystemLabel:
 db " with the label ", 0
-.tipoFS:
+.filesystemType:
 db " type ", 0
-.naoEncontrado:
+.notFound:
 db 10, "Device not found or filesystem not supported.", 0
-.operacaoNegada:
+.operationDenied:
 db "The mount was refused by the system. This may be explained due to the fact that the current user", 10
 db "does not have administrative privileges, not being a root user (root).", 10, 10
 db "Only the root user (root) can perform mounts. Login in this user to perform the desired mount.", 0
@@ -363,9 +362,9 @@ db "FAT16B", 0
 db "FAT12", 0
 .FAT16_32:
 db "FAT16 <32 MB", 0
-.desconhecido:
+.unknownFilesystem:
 db "unknown", 0
 
-parametros:    dd 0
-volume:        dd ?
-pontoMontagem: dd ?
+parameters: dd 0
+volume:     dd ?
+mountPoint: dd ?
