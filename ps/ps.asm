@@ -68,12 +68,12 @@
 
 use32
 
-;; Agora vamos criar um cabeçalho para a imagem HAPP final do aplicativo.
+;; Now let's create a HAPP header for the application
 
-include "HAPP.s" ;; Aqui está uma estrutura para o cabeçalho HAPP
+include "HAPP.s" ;; Here is a structure for the HAPP header
 
-;; Instância | Estrutura | Arquitetura | Versão | Subversão | Entrada | Tipo
-cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, inicioAPP, 01h
+;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
+cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, applicationStart, 01h
 
 
 ;;************************************************************************************
@@ -84,52 +84,52 @@ include "macros.s"
 
 ;;************************************************************************************
 
-inicioAPP: ;; Ponto de entrada do aplicativo
+applicationStart: ;; Ponto de entrada do aplicativo
 
-    mov [parametro], edi
+    mov [parameters], edi
 
-    novaLinha
+    putNewLine
 
-    mov edi, ps.parametroAjuda
-    mov esi, [parametro]
-
-    hx.syscall compararPalavrasString
-
-    jc usoAplicativo
-
-    mov edi, ps.parametroAjuda2
-    mov esi, [parametro]
+    mov edi, ps.helpParameter
+    mov esi, [parameters]
 
     hx.syscall compararPalavrasString
 
-    jc usoAplicativo
+    jc applicationUsage
 
-    mov edi, ps.parametroPID
-    mov esi, [parametro]
-
-    hx.syscall compararPalavrasString
-
-    jc parametroPID
-
-    mov edi, ps.parametroMemoria
-    mov esi, [parametro]
+    mov edi, ps.helpParameter2
+    mov esi, [parameters]
 
     hx.syscall compararPalavrasString
 
-    jc parametroMemoria
+    jc applicationUsage
 
-    mov edi, ps.parametroOutros
-    mov esi, [parametro]
+    mov edi, ps.parameterPID
+    mov esi, [parameters]
 
     hx.syscall compararPalavrasString
 
-    jc parametroOutrosProcessos
+    jc parameterPID
 
-    jmp parametroMemoria
+    mov edi, ps.parameterMemory
+    mov esi, [parameters]
+
+    hx.syscall compararPalavrasString
+
+    jc parameterMemory
+
+    mov edi, ps.parameterOtherProcesses
+    mov esi, [parameters]
+
+    hx.syscall compararPalavrasString
+
+    jc parameterOtherProcesses
+
+    jmp parameterMemory
 
 ;;************************************************************************************
 
-parametroPID:
+parameterPID:
 
     hx.syscall hx.getpid
 
@@ -141,18 +141,18 @@ parametroPID:
 
     imprimirInteiro
 
-    novaLinha
-    novaLinha
+    putNewLine
+    putNewLine
 
-    jmp parametroMemoria.linha
+    jmp parameterMemory.line
 
 ;;************************************************************************************
 
-parametroMemoria:
+parameterMemory:
 
-.linha:
+.line:
 
-    fputs ps.usoMem
+    fputs ps.memoryUsage
 
     hx.syscall usoMemoria
 
@@ -160,75 +160,75 @@ parametroMemoria:
 
     fputs ps.kbytes
 
-    jmp terminar
+    jmp finish
 
 ;;************************************************************************************
 
-parametroOutrosProcessos:
+parameterOtherProcesses:
 
     hx.syscall hx.getpid
 
     push eax
 
-    fputs ps.numeroProcessos
+    fputs ps.numberOfProcesses
 
     pop eax
 
     imprimirInteiro
 
-    fputs ps.processos
+    fputs ps.processes
 
-    jmp terminar
-
-;;************************************************************************************
-
-usoAplicativo:
-
-    fputs ps.uso
-
-    jmp terminar
+    jmp finish
 
 ;;************************************************************************************
 
-terminar:
+applicationUsage:
+
+    fputs ps.use
+
+    jmp finish
+
+;;************************************************************************************
+
+finish:
 
     hx.syscall encerrarProcesso
 
 ;;************************************************************************************
 
-versaoPS equ "1.1.5.2"
+VERSION equ "1.2.0"
 
 ps:
 
 .pid:
 db "PID of this process: ", 0
-.usoMem:
+.memoryUsage:
 db "Memory usage: ", 0
 .kbytes:
 db " bytes used by running processes.", 0
-.uso:
+.use:
 db "Usage: ps [parameter]", 10, 10
 db "Displays process information and usage of memory and system resources.", 10, 10
 db "Possible parameters (in case of missing parameters, the '-v' option will be selected):", 10, 10
 db "-t - Displays all possible process and system resource information.", 10
 db "-v - Displays only memory usage of running processes.", 10, 10
 db "-o - Displays the number of processes in the execution queue.", 10, 10
-db "ps version ", versaoPS, 10, 10
+db "ps version ", VERSION, 10, 10
 db "Copyright (C) 2017-", __stringano, " Felipe Miguel Nery Lunkes", 10
 db "All rights reserved.", 0
-.parametroAjuda:
+.helpParameter:
 db "?", 0
-.parametroAjuda2:
+.helpParameter2:
 db "--help", 0
-.parametroPID:
+.parameterPID:
 db "-t", 0
-.parametroOutros:
+.parameterOtherProcesses:
 db "-o", 0
-.parametroMemoria:
+.parameterMemory:
 db "-v", 0
-.numeroProcessos:
+.numberOfProcesses:
 db "There are currently ", 0
-.processos:
+.processes:
 db " processes in the Hexagonix runtime stack.", 0
 
-parametro: dd ?
+parameters: dd ?
