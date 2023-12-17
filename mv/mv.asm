@@ -68,12 +68,12 @@
 
 use32
 
-;; Agora vamos criar um cabeçalho para a imagem HAPP final do aplicativo.
+;; Now let's create a HAPP header for the application
 
-include "HAPP.s" ;; Aqui está uma estrutura para o cabeçalho HAPP
+include "HAPP.s" ;; Here is a structure for the HAPP header
 
-;; Instância | Estrutura | Arquitetura | Versão | Subversão | Entrada | Tipo
-cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, inicioAPP, 01h
+;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
+cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, applicationStart, 01h
 
 ;;************************************************************************************
 
@@ -83,118 +83,117 @@ include "macros.s"
 
 ;;************************************************************************************
 
-inicioAPP:
+applicationStart:
 
-    push ds ;; Segmento de dados do modo usuário (seletor 38h)
+    push ds ;; User mode data segment (38h selector)
     pop es
 
-    mov [parametros], edi
+    mov [parameters], edi
 
-    call obterParametros
+    call getParameters
 
-    jc  usoAplicativo
+    jc  applicationUsage
 
     push esi
     push edi
 
-    mov edi, mv.parametroAjuda
-    mov esi, [parametros]
+    mov edi, mv.helpParameter
+    mov esi, [parameters]
 
     hx.syscall compararPalavrasString
 
-    jc usoAplicativo
+    jc applicationUsage
 
-    mov edi, mv.parametroAjuda2
-    mov esi, [parametros]
+    mov edi, mv.helpParameter2
+    mov esi, [parameters]
 
     hx.syscall compararPalavrasString
 
-    jc usoAplicativo
+    jc applicationUsage
 
     pop edi
     pop esi
 
-    mov esi, [arquivoEntrada]
+    mov esi, [inputFile]
 
     hx.syscall arquivoExiste
 
-    jc fonteNaoEncontrado
+    jc sourceNotFound
 
-    mov esi, [arquivoSaida]
+    mov esi, [outputFile]
 
     hx.syscall arquivoExiste
 
-    jnc destinoPresente
+    jnc destinationPresent
 
-    mov esi, [arquivoEntrada]
-    mov edi, [arquivoSaida]
+    mov esi, [inputFile]
+    mov edi, [outputFile]
 
     hx.syscall rename
 
-    jc erroRenomear
+    jc renameError
 
-;; Sucesso ao renomear
+;; Success
 
-    jmp terminar
-
-;;************************************************************************************
-
-erroRenomear:
-
-    fputs mv.erroRenomeando
-
-    jmp terminar
+    jmp finish
 
 ;;************************************************************************************
 
-fonteNaoEncontrado:
+renameError:
 
-    fputs mv.fonteIndisponivel
+    fputs mv.renamingError
 
-    jmp terminar
-
-;;************************************************************************************
-
-destinoPresente:
-
-    fputs mv.destinoExistente
-
-    jmp terminar
+    jmp finish
 
 ;;************************************************************************************
 
-terminar:
+sourceNotFound:
+
+    fputs mv.sourceNotFound
+
+    jmp finish
+
+;;************************************************************************************
+
+destinationPresent:
+
+    fputs mv.destinationPresent
+
+    jmp finish
+
+;;************************************************************************************
+
+finish:
 
     hx.syscall encerrarProcesso
 
 ;;************************************************************************************
 
-;; Obtem os parâmetros necessários para o funcionamento do programa, diretamente da linha
-;; de comando fornecida pelo Sistema
+;; Get the necessary parameters directly from the command line
 
-obterParametros:
+getParameters:
 
-    mov esi, [parametros]
-    mov [arquivoEntrada], esi
+    mov esi, [parameters]
+    mov [inputFile], esi
 
     cmp byte[esi], 0
-    je usoAplicativo
+    je applicationUsage
 
     mov al, ' '
 
     hx.syscall encontrarCaractere
 
-    jc usoAplicativo
+    jc applicationUsage
 
     mov al, ' '
 
-    call encontrarCaractereMV
+    call findCharacterMV
 
-    mov [arquivoSaida], esi
+    mov [outputFile], esi
 
-    jmp .pronto
+    jmp .done
 
-.pronto:
+.done:
 
     clc
 
@@ -202,27 +201,27 @@ obterParametros:
 
 ;;************************************************************************************
 
-;; Realiza a busca de um caractere específico na String fornecida
+;; Searches for a specific character in the given String
 ;;
-;; Entrada:
+;; Input:
 ;;
-;; ESI - String à ser verificada
-;; AL  - Caractere para procurar
+;; ESI - String to be checked
+;; AL  - Character to search for
 ;;
-;; Saída:
+;; Output:
 ;;
-;; ESI - Posição do caractere na String fornecida
+;; ESI - Character position in the given String
 
-encontrarCaractereMV:
+findCharacterMV:
 
     lodsb
 
     cmp al, ' '
-    je .pronto
+    je .done
 
-    jmp encontrarCaractereMV
+    jmp findCharacterMV
 
-.pronto:
+.done:
 
     mov byte[esi-1], 0
 
@@ -230,45 +229,43 @@ encontrarCaractereMV:
 
 ;;************************************************************************************
 
-usoAplicativo:
+applicationUsage:
 
-    fputs mv.uso
+    fputs mv.use
 
-    jmp terminar
+    jmp finish
 
 ;;************************************************************************************
 
 ;;************************************************************************************
 ;;
-;;                    Área de dados e variáveis do aplicativo
+;;                        Application variables and data
 ;;
 ;;************************************************************************************
 
-versaoMV equ "0.0.2"
+VERSION equ "0.1.0"
 
 mv:
 
-.naoEncontrado:
-db 10, "File not found. Please check filename and try again.", 0
-.uso:
+.use:
 db 10, "Usage: mv [file1] [file2]", 10, 10
 db "Renames file1 into file2.", 10, 10
-db "mv version ", versaoMV, 10, 10
+db "mv version ", VERSION, 10, 10
 db "Copyright (C) 2023-", __stringano, " Felipe Miguel Nery Lunkes", 10
 db "All rights reserved.", 0
-.fonteIndisponivel:
+.sourceNotFound:
 db 10, "The source file cannot be found on this volume.", 0
-.destinoExistente:
+.destinationPresent:
 db 10, "A file with the given name already exists for the destination. Please remove the file and try again.", 0
-.erroRenomeando:
+.renamingError:
 db 10, "An error occurred while requesting to rename the file.", 10
 db "This could be due to write protection, volume removal, out of storage or because the system is busy.", 10
 db "Please try again later.", 0
-.parametroAjuda:
+.helpParameter:
 db "?", 0
-.parametroAjuda2:
+.helpParameter2:
 db "--help", 0
 
-parametros:     dd 0
-arquivoEntrada: dd ?
-arquivoSaida:   dd ?
+parameters: dd 0
+inputFile:  dd ?
+outputFile: dd ?
