@@ -68,12 +68,12 @@
 
 use32
 
-;; Agora vamos criar um cabeçalho para a imagem HAPP final do aplicativo.
+;; Now let's create a HAPP header for the application
 
-include "HAPP.s" ;; Aqui está uma estrutura para o cabeçalho HAPP
+include "HAPP.s" ;; Here is a structure for the HAPP header
 
-;; Instância | Estrutura | Arquitetura | Versão | Subversão | Entrada | Tipo
-cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, inicioAPP, 01h
+;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
+cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, applicationStart, 01h
 
 ;;************************************************************************************
 
@@ -83,149 +83,149 @@ include "macros.s"
 
 ;;************************************************************************************
 
-versaoMAN equ "2.3.8"
+VERSION equ "2.4.0"
 
-versaoCoreUtils equ "Raava-CURRENT-6.3"
-versaoUnixUtils equ "Raava-CURRENT-6.3"
+CoreUtilsVersion equ "System I-CURRENT-7.0"
+UnixUtilsVersion equ "System I-CURRENT-7.0"
 
 align 32
 
 man:
 
-.parametroAjuda:
+.helpParameter:
 db "?", 0
-.parametroAjuda2:
+.helpParameter2:
 db "--help",0
 .man:
 db "Hexagonix manual", 0
-.uso:
+.use:
 db 10, "Usage: man [utility]", 10, 10
 db "Display detailed help for installed Unix utilities.", 10, 10
-db "CoreUtils version: ", versaoCoreUtils, 10
-db "UnixUtils Version: ", versaoUnixUtils, 10, 10
-db "man version ", versaoMAN, 10, 10
+db "CoreUtils version: ", CoreUtilsVersion, 10
+db "UnixUtils Version: ", UnixUtilsVersion, 10, 10
+db "man version ", VERSION, 10, 10
 db "Copyright (C) 2018-", __stringano, " Felipe Miguel Nery Lunkes", 10
 db "All rights reserved.", 10, 10
 db "Hexagonix is distributed under the BSD-3-Clause license.", 0
-.aguardar:
+.waitKeyPress:
 db "Press <q> to exit.", 0
-.naoEncontrado:
+.manNotFound:
 db ": manual not found for this utility.", 0
-.extensaoManual:
+.manFileExtension:
 db ".man", 0
 
-utilitario: dd ?
+utility: dd ?
 
 ;;************************************************************************************
 
-inicioAPP:
+applicationStart:
 
-    mov [utilitario], edi
+    mov [utility], edi
 
     cmp byte[edi], 0
-    je usoAplicativo
+    je applicationUsage
 
-    mov edi, man.parametroAjuda
-    mov esi, [utilitario]
-
-    hx.syscall compararPalavrasString
-
-    jc usoAplicativo
-
-    mov edi, man.parametroAjuda2
-    mov esi, [utilitario]
+    mov edi, man.helpParameter
+    mov esi, [utility]
 
     hx.syscall compararPalavrasString
 
-    jc usoAplicativo
+    jc applicationUsage
 
-    mov esi, [utilitario]
+    mov edi, man.helpParameter2
+    mov esi, [utility]
+
+    hx.syscall compararPalavrasString
+
+    jc applicationUsage
+
+    mov esi, [utility]
 
     hx.syscall tamanhoString
 
     mov ebx, eax
 
-    mov al, byte[man.extensaoManual+0]
+    mov al, byte[man.manFileExtension+0]
 
     mov byte[esi+ebx+0], al
 
-    mov al, byte[man.extensaoManual+1]
+    mov al, byte[man.manFileExtension+1]
 
     mov byte[esi+ebx+1], al
 
-    mov al, byte[man.extensaoManual+2]
+    mov al, byte[man.manFileExtension+2]
 
     mov byte[esi+ebx+2], al
 
-    mov al, byte[man.extensaoManual+3]
+    mov al, byte[man.manFileExtension+3]
 
     mov byte[esi+ebx+3], al
 
-    mov byte[esi+ebx+4], 0 ;; Fim da string
+    mov byte[esi+ebx+4], 0 ;; End of string
 
     push esi
 
     hx.syscall arquivoExiste
 
-    jc manualNaoEncontrado
+    jc manNotFound
 
-    mov edi, bufferArquivo
+    mov edi, appFileBuffer
 
     pop esi
 
     hx.syscall hx.open
 
-    jc manualNaoEncontrado
+    jc manNotFound
 
-;; Preparação do ambiente
+;; Environment preparation
 
-    call montarInterface
+    call buildInterface
 
-    fputs bufferArquivo
+    fputs appFileBuffer
 
-    jmp terminar
+    jmp finish
 
 ;;************************************************************************************
 
-montarInterface:
+buildInterface:
 
     hx.syscall limparTela
 
     fputs man.man
 
-    xyfputs 40, 0, [utilitario]
+    xyfputs 40, 0, [utility]
 
-    novaLinha
-    novaLinha
+    putNewLine
+    putNewLine
 
     ret
 
 ;;************************************************************************************
 
-manualNaoEncontrado:
+manNotFound:
 
-    novaLinha
+    putNewLine
 
-    fputs [utilitario]
+    fputs [utility]
 
-    fputs man.naoEncontrado
+    fputs man.manNotFound
 
-   jmp terminar
-
-;;************************************************************************************
-
-usoAplicativo:
-
-    fputs man.uso
-
-    jmp terminar
+    jmp finish
 
 ;;************************************************************************************
 
-terminar:
+applicationUsage:
+
+    fputs man.use
+
+    jmp finish
+
+;;************************************************************************************
+
+finish:
 
     hx.syscall encerrarProcesso
 
 ;;*****************************************************************************
 
-bufferArquivo:
+appFileBuffer:
