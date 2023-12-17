@@ -68,12 +68,12 @@
 
 use32
 
-;; Agora vamos criar um cabeçalho para a imagem HAPP final do aplicativo.
+;; Now let's create a HAPP header for the application
 
-include "HAPP.s" ;; Aqui está uma estrutura para o cabeçalho HAPP
+include "HAPP.s" ;; Here is a structure for the HAPP header
 
-;; Instância | Estrutura | Arquitetura | Versão | Subversão | Entrada | Tipo
-cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, inicioAPP, 01h
+;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
+cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, applicationStart, 01h
 
 ;;************************************************************************************
 
@@ -83,57 +83,57 @@ include "macros.s"
 
 ;;************************************************************************************
 
-inicioAPP:
+applicationStart:
 
-    mov [linhaComando], edi
+    mov [parameters], edi
 
-    mov edi, whoami.parametroAjuda
-    mov esi, [linhaComando]
-
-    hx.syscall compararPalavrasString
-
-    jc usoAplicativo
-
-    mov edi, whoami.parametroAjuda2
-    mov esi, [linhaComando]
+    mov edi, whoami.helpParameter
+    mov esi, [parameters]
 
     hx.syscall compararPalavrasString
 
-    jc usoAplicativo
+    jc applicationUsage
 
-    mov edi, whoami.parametroTudo
-    mov esi, [linhaComando]
-
-    hx.syscall compararPalavrasString
-
-    jc usuarioEGrupo
-
-    mov edi, whoami.parametroUsuario
-    mov esi, [linhaComando]
+    mov edi, whoami.helpParameter2
+    mov esi, [parameters]
 
     hx.syscall compararPalavrasString
 
-    jc exibirUsuario
+    jc applicationUsage
 
-    jmp exibirUsuario
+    mov edi, whoami.parameterAll
+    mov esi, [parameters]
+
+    hx.syscall compararPalavrasString
+
+    jc userAndGroup
+
+    mov edi, whoami.parameterUser
+    mov esi, [parameters]
+
+    hx.syscall compararPalavrasString
+
+    jc displayUser
+
+    jmp displayUser
 
 ;;************************************************************************************
 
-exibirUsuario:
+displayUser:
 
-    novaLinha
+    putNewLine
 
     hx.syscall obterUsuario
 
     imprimirString
 
-    jmp terminar
+    jmp finish
 
 ;;************************************************************************************
 
-usuarioEGrupo:
+userAndGroup:
 
-    novaLinha
+    putNewLine
 
     hx.syscall obterUsuario
 
@@ -141,25 +141,25 @@ usuarioEGrupo:
 
     imprimirString
 
-    fputs whoami.grupo
+    fputs whoami.group
 
     pop eax
 
     imprimirInteiro
 
-    jmp terminar
+    jmp finish
 
 ;;************************************************************************************
 
-usoAplicativo:
+applicationUsage:
 
-    fputs whoami.uso
+    fputs whoami.use
 
-    jmp terminar
+    jmp finish
 
 ;;************************************************************************************
 
-terminar:
+finish:
 
     hx.syscall encerrarProcesso
 
@@ -167,32 +167,32 @@ terminar:
 
 ;;************************************************************************************
 ;;
-;;                    Área de dados e variáveis do aplicativo
+;;                        Application variables and data
 ;;
 ;;************************************************************************************
 
-linhaComando: dd 0
-
-versaoWHOAMI equ "1.1.3"
+VERSION equ "1.2.0"
 
 whoami:
 
-.uso:
+.use:
 db 10, "Usage: whoami", 10, 10
 db "Displays the name of the user currently logged into the system.", 10, 10
 db "Possible parameters (in case of missing parameters, the '-u' option will be selected):", 10, 10
 db "-t - Displays all possible information of the currently logged in user", 10
 db "-u - Display only the name of the logged in user", 10, 10
-db "whoami version ", versaoWHOAMI, 10, 10
+db "whoami version ", VERSION, 10, 10
 db "Copyright (C) 2017-", __stringano, " Felipe Miguel Nery Lunkes", 10
 db "All rights reserved.", 0
-.parametroAjuda:
+.helpParameter:
 db "?", 0
-.parametroAjuda2:
+.helpParameter2:
 db "--help", 0
-.parametroTudo:
+.parameterAll:
 db "-t", 0
-.parametroUsuario:
+.parameterUser:
 db "-u", 0
-.grupo:
+.group:
 db ", of the group ", 0
+
+parameters: dd ?
