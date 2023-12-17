@@ -68,12 +68,12 @@
 
 use32
 
-;; Agora vamos criar um cabeçalho para a imagem HAPP final do aplicativo.
+;; Now let's create a HAPP header for the application
 
-include "HAPP.s" ;; Aqui está uma estrutura para o cabeçalho HAPP
+include "HAPP.s" ;; Here is a structure for the HAPP header
 
-;; Instância | Estrutura | Arquitetura | Versão | Subversão | Entrada | Tipo
-cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, inicioAPP, 01h
+;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
+cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, applicationStart, 01h
 
 ;;************************************************************************************
 
@@ -85,54 +85,54 @@ include "macros.s"
 
 ;;************************************************************************************
 ;;
-;;                    Área de dados e variáveis do aplicativo
+;;                        Application variables and data
 ;;
 ;;************************************************************************************
 
-versaoLSHAPP equ "1.12.4"
+VERSION equ "1.13.0"
 
 lshapp:
 
-.uso:
+.use:
 db 10, "Usage: lshapp [file]", 10, 10
 db "Retrieve and display information from a HAPP image.", 10, 10
-db "lshapp version ", versaoLSHAPP, 10, 10
+db "lshapp version ", VERSION, 10, 10
 db "Copyright (C) 2020-", __stringano, " Felipe Miguel Nery Lunkes", 10
 db "All rights reserved.", 0
-.arquivoInvalido:
+.invalidFile:
 db 10, 10, "The filename is invalid. Please enter a valid filename.", 10, 0
-.infoArquivo:
+.fileInfo:
 db 10, "> Filename: ", 0
-.tamanhoArquivo:
+.fileSize:
 db 10, "> File size: ", 0
 .bytes:
 db " bytes.", 0
-.imagemInvalida:
+.invalidImage:
 db 10, "<!> This is not a valid HAPP image. Try another file.", 0
-.semArquivo:
+.fileNotFound:
 db 10, 10, "<!> The requested file is not available on this volume.", 10, 10
 db "<!> Check the filename and try again.", 0
-.tipoArquitetura:
+.archType:
 db 10, "> Target architecture: ", 0
 .verHexagon:
 db 10, "> Minimum version of Hexagon required to run: ", 0
-.camposVersaoHexagon:
+.fieldVersionHexagon:
 db " -> [HAPP:version and HAPP:subversion].", 0
-.cabecalho:
+.header:
 db 10, "<+> This file contains a valid HAPP image.", 0
 .i386:
 db "i386", 0
 .amd64:
 db "amd64", 0
-.campoArquitetura:
+.fieldArch:
 db " -> [HAPP:arch].", 0
-.arquiteturaInvalida:
+.invalidArch:
 db "unknown", 0
-.entradaCodigo:
+.imageEntryPoint:
 db 10, "> Image entry point: ?:", 0
-.campoEntrada:
+.fieldEntryPoint:
 db " -> [HAPP:entryPoint].", 0
-.tipoImagem:
+.imageType:
 db 10, "> HAPP image format (type): ", 0
 .HAPPExec:
 db "Exec", 0
@@ -140,154 +140,156 @@ db "Exec", 0
 db "LibS", 0
 .HAPPLibD:
 db "LibD", 0
-.HAPPDesconhecido:
+.unknownImagetype:
 db "?", 0
-.campoImagem:
+.fieldImageType:
 db " -> [HAPP:imageFormat].", 0
-.parametroAjuda:
+.helpParameter:
 db "?", 0
-.parametroAjuda2:
+.helpParameter2:
 db "--help", 0
-.ponto:
+.dot:
 db ".", 0
-.pontoEntrada:  dd 0
-.arquitetura:   db 0
-.versaoMinima:  db 0
-.subverMinima:  db 0
-.especieImagem: db 0
 
-parametro: dd ?
+.entryPoint:        dd 0
+.architecture:      db 0
+.minimumVersion:    db 0
+.minimumSubversion: db 0
+.imageFormat:       db 0
 
-nomeArquivo:
+parameters: dd ?
+
+filename:
 times 13 db 0
 
 ;;************************************************************************************
 
-inicioAPP:
+applicationStart:
 
-    push ds ;; Segmento de dados do modo usuário (seletor 38h)
+    push ds ;; User mode data segment (38h selector)
     pop es
 
-    mov [parametro], edi
+    mov [parameters], edi
 
-    mov esi, [parametro]
+    mov esi, [parameters]
 
     cmp byte[esi], 0
-    je usoAplicativo
+    je applicationUsage
 
-    mov edi, lshapp.parametroAjuda
-    mov esi, [parametro]
-
-    hx.syscall compararPalavrasString
-
-    jc usoAplicativo
-
-    mov edi, lshapp.parametroAjuda2
-    mov esi, [parametro]
+    mov edi, lshapp.helpParameter
+    mov esi, [parameters]
 
     hx.syscall compararPalavrasString
 
-    jc usoAplicativo
+    jc applicationUsage
 
-    mov esi, [parametro]
+    mov edi, lshapp.helpParameter2
+    mov esi, [parameters]
+
+    hx.syscall compararPalavrasString
+
+    jc applicationUsage
+
+    mov esi, [parameters]
 
     hx.syscall cortarString
 
     hx.syscall tamanhoString
 
     cmp eax, 13
-    jl .obterInformacoes
+    jl .getInformation
 
-    fputs lshapp.arquivoInvalido
+    fputs lshapp.invalidFile
 
-    jmp .fim
+    jmp .end
 
-.obterInformacoes:
+.getInformation:
 
     hx.syscall arquivoExiste
 
-    jc .semArquivo
+    jc .fileNotFound
 
-    call manterArquivo
+    call saveFilename
 
-;; Primeiro vamos ver se se trata de uma imagem executável. Se sim, podemos pular todo o
-;; restante do processamento. Isso garante que imagens executáveis sejam relatadas como
-;; tal mesmo se tiverem diferentes extensões. O próprio Hexagon é uma imagem HAPP.
+;; First let's see if it is an executable image.
+;; If not, we can skip all the rest of the processing.
+;; This ensures that executable images are reported as such even if they have different
+;; extensions. The Hexagon itself is a HAPP image.
 
-    call verificarArquivoHAPP
+    call checkFileByHeader
 
-    jmp .fim
+    jmp .end
 
-.semArquivo:
+.fileNotFound:
 
-    fputs lshapp.semArquivo
+    fputs lshapp.fileNotFound
 
-    jmp .fim
+    jmp .end
 
-.fim:
+.end:
 
-    jmp terminar
+    jmp finish
 
 ;;************************************************************************************
 
-verificarArquivoHAPP:
+checkFileByHeader:
 
-    mov esi, nomeArquivo
-    mov edi, bufferArquivo
+    mov esi, filename
+    mov edi, appFileBuffer
 
     hx.syscall hx.open
 
-    jc inicioAPP.semArquivo
+    jc applicationStart.fileNotFound
 
-    mov edi, bufferArquivo
+    mov edi, appFileBuffer
 
     cmp byte[edi+0], "H"
-    jne .naoHAPP
+    jne .invalidHeader
 
     cmp byte[edi+1], "A"
-    jne .naoHAPP
+    jne .invalidHeader
 
     cmp byte[edi+2], "P"
-    jne .naoHAPP
+    jne .invalidHeader
 
     cmp byte[edi+3], "P"
-    jne .naoHAPP
+    jne .invalidHeader
 
     mov dh, byte[edi+4]
-    mov byte[lshapp.arquitetura], dh
+    mov byte[lshapp.architecture], dh
 
     mov dh, byte[edi+5]
-    mov byte[lshapp.versaoMinima], dh
+    mov byte[lshapp.minimumVersion], dh
 
     mov dh, byte[edi+6]
-    mov byte[lshapp.subverMinima], dh
+    mov byte[lshapp.minimumSubversion], dh
 
     mov eax, dword[edi+7]
-    mov dword[lshapp.pontoEntrada], eax
+    mov dword[lshapp.entryPoint], eax
 
     mov ah, byte[edi+11]
-    mov byte[lshapp.especieImagem], ah
+    mov byte[lshapp.imageFormat], ah
 
-    fputs lshapp.cabecalho
+    fputs lshapp.header
 
-;; Tamanho da imagem
+;; Image size
 
-    mov esi, nomeArquivo
+    mov esi, filename
 
     hx.syscall arquivoExiste
 
-    jc inicioAPP.semArquivo
+    jc applicationStart.fileNotFound
 
     push eax
     push esi
 
-    fputs lshapp.infoArquivo
+    fputs lshapp.fileInfo
 
     pop esi
 
     fputs esi
 
-    fputs lshapp.tamanhoArquivo
+    fputs lshapp.fileSize
 
     pop eax
 
@@ -295,127 +297,127 @@ verificarArquivoHAPP:
 
     fputs lshapp.bytes
 
-;; Tipo de arquitetura
+;; Type of architecture
 
-    fputs lshapp.tipoArquitetura
+    fputs lshapp.archType
 
-    cmp byte[lshapp.arquitetura], 01h
+    cmp byte[lshapp.architecture], 01h
     je .i386
 
-    cmp byte[lshapp.arquitetura], 02h
+    cmp byte[lshapp.architecture], 02h
     je .amd64
 
-    cmp byte[lshapp.arquitetura], 02h
-    jg .arquiteturaInvalida
+    cmp byte[lshapp.architecture], 02h
+    jg .invalidArch
 
 .i386:
 
     fputs lshapp.i386
 
-    jmp .continuar
+    jmp .continue
 
 .amd64:
 
     fputs lshapp.amd64
 
-    jmp .continuar
+    jmp .continue
 
-.arquiteturaInvalida:
+.invalidArch:
 
-    fputs lshapp.arquiteturaInvalida
+    fputs lshapp.invalidArch
 
-    jmp .continuar
+    jmp .continue
 
-.continuar:
+.continue:
 
-;; Versão do Hexagon necessária à execução
+;; Version of Hexagon required for execution
 
-    fputs lshapp.campoArquitetura
+    fputs lshapp.fieldArch
 
     fputs lshapp.verHexagon
 
-    mov dh, byte[lshapp.versaoMinima]
+    mov dh, byte[lshapp.minimumVersion]
     movzx eax, dh
 
     imprimirInteiro
 
-    fputs lshapp.ponto
+    fputs lshapp.dot
 
-    mov dh, byte[lshapp.subverMinima]
+    mov dh, byte[lshapp.minimumSubversion]
     movzx eax, dh
 
     imprimirInteiro
 
-    fputs lshapp.camposVersaoHexagon
+    fputs lshapp.fieldVersionHexagon
 
-;; Ponto de entrada do código
+;; Image entry point
 
-    fputs lshapp.entradaCodigo
+    fputs lshapp.imageEntryPoint
 
-    mov eax, dword[lshapp.pontoEntrada]
+    mov eax, dword[lshapp.entryPoint]
 
     imprimirHexadecimal
 
-    fputs lshapp.campoEntrada
+    fputs lshapp.fieldEntryPoint
 
-;; Tipo de imagem HAPP
+;; HAPP type
 
-    fputs lshapp.tipoImagem
+    fputs lshapp.imageType
 
-    cmp byte[lshapp.especieImagem], 01h
+    cmp byte[lshapp.imageFormat], 01h
     je .HAPPExec
 
-    cmp byte[lshapp.especieImagem], 02h
+    cmp byte[lshapp.imageFormat], 02h
     je .HAPPLibS
 
-    cmp byte[lshapp.especieImagem], 03h
+    cmp byte[lshapp.imageFormat], 03h
     je .HAPPLibD
 
-    fputs lshapp.HAPPDesconhecido
+    fputs lshapp.unknownImagetype
 
-    jmp .tipoHAPPListado
+    jmp .imageTypeField
 
 .HAPPExec:
 
     fputs lshapp.HAPPExec
 
-    jmp .tipoHAPPListado
+    jmp .imageTypeField
 
 .HAPPLibS:
 
     fputs lshapp.HAPPLibS
 
-    jmp .tipoHAPPListado
+    jmp .imageTypeField
 
 .HAPPLibD:
 
     fputs lshapp.HAPPLibD
 
-    jmp .tipoHAPPListado
+    jmp .imageTypeField
 
-.tipoHAPPListado:
+.imageTypeField:
 
-    fputs lshapp.campoImagem
+    fputs lshapp.fieldImageType
 
     ret
 
-.naoHAPP:
+.invalidHeader:
 
-    fputs lshapp.imagemInvalida
+    fputs lshapp.invalidImage
 
     ret
 
 ;;************************************************************************************
 
-usoAplicativo:
+applicationUsage:
 
-    fputs lshapp.uso
+    fputs lshapp.use
 
-    jmp terminar
+    jmp finish
 
 ;;************************************************************************************
 
-manterArquivo:
+saveFilename:
 
     push esi
     push eax
@@ -426,9 +428,9 @@ manterArquivo:
 
     mov ecx, eax
 
-    mov edi, nomeArquivo
+    mov edi, filename
 
-    rep movsb ;; Copiar (ECX) caracteres de ESI para EDI
+    rep movsb ;; Copy (ECX) characters from ESI to EDI
 
     pop eax
 
@@ -438,10 +440,10 @@ manterArquivo:
 
 ;;************************************************************************************
 
-terminar:
+finish:
 
     hx.syscall encerrarProcesso
 
 ;;************************************************************************************
 
-bufferArquivo:
+appFileBuffer:
