@@ -83,12 +83,10 @@ include "macros.s"
 
 ;;************************************************************************************
 
-VERSION equ "2.4.0"
+VERSION equ "2.4.1"
 
 CoreUtilsVersion equ "System I-CURRENT-7.0"
 UnixUtilsVersion equ "System I-CURRENT-7.0"
-
-align 32
 
 man:
 
@@ -163,15 +161,13 @@ applicationStart:
 
     mov byte[esi+ebx+4], 0 ;; End of string
 
-    push esi
-
     hx.syscall arquivoExiste
 
     jc manNotFound
 
     mov edi, appFileBuffer
 
-    pop esi
+    mov esi, [utility]
 
     hx.syscall hx.open
 
