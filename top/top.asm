@@ -68,12 +68,12 @@
 
 use32
 
-;; Agora vamos criar um cabeçalho para a imagem HAPP final do aplicativo.
+;; Now let's create a HAPP header for the application
 
-include "HAPP.s" ;; Aqui está uma estrutura para o cabeçalho HAPP
+include "HAPP.s" ;; Here is a structure for the HAPP header
 
-;; Instância | Estrutura | Arquitetura | Versão | Subversão | Entrada | Tipo
-cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, inicioAPP, 01h
+;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
+cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, applicationStart, 01h
 
 ;;************************************************************************************
 
@@ -83,60 +83,58 @@ include "macros.s"
 
 ;;************************************************************************************
 
-inicioAPP: ;; Ponto de entrada do aplicativo
+applicationStart: ;; Entry point
 
-    mov [parametro], edi
-
-;;************************************************************************************
+    mov [parameters], edi
 
     hx.syscall obterCor
 
-    mov dword[top.corFonte], eax
-    mov dword[top.corFundo], ebx
+    mov dword[top.fontColor], eax
+    mov dword[top.backgroundColor], ebx
 
-    novaLinha
+    putNewLine
 
-    mov edi, top.parametroAjuda
-    mov esi, [parametro]
-
-    hx.syscall compararPalavrasString
-
-    jc usoAplicativo
-
-    mov edi, top.parametroAjuda2
-    mov esi, [parametro]
+    mov edi, top.helpParameter
+    mov esi, [parameters]
 
     hx.syscall compararPalavrasString
 
-    jc usoAplicativo
+    jc applicationUsage
 
-    jmp exibirProcessos
+    mov edi, top.helpParameter2
+    mov esi, [parameters]
 
-exibirProcessos:
+    hx.syscall compararPalavrasString
 
-    fputs top.inicio
+    jc applicationUsage
 
-    call definirCorPadrao
+    jmp displayProcesses
 
-    fputs top.usoMem
+displayProcesses:
+
+    fputs top.start
+
+    call setDefaultColor
+
+    fputs top.memoryUsage
 
     mov eax, VERDE_FLORESTA
 
-    call definirCorTexto
+    call setTextColor
 
     hx.syscall usoMemoria
 
     imprimirInteiro
 
-    call definirCorPadrao
+    call setDefaultColor
 
     fputs top.bytes
 
-    fputs top.memTotal
+    fputs top.totalMemory
 
     mov eax, VERDE_FLORESTA
 
-    call definirCorTexto
+    call setTextColor
 
     hx.syscall usoMemoria
 
@@ -144,16 +142,16 @@ exibirProcessos:
 
     imprimirInteiro
 
-    call definirCorPadrao
+    call setDefaultColor
 
     fputs top.mbytes
 
-    novaLinha
+    putNewLine
 
     hx.syscall obterProcessos
 
-    mov [listaRemanescente], esi
-    mov dword[numeroPIDs], eax
+    mov [remainingList], esi
+    mov dword[numbersPID], eax
 
     push eax
 
@@ -166,22 +164,22 @@ exibirProcessos:
 
     mov edx, eax
 
-    mov dword[numeroProcessos], 00h
+    mov dword[processCount], 00h
 
-    fputs top.cabecalho
+    fputs top.header
 
     inc dword[PIDs]
 
-.loopProcessos:
+.processLoop:
 
-    push ds ;; Segmento de dados do modo usuário (seletor 38h)
+    push ds ;; User mode data segment (38h selector)
     pop es
 
-    call lerListaProcessos
+    call readProcessList
 
-    fputs [processoAtual]
+    fputs [currentProcess]
 
-    call colocarEspaco
+    call putSpace
 
     mov eax, [PIDs]
 
@@ -191,46 +189,46 @@ exibirProcessos:
 
     hx.syscall imprimirCaractere
 
-    cmp dword[numeroPIDs], 01h
-    je .continuar
+    cmp dword[numbersPID], 01h
+    je .continue
 
-    inc dword[numeroProcessos]
+    inc dword[processCount]
     inc dword[PIDs]
-    dec dword[numeroPIDs]
+    dec dword[numbersPID]
 
-    jmp .loopProcessos
+    jmp .processLoop
 
-.continuar:
+.continue:
 
-    call definirCorPadrao
+    call setDefaultColor
 
-    jmp terminar
-
-;;************************************************************************************
-
-usoAplicativo:
-
-    fputs top.uso
-
-    jmp terminar
+    jmp finish
 
 ;;************************************************************************************
 
-terminar:
+applicationUsage:
+
+    fputs top.use
+
+    jmp finish
+
+;;************************************************************************************
+
+finish:
 
     hx.syscall encerrarProcesso
 
 ;;************************************************************************************
 
-;; Função para definir a cor do conteúdo à ser exibido
+;; Function to define the color of the content to be displayed
 ;;
-;; Entrada:
+;; Input:
 ;;
-;; EAX - Cor do texto
+;; EAX - Text color
 
-definirCorTexto:
+setTextColor:
 
-    mov ebx, [top.corFundo]
+    mov ebx, [top.backgroundColor]
 
     hx.syscall definirCor
 
@@ -238,10 +236,10 @@ definirCorTexto:
 
 ;;************************************************************************************
 
-definirCorPadrao:
+setDefaultColor:
 
-    mov eax, [top.corFonte]
-    mov ebx, [top.corFundo]
+    mov eax, [top.fontColor]
+    mov ebx, [top.backgroundColor]
 
     hx.syscall definirCor
 
@@ -249,16 +247,16 @@ definirCorPadrao:
 
 ;;************************************************************************************
 
-colocarEspaco:
+putSpace:
 
     push ecx
     push ebx
     push eax
 
-    push ds ;; Segmento de dados do modo usuário (seletor 38h)
+    push ds ;; User mode data segment (38h selector)
     pop es
 
-    mov esi, [processoAtual]
+    mov esi, [currentProcess]
 
     hx.syscall tamanhoString
 
@@ -268,7 +266,7 @@ colocarEspaco:
 
     mov ecx, ebx
 
-.loopEspaco:
+.spaceLoop:
 
     mov al, ' '
 
@@ -277,11 +275,11 @@ colocarEspaco:
     dec ecx
 
     cmp ecx, 0
-    je .terminado
+    je .done
 
-    jmp .loopEspaco
+    jmp .spaceLoop
 
-.terminado:
+.done:
 
     pop eax
     pop ebx
@@ -291,34 +289,33 @@ colocarEspaco:
 
 ;;************************************************************************************
 
-;; Obtem os parâmetros necessários para o funcionamento do programa, diretamente da linha
-;; de comando fornecida pelo Sistema
+;; Get parameters directly from the command line
 
-lerListaProcessos:
+readProcessList:
 
-    push ds ;; Segmento de dados do modo usuário (seletor 38h)
+    push ds ;; User mode data segment (38h selector)
     pop es
 
-    mov esi, [listaRemanescente]
-    mov [processoAtual], esi
+    mov esi, [remainingList]
+    mov [currentProcess], esi
 
     mov al, ' '
 
     hx.syscall encontrarCaractere
 
-    jc .pronto
+    jc .done
 
     mov al, ' '
 
-    call encontrarCaractereLista
+    call findCharacterInList
 
     hx.syscall cortarString
 
-    mov [listaRemanescente], esi
+    mov [remainingList], esi
 
-    jmp .pronto
+    jmp .done
 
-.pronto:
+.done:
 
     clc
 
@@ -326,27 +323,27 @@ lerListaProcessos:
 
 ;;************************************************************************************
 
-;; Realiza a busca de um caractere específico na String fornecida
+;; Searches for a specific character in the given String
 ;;
-;; Entrada:
+;; Input:
 ;;
-;; ESI - String à ser verificada
-;; AL  - Caractere para procurar
+;; ESI - String to be checked
+;; AL  - Character to search for
 ;;
-;; Saída:
+;; Exit:
 ;;
-;; ESI - Posição do caractere na String fornecida
+;; ESI - Character position in the given String
 
-encontrarCaractereLista:
+findCharacterInList:
 
     lodsb
 
     cmp al, ' '
-    je .pronto
+    je .done
 
-    jmp encontrarCaractereLista
+    jmp findCharacterInList
 
-.pronto:
+.done:
 
     mov byte[esi-1], 0
 
@@ -354,17 +351,17 @@ encontrarCaractereLista:
 
 ;;************************************************************************************
 
-versaoTOP equ "1.4.5"
+VERSION equ "1.5.0"
 
 top:
 
-.inicio:
+.start:
 db "Hexagonix process viewer", 10, 10, 0
 .pid:
 db "PID of this process: ", 0
-.usoMem:
+.memoryUsage:
 db "Memory usage: ", 0
-.memTotal:
+.totalMemory:
 db 10, "Total installed memory identified: ", 0
 .bytes:
 db " bytes used by running processes.", 0
@@ -372,29 +369,28 @@ db " bytes used by running processes.", 0
 db " kbytes.", 0
 .mbytes:
 db " megabytes.", 0
-.cabecalho:
+.header:
 db 10, "Process        | PID", 10
 db "---------------|----", 10, 10, 0
-.uso:
+.use:
 db "Usage: top", 10, 10
 db "Displays processes loaded on the system.", 10, 10
 db "Kernel processes are filtered and not displayed in this list.", 10, 10
-db "top version ", versaoTOP, 10, 10
+db "top version ", VERSION, 10, 10
 db "Copyright (C) 2017-", __stringano, " Felipe Miguel Nery Lunkes", 10
 db "All rights reserved.", 0
-.parametroAjuda:
+.helpParameter:
 db "?", 0
-.parametroAjuda2:
+.helpParameter2:
 db "--help", 0
-.corFonte: dd 0
-.corFundo: dd 0
+.fontColor:       dd 0
+.backgroundColor: dd 0
 
 ;;************************************************************************************
 
-listaRemanescente: dd ?
-limiteExibicao:    dd 0
-numeroProcessos:   dd 0
-PIDs:              dd 0
-numeroPIDs:        dd 0
-processoAtual:     dd ' '
-parametro:         dd ?
+remainingList:  dd ?
+processCount:   dd 0
+PIDs:           dd 0
+numbersPID:     dd 0
+currentProcess: dd ' '
+parameters:     dd ?
