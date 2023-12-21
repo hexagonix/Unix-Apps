@@ -68,12 +68,12 @@
 
 use32
 
-;; Agora vamos criar um cabeçalho para a imagem HAPP final do aplicativo.
+;; Now let's create a HAPP header for the application
 
-include "HAPP.s" ;; Aqui está uma estrutura para o cabeçalho HAPP
+include "HAPP.s" ;; Here is a structure for the HAPP header
 
-;; Instância | Estrutura | Arquitetura | Versão | Subversão | Entrada | Tipo
-cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, inicioAPP, 01h
+;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
+cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, applicationStart, 01h
 
 ;;************************************************************************************
 
@@ -84,143 +84,143 @@ include "log.s"
 
 ;;************************************************************************************
 
-inicioAPP:
+applicationStart:
 
-    push ds ;; Segmento de dados do modo usuário (seletor 38h)
+    push ds ;; User mode data segment (38h selector)
     pop es
 
-    mov [parametro], edi ;; Salvar os parâmetros da linha de comando para uso futuro
+    mov [parameters], edi ;; Save command line parameters
 
-    logSistema shutdown.Verbose.inicio, 00h, Log.Prioridades.p4
-    logSistema shutdown.Verbose.estado, 00h, Log.Prioridades.p4
+    logSistema shutdown.Verbose.start, 00h, Log.Prioridades.p4
+    logSistema shutdown.Verbose.status, 00h, Log.Prioridades.p4
 
-    mov esi, [parametro]
+    mov esi, [parameters]
 
     cmp byte[esi], 0
-    je faltaArgumento
+    je argumentRequired
 
-    mov edi, shutdown.parametroAjuda
-    mov esi, [parametro]
-
-    hx.syscall compararPalavrasString
-
-    jc usoAplicativo
-
-    mov edi, shutdown.parametroAjuda2
-    mov esi, [parametro]
+    mov edi, shutdown.helpParameter
+    mov esi, [parameters]
 
     hx.syscall compararPalavrasString
 
-    jc usoAplicativo
+    jc applicationUsage
 
-    mov edi, shutdown.parametroDesligar
-    mov esi, [parametro]
-
-    hx.syscall compararPalavrasString
-
-    jc iniciarDesligamento
-
-    mov edi, shutdown.desligarAgora
-    mov esi, [parametro]
+    mov edi, shutdown.helpParameter2
+    mov esi, [parameters]
 
     hx.syscall compararPalavrasString
 
-    jc iniciarDesligamento
+    jc applicationUsage
 
-    mov edi, shutdown.parametroReiniciar
-    mov esi, [parametro]
-
-    hx.syscall compararPalavrasString
-
-    jc iniciarReinicio
-
-    mov edi, shutdown.parDesligarSemEco
-    mov esi, [parametro]
+    mov edi, shutdown.shutdownParameter
+    mov esi, [parameters]
 
     hx.syscall compararPalavrasString
 
-    jc iniciarDesligamentoSemEco
+    jc startShutdown
 
-    mov edi, shutdown.parReiniciarSemEco
-    mov esi, [parametro]
+    mov edi, shutdown.shuydownNow
+    mov esi, [parameters]
 
     hx.syscall compararPalavrasString
 
-    jc iniciarReinicioSemEco
+    jc startShutdown
 
-    jmp usoAplicativo
+    mov edi, shutdown.rebootParameter
+    mov esi, [parameters]
+
+    hx.syscall compararPalavrasString
+
+    jc startReboot
+
+    mov edi, shutdown.shutdownWithoutEchoParameter
+    mov esi, [parameters]
+
+    hx.syscall compararPalavrasString
+
+    jc startShutdownWithoutEcho
+
+    mov edi, shutdown.rebootWithoutEchoParameter
+    mov esi, [parameters]
+
+    hx.syscall compararPalavrasString
+
+    jc startRebootWithoutEcho
+
+    jmp applicationUsage
 
 ;;************************************************************************************
 
-iniciarDesligamento:
+startShutdown:
 
-    jmp desligarHexagon
-
-;;************************************************************************************
-
-iniciarReinicio:
-
-    jmp reiniciarHexagon
+    jmp shutdownHexagon
 
 ;;************************************************************************************
 
-iniciarDesligamentoSemEco:
+startReboot:
 
-    logSistema shutdown.Verbose.parametroDesligar, 00h, Log.Prioridades.p4
+    jmp rebootHexagon
 
-    call prepararSistemaSemEco
+;;************************************************************************************
 
-    logSistema shutdown.Verbose.parametroSolicitar, 00h, Log.Prioridades.p4
+startShutdownWithoutEcho:
+
+    logSistema shutdown.Verbose.shutdownParameter, 00h, Log.Prioridades.p4
+
+    call prepareSystemWithoutEcho
+
+    logSistema shutdown.Verbose.parameterRequest, 00h, Log.Prioridades.p4
 
     hx.syscall desligarPC
 
-    jmp terminar
+    jmp finish
 
 ;;************************************************************************************
 
-iniciarReinicioSemEco:
+startRebootWithoutEcho:
 
-    logSistema shutdown.Verbose.parametroReiniciar, 00h, Log.Prioridades.p4
+    logSistema shutdown.Verbose.rebootParameter, 00h, Log.Prioridades.p4
 
-    call prepararSistemaSemEco
+    call prepareSystemWithoutEcho
 
-    logSistema shutdown.Verbose.parametroSolicitar, 00h, Log.Prioridades.p4
+    logSistema shutdown.Verbose.parameterRequest, 00h, Log.Prioridades.p4
 
     hx.syscall reiniciarPC
 
-    jmp terminar
+    jmp finish
 
 ;;************************************************************************************
 
-desligarHexagon:
+shutdownHexagon:
 
-    logSistema shutdown.Verbose.parametroDesligar, 00h, Log.Prioridades.p4
+    logSistema shutdown.Verbose.shutdownParameter, 00h, Log.Prioridades.p4
 
-    call prepararSistema
+    call prepareSystem
 
-    logSistema shutdown.Verbose.parametroSolicitar, 00h, Log.Prioridades.p4
+    logSistema shutdown.Verbose.parameterRequest, 00h, Log.Prioridades.p4
 
     hx.syscall desligarPC
 
-    jmp terminar
+    jmp finish
 
 ;;************************************************************************************
 
-reiniciarHexagon:
+rebootHexagon:
 
-    logSistema shutdown.Verbose.parametroReiniciar, 00h, Log.Prioridades.p4
+    logSistema shutdown.Verbose.rebootParameter, 00h, Log.Prioridades.p4
 
-    call prepararSistema
+    call prepareSystem
 
-    logSistema shutdown.Verbose.parametroSolicitar, 00h, Log.Prioridades.p4
+    logSistema shutdown.Verbose.parameterRequest, 00h, Log.Prioridades.p4
 
     hx.syscall reiniciarPC
 
-    jmp terminar
+    jmp finish
 
 ;;************************************************************************************
 
-prepararSistemaSemEco:
+prepareSystemWithoutEcho:
 
     mov ecx, 20000
 
@@ -230,15 +230,15 @@ prepararSistemaSemEco:
 
 ;;************************************************************************************
 
-prepararSistema:
+prepareSystem:
 
-    fputs shutdown.msgHexagonix
+    fputs shutdown.systemMessage
 
     mov ecx, 10000
 
     hx.syscall causarAtraso
 
-    fputs shutdown.msgDiscos
+    fputs shutdown.disksMessage
 
     mov ecx, 10000
 
@@ -248,88 +248,88 @@ prepararSistema:
 
 ;;************************************************************************************
 
-usoAplicativo:
+applicationUsage:
 
-    fputs shutdown.uso
+    fputs shutdown.use
 
-    jmp terminar
-
-;;************************************************************************************
-
-faltaArgumento:
-
-    fputs shutdown.argumentos
-
-    jmp terminar
+    jmp finish
 
 ;;************************************************************************************
 
-terminar:
+argumentRequired:
 
-    logSistema shutdown.Verbose.falhaSolicitacao, 00h, Log.Prioridades.p4
+    fputs shutdown.arguments
+
+    jmp finish
+
+;;************************************************************************************
+
+finish:
+
+    logSistema shutdown.Verbose.failedRequest, 00h, Log.Prioridades.p4
 
     hx.syscall encerrarProcesso
 
 ;;************************************************************************************
 ;;
-;; Dados do aplicativo
+;;                        Application variables and data
 ;;
 ;;************************************************************************************
 
-rotuloMENSAGEM equ "[shutdown]: "
+messageLabel equ "[shutdown]: "
 
-versaoSHUTDOWN  equ "1.5.3"
+VERSION  equ "1.6.0"
 
 shutdown:
 
-.parametroDesligar:
+.shutdownParameter:
 db "-d", 0
-.parDesligarSemEco:
+.shutdownWithoutEchoParameter:
 db "-de", 0
-.parametroReiniciar:
+.rebootParameter:
 db "-r", 0
-.parReiniciarSemEco:
+.rebootWithoutEchoParameter:
 db "-re", 0
-.desligarAgora:
+.shuydownNow:
 db "now", 0
-.msgHexagonix:
+.systemMessage:
 db 10, "The system is coming down. Please wait...", 0
-.msgDiscos:
+.disksMessage:
 db 10, "Stoping disks and shutting down the computer...", 0
-.msgPronto:
+.doneMessage:
 db "[Ok]", 0
-.msgFalha:
+.failMessage:
 db "[Fail]", 0
-.parametroAjuda:
+.helpParameter:
 db "?", 0
-.parametroAjuda2:
+.helpParameter2:
 db "--help", 0
-.argumentos:
+.arguments:
 db 10, "An argument is required.", 0
-.uso:
+.use:
 db 10, "Usage: shutdown [argument]", 10, 10
 db "Power off or reboot the computer.", 10, 10
 db "Possible arguments:", 10, 10
 db "-d  - Power the computer off.", 10
 db "-r  - Reboot the computer.", 10
 db "now - Same as -d.", 10, 10
-db "shutdown version ", versaoSHUTDOWN, 10, 10
+db "shutdown version ", VERSION, 10, 10
 db "Copyright (C) 2022-", __stringano, " Felipe Miguel Nery Lunkes", 10
 db "All rights reserved.", 0
 
 shutdown.Verbose:
 
-.inicio:
-db rotuloMENSAGEM, "starting power management (version ", versaoSHUTDOWN, ")...", 0
-.estado:
-db rotuloMENSAGEM, "getting device state...", 0
-.parametroDesligar:
-db rotuloMENSAGEM, "received shutdown request.", 0
-.parametroReiniciar:
-db rotuloMENSAGEM, "reboot request received.", 0
-.parametroSolicitar:
-db rotuloMENSAGEM, "sending signal to processes and request to Hexagon...", 0
-.falhaSolicitacao:
-db rotuloMENSAGEM, "failed to process the request or request rejected by Hexagon.", 0
+.start:
+db messageLabel, "starting power management (version ", VERSION, ")...", 0
+.status:
+db messageLabel, "getting device state...", 0
+.shutdownParameter:
+db messageLabel, "received shutdown request.", 0
+.rebootParameter:
+db messageLabel, "reboot request received.", 0
+.parameterRequest:
+db messageLabel, "sending signal to processes and request to Hexagon...", 0
+.failedRequest:
+db messageLabel, "failed to process the request or request rejected by Hexagon.", 0
 
-parametro: dd ?
+parameters: dd ?
