@@ -68,12 +68,12 @@
 
 use32
 
-;; Agora vamos criar um cabeçalho para a imagem HAPP final do aplicativo.
+;; Now let's create a HAPP header for the application
 
-include "HAPP.s" ;; Aqui está uma estrutura para o cabeçalho HAPP
+include "HAPP.s" ;; Here is a structure for the HAPP header
 
-;; Instância | Estrutura | Arquitetura | Versão | Subversão | Entrada | Tipo
-cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, inicioShell, 01h
+;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
+cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, shellStart, 01h
 
 ;;************************************************************************************
 
@@ -84,39 +84,39 @@ include "erros.s"
 
 ;;************************************************************************************
 
-inicioShell:
+shellStart:
 
-    mov [linhaComando], edi
+    mov [commandLine], edi
 
     mov edi, sh.helpParameter
-    mov esi, [linhaComando]
+    mov esi, [commandLine]
 
     hx.syscall compararPalavrasString
 
     jc applicationUsage
 
     mov edi, sh.helpParameter2
-    mov esi, [linhaComando]
+    mov esi, [commandLine]
 
     hx.syscall compararPalavrasString
 
     jc applicationUsage
 
-    mov esi, [linhaComando]
+    mov esi, [commandLine]
 
     cmp byte[esi], 0
-    je .iniciar
+    je .start
 
-.iniciar:
+.start:
 
-;; Iniciar a configuração do terminal
+;; Start terminal configuration
 
     putNewLine
 
     hx.syscall obterInfoTela
 
-    mov byte[maxColunas], bl
-    mov byte[maxLinhas], bh
+    mov byte[numberColumns], bl
+    mov byte[numberRows], bh
 
     hx.syscall obterCursor
 
@@ -126,19 +126,19 @@ inicioShell:
 
     putNewLine
 
-.processarRC:
+.processRC:
 
-    mov esi, sh.arquivorc
+    mov esi, sh.fileRC
 
     hx.syscall arquivoExiste
 
-    jc .continuar
+    jc .continue
 
-    jmp .processarArquivoShell
+    jmp .processShellFile
 
-.processarArquivoShell:
+.processShellFile:
 
-    mov esi, sh.arquivorc
+    mov esi, sh.fileRC
     mov edi, appFileBuffer
 
     hx.syscall abrir
@@ -147,11 +147,11 @@ inicioShell:
 
     fputs appFileBuffer
 
-    jmp .continuar
+    jmp .continue
 
-.continuar:
+.continue:
 
-.iniciarSessao:
+.startSession:
 
     hx.syscall obterUsuario
 
@@ -170,7 +170,7 @@ inicioShell:
 
     push eax
 
-    mov edi, sh.nomeUsuario
+    mov edi, sh.userName
 
     pop ecx
 
@@ -181,26 +181,26 @@ inicioShell:
     pop eax
 
     cmp eax, 555
-    je .usuarioNormal
+    je .commonUser
 
     cmp eax, 777
-    je .usuarioRoot
+    je .rootUser
 
-.usuarioNormal:
+.commonUser:
 
     push es
 
     push ds ;; User mode data segment (38h selector)
     pop es
 
-    mov esi, sh.usuarioNormal
+    mov esi, sh.commonUser
 
     hx.syscall tamanhoString
 
     push eax
 
-    mov edi, sh.separador
-    mov esi, sh.usuarioNormal
+    mov edi, sh.promptSymbol
+    mov esi, sh.commonUser
 
     pop ecx
 
@@ -208,23 +208,23 @@ inicioShell:
 
     pop es
 
-    jmp .finalizarPrompt
+    jmp .finishPrompt
 
-.usuarioRoot:
+.rootUser:
 
     push es
 
     push ds ;; User mode data segment (38h selector)
     pop es
 
-    mov esi, sh.usuarioRoot
+    mov esi, sh.rootUser
 
     hx.syscall tamanhoString
 
     push eax
 
-    mov edi, sh.separador
-    mov esi, sh.usuarioRoot
+    mov edi, sh.promptSymbol
+    mov esi, sh.rootUser
 
     pop ecx
 
@@ -232,23 +232,23 @@ inicioShell:
 
     pop es
 
-    jmp .finalizarPrompt
+    jmp .finishPrompt
 
 ;;************************************************************************************
 
-.finalizarPrompt:
+.finishPrompt:
 
-    mov esi, sh.separador
+    mov esi, sh.promptSymbol
 
     hx.syscall tamanhoString
 
     inc eax
 
-    mov byte[sh.separador+eax], 0
+    mov byte[sh.promptSymbol+eax], 0
 
 ;;************************************************************************************
 
-.obterComando:
+.getCommandLine:
 
     clc
 
@@ -258,64 +258,64 @@ inicioShell:
 
     hx.syscall definirCursor
 
-    fputs sh.nomeUsuario
+    fputs sh.userName
 
     fputs sh.prompt
 
-    fputs sh.separador
+    fputs sh.promptSymbol
 
-    mov al, byte[maxColunas] ;; Máximo de caracteres para obter
+    mov al, byte[numberColumns] ;; Maximum characters to get
 
     sub al, 20
 
     hx.syscall obterString
 
-    hx.syscall cortarString ;; Remover espaços em branco extras
+    hx.syscall cortarString ;; Remove extra spaces
 
-    cmp byte[esi], 0 ;; Nenhum comando inserido
-    je .obterComando
+    cmp byte[esi], 0 ;; No command entered
+    je .getCommandLine
 
-;; Comparar com comandos internos disponíveis
+;; Compare with available internal commands
 
-    ;; Comando EXIT
+    ;; EXIT command
 
-    mov edi, comandos.sair
-
-    hx.syscall compararPalavrasString
-
-    jc finalizarShell
-
-    ;; Comando RC
-
-    mov edi, comandos.rc
+    mov edi, commands.exit
 
     hx.syscall compararPalavrasString
 
-    jc executarShellScript ;; Iniciar a execução de arquivo em lote
+    jc finishShell
 
-;; Tentar carregar uma imagem
+    ;; RC command
 
-    call obterArgumentos ;; Separar comando e argumentos
+    mov edi, commands.rc
 
-.entradaCarregamentoImagem:
+    hx.syscall compararPalavrasString
+
+    jc runShellScript ;; Start batch file execution
+
+;; Try to load an image
+
+    call getArguments ;; Separate command and arguments
+
+.entryPointLoadImage:
 
     clc
 
     push esi
     push edi
 
-    jmp .carregarPrograma
+    jmp .loadImage
 
-.falhaExecutando:
+.executionFailure:
 
-;; Agora o error enviado pelo sistema será analisado, para que o Shell conheça
-;; sua natureza
+;; Now the error sent by the system will be analyzed, so that the shell
+;; knows its nature
 
-    cmp eax, Hexagon.limiteProcessos ;; Limite de processos em execução atingido
-    je .limiteAtingido               ;; Se sim, exibir a mensagem apropriada
+    cmp eax, Hexagon.limiteProcessos ;; Limit of running processes reached
+    je .limitReached                 ;; If yes, display the appropriate message
 
     cmp eax, Hexagon.imagemInvalida
-    je .imagemHAPPInvalida
+    je .invalidHAPPImage
 
     push esi
 
@@ -325,21 +325,21 @@ inicioShell:
 
     imprimirString
 
-    fputs sh.comandoNaoEncontrado
+    fputs sh.commandNotFound
 
-    jmp .obterComando
+    jmp .getCommandLine
 
-.limiteAtingido:
+.limitReached:
 
     putNewLine
 
-    fputs sh.limiteProcessos
+    fputs sh.processLimit
 
     clc
 
-    jmp .obterComando
+    jmp .getCommandLine
 
-.imagemHAPPInvalida:
+.invalidHAPPImage:
 
     push esi
 
@@ -349,13 +349,13 @@ inicioShell:
 
     imprimirString
 
-    fputs sh.imagemInvalida
+    fputs sh.invalidImage
 
     clc
 
-    jmp .obterComando
+    jmp .getCommandLine
 
-.carregarPrograma:
+.loadImage:
 
     pop edi
 
@@ -371,81 +371,81 @@ inicioShell:
 
     hx.syscall iniciarProcesso
 
-    jc .falhaExecutando
+    jc .executionFailure
 
-    jmp .obterComando
+    jmp .getCommandLine
 
 ;;************************************************************************************
 
-;; Outras funções auxiliares
+;; Other auxiliary functions
 
-executarShellScript:
+runShellScript:
 
     add esi, 02h
 
     hx.syscall cortarString
 
     cmp byte[esi], 0
-    je .argumentonNecessario
+    je .argumentRequired
 
-    mov word[sh.posicaoBX], 0FFFFh ;; A cada execução, zerar o contador.
+    mov word[sh.positionBX], 0FFFFh ;; With each execution, reset the counter
 
     mov edi, appFileBuffer
 
     hx.syscall hx.open
 
-    jc .arquivoShellAusente
+    jc .shellScriptNotFound
 
-    call procurarComandos
+    call searchCommands
 
-    jc .naoEncontrado
+    jc .notFound
 
-.carregarImagem:
+.loadImage:
 
-    mov esi, sh.imagemDisco
+    mov esi, sh.diskImage
 
     hx.syscall arquivoExiste
 
-    jc .proximoComando
+    jc .nextCommand
 
-    mov eax, 0 ;; Não passar argumentos
-    mov esi, sh.imagemDisco ;; Nome do arquivo
+    mov eax, 0 ;; Do not pass arguments
+    mov esi, sh.diskImage ;; Filename
 
     stc
 
-    hx.syscall iniciarProcesso ;; Solicitar o carregamento do primeiro comando
+    hx.syscall iniciarProcesso ;; Request execution of the first command
 
-    jnc .proximoComando
+    jnc .nextCommand
 
-.proximoComando:
+.nextCommand:
 
     clc
 
-    call procurarComandos
+    call searchCommands
 
-    jmp .carregarImagem
+    jmp .loadImage
 
-.naoEncontrado: ;; O serviço não pôde ser localizado
+.notFound: ;; The service could not be find
 
-    jmp inicioShell.obterComando
+    jmp shellStart.getCommandLine
 
-.arquivoShellAusente:
+.shellScriptNotFound:
 
-    fputs sh.semArquivoShell
+    fputs sh.shellScriptNotFound
 
-    jmp inicioShell.obterComando
+    jmp shellStart.getCommandLine
 
-.argumentonNecessario:
+.argumentRequired:
 
-    fputs sh.argumentoNecessario
+    fputs sh.argumentRequired
 
-    jmp inicioShell.obterComando
+    jmp shellStart.getCommandLine
 
 ;;************************************************************************************
 
-;; Componentes do comando exec para execução do comando em lotes do shell
+;; Components for shell batch command execution
 
-procurarComandos:
+searchCommands:
 
     pusha
 
@@ -454,69 +454,69 @@ procurarComandos:
     push ds ;; User mode data segment (38h selector)
     pop es
 
-    mov si, appFileBuffer ;; Aponta para o buffer com o conteúdo do arquivo
-    mov bx, word[sh.posicaoBX]
+    mov si, appFileBuffer ;; Points to the buffer with the file contents
+    mov bx, word[sh.positionBX]
 
-    jmp .procurarEntreDelimitadores
+    jmp .searchBetweenDelimiters
 
-.procurarEntreDelimitadores:
+.searchBetweenDelimiters:
 
     inc bx
 
-    mov word[sh.posicaoBX], bx
+    mov word[sh.positionBX], bx
 
-    cmp bx, tamanhoLimiteBusca
-    je inicioShell.obterComando
+    cmp bx, searchSizeLimit
+    je shellStart.getCommandLine
 
     mov al, [ds:si+bx]
 
     cmp al, '>'
-    jne .procurarEntreDelimitadores ;; O limitador inicial foi encontrado
+    jne .searchBetweenDelimiters ;; The initial delimiter has been found
 
-;; BX agora aponta para o primeira caractere do nome do shell resgatado do arquivo
+;; BX now points to the first character of the command name retrieved from the file
 
     push ds ;; User mode data segment (38h selector)
     pop es
 
-    mov di, sh.imagemDisco ;; O nome do shell será copiado para ES:DI
+    mov di, sh.diskImage ;; The command name will be copied to ES:DI
 
     mov si, appFileBuffer
 
-    add si, bx ;; Mover SI para aonde BX aponta
+    add si, bx ;; Move SI to where BX points
 
-    mov bx, 0 ;; Iniciar em 0
+    mov bx, 0 ;; Start at 0
 
-.obterComando:
+.getCommandLine:
 
     inc bx
 
     cmp bx, 13
-    je .nomeComandoInvalido ;; Se nome de arquivo maior que 11, o nome é inválido
+    je .invalidCommandName ;; If file name greater than 11, the name is invalid
 
     mov al, [ds:si+bx]
 
-;; Agora vamos procurar os limitadores finais do nome de um comando, que podem ser:
+;; Now let's look for the final limiters of a command name, which could be:
 ;;
-;; EOL - nova linha (10)
-;; Espaço - um espaço após o último caractere
-;; # - Se usado após o último caractere do nome do serviço, marcar como comentário
+;; EOL - new line (10)
+;; Space - a space after the last character
+;; # - If used after the last character of the service name, mark as a comment
 
-    cmp al, 10 ;; Se encontrar outro delimitador, o nome foi carregado com sucesso
-    je .nomeComandoObtido
+    cmp al, 10 ;; If another delimiter is found, the name was loaded successfully
+    je .commandNameObtained
 
-    cmp al, ' ' ;; Se encontrar outro delimitador, o nome foi carregado com sucesso
-    je .nomeComandoObtido
+    cmp al, ' ' ;; If another delimiter is found, the name was loaded successfully
+    je .commandNameObtained
 
-    cmp al, '#' ;; Se encontrar outro delimitador, o nome foi carregado com sucesso
-    je .nomeComandoObtido
+    cmp al, '#' ;; If another delimiter is found, the name was loaded successfully
+    je .commandNameObtained
 
-;; Se não estiver pronto, armazenar o caractere obtido
+;; If not ready, store the obtained character
 
     stosb
 
-    jmp .obterComando
+    jmp .getCommandLine
 
-.nomeComandoObtido:
+.commandNameObtained:
 
     pop es
 
@@ -524,7 +524,7 @@ procurarComandos:
 
     ret
 
-.nomeComandoInvalido:
+.invalidCommandName:
 
     pop es
 
@@ -536,19 +536,19 @@ procurarComandos:
 
 ;;************************************************************************************
 
-;; Separar nome de comando e argumentos
+;; Separate command name and arguments
 ;;
-;; Entrada:
+;; Input:
 ;;
-;; ESI - Endereço do comando
+;; ESI - Command address
 ;;
-;; Saída:
+;; Output:
 ;;
-;; ESI - Endereço do comando
-;; EDI - Argumentos do comando
-;; CF  - Definido em caso de falta de extensão
+;; ESI - Command address
+;; EDI - Command arguments
+;; CF - Set in case of lack of extension
 
-obterArgumentos:
+getArguments:
 
     push esi
 
@@ -557,14 +557,14 @@ obterArgumentos:
     lodsb ;; mov AL, byte[ESI] & inc ESI
 
     cmp al, 0
-    je .naoencontrado
+    je .notFound
 
     cmp al, ' '
-    je .espacoEncontrado
+    je .spaceFound
 
     jmp .loop
 
-.naoencontrado:
+.notFound:
 
     pop esi
 
@@ -572,9 +572,9 @@ obterArgumentos:
 
     stc
 
-    jmp .fim
+    jmp .end
 
-.espacoEncontrado:
+.spaceFound:
 
     mov byte[esi-1], 0
     mov ebx, esi
@@ -583,7 +583,7 @@ obterArgumentos:
 
     mov ecx, eax
 
-    inc ecx ;; Incluindo o último caractere (NULL)
+    inc ecx ;; Including the last character (NULL)
 
     push es
 
@@ -593,7 +593,7 @@ obterArgumentos:
     mov esi, ebx
     mov edi, appFileBuffer
 
-    rep movsb ;; Copiar (ECX) caracteres da string de ESI para EDI
+    rep movsb ;; Copy (ECX) string characters from ESI to EDI
 
     pop es
 
@@ -603,7 +603,7 @@ obterArgumentos:
 
     clc
 
-.fim:
+.end:
 
     ret
 
@@ -613,11 +613,11 @@ applicationUsage:
 
     fputs sh.use
 
-    jmp finalizarShell
+    jmp finishShell
 
 ;;************************************************************************************
 
-finalizarShell:
+finishShell:
 
     mov ebx, 00h
 
@@ -627,78 +627,74 @@ finalizarShell:
 
 ;;************************************************************************************
 ;;
-;; Dados, variáveis e constantes utilizadas pelo shell
+;;                        Application variables and data
 ;;
 ;;************************************************************************************
 
-;; TODO: melhorar suporta a script de shell
+;; TODO: improve shell scripting support
 
-;; A versão do sh é independente da versão do restante do sistema.
-;; Ela deve ser utilizada para identificar para qual versão do Hexagonix o sh foi
-;; desenvolvido.
+VERSION equ "1.8.0"
 
-versaoSH equ "1.7.3.0"
-
-tamanhoLimiteBusca = 32768
+searchSizeLimit = 32768
 
 sh:
 
 .prompt:
 db "@Hexagonix", 0
-.comandoNaoEncontrado:
+.commandNotFound:
 db ": command not found.", 0
-.arquivorc:
+.fileRC:
 db "shrc", 0
-.imagemInvalida:
+.invalidImage:
 db ": unable to load image. Unsupported executable format.", 0
-.limiteProcessos:
+.processLimit:
 db "There is no available process slot to run the requested application.", 10
 db "First try to terminate applications or their instances, and try again.", 0
-.ponto:
+.dot:
 db ".", 0
-.usuarioNormal:
+.commonUser:
 db "$ ", 0
-.usuarioRoot:
+.rootUser:
 db "# ", 0
 .use:
 db 10, 10, "Usage: sh", 10, 10
 db "Start a Unix shell for the current user.", 10, 10
-db "sh version ", versaoSH, 10, 10
+db "sh version ", VERSION, 10, 10
 db "Copyright (C) 2017-", __stringano, " Felipe Miguel Nery Lunkes", 10
 db "All rights reserved.", 10, 0
 .helpParameter:
 db "?", 0
 .helpParameter2:
 db "--help", 0
-.semArquivoShell:
+.shellScriptNotFound:
 db 10, "Shell script not found.", 0
-.argumentoNecessario:
+.argumentRequired:
 db 10, "An argument is necessary.", 0
 
-.posicaoBX: dw 0 ;; Marcação da posição de busca no conteúdo do arquivo
+.positionBX: dw 0 ;; Marking the search position in the file content
 
-.imagemDisco: ;; Armazena o nome do shell à ser utilizado pelo sistema
+.diskImage: ;; Stores the name of the image to be used
 times 12 db 0
-.nomeUsuario: ;; Armazena o nome de usuário
+.userName: ;; Stores the username
 times 64 db 0
-.separador: ;; Armazena # ou $
+.promptSymbol: ;; Stores # or $
 times 8 db 0
 
 ;;**************************
 
-comandos:
+commands:
 
-.sair:
+.exit:
 db "exit", 0
 .rc:
 db "rc", 0
 
 ;;**************************
 
-maxColunas:   db 0 ;; Total de colunas disponíveis no vídeo na resolução atual
-maxLinhas:    db 0 ;; Total de linhas disponíveis no vídeo na resolução atual
-linhaComando: dd 0
+numberColumns: db 0 ;; Total columns available in the video at the current resolution
+numberRows:    db 0 ;; Total rows available in the video at the current resolution
+commandLine:   dd 0
 
 ;;************************************************************************************
 
-appFileBuffer: ;; Endereço para carregamento de arquivos
+appFileBuffer: ;; Address for opening files
