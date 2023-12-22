@@ -13,7 +13,7 @@
 ;;
 ;;                     Sistema Operacional Hexagonix - Hexagonix Operating System
 ;;
-;;                         Copyright (c) 2015-2023 Felipe Miguel Nery Lunkes
+;;                         Copyright (c) 2015-2024 Felipe Miguel Nery Lunkes
 ;;                        Todos os direitos reservados - All rights reserved.
 ;;
 ;;*************************************************************************************************
@@ -36,7 +36,7 @@
 ;;
 ;; BSD 3-Clause License
 ;;
-;; Copyright (c) 2015-2023, Felipe Miguel Nery Lunkes
+;; Copyright (c) 2015-2024, Felipe Miguel Nery Lunkes
 ;; All rights reserved.
 ;;
 ;; Redistribution and use in source and binary forms, with or without
@@ -88,19 +88,19 @@ inicioShell:
 
     mov [linhaComando], edi
 
-    mov edi, sh.parametroAjuda
+    mov edi, sh.helpParameter
     mov esi, [linhaComando]
 
     hx.syscall compararPalavrasString
 
-    jc usoAplicativo
+    jc applicationUsage
 
-    mov edi, sh.parametroAjuda2
+    mov edi, sh.helpParameter2
     mov esi, [linhaComando]
 
     hx.syscall compararPalavrasString
 
-    jc usoAplicativo
+    jc applicationUsage
 
     mov esi, [linhaComando]
 
@@ -111,7 +111,7 @@ inicioShell:
 
 ;; Iniciar a configuração do terminal
 
-    novaLinha
+    putNewLine
 
     hx.syscall obterInfoTela
 
@@ -124,7 +124,7 @@ inicioShell:
 
     hx.syscall definirCursor
 
-    novaLinha
+    putNewLine
 
 .processarRC:
 
@@ -139,13 +139,13 @@ inicioShell:
 .processarArquivoShell:
 
     mov esi, sh.arquivorc
-    mov edi, bufferArquivo
+    mov edi, appFileBuffer
 
     hx.syscall abrir
 
-    novaLinha
+    putNewLine
 
-    fputs bufferArquivo
+    fputs appFileBuffer
 
     jmp .continuar
 
@@ -159,7 +159,7 @@ inicioShell:
 
     push es
 
-    push ds ;; Segmento de dados do modo usuário (seletor 38h)
+    push ds ;; User mode data segment (38h selector)
     pop es
 
     push esi
@@ -190,7 +190,7 @@ inicioShell:
 
     push es
 
-    push ds ;; Segmento de dados do modo usuário (seletor 38h)
+    push ds ;; User mode data segment (38h selector)
     pop es
 
     mov esi, sh.usuarioNormal
@@ -214,7 +214,7 @@ inicioShell:
 
     push es
 
-    push ds ;; Segmento de dados do modo usuário (seletor 38h)
+    push ds ;; User mode data segment (38h selector)
     pop es
 
     mov esi, sh.usuarioRoot
@@ -252,7 +252,7 @@ inicioShell:
 
     clc
 
-    novaLinha
+    putNewLine
 
     hx.syscall obterCursor
 
@@ -308,7 +308,7 @@ inicioShell:
 
 .falhaExecutando:
 
-;; Agora o erro enviado pelo sistema será analisado, para que o Shell conheça
+;; Agora o error enviado pelo sistema será analisado, para que o Shell conheça
 ;; sua natureza
 
     cmp eax, Hexagon.limiteProcessos ;; Limite de processos em execução atingido
@@ -319,7 +319,7 @@ inicioShell:
 
     push esi
 
-    novaLinha
+    putNewLine
 
     pop esi
 
@@ -331,7 +331,7 @@ inicioShell:
 
 .limiteAtingido:
 
-    novaLinha
+    putNewLine
 
     fputs sh.limiteProcessos
 
@@ -343,7 +343,7 @@ inicioShell:
 
     push esi
 
-    novaLinha
+    putNewLine
 
     pop esi
 
@@ -390,7 +390,7 @@ executarShellScript:
 
     mov word[sh.posicaoBX], 0FFFFh ;; A cada execução, zerar o contador.
 
-    mov edi, bufferArquivo
+    mov edi, appFileBuffer
 
     hx.syscall hx.open
 
@@ -451,10 +451,10 @@ procurarComandos:
 
     push es
 
-    push ds ;; Segmento de dados do modo usuário (seletor 38h)
+    push ds ;; User mode data segment (38h selector)
     pop es
 
-    mov si, bufferArquivo ;; Aponta para o buffer com o conteúdo do arquivo
+    mov si, appFileBuffer ;; Aponta para o buffer com o conteúdo do arquivo
     mov bx, word[sh.posicaoBX]
 
     jmp .procurarEntreDelimitadores
@@ -475,12 +475,12 @@ procurarComandos:
 
 ;; BX agora aponta para o primeira caractere do nome do shell resgatado do arquivo
 
-    push ds ;; Segmento de dados do modo usuário (seletor 38h)
+    push ds ;; User mode data segment (38h selector)
     pop es
 
     mov di, sh.imagemDisco ;; O nome do shell será copiado para ES:DI
 
-    mov si, bufferArquivo
+    mov si, appFileBuffer
 
     add si, bx ;; Mover SI para aonde BX aponta
 
@@ -587,17 +587,17 @@ obterArgumentos:
 
     push es
 
-    push ds ;; Segmento de dados do modo usuário (seletor 38h)
+    push ds ;; User mode data segment (38h selector)
     pop es
 
     mov esi, ebx
-    mov edi, bufferArquivo
+    mov edi, appFileBuffer
 
     rep movsb ;; Copiar (ECX) caracteres da string de ESI para EDI
 
     pop es
 
-    mov edi, bufferArquivo
+    mov edi, appFileBuffer
 
     pop esi
 
@@ -609,9 +609,9 @@ obterArgumentos:
 
 ;;************************************************************************************
 
-usoAplicativo:
+applicationUsage:
 
-    fputs sh.uso
+    fputs sh.use
 
     jmp finalizarShell
 
@@ -660,15 +660,15 @@ db ".", 0
 db "$ ", 0
 .usuarioRoot:
 db "# ", 0
-.uso:
+.use:
 db 10, 10, "Usage: sh", 10, 10
 db "Start a Unix shell for the current user.", 10, 10
 db "sh version ", versaoSH, 10, 10
 db "Copyright (C) 2017-", __stringano, " Felipe Miguel Nery Lunkes", 10
 db "All rights reserved.", 10, 0
-.parametroAjuda:
+.helpParameter:
 db "?", 0
-.parametroAjuda2:
+.helpParameter2:
 db "--help", 0
 .semArquivoShell:
 db 10, "Shell script not found.", 0
@@ -701,4 +701,4 @@ linhaComando: dd 0
 
 ;;************************************************************************************
 
-bufferArquivo: ;; Endereço para carregamento de arquivos
+appFileBuffer: ;; Endereço para carregamento de arquivos
