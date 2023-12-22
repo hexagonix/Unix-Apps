@@ -13,7 +13,7 @@
 ;;
 ;;                     Sistema Operacional Hexagonix - Hexagonix Operating System
 ;;
-;;                         Copyright (c) 2015-2023 Felipe Miguel Nery Lunkes
+;;                         Copyright (c) 2015-2024 Felipe Miguel Nery Lunkes
 ;;                        Todos os direitos reservados - All rights reserved.
 ;;
 ;;*************************************************************************************************
@@ -36,7 +36,7 @@
 ;;
 ;; BSD 3-Clause License
 ;;
-;; Copyright (c) 2015-2023, Felipe Miguel Nery Lunkes
+;; Copyright (c) 2015-2024, Felipe Miguel Nery Lunkes
 ;; All rights reserved.
 ;;
 ;; Redistribution and use in source and binary forms, with or without
@@ -68,12 +68,12 @@
 
 use32
 
-;; Agora vamos criar um cabeçalho para a imagem HAPP final do aplicativo.
+;; Now let's create a HAPP header for the application
 
-include "HAPP.s" ;; Aqui está uma estrutura para o cabeçalho HAPP
+include "HAPP.s" ;; Here is a structure for the HAPP header
 
-;; Instância | Estrutura | Arquitetura | Versão | Subversão | Entrada | Tipo
-cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, inicioAPP, 01h
+;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
+cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, applicationStart, 01h
 
 ;;************************************************************************************
 
@@ -83,69 +83,69 @@ include "macros.s"
 
 ;;************************************************************************************
 
-versaoUNAME equ "2.6.8.0"
+VERSION equ "2.7.0"
 
 uname:
 
-;; Parâmetros (novos) POSIX.2 e compatível com o uname do BSD:
+;; Parameters POSIX.2 and compatible with BSD uname:
 ;;
-;; -a: tudo
-;; -s: nome do kernel
+;; -a: all parameters included
+;; -s: kernel name
 ;; -n: hostname
-;; -r: lançamento do kernel
-;; -v: versão do kernel
-;; -m: tipo de máquina
-;; -p: tipo de processador
-;; -i: plataforma de hardware
-;; -o: sistema operacional
+;; -r: kernel release
+;; -v: kernel version
+;; -m: machine type
+;; -p: processor type
+;; -i: hardware platform
+;; -o: operating system
 
-.sistemaOperacional:
+.operatingSystem:
 db "Hexagonix", 0
-.espaco:
+.space:
 db " ", 0
-.maquina:
+.machine:
 db "Hexagonix-PC", 0
 .buildHexagon:
 db "(build ", 0
-.fecharParenteses:
+.closeParentheses:
 db ")", 0
-.versao:
+.version:
 db " version ", 0
-.arquiteturai386:
+.archi386:
 db "i386", 0
-.arquiteturaamd64:
+.archamd64:
 db "amd64", 0
 .hexagonix:
 db "Hexagonix", 0
-.parametroAjuda:
+.helpParameter:
 db "?", 0
-.parametroAjuda2:
+.helpParameter2:
 db "--help", 0
-.parametroExibirTudo:
+.showAllParameter:
 db "-a", 0
-.parametroExibirNomeKernel:
+.showKernelNameParameter:
 db "-s", 0
-.parametroExibirHostname:
+.showHostnameParameter:
 db "-n", 0
-.parametroExibirLancamento:
+.showReleaseParameter:
 db "-r", 0
-.parametroExibirTipo:
+.showMachineTypeParameter:
 db "-m", 0
-.parametroExibirArch:
+.shorArchparameter:
 db "-p", 0
-.parametroExibirPlataforma:
+.showPlatformParameter:
 db "-i", 0
-.parametroExibirVersao:
+.showVersionParameter:
 db "-v", 0
-.parametroExibirSO:
+.showOperatingSystemParameter:
 db "-o", 0
-.arquivoUnix:
+.hostFilename:
 db "host", 0
-.naoSuportado:
+.notSupported:
 db "Unknown architecture.", 0
-.plataformaPC:
+.platformPC:
 db "PC", 0
-.uso:
+.use:
 db 10, "Usage: uname [parameter]", 10, 10
 db "Displays system information.", 10, 10
 db "Possible parameters (in case of missing parameters, the '-s' option will be selected):", 10, 10
@@ -158,158 +158,158 @@ db " -m: Machine type.", 10
 db " -p: System processor architecture.", 10
 db " -i: System hardware platform.", 10
 db " -o: Name of running operating system.", 10, 10
-db "uname version ", versaoUNAME, 10, 10
+db "uname version ", VERSION, 10, 10
 db "Copyright (C) 2017-", __stringano, " Felipe Miguel Nery Lunkes", 10
 db "All rights reserved.", 0
-ponto:
+.dot:
 db ".", 0
 
-parametro: dd ?
+parameters: dd ?
 
 ;;************************************************************************************
 
-inicioAPP: ;; Ponto de entrada do aplicativo
+applicationStart: ;; Entry point
 
-    mov [parametro], edi
+    mov [parameters], edi
 
-    mov edi, uname.parametroAjuda
-    mov esi, [parametro]
-
-    hx.syscall compararPalavrasString
-
-    jc usoAplicativo
-
-    mov edi, uname.parametroAjuda2
-    mov esi, [parametro]
+    mov edi, uname.helpParameter
+    mov esi, [parameters]
 
     hx.syscall compararPalavrasString
 
-    jc usoAplicativo
+    jc applicationUsage
+
+    mov edi, uname.helpParameter2
+    mov esi, [parameters]
+
+    hx.syscall compararPalavrasString
+
+    jc applicationUsage
 
 ;; -a
 
-    mov edi, uname.parametroExibirTudo
-    mov esi, [parametro]
+    mov edi, uname.showAllParameter
+    mov esi, [parameters]
 
     hx.syscall compararPalavrasString
 
-    jc exibirTudo
+    jc showAll
 
 ;; -s
 
-    mov edi, uname.parametroExibirNomeKernel
-    mov esi, [parametro]
+    mov edi, uname.showKernelNameParameter
+    mov esi, [parameters]
 
     hx.syscall compararPalavrasString
 
-    jc exibirNomeKernel
+    jc showKernelName
 
 ;; -n
 
-    mov edi, uname.parametroExibirHostname
-    mov esi, [parametro]
+    mov edi, uname.showHostnameParameter
+    mov esi, [parameters]
 
     hx.syscall compararPalavrasString
 
-    jc exibirHostname
+    jc showHostname
 
 ;; -r
 
-    mov edi, uname.parametroExibirLancamento
-    mov esi, [parametro]
+    mov edi, uname.showReleaseParameter
+    mov esi, [parameters]
 
     hx.syscall compararPalavrasString
 
-    jc exibirLancamento
+    jc showRelease
 
 ;; -m
 
-    mov edi, uname.parametroExibirTipo
-    mov esi, [parametro]
+    mov edi, uname.showMachineTypeParameter
+    mov esi, [parameters]
 
     hx.syscall compararPalavrasString
 
-    jc exibirArquitetura
+    jc showArch
 
 ;; -p
 
-    mov edi, uname.parametroExibirArch
-    mov esi, [parametro]
+    mov edi, uname.shorArchparameter
+    mov esi, [parameters]
 
     hx.syscall compararPalavrasString
 
-    jc exibirArquitetura
+    jc showArch
 
 ;; -i
 
-    mov edi, uname.parametroExibirPlataforma
-    mov esi, [parametro]
+    mov edi, uname.showPlatformParameter
+    mov esi, [parameters]
 
     hx.syscall compararPalavrasString
 
-    jc exibirPlataforma
+    jc showPlatform
 
 ;; -v
 
-    mov edi, uname.parametroExibirVersao
-    mov esi, [parametro]
+    mov edi, uname.showVersionParameter
+    mov esi, [parameters]
 
     hx.syscall compararPalavrasString
 
-    jc exibirVersaoApenas
+    jc showVersionOnly
 
 ;; -o
 
-    mov edi, uname.parametroExibirSO
-    mov esi, [parametro]
+    mov edi, uname.showOperatingSystemParameter
+    mov esi, [parameters]
 
     hx.syscall compararPalavrasString
 
-    jc exibirInfoSistemaOperacional
+    jc showOperatingSystemInfo
 
-    jmp exibirNomeKernel
+    jmp showKernelName
 
 ;;************************************************************************************
 
-exibirNomeKernel:
+showKernelName:
 
-    call espacoPadrao
+    call putSpace
 
     hx.syscall hx.uname
 
     imprimirString
 
-    jmp terminar
+    jmp finish
 
 ;;************************************************************************************
 
-exibirHostname:
+showHostname:
 
-    call espacoPadrao
+    call putSpace
 
-    call obterHostname
+    call getHostname
 
-    jmp terminar
-
-;;************************************************************************************
-
-exibirLancamento:
-
-    call espacoPadrao
-
-    call versaoHexagon
-
-    jmp terminar
+    jmp finish
 
 ;;************************************************************************************
 
-exibirArquitetura:
+showRelease:
 
-    call espacoPadrao
+    call putSpace
+
+    call kernelVersion
+
+    jmp finish
+
+;;************************************************************************************
+
+showArch:
+
+    call putSpace
 
     hx.syscall hx.uname
 
-;; Em EDX temos a arquitetura
+;; In EDX we have the architecture
 
     cmp edx, 01
     je .i386
@@ -317,65 +317,65 @@ exibirArquitetura:
     cmp edx, 02
     je .x86_64
 
-    fputs uname.naoSuportado
+    fputs uname.notSupported
 
-    jmp .terminar
+    jmp .finish
 
 .i386:
 
-    fputs uname.arquiteturai386
+    fputs uname.archi386
 
-    jmp .terminar
+    jmp .finish
 
 .x86_64:
 
-    fputs uname.arquiteturaamd64
+    fputs uname.archamd64
 
-    jmp .terminar
+    jmp .finish
 
-.terminar:
+.finish:
 
-    jmp terminar
-
-;;************************************************************************************
-
-exibirPlataforma:
-
-    call espacoPadrao
-
-    fputs uname.plataformaPC
-
-    jmp terminar
+    jmp finish
 
 ;;************************************************************************************
 
-exibirTudo:
+showPlatform:
 
-    call espacoPadrao
+    call putSpace
 
-    fputs uname.sistemaOperacional
+    fputs uname.platformPC
 
-    fputs uname.espaco
+    jmp finish
 
-    call obterHostname
+;;************************************************************************************
+
+showAll:
+
+    call putSpace
+
+    fputs uname.operatingSystem
+
+    fputs uname.space
+
+    call getHostname
 
 .continuarHost:
 
-    fputs uname.espaco
+    fputs uname.space
 
     hx.syscall hx.uname
 
     imprimirString
 
-;; Para ficar de acordo com o padrão do FreeBSD, a mensagem "versao" não é exibida
+;; Para ficar de acordo com o padrão do FreeBSD, a mensagem "version" não é exibida
 
-    ;; fputs uname.versao
+    ;; fputs uname.version
 
-    fputs uname.espaco
+    fputs uname.space
 
-    call versaoHexagon
+    call kernelVersion
 
-    fputs uname.espaco
+    fputs uname.space
 
     cmp edx, 01h
     je .i386
@@ -385,55 +385,55 @@ exibirTudo:
 
 .i386:
 
-    fputs uname.arquiteturai386
+    fputs uname.archi386
 
-    jmp .continuar
+    jmp .continue
 
 .amd64:
 
-    fputs uname.arquiteturaamd64
+    fputs uname.archamd64
 
-    jmp .continuar
+    jmp .continue
 
-.continuar:
+.continue:
 
-    fputs uname.espaco
+    fputs uname.space
 
     fputs uname.hexagonix
 
-    jmp terminar
+    jmp finish
 
 ;;************************************************************************************
 
-exibirInfoSistemaOperacional:
+showOperatingSystemInfo:
 
-    call espacoPadrao
+    call putSpace
 
-    fputs uname.sistemaOperacional
+    fputs uname.operatingSystem
 
-    jmp terminar
+    jmp finish
 
 ;;************************************************************************************
 
-exibirVersaoApenas:
+showVersionOnly:
 
-    call espacoPadrao
+    call putSpace
 
     hx.syscall hx.uname
 
     imprimirString
 
-    fputs uname.espaco
+    fputs uname.space
 
-    call versaoHexagon
+    call kernelVersion
 
-    jmp terminar
+    jmp finish
 
 ;;************************************************************************************
 
-;; Solicita a versão do kernel, a decodifica e exibe para o usuário
+;; Requests the kernel version, decodes it and displays it to the user
 
-versaoHexagon:
+kernelVersion:
 
     hx.syscall hx.uname
 
@@ -442,7 +442,7 @@ versaoHexagon:
 
     imprimirInteiro
 
-    fputs ponto
+    fputs uname.dot
 
     pop eax
 
@@ -451,19 +451,19 @@ versaoHexagon:
     pop ecx
 
     cmp ecx, 0
-    je .continuar
+    je .continue
 
     push ecx
 
-    fputs ponto
+    fputs uname.dot
 
     pop eax
 
     imprimirInteiro
 
-.continuar:
+.continue:
 
-    fputs uname.espaco
+    fputs uname.space
 
     fputs uname.buildHexagon
 
@@ -471,50 +471,50 @@ versaoHexagon:
 
     fputs edi
 
-    fputs uname.fecharParenteses
+    fputs uname.closeParentheses
 
     ret
 
 ;;************************************************************************************
 
-usoAplicativo:
+applicationUsage:
 
-    fputs uname.uso
+    fputs uname.use
 
-    jmp terminar
+    jmp finish
 
 ;;************************************************************************************
 
-terminar:
+finish:
 
     hx.syscall encerrarProcesso
 
 ;;*****************************************************************************
 
-espacoPadrao:
+putSpace:
 
-    novaLinha
+    putNewLine
 
     ret
 
 ;;*****************************************************************************
 
-obterHostname:
+getHostname:
 
-;; Vamos agora exibir o nome de host
+;; Let's now display the hostname
 
-    mov edi, enderecoCarregamento
-    mov esi, uname.arquivoUnix
+    mov edi, appFileBuffer
+    mov esi, uname.hostFilename
 
     hx.syscall hx.open
 
-    jc .arquivoNaoEncontrado ;; Se não for encontrado, exibir o padrão
+    jc .fileNotFound ;; If not found, display the default
 
-;; Se encontrado, exibir o nome de host definido
+;; If found, display the defined hostname
 
     clc
 
-    mov esi, enderecoCarregamento
+    mov esi, appFileBuffer
 
     hx.syscall tamanhoString
 
@@ -525,24 +525,24 @@ obterHostname:
 
     hx.syscall inserirCaractere
 
-    fputs enderecoCarregamento
+    fputs appFileBuffer
 
-    jmp .retornar
+    jmp .continue
 
-.arquivoNaoEncontrado:
+.fileNotFound:
 
     stc
 
-    fputs uname.maquina
+    fputs uname.machine
 
-.retornar:
+.continue:
 
     ret
 
 ;;************************************************************************************
 ;;
-;;                    Área de dados e variáveis do aplicativo
+;;                        Application variables and data
 ;;
 ;;************************************************************************************
 
-enderecoCarregamento:
+appFileBuffer:
