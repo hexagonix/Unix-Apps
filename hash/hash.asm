@@ -174,7 +174,7 @@ shellStart:
 
     push eax
 
-    mov edi, hash.prompt
+    mov edi, hash.promptSymbol
     mov esi, hash.commonUser
 
     pop ecx
@@ -198,7 +198,7 @@ shellStart:
 
     push eax
 
-    mov edi, hash.prompt
+    mov edi, hash.promptSymbol
     mov esi, hash.rootUser
 
     pop ecx
@@ -213,13 +213,13 @@ shellStart:
 
 .finishPrompt:
 
-    mov esi, hash.prompt
+    mov esi, hash.promptSymbol
 
     hx.syscall tamanhoString
 
     inc eax
 
-    mov byte[hash.prompt+eax], 0
+    mov byte[hash.promptSymbol+eax], 0
 
 ;;************************************************************************************
 
@@ -233,7 +233,7 @@ shellStart:
 
     hx.syscall definirCursor
 
-    fputs hash.prompt
+    fputs hash.promptSymbol
 
     mov al, byte[numberColumns] ;; Maximum characters to get
 
@@ -440,7 +440,7 @@ searchCommands:
     mov al, [ds:si+bx]
 
     cmp al, '>'
-    jne .searchBetweenDelimiters ;; The initial limiter has been found
+    jne .searchBetweenDelimiters ;; The initial delimiter has been found
 
 ;; BX now points to the first character of the command name retrieved from the file
 
@@ -602,7 +602,7 @@ finishShell:
 
 ;; TODO: improve shell scripting support
 
-VERSION equ "0.10.0"
+VERSION equ "0.10.1"
 
 searchSizeLimit = 32768
 
@@ -642,7 +642,7 @@ db 10, "An argument is necessary.", 0
 
 .diskImage: ;; Stores the name of the image to be used
 times 12 db 0
-.prompt: ;; Stores # or $
+.promptSymbol: ;; Stores # or $
 times 8  db 0
 
 ;;**************************
