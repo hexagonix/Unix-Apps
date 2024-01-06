@@ -73,7 +73,7 @@ use32
 include "HAPP.s" ;; Here is a structure for the HAPP header
 
 ;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
-cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, applicationStart, 01h
+appHeader headerHAPP HAPP.Architectures.i386, 1, 00, applicationStart, 01h
 
 ;;************************************************************************************
 
@@ -89,7 +89,7 @@ include "macros.s"
 ;;
 ;;************************************************************************************
 
-VERSION equ "1.13.0"
+VERSION equ "1.14.0"
 
 lshapp:
 
@@ -179,22 +179,22 @@ applicationStart:
     mov edi, lshapp.helpParameter
     mov esi, [parameters]
 
-    hx.syscall compararPalavrasString
+    hx.syscall hx.compareWordsString
 
     jc applicationUsage
 
     mov edi, lshapp.helpParameter2
     mov esi, [parameters]
 
-    hx.syscall compararPalavrasString
+    hx.syscall hx.compareWordsString
 
     jc applicationUsage
 
     mov esi, [parameters]
 
-    hx.syscall cortarString
+    hx.syscall hx.trimString
 
-    hx.syscall tamanhoString
+    hx.syscall hx.stringSize
 
     cmp eax, 13
     jl .getInformation
@@ -205,7 +205,7 @@ applicationStart:
 
 .getInformation:
 
-    hx.syscall arquivoExiste
+    hx.syscall hx.fileExists
 
     jc .fileNotFound
 
@@ -276,7 +276,7 @@ checkFileByHeader:
 
     mov esi, filename
 
-    hx.syscall arquivoExiste
+    hx.syscall hx.fileExists
 
     jc applicationStart.fileNotFound
 
@@ -293,7 +293,7 @@ checkFileByHeader:
 
     pop eax
 
-    imprimirInteiro
+    printInteger
 
     fputs lshapp.bytes
 
@@ -339,14 +339,14 @@ checkFileByHeader:
     mov dh, byte[lshapp.minimumVersion]
     movzx eax, dh
 
-    imprimirInteiro
+    printInteger
 
     fputs lshapp.dot
 
     mov dh, byte[lshapp.minimumSubversion]
     movzx eax, dh
 
-    imprimirInteiro
+    printInteger
 
     fputs lshapp.fieldVersionHexagon
 
@@ -356,7 +356,7 @@ checkFileByHeader:
 
     mov eax, dword[lshapp.entryPoint]
 
-    imprimirHexadecimal
+    printHexadecimal
 
     fputs lshapp.fieldEntryPoint
 
@@ -422,9 +422,9 @@ saveFilename:
     push esi
     push eax
 
-    hx.syscall cortarString
+    hx.syscall hx.trimString
 
-    hx.syscall tamanhoString
+    hx.syscall hx.stringSize
 
     mov ecx, eax
 
@@ -442,7 +442,7 @@ saveFilename:
 
 finish:
 
-    hx.syscall encerrarProcesso
+    hx.syscall hx.exit
 
 ;;************************************************************************************
 
