@@ -73,7 +73,7 @@ use32
 include "HAPP.s" ;; Here is a structure for the HAPP header
 
 ;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
-cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, applicationStart, 01h
+appHeader headerHAPP HAPP.Architectures.i386, 1, 00, applicationStart, 01h
 
 ;;************************************************************************************
 
@@ -99,20 +99,20 @@ applicationStart:
     mov edi, rm.helpParameter
     mov esi, [parameters]
 
-    hx.syscall compararPalavrasString
+    hx.syscall hx.compareWordsString
 
     jc applicationUsage
 
     mov edi, rm.helpParameter2
     mov esi, [parameters]
 
-    hx.syscall compararPalavrasString
+    hx.syscall hx.compareWordsString
 
     jc applicationUsage
 
     mov esi, [parameters]
 
-    hx.syscall arquivoExiste
+    hx.syscall hx.fileExists
 
     jc .fileNotFound
 
@@ -122,7 +122,7 @@ applicationStart:
 
 .getConfirmationKeys:
 
-    hx.syscall aguardarTeclado
+    hx.syscall hx.waitKeyboard
 
     cmp al, 'y'
     je .safeDelete
@@ -146,7 +146,7 @@ applicationStart:
 
 .safeDelete:
 
-    hx.syscall imprimirCaractere
+    hx.syscall hx.printCharacter
 
     mov esi, [parameters]
 
@@ -160,7 +160,7 @@ applicationStart:
 
 .cancel:
 
-    hx.syscall imprimirCaractere
+    hx.syscall hx.printCharacter
 
     fputs rm.cancel
 
@@ -174,7 +174,7 @@ applicationStart:
 
     pop eax
 
-    cmp eax, IO.operacaoNegada
+    cmp eax, IO.operationDenied
     je .permissionDenied
 
     jmp finish
@@ -205,7 +205,7 @@ withoutParameter:
 
 finish:
 
-    hx.syscall encerrarProcesso
+    hx.syscall hx.exit
 
 ;;************************************************************************************
 
@@ -215,7 +215,7 @@ finish:
 ;;
 ;;************************************************************************************
 
-VERSION equ "1.2.0"
+VERSION equ "1.3.0"
 
 rm:
 
