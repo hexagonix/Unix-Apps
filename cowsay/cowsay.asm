@@ -73,7 +73,7 @@ use32
 include "HAPP.s" ;; Here is a structure for the HAPP header
 
 ;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
-cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, applicationStart, 01h
+appHeader headerHAPP HAPP.Architectures.i386, 1, 00, applicationStart, 01h
 
 ;;************************************************************************************
 
@@ -95,14 +95,14 @@ applicationStart:
     mov edi, cowsay.helpParameter
     mov esi, [parameters]
 
-    hx.syscall compararPalavrasString
+    hx.syscall hx.compareWordsString
 
     jc applicationUsage
 
     mov edi, cowsay.helpParameter2
     mov esi, [parameters]
 
-    hx.syscall compararPalavrasString
+    hx.syscall hx.compareWordsString
 
     jc applicationUsage
 
@@ -110,7 +110,7 @@ applicationStart:
 
     mov esi, [userMessage]
 
-    hx.syscall tamanhoString
+    hx.syscall hx.stringSize
 
     mov dword[userMessageSize], eax
 
@@ -188,7 +188,7 @@ applicationStart:
 
     mov esi, [cowProfile]
 
-    hx.syscall tamanhoString
+    hx.syscall hx.stringSize
 
     mov ebx, eax
 
@@ -212,7 +212,7 @@ applicationStart:
 
     push esi
 
-    hx.syscall arquivoExiste
+    hx.syscall hx.fileExists
 
     jc .innerCow
 
@@ -265,7 +265,7 @@ getParameters:
 
     clc ;; Clean the Carry
 
-    hx.syscall encontrarCaractere ;; Request character search service
+    hx.syscall hx.findCharacter ;; Request character search service
 
     jnc .withoutExternalFile ;; A sentence marker was identified. Skip character load
 
@@ -275,7 +275,7 @@ getParameters:
 
     mov al, ' ' ;; Let's search if there is a space, which would indicate two or more words
 
-    hx.syscall encontrarCaractere ;; Request character search service
+    hx.syscall hx.findCharacter ;; Request character search service
 
 ;; We don't have more than one word, which indicates that there is no character chang
 
@@ -314,20 +314,20 @@ getParameters:
 
     mov esi, [cowProfile] ;; Let's take the parameter string provided by the system
 
-    hx.syscall cortarString ;; Cut it (trimming) to be sure of the character positions
+    hx.syscall hx.trimString ;; Cut it (trimming) to be sure of the character positions
 
 ;; Now let's remove the '"' characters, remembering that only the first and last '"' characters
 ;; will be removed. Anyone inside the chain will remain, for now.
 
     mov eax, 00h ;; Position zero of the cut string, first '"'
 
-    hx.syscall removerCaractereString ;; Remove the character
+    hx.syscall hx.removeCharacterString ;; Remove the character
 
-    hx.syscall tamanhoString ;; Now, how long is the residual chain?
+    hx.syscall hx.stringSize ;; Now, how long is the residual chain?
 
     dec eax ;; The last character is always the terminator, so indent one. This is the last '"'
 
-    hx.syscall removerCaractereString ;; Remove the character
+    hx.syscall hx.removeCharacterString ;; Remove the character
 
     mov [userMessage], esi ;; The message is ready to be displayed
 
@@ -395,11 +395,11 @@ applicationUsage:
 
 finish:
 
-    hx.syscall encerrarProcesso
+    hx.syscall hx.exit
 
 ;;************************************************************************************
 
-VERSION equ "2.3.0"
+VERSION equ "2.4.0"
 
 cowsay:
 
