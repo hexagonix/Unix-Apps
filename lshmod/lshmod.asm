@@ -73,7 +73,7 @@ use32
 include "HAPP.s" ;; Here is a structure for the HAPP header
 
 ;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
-cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, applicationStart, 01h
+appHeader headerHAPP HAPP.Architectures.i386, 1, 00, applicationStart, 01h
 
 ;;************************************************************************************
 
@@ -87,7 +87,7 @@ include "macros.s"
 ;;
 ;;************************************************************************************
 
-VERSION equ "0.8.0"
+VERSION equ "0.9.0"
 
 lshmod:
 
@@ -159,22 +159,22 @@ applicationStart:
     mov edi, lshmod.helpParameter
     mov esi, [parameters]
 
-    hx.syscall compararPalavrasString
+    hx.syscall hx.compareWordsString
 
     jc applicationUsage
 
     mov edi, lshmod.helpParameter2
     mov esi, [parameters]
 
-    hx.syscall compararPalavrasString
+    hx.syscall hx.compareWordsString
 
     jc applicationUsage
 
     mov esi, [parameters]
 
-    hx.syscall cortarString
+    hx.syscall hx.trimString
 
-    hx.syscall tamanhoString
+    hx.syscall hx.stringSize
 
     cmp eax, 13
     jl .getInformation
@@ -185,7 +185,7 @@ applicationStart:
 
 .getInformation:
 
-    hx.syscall arquivoExiste
+    hx.syscall hx.fileExists
 
     jc .fileNotFound
 
@@ -261,7 +261,7 @@ checkFileByHeader:
 
     mov esi, filename
 
-    hx.syscall arquivoExiste
+    hx.syscall hx.fileExists
 
     jc applicationStart.fileNotFound
 
@@ -278,7 +278,7 @@ checkFileByHeader:
 
     pop eax
 
-    imprimirInteiro
+    printInteger
 
     fputs lshmod.bytes
 
@@ -322,14 +322,14 @@ checkFileByHeader:
     mov dh, byte[lshmod.verMod]
     movzx eax, dh
 
-    imprimirInteiro
+    printInteger
 
     fputs lshmod.dot
 
     mov dh, byte[lshmod.subverMod]
     movzx eax, dh
 
-    imprimirInteiro
+    printInteger
 
     fputs lshmod.dot
 
@@ -360,9 +360,9 @@ saveFilename:
     push esi
     push eax
 
-    hx.syscall cortarString
+    hx.syscall hx.trimString
 
-    hx.syscall tamanhoString
+    hx.syscall hx.stringSize
 
     mov ecx, eax
 
@@ -380,7 +380,7 @@ saveFilename:
 
 finish:
 
-    hx.syscall encerrarProcesso
+    hx.syscall hx.exit
 
 ;;************************************************************************************
 
