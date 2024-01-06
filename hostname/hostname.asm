@@ -73,7 +73,7 @@ use32
 include "HAPP.s" ;; Here is a structure for the HAPP header
 
 ;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
-cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, applicationStart, 01h
+appHeader headerHAPP HAPP.Architectures.i386, 1, 00, applicationStart, 01h
 
 ;;************************************************************************************
 
@@ -98,14 +98,14 @@ applicationStart:
     mov edi, hostname.helpParameter
     mov esi, [parameters]
 
-    hx.syscall compararPalavrasString
+    hx.syscall hx.compareWordsString
 
     jc applicationUsage
 
     mov edi, hostname.helpParameter2
     mov esi, [parameters]
 
-    hx.syscall compararPalavrasString
+    hx.syscall hx.compareWordsString
 
     jc applicationUsage
 
@@ -120,14 +120,14 @@ applicationStart:
 
     mov esi, appFileBuffer
 
-    hx.syscall tamanhoString
+    hx.syscall hx.stringSize
 
     mov edx, eax
     dec edx
 
     mov al, 0
 
-    hx.syscall inserirCaractere
+    hx.syscall hx.insertCharacter
 
     fputs appFileBuffer
 
@@ -151,7 +151,7 @@ applicationUsage:
 
 finish:
 
-    hx.syscall encerrarProcesso
+    hx.syscall hx.exit
 
 ;;************************************************************************************
 
@@ -161,7 +161,7 @@ finish:
 ;;
 ;;************************************************************************************
 
-VERSION equ "1.3.0"
+VERSION equ "1.4.0"
 
 hostname:
 
