@@ -73,7 +73,7 @@ use32
 include "HAPP.s" ;; Here is a structure for the HAPP header
 
 ;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
-cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, applicationStart, 01h
+appHeader headerHAPP HAPP.Architectures.i386, 1, 00, applicationStart, 01h
 
 ;;************************************************************************************
 
@@ -90,7 +90,7 @@ applicationStart:
 
     mov [parameters], edi ;; Save command line parameters for future use
 
-    hx.syscall obterCor
+    hx.syscall hx.getColor
 
     mov dword[ls.fontColor], eax
     mov dword[ls.backgroundColor], ebx
@@ -102,7 +102,7 @@ applicationStart:
 
 checkResolution:
 
-    hx.syscall obterResolucao
+    hx.syscall hx.getResolution
 
     cmp eax, 1
     je .graphicsMode1
@@ -136,21 +136,21 @@ checkParameters:
     mov edi, ls.helpParameter
     mov esi, [parameters]
 
-    hx.syscall compararPalavrasString
+    hx.syscall hx.compareWordsString
 
     jc applicationUsage
 
     mov edi, ls.helpParameter2
     mov esi, [parameters]
 
-    hx.syscall compararPalavrasString
+    hx.syscall hx.compareWordsString
 
     jc applicationUsage
 
     mov edi, ls.parameterAllFiles
     mov esi, [parameters]
 
-    hx.syscall compararPalavrasString
+    hx.syscall hx.compareWordsString
 
     jc configureDisplay
 
@@ -173,7 +173,7 @@ list:
 
     putNewLine
 
-    hx.syscall listarArquivos ;; Get files in ESI
+    hx.syscall hx.listFiles ;; Get files in ESI
 
     jc .listError
 
@@ -202,61 +202,61 @@ list:
 
     mov edi, ls.extensionAPP
 
-    hx.syscall compararPalavrasString ;; Check for .APP extension
+    hx.syscall hx.compareWordsString ;; Check for .APP extension
 
     jc .application
 
     mov edi, ls.extensionSIS
 
-    hx.syscall compararPalavrasString
+    hx.syscall hx.compareWordsString
 
     jc .system
 
     mov edi, ls.extensionASM
 
-    hx.syscall compararPalavrasString
+    hx.syscall hx.compareWordsString
 
     jc .fileASM
 
     mov edi, ls.extensionBIN
 
-    hx.syscall compararPalavrasString
+    hx.syscall hx.compareWordsString
 
     jc .fileBIN
 
     mov edi, ls.extensionUNX
 
-    hx.syscall compararPalavrasString
+    hx.syscall hx.compareWordsString
 
     jc .fileUNX
 
     mov edi, ls.extensionFNT
 
-    hx.syscall compararPalavrasString
+    hx.syscall hx.compareWordsString
 
     jc .fileFNT
 
     mov edi, ls.extensionOCL
 
-    hx.syscall compararPalavrasString
+    hx.syscall hx.compareWordsString
 
     jc .fileOCL
 
     mov edi, ls.extensionMOD
 
-    hx.syscall compararPalavrasString
+    hx.syscall hx.compareWordsString
 
     jc .fileMOD
 
     mov edi, ls.extensionCOW
 
-    hx.syscall compararPalavrasString
+    hx.syscall hx.compareWordsString
 
     jc .fileCOW
 
     mov edi, ls.extensionMAN
 
-    hx.syscall compararPalavrasString
+    hx.syscall hx.compareWordsString
 
     jc .fileMAN
 
@@ -487,7 +487,7 @@ applicationUsage:
 
 finish:
 
-    hx.syscall encerrarProcesso
+    hx.syscall hx.exit
 
 ;;************************************************************************************
 
@@ -501,7 +501,7 @@ setFileColor:
 
     mov ebx, dword[ls.backgroundColor]
 
-    hx.syscall definirCor
+    hx.syscall hx.setColor
 
     ret
 
@@ -512,7 +512,7 @@ setDefaultColor:
     mov eax, dword[ls.fontColor]
     mov ebx, dword[ls.backgroundColor]
 
-    hx.syscall definirCor
+    hx.syscall hx.setColor
 
     ret
 
@@ -529,7 +529,7 @@ putSpace:
 
     mov esi, [currentFile]
 
-    hx.syscall tamanhoString
+    hx.syscall hx.stringSize
 
     mov ebx, 15
 
@@ -541,7 +541,7 @@ putSpace:
 
     mov al, ' '
 
-    hx.syscall imprimirCaractere
+    hx.syscall hx.printCharacter
 
     dec ecx
 
@@ -572,7 +572,7 @@ readFileList:
 
     mov al, ' '
 
-    hx.syscall encontrarCaractere
+    hx.syscall hx.findCharacter
 
     jc .done
 
@@ -624,7 +624,7 @@ checkFile:
 
     mov esi, [parameters]
 
-    hx.syscall arquivoExiste
+    hx.syscall hx.fileExists
 
     jc finish
 
@@ -633,11 +633,11 @@ checkFile:
 
     mov esi, [parameters]
 
-    hx.syscall stringParaMaiusculo
+    hx.syscall hx.stringToUppercase
 
     mov [parameters], esi
 
-    imprimirString
+    printString
 
     jmp finish
 
@@ -649,7 +649,7 @@ checkFile:
 ;;
 ;;************************************************************************************
 
-VERSION equ "3.3.0"
+VERSION equ "3.4.0"
 
 ls:
 
