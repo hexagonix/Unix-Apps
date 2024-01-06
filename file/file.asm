@@ -73,7 +73,7 @@ use32
 include "HAPP.s" ;; Here is a structure for the HAPP header
 
 ;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
-cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, applicationStart, 01h
+appHeader headerHAPP HAPP.Architectures.i386, 1, 00, applicationStart, 01h
 
 ;;************************************************************************************
 
@@ -98,22 +98,22 @@ applicationStart:
     mov edi, fileUnix.helpParameter
     mov esi, [parameters]
 
-    hx.syscall compararPalavrasString
+    hx.syscall hx.compareWordsString
 
     jc applicationUsage
 
     mov edi, fileUnix.helpParameter2
     mov esi, [parameters]
 
-    hx.syscall compararPalavrasString
+    hx.syscall hx.compareWordsString
 
     jc applicationUsage
 
     mov esi, [parameters]
 
-    hx.syscall cortarString
+    hx.syscall hx.trimString
 
-    hx.syscall tamanhoString
+    hx.syscall hx.stringSize
 
     cmp eax, 13
     jl .getInfo
@@ -124,7 +124,7 @@ applicationStart:
 
 .getInfo:
 
-    hx.syscall arquivoExiste
+    hx.syscall hx.fileExists
 
     jc .fileNotFound
 
@@ -136,7 +136,7 @@ applicationStart:
 
     pop eax
 
-    imprimirInteiro
+    printInteger
 
     fputs fileUnix.bytes
 
@@ -157,9 +157,9 @@ applicationStart:
 
     mov esi, fileName
 
-    hx.syscall stringParaMaiusculo ;; We will check based on the capitalized extension
+    hx.syscall hx.stringToUppercase ;; We will check based on the capitalized extension
 
-    hx.syscall tamanhoString
+    hx.syscall hx.stringSize
 
     add esi, eax ;; Add name length
 
@@ -167,49 +167,49 @@ applicationStart:
 
     mov edi, fileUnix.extensionUNX
 
-    hx.syscall compararPalavrasString ;; Check for .UNX extension
+    hx.syscall hx.compareWordsString ;; Check for .UNX extension
 
     jc .fileUNX
 
     mov edi, fileUnix.extensionSIS
 
-    hx.syscall compararPalavrasString ;; Check for .SIS extension
+    hx.syscall hx.compareWordsString ;; Check for .SIS extension
 
     jc .fileSIS
 
     mov edi, fileUnix.extensionTXT
 
-    hx.syscall compararPalavrasString ;; Check for .TXT extension
+    hx.syscall hx.compareWordsString ;; Check for .TXT extension
 
     jc .fileTXT
 
     mov edi, fileUnix.extensionASM
 
-    hx.syscall compararPalavrasString ;; Check for .ASM extension
+    hx.syscall hx.compareWordsString ;; Check for .ASM extension
 
     jc .fileASM
 
     mov edi, fileUnix.extensionCOW
 
-    hx.syscall compararPalavrasString ;; Check for .COW extension
+    hx.syscall hx.compareWordsString ;; Check for .COW extension
 
     jc .fileCOW
 
     mov edi, fileUnix.extensionMAN
 
-    hx.syscall compararPalavrasString ;; Check for .MAN extension
+    hx.syscall hx.compareWordsString ;; Check for .MAN extension
 
     jc .fileMAN
 
     mov edi, fileUnix.extensionFNT
 
-    hx.syscall compararPalavrasString ;; Check for .FNT extension
+    hx.syscall hx.compareWordsString ;; Check for .FNT extension
 
     jc .fileFNT
 
     mov edi, fileUnix.extensionCAN
 
-    hx.syscall compararPalavrasString ;; Check for .CAN extension
+    hx.syscall hx.compareWordsString ;; Check for .CAN extension
 
     jc .fileCAN
 
@@ -221,7 +221,7 @@ applicationStart:
 
     mov edi, fileUnix.extensionS
 
-    hx.syscall compararPalavrasString ;; Check for .S extension
+    hx.syscall hx.compareWordsString ;; Check for .S extension
 
     jc .fileS
 
@@ -387,9 +387,9 @@ saveFileName:
     push esi
     push eax
 
-    hx.syscall cortarString
+    hx.syscall hx.trimString
 
-    hx.syscall tamanhoString
+    hx.syscall hx.stringSize
 
     mov ecx, eax
 
@@ -407,7 +407,7 @@ saveFileName:
 
 finish:
 
-    hx.syscall encerrarProcesso
+    hx.syscall hx.exit
 
 ;;************************************************************************************
 
@@ -417,7 +417,7 @@ finish:
 ;;
 ;;*********************************************************************
 
-VERSION equ "1.10.0"
+VERSION equ "1.11.0"
 
 fileUnix:
 
