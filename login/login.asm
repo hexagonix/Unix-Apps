@@ -82,7 +82,7 @@ use32
 include "HAPP.s" ;; Here is a structure for the HAPP header
 
 ;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
-cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, loginHexagonix, 01h
+appHeader headerHAPP HAPP.Architectures.i386, 1, 00, loginHexagonix, 01h
 
 ;;************************************************************************************
 
@@ -103,7 +103,7 @@ searchSizeLimit = 32768
 
 ;;************************************************************************************
 
-VERSION equ "4.10.0"
+VERSION equ "4.11.0"
 
 login:
 
@@ -188,24 +188,24 @@ loginHexagonix: ;; Entry point
     mov edi, login.helpParameter
     mov esi, [requestedUser]
 
-    hx.syscall compararPalavrasString
+    hx.syscall hx.compareWordsString
 
     jc applicationUsage
 
     mov edi, login.helpParameter2
     mov esi, [requestedUser]
 
-    hx.syscall compararPalavrasString
+    hx.syscall hx.compareWordsString
 
     jc applicationUsage
 
     call checkDatabase
 
-    logSistema login.verboseLogin, 0, Log.Prioridades.p4
+    systemLog login.verboseLogin, 0, Log.Priorities.p4
 
 startProcessing:
 
-    hx.syscall hx.getpid
+    hx.syscall hx.pid
 
     cmp eax, 02h
     je .viaInit
@@ -231,7 +231,7 @@ startProcessing:
 
     clc
 
-    logSistema login.verboseLoginRefused, 0, Log.Prioridades.p4
+    systemLog login.verboseLoginRefused, 0, Log.Priorities.p4
 
     fputs login.wrongData
 
@@ -239,7 +239,7 @@ startProcessing:
 
 .initialRun:
 
-    logSistema login.verboseFindFile, 0, Log.Prioridades.p4
+    systemLog login.verboseFindFile, 0, Log.Priorities.p4
 
     call clearUserVariables
 
@@ -249,9 +249,9 @@ startProcessing:
 
     mov ebx, 01h
 
-    hx.syscall obterString
+    hx.syscall hx.getString
 
-    hx.syscall cortarString
+    hx.syscall hx.trimString
 
     mov [requestedUser], esi
 
@@ -267,9 +267,9 @@ startProcessing:
 
     mov ebx, 1234h ;; We don't want to echo the password!
 
-    hx.syscall obterString
+    hx.syscall hx.getString
 
-    hx.syscall cortarString
+    hx.syscall hx.trimString
 
     cmp byte[wrong], 1
     jne .continueProcessing
@@ -280,13 +280,13 @@ startProcessing:
 
     mov edi, passwordObtained
 
-    hx.syscall compararPalavrasString
+    hx.syscall hx.compareWordsString
 
     jc .loginAccepted
 
 .loginRefused:
 
-    logSistema login.verboseLoginRefused, 00h, Log.Prioridades.p4
+    systemLog login.verboseLoginRefused, 00h, Log.Priorities.p4
 
     mov byte[wrong], 1
 
@@ -299,13 +299,13 @@ startProcessing:
 
 .loginAccepted:
 
-    logSistema login.verboseLoginAccept, 0, Log.Prioridades.p4
+    systemLog login.verboseLoginAccept, 0, Log.Priorities.p4
 
     call registerUser
 
     call findUserShell
 
-    hx.syscall destravar
+    hx.syscall hx.unlock
 
 .startShell:
 
@@ -313,7 +313,7 @@ startProcessing:
 
     mov esi, hexagonixShell
 
-    hx.syscall arquivoExiste
+    hx.syscall hx.fileExists
 
     jc .notFound
 
@@ -322,11 +322,11 @@ startProcessing:
 
     clc
 
-    hx.syscall iniciarProcesso ;; Request to run the Hexagonix shell
+    hx.syscall hx.exec ;; Request to run the Hexagonix shell
 
     jc .tryDefaultShell
 
-    hx.syscall travar
+    hx.syscall hx.lock
 
     jmp .shellFinished
 
@@ -340,9 +340,9 @@ startProcessing:
 
 .shellFinished: ;; Try loading the shell again
 
-    hx.syscall travar
+    hx.syscall hx.lock
 
-    logSistema login.verboseLogout, 0, Log.Prioridades.p4
+    systemLog login.verboseLogout, 0, Log.Priorities.p4
 
 ;; Here we will implement a change in the way login should interpret shell exit.
 ;; If login has PID 2, it means it was invoked via init. Therefore, he must remain
@@ -373,7 +373,7 @@ registerUser:
     mov esi, login.rootUser
     mov edi, user
 
-    hx.syscall compararPalavrasString
+    hx.syscall hx.compareWordsString
 
     jc .root
 
@@ -389,7 +389,7 @@ registerUser:
 
     mov esi, user
 
-    hx.syscall definirUsuario
+    hx.syscall hx.setUser
 
     ret
 
@@ -466,7 +466,7 @@ findUserName:
     mov edi, user
     mov esi, [requestedUser]
 
-    hx.syscall compararPalavrasString
+    hx.syscall hx.compareWordsString
 
     jc .obtained
 
@@ -521,7 +521,7 @@ clearVariable:
 
     mov esi, user
 
-    hx.syscall tamanhoString
+    hx.syscall hx.stringSize
 
     push eax
 
@@ -548,7 +548,7 @@ clearUserVariables:
 
     mov esi, user
 
-    hx.syscall tamanhoString
+    hx.syscall hx.stringSize
 
     push eax
 
@@ -562,7 +562,7 @@ clearUserVariables:
 
     mov esi, requestedUser
 
-    hx.syscall tamanhoString
+    hx.syscall hx.stringSize
 
     push eax
 
@@ -576,7 +576,7 @@ clearUserVariables:
 
     mov esi, hexagonixShell
 
-    hx.syscall tamanhoString
+    hx.syscall hx.stringSize
 
     push eax
 
@@ -796,7 +796,7 @@ getDefaultShell:
 
     mov esi, login.defaultShell
 
-    hx.syscall tamanhoString
+    hx.syscall hx.stringSize
 
     push eax
 
@@ -820,11 +820,11 @@ saveCurrentUser:
     push ds ;; User mode data segment (38h selector)
     pop es
 
-    hx.syscall obterUsuario
+    hx.syscall hx.getUser
 
     push esi
 
-    hx.syscall tamanhoString
+    hx.syscall hx.stringSize
 
     pop esi
 
@@ -838,7 +838,7 @@ saveCurrentUser:
 
     pop es
 
-    hx.syscall obterUsuario
+    hx.syscall hx.getUser
 
     mov [previousCode], eax
 
@@ -851,7 +851,7 @@ restoreUser:
     mov esi, previousUser
     mov eax, [previousCode]
 
-    hx.syscall definirUsuario
+    hx.syscall hx.setUser
 
     ret
 
@@ -872,7 +872,7 @@ runLogind:
 
     clc
 
-    hx.syscall iniciarProcesso ;; Request login daemon loading
+    hx.syscall hx.exec ;; Request login daemon loading
 
     ret
 
@@ -880,7 +880,7 @@ runLogind:
 
 finish:
 
-    hx.syscall encerrarProcesso
+    hx.syscall hx.exit
 
 ;;************************************************************************************
 
@@ -895,14 +895,14 @@ defaultLogin:
 
     mov esi, login.rootUser
 
-    hx.syscall definirUsuario
+    hx.syscall hx.setUser
 
     mov eax, 0
     mov esi, login.defaultShell
 
     clc
 
-    hx.syscall iniciarProcesso
+    hx.syscall hx.exec
 
     je finish
 
@@ -918,7 +918,7 @@ checkDatabase:
 
     mov esi, login.file
 
-    hx.syscall arquivoExiste
+    hx.syscall hx.fileExists
 
     jc defaultLogin
 
