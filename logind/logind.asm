@@ -82,7 +82,7 @@ use32
 include "HAPP.s" ;; Here is a structure for the HAPP header
 
 ;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
-cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, daemonStart, 01h
+appHeader headerHAPP HAPP.Architectures.i386, 1, 00, daemonStart, 01h
 
 
 ;;************************************************************************************
@@ -104,7 +104,7 @@ searchSizeLimit = 32768
 
 ;;************************************************************************************
 
-VERSION equ "1.12.1"
+VERSION equ "1.13.0"
 
 logind:
 
@@ -173,16 +173,16 @@ daemonStart: ;; Entry point
 ;; logind is a daemon that should only be used during startup.
 ;; To do this, it must check if the PID is 3 (init=1 and login=2).
 
-    hx.syscall obterPID
+    hx.syscall hx.pid
 
     cmp eax, 03h
     je startProcessing
 
-    hx.syscall encerrarProcesso
+    hx.syscall hx.exit
 
 startProcessing:
 
-    logSistema logind.verboseLogind, 0, Log.Prioridades.p4
+    systemLog logind.verboseLogind, 0, Log.Priorities.p4
 
 ;; Now let's initialize the tty1 virtual console, clearing its contents and setting
 ;; its graphical properties. First, we must save the cursor position in the current console,
@@ -190,7 +190,7 @@ startProcessing:
 ;; This step takes this complexity out of Hexagon, reducing possible bugs and allowing expand to
 ;; other consoles in the future without having to change anything in the kernel.
 
-    hx.syscall obterCursor
+    hx.syscall hx.getCursor
 
     push edx ;; Save current console position
 
@@ -198,7 +198,7 @@ startProcessing:
 
     hx.syscall hx.open ;; Open the device
 
-    hx.syscall limparTela
+    hx.syscall hx.clearConsole
 
     mov esi, Hexagon.LibASM.Dev.video.tty0 ;; Reopen the default console
 
@@ -206,18 +206,18 @@ startProcessing:
 
     pop edx ;; Restaurar posição do console
 
-    hx.syscall definirCursor
+    hx.syscall hx.setCursor
 
 .verifyOOBE:
 
     mov esi, logind.OOBE
 
-    hx.syscall arquivoExiste
+    hx.syscall hx.fileExists
 
     mov esi, logind.OOBE
     mov eax, 0h
 
-    hx.syscall iniciarProcesso
+    hx.syscall hx.exec
 
     jc .continue
 
@@ -230,7 +230,7 @@ match =Moderno, TIPOLOGIN
 
     call verifyTheme
 
-    hx.syscall limparTela
+    hx.syscall hx.clearConsole
 
 }
 
@@ -309,14 +309,14 @@ verifyTheme:
     mov edi, themeChosen
     mov esi, logind.lightTheme
 
-    hx.syscall compararPalavrasString
+    hx.syscall hx.compareWordsString
 
     jc .selectLightTheme
 
     mov edi, themeChosen
     mov esi, logind.darkTheme
 
-    hx.syscall compararPalavrasString
+    hx.syscall hx.compareWordsString
 
     jc .selectDarkTheme
 
@@ -339,9 +339,9 @@ verifyTheme:
     mov eax, HEXAGONIX_CLASSICO_PRETO
     mov ebx, HEXAGONIX_CLASSICO_BRANCO
 
-    hx.syscall definirCor
+    hx.syscall hx.setColor
 
-    hx.syscall limparTela ;; Clean the console
+    hx.syscall hx.clearConsole ;; Clean the console
 
     mov esi, Hexagon.LibASM.Dev.video.tty0 ;; Reopens the standard console
 
@@ -350,9 +350,9 @@ verifyTheme:
     mov eax, PRETO
     mov ebx, BRANCO_ANDROMEDA
 
-    hx.syscall definirCor
+    hx.syscall hx.setColor
 
-    hx.syscall limparTela ;; Clean the console
+    hx.syscall hx.clearConsole ;; Clean the console
 
     ret
 
@@ -365,9 +365,9 @@ verifyTheme:
     mov eax, HEXAGONIX_BLOSSOM_AMARELO
     mov ebx, HEXAGONIX_BLOSSOM_CINZA
 
-    hx.syscall definirCor
+    hx.syscall hx.setColor
 
-    hx.syscall limparTela ;; Clean the console
+    hx.syscall hx.clearConsole ;; Clean the console
 
     mov esi, Hexagon.LibASM.Dev.video.tty0 ;; Reopens the standard console
 
@@ -376,9 +376,9 @@ verifyTheme:
     mov eax, BRANCO_ANDROMEDA
     mov ebx, PRETO
 
-    hx.syscall definirCor
+    hx.syscall hx.setColor
 
-    hx.syscall limparTela ;; Clean the console
+    hx.syscall hx.clearConsole ;; Clean the console
 
 .invalidThemeName:
 
@@ -436,7 +436,7 @@ checkConsistency:
 
     call verifyTheme
 
-    hx.syscall limparTela
+    hx.syscall hx.clearConsole
 
     ret
 
@@ -444,7 +444,7 @@ checkConsistency:
 
 finish:
 
-    hx.syscall encerrarProcesso
+    hx.syscall hx.exit
 
 ;;************************************************************************************
 
@@ -454,7 +454,7 @@ checkDatabase:
 
     mov esi, logind.file
 
-    hx.syscall arquivoExiste
+    hx.syscall hx.fileExists
 
     ret
 
