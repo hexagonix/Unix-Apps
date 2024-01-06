@@ -73,7 +73,7 @@ use32
 include "HAPP.s" ;; Here is a structure for the HAPP header
 
 ;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
-cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, applicationStart, 01h
+appHeader headerHAPP HAPP.Architectures.i386, 1, 00, applicationStart, 01h
 
 ;;************************************************************************************
 
@@ -87,7 +87,7 @@ applicationStart: ;; Entry point
 
     mov [parameters], edi
 
-    hx.syscall obterCor
+    hx.syscall hx.getColor
 
     mov dword[top.fontColor], eax
     mov dword[top.backgroundColor], ebx
@@ -97,14 +97,14 @@ applicationStart: ;; Entry point
     mov edi, top.helpParameter
     mov esi, [parameters]
 
-    hx.syscall compararPalavrasString
+    hx.syscall hx.compareWordsString
 
     jc applicationUsage
 
     mov edi, top.helpParameter2
     mov esi, [parameters]
 
-    hx.syscall compararPalavrasString
+    hx.syscall hx.compareWordsString
 
     jc applicationUsage
 
@@ -122,9 +122,9 @@ displayProcesses:
 
     call setTextColor
 
-    hx.syscall usoMemoria
+    hx.syscall hx.memoryUsage
 
-    imprimirInteiro
+    printInteger
 
     call setDefaultColor
 
@@ -136,11 +136,11 @@ displayProcesses:
 
     call setTextColor
 
-    hx.syscall usoMemoria
+    hx.syscall hx.memoryUsage
 
     mov eax, ecx
 
-    imprimirInteiro
+    printInteger
 
     call setDefaultColor
 
@@ -148,7 +148,7 @@ displayProcesses:
 
     putNewLine
 
-    hx.syscall obterProcessos
+    hx.syscall hx.getProcesses
 
     mov [remainingList], esi
     mov dword[numbersPID], eax
@@ -183,11 +183,11 @@ displayProcesses:
 
     mov eax, [PIDs]
 
-    imprimirInteiro
+    printInteger
 
     mov al, 10
 
-    hx.syscall imprimirCaractere
+    hx.syscall hx.printCharacter
 
     cmp dword[numbersPID], 01h
     je .continue
@@ -216,7 +216,7 @@ applicationUsage:
 
 finish:
 
-    hx.syscall encerrarProcesso
+    hx.syscall hx.exit
 
 ;;************************************************************************************
 
@@ -230,7 +230,7 @@ setTextColor:
 
     mov ebx, [top.backgroundColor]
 
-    hx.syscall definirCor
+    hx.syscall hx.setColor
 
     ret
 
@@ -241,7 +241,7 @@ setDefaultColor:
     mov eax, [top.fontColor]
     mov ebx, [top.backgroundColor]
 
-    hx.syscall definirCor
+    hx.syscall hx.setColor
 
     ret
 
@@ -258,7 +258,7 @@ putSpace:
 
     mov esi, [currentProcess]
 
-    hx.syscall tamanhoString
+    hx.syscall hx.stringSize
 
     mov ebx, 17
 
@@ -270,7 +270,7 @@ putSpace:
 
     mov al, ' '
 
-    hx.syscall imprimirCaractere
+    hx.syscall hx.printCharacter
 
     dec ecx
 
@@ -301,7 +301,7 @@ readProcessList:
 
     mov al, ' '
 
-    hx.syscall encontrarCaractere
+    hx.syscall hx.findCharacter
 
     jc .done
 
@@ -309,7 +309,7 @@ readProcessList:
 
     call findCharacterInList
 
-    hx.syscall cortarString
+    hx.syscall hx.trimString
 
     mov [remainingList], esi
 
@@ -330,7 +330,7 @@ readProcessList:
 ;; ESI - String to be checked
 ;; AL  - Character to search for
 ;;
-;; Exit:
+;; Output:
 ;;
 ;; ESI - Character position in the given String
 
@@ -351,7 +351,7 @@ findCharacterInList:
 
 ;;************************************************************************************
 
-VERSION equ "1.5.0"
+VERSION equ "1.6.0"
 
 top:
 
