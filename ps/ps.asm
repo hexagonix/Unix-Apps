@@ -73,7 +73,7 @@ use32
 include "HAPP.s" ;; Here is a structure for the HAPP header
 
 ;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
-cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, applicationStart, 01h
+appHeader headerHAPP HAPP.Architectures.i386, 1, 00, applicationStart, 01h
 
 
 ;;************************************************************************************
@@ -84,7 +84,7 @@ include "macros.s"
 
 ;;************************************************************************************
 
-applicationStart: ;; Ponto de entrada do aplicativo
+applicationStart: ;; Ponto de entryPoint do aplicativo
 
     mov [parameters], edi
 
@@ -93,35 +93,35 @@ applicationStart: ;; Ponto de entrada do aplicativo
     mov edi, ps.helpParameter
     mov esi, [parameters]
 
-    hx.syscall compararPalavrasString
+    hx.syscall hx.compareWordsString
 
     jc applicationUsage
 
     mov edi, ps.helpParameter2
     mov esi, [parameters]
 
-    hx.syscall compararPalavrasString
+    hx.syscall hx.compareWordsString
 
     jc applicationUsage
 
     mov edi, ps.parameterPID
     mov esi, [parameters]
 
-    hx.syscall compararPalavrasString
+    hx.syscall hx.compareWordsString
 
     jc parameterPID
 
     mov edi, ps.parameterMemory
     mov esi, [parameters]
 
-    hx.syscall compararPalavrasString
+    hx.syscall hx.compareWordsString
 
     jc parameterMemory
 
     mov edi, ps.parameterOtherProcesses
     mov esi, [parameters]
 
-    hx.syscall compararPalavrasString
+    hx.syscall hx.compareWordsString
 
     jc parameterOtherProcesses
 
@@ -131,7 +131,7 @@ applicationStart: ;; Ponto de entrada do aplicativo
 
 parameterPID:
 
-    hx.syscall hx.getpid
+    hx.syscall hx.pid
 
     push eax
 
@@ -139,7 +139,7 @@ parameterPID:
 
     pop eax
 
-    imprimirInteiro
+    printInteger
 
     putNewLine
     putNewLine
@@ -154,9 +154,9 @@ parameterMemory:
 
     fputs ps.memoryUsage
 
-    hx.syscall usoMemoria
+    hx.syscall hx.memoryUsage
 
-    imprimirInteiro
+    printInteger
 
     fputs ps.kbytes
 
@@ -166,7 +166,7 @@ parameterMemory:
 
 parameterOtherProcesses:
 
-    hx.syscall hx.getpid
+    hx.syscall hx.pid
 
     push eax
 
@@ -174,7 +174,7 @@ parameterOtherProcesses:
 
     pop eax
 
-    imprimirInteiro
+    printInteger
 
     fputs ps.processes
 
@@ -192,11 +192,11 @@ applicationUsage:
 
 finish:
 
-    hx.syscall encerrarProcesso
+    hx.syscall hx.exit
 
 ;;************************************************************************************
 
-VERSION equ "1.2.0"
+VERSION equ "1.3.0"
 
 ps:
 
