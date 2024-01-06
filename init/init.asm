@@ -82,7 +82,7 @@ use32
 include "HAPP.s" ;; Here is a structure for the HAPP header
 
 ;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
-cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, initHexagonix, 01h
+appHeader headerHAPP HAPP.Architectures.i386, 1, 00, initHexagonix, 01h
 
 ;;************************************************************************************
 
@@ -93,7 +93,7 @@ include "dev.s"
 
 ;;************************************************************************************
 
-VERSION equ "2.7.0"
+VERSION equ "2.8.0"
 
 searchSizeLimit = 32768 ;; Maximum file size: 32 kbytes
 
@@ -137,19 +137,19 @@ initHexagonix: ;; Entry point
 ;; Hexagon. If the PID is different from 1, init must be terminated.
 ;; If 1, continue with the Hexagonix user environment initialization process
 
-    hx.syscall hx.getpid
+    hx.syscall hx.pid
 
     cmp eax, 01h
     je .configureConsole ;; Is PID 1? Proceed
 
-    hx.syscall encerrarProcesso ;; It is not? Finish now
+    hx.syscall hx.exit ;; It is not? Finish now
 
 ;; Configure the Hexagonix terminal
 
 .configureConsole:
 
-    logSistema init.startInit, 0, Log.Prioridades.p5
-    logSistema init.startingSystem, 0, Log.Prioridades.p5
+    systemLog init.startInit, 0, Log.Priorities.p5
+    systemLog init.startingSystem, 0, Log.Priorities.p5
 
 ;; Now the double buffering memory buffer must be cleared.
 ;; This prevents polluted memory from being used as the basis for display when an application is
@@ -163,7 +163,7 @@ initHexagonix: ;; Entry point
 
 startProcessing:
 
-    hx.syscall travar ;; Prevents the user from killing the login process with a special key
+    hx.syscall hx.lock ;; Prevents the user from killing the login process with a special key
 
 ;; Now init will check the existence of the rc configuration file.
 ;; If this file is present, init will look for the declaration of an image to be used with the
@@ -171,21 +171,21 @@ startProcessing:
 ;; If this file is not found, init will load the default shell. The default is the Hexagonix login
 ;; utility.
 
-    logSistema init.searchFile, 0, Log.Prioridades.p4
+    systemLog init.searchFile, 0, Log.Priorities.p4
 
     mov word[positionBX], 0FFFFh ;; Starts at position -1, so you can find the delimiters
 
     call findConfigurationFile
 
-    logSistema init.systemReady, 0, Log.Prioridades.p5
+    systemLog init.systemReady, 0, Log.Priorities.p5
 
 .loadService:
 
-    logSistema init.registeringComponents, 0, Log.Prioridades.p4
+    systemLog init.registeringComponents, 0, Log.Priorities.p4
 
     mov esi, hexagonixService
 
-    hx.syscall arquivoExiste
+    hx.syscall hx.fileExists
 
     jc .nextService
 
@@ -194,7 +194,7 @@ startProcessing:
 
     stc
 
-    hx.syscall iniciarProcesso ;; Request loading of the service
+    hx.syscall hx.exec ;; Request loading of the service
 
     jnc .nextService
 
@@ -213,7 +213,7 @@ startProcessing:
     cmp byte[tryDefaultShell], 0
     je .tryDefaultShell          ;; If not, try loading the default Hexagonix shell
 
-    hx.syscall encerrarProcesso ;; If yes, the default shell cannot be run either
+    hx.syscall hx.exit ;; If yes, the default shell cannot be run either
 
 .tryDefaultShell: ;; Try loading the default Hexagonix shell
 
@@ -221,7 +221,7 @@ startProcessing:
 
     mov byte[tryDefaultShell], 1 ;; Try loading the default Hexagonix shell
 
-    hx.syscall destravar ;; The shell can be terminated using a special key
+    hx.syscall hx.unlock ;; The shell can be terminated using a special key
 
     jmp .loadService ;; Try loading the default Hexagonix shell
 
@@ -229,7 +229,7 @@ startProcessing:
 
 clearConsole:
 
-    logSistema init.setupConsole, 0, Log.Prioridades.p5
+    systemLog init.setupConsole, 0, Log.Priorities.p5
 
     mov esi, Hexagon.LibASM.Dev.video.tty1 ;; Open the first virtual console
 
@@ -329,7 +329,7 @@ findConfigurationFile:
 
     popa
 
-    logSistema init.fileFound, 0, Log.Prioridades.p4
+    systemLog init.fileFound, 0, Log.Priorities.p4
 
     ret
 
@@ -348,7 +348,7 @@ findConfigurationFile:
 
     popa
 
-    logSistema init.fileNotFound, 0, Log.Prioridades.p4
+    systemLog init.fileNotFound, 0, Log.Priorities.p4
 
     jmp findDefaultShell
 
@@ -363,7 +363,7 @@ findDefaultShell:
 
     mov esi, hexagonixService
 
-    hx.syscall tamanhoString
+    hx.syscall hx.stringSize
 
     push eax
 
@@ -383,7 +383,7 @@ findDefaultShell:
 
     mov esi, defaultShell
 
-    hx.syscall tamanhoString
+    hx.syscall hx.stringSize
 
     push eax
 
