@@ -73,7 +73,7 @@ use32
 include "HAPP.s" ;; Here is a structure for the HAPP header
 
 ;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
-cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, applicationStart, 01h
+appHeader headerHAPP HAPP.Architectures.i386, 1, 00, applicationStart, 01h
 
 ;;************************************************************************************
 
@@ -83,10 +83,10 @@ include "macros.s"
 
 ;;************************************************************************************
 
-VERSION equ "2.4.1"
+VERSION equ "2.5.0"
 
-CoreUtilsVersion equ "System I-CURRENT-7.0"
-UnixUtilsVersion equ "System I-CURRENT-7.0"
+CoreUtilsVersion equ "System I-CURRENT-8.0"
+UnixUtilsVersion equ "System I-CURRENT-8.0"
 
 man:
 
@@ -126,20 +126,20 @@ applicationStart:
     mov edi, man.helpParameter
     mov esi, [utility]
 
-    hx.syscall compararPalavrasString
+    hx.syscall hx.compareWordsString
 
     jc applicationUsage
 
     mov edi, man.helpParameter2
     mov esi, [utility]
 
-    hx.syscall compararPalavrasString
+    hx.syscall hx.compareWordsString
 
     jc applicationUsage
 
     mov esi, [utility]
 
-    hx.syscall tamanhoString
+    hx.syscall hx.stringSize
 
     mov ebx, eax
 
@@ -161,7 +161,7 @@ applicationStart:
 
     mov byte[esi+ebx+4], 0 ;; End of string
 
-    hx.syscall arquivoExiste
+    hx.syscall hx.fileExists
 
     jc manNotFound
 
@@ -185,7 +185,7 @@ applicationStart:
 
 buildInterface:
 
-    hx.syscall limparTela
+    hx.syscall hx.clearConsole
 
     fputs man.man
 
@@ -220,7 +220,7 @@ applicationUsage:
 
 finish:
 
-    hx.syscall encerrarProcesso
+    hx.syscall hx.exit
 
 ;;*****************************************************************************
 
