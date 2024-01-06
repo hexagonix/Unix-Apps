@@ -73,7 +73,7 @@ use32
 include "HAPP.s" ;; Here is a structure for the HAPP header
 
 ;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
-cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, applicationStart, 01h
+appHeader headerHAPP HAPP.Architectures.i386, 1, 00, applicationStart, 01h
 
 ;;************************************************************************************
 
@@ -96,14 +96,14 @@ applicationStart:
     mov edi, clear.helpParameter
     mov esi, [parameters]
 
-    hx.syscall compararPalavrasString
+    hx.syscall hx.compareWordsString
 
     jc applicationUsage
 
     mov edi, clear.helpParameter2
     mov esi, [parameters]
 
-    hx.syscall compararPalavrasString
+    hx.syscall hx.compareWordsString
 
     jc applicationUsage
 
@@ -119,13 +119,13 @@ performCleaning:
 
     jc .error
 
-    hx.syscall limparTela ;; Clean your content
+    hx.syscall hx.clearConsole ;; Clean your content
 
     mov esi, Hexagon.LibASM.Dev.video.tty0 ;; Reopen the main console
 
     hx.syscall hx.open ;; Open the device
 
-    hx.syscall limparTela
+    hx.syscall hx.clearConsole
 
     jmp finish
 
@@ -139,7 +139,7 @@ performCleaning:
 
 finish:
 
-    hx.syscall encerrarProcesso
+    hx.syscall hx.exit
 
 ;;************************************************************************************
 
@@ -157,7 +157,7 @@ applicationUsage:
 ;;
 ;;************************************************************************************
 
-VERSION equ "1.4.0"
+VERSION equ "1.5.0"
 
 clear:
 
