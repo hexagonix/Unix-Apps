@@ -73,7 +73,7 @@ use32
 include "HAPP.s" ;; Here is a structure for the HAPP header
 
 ;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
-cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, applicationStart, 01h
+appHeader headerHAPP HAPP.Architectures.i386, 1, 00, applicationStart, 01h
 
 ;;************************************************************************************
 
@@ -100,14 +100,14 @@ applicationStart:
     mov edi, cp.helpParameter
     mov esi, [parameters]
 
-    hx.syscall compararPalavrasString
+    hx.syscall hx.compareWordsString
 
     jc applicationUsage
 
     mov edi, cp.helpParameter2
     mov esi, [parameters]
 
-    hx.syscall compararPalavrasString
+    hx.syscall hx.compareWordsString
 
     jc applicationUsage
 
@@ -116,13 +116,13 @@ applicationStart:
 
     mov esi, [inputFile]
 
-    hx.syscall arquivoExiste
+    hx.syscall hx.fileExists
 
     jc inputFileNotFound
 
     mov esi, [outputFile]
 
-    hx.syscall arquivoExiste
+    hx.syscall hx.fileExists
 
     jnc outputPresent
 
@@ -137,14 +137,14 @@ applicationStart:
 
     mov esi, [inputFile]
 
-    hx.syscall arquivoExiste
+    hx.syscall hx.fileExists
 
 ;; Save file
 
     mov esi, [outputFile]
     mov edi, appFileBuffer
 
-    hx.syscall salvarArquivo
+    hx.syscall hx.create
 
     jc saveError
 
@@ -188,7 +188,7 @@ outputPresent:
 
 finish:
 
-    hx.syscall encerrarProcesso
+    hx.syscall hx.exit
 
 ;;************************************************************************************
 
@@ -204,7 +204,7 @@ getParameters:
 
     mov al, ' '
 
-    hx.syscall encontrarCaractere
+    hx.syscall hx.findCharacter
 
     jc applicationUsage
 
@@ -266,7 +266,7 @@ applicationUsage:
 ;;
 ;;************************************************************************************
 
-VERSION equ "2.3.0"
+VERSION equ "2.4.0"
 
 cp:
 
