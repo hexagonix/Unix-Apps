@@ -73,7 +73,7 @@ use32
 include "HAPP.s" ;; Here is a structure for the HAPP header
 
 ;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
-cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, applicationStart, 01h
+appHeader headerHAPP HAPP.Architectures.i386, 1, 00, applicationStart, 01h
 
 ;;************************************************************************************
 
@@ -100,14 +100,14 @@ applicationStart:
     mov edi, mv.helpParameter
     mov esi, [parameters]
 
-    hx.syscall compararPalavrasString
+    hx.syscall hx.compareWordsString
 
     jc applicationUsage
 
     mov edi, mv.helpParameter2
     mov esi, [parameters]
 
-    hx.syscall compararPalavrasString
+    hx.syscall hx.compareWordsString
 
     jc applicationUsage
 
@@ -116,20 +116,20 @@ applicationStart:
 
     mov esi, [inputFile]
 
-    hx.syscall arquivoExiste
+    hx.syscall hx.fileExists
 
     jc sourceNotFound
 
     mov esi, [outputFile]
 
-    hx.syscall arquivoExiste
+    hx.syscall hx.fileExists
 
     jnc destinationPresent
 
     mov esi, [inputFile]
     mov edi, [outputFile]
 
-    hx.syscall rename
+    hx.syscall hx.rename
 
     jc renameError
 
@@ -165,7 +165,7 @@ destinationPresent:
 
 finish:
 
-    hx.syscall encerrarProcesso
+    hx.syscall hx.exit
 
 ;;************************************************************************************
 
@@ -181,7 +181,7 @@ getParameters:
 
     mov al, ' '
 
-    hx.syscall encontrarCaractere
+    hx.syscall hx.findCharacter
 
     jc applicationUsage
 
@@ -243,7 +243,7 @@ applicationUsage:
 ;;
 ;;************************************************************************************
 
-VERSION equ "0.1.0"
+VERSION equ "0.2.0"
 
 mv:
 
