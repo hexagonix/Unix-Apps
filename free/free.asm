@@ -73,7 +73,7 @@ use32
 include "HAPP.s" ;; Here is a structure for the HAPP header
 
 ;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
-cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, applicationStart, 01h
+appHeader headerHAPP HAPP.Architectures.i386, 1, 00, applicationStart, 01h
 
 ;;************************************************************************************
 
@@ -95,14 +95,14 @@ applicationStart:
     mov edi, free.helpParameter
     mov esi, [parameters]
 
-    hx.syscall compararPalavrasString
+    hx.syscall hx.compareWordsString
 
     jc applicationUsage
 
     mov edi, free.helpParameter2
     mov esi, [parameters]
 
-    hx.syscall compararPalavrasString
+    hx.syscall hx.compareWordsString
 
     jc applicationUsage
 
@@ -110,29 +110,29 @@ applicationStart:
 
     fputs free.memory
 
-    hx.syscall obterCursor
+    hx.syscall hx.getCursor
 
     mov byte[free.positionY], dh
 
-    hx.syscall usoMemoria
+    hx.syscall hx.memoryUsage
 
     mov eax, ecx
 
-    imprimirInteiro
+    printInteger
 
     fputs free.megabytes
 
-    hx.syscall usoMemoria
+    hx.syscall hx.memoryUsage
 
     gotoxy 20, [free.positionY]
 
-    imprimirInteiro
+    printInteger
 
     fputs free.kbytes
 
     gotoxy 40, [free.positionY]
 
-    hx.syscall usoMemoria
+    hx.syscall hx.memoryUsage
 
 ;; Now let's transform bytes into megabytes
 
@@ -145,7 +145,7 @@ applicationStart:
 
     mov eax, ecx
 
-    imprimirInteiro
+    printInteger
 
     fputs free.megabytes
 
@@ -163,7 +163,7 @@ applicationUsage:
 
 finish:
 
-    hx.syscall encerrarProcesso
+    hx.syscall hx.exit
 
 ;;************************************************************************************
 
@@ -173,7 +173,7 @@ finish:
 ;;
 ;;************************************************************************************
 
-VERSION equ "1.2.0"
+VERSION equ "1.3.0"
 
 free:
 
