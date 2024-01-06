@@ -73,7 +73,7 @@ use32
 include "HAPP.s" ;; Here is a structure for the HAPP header
 
 ;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
-cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, applicationStart, 01h
+appHeader headerHAPP HAPP.Architectures.i386, 1, 00, applicationStart, 01h
 
 ;;************************************************************************************
 
@@ -103,14 +103,14 @@ applicationStart:
     mov edi, mount.helpParameter
     mov esi, [parameters]
 
-    hx.syscall compararPalavrasString
+    hx.syscall hx.compareWordsString
 
     jc applicationUsage
 
     mov edi, mount.defaultPath
     mov esi, [mountPoint]
 
-    hx.syscall compararPalavrasString
+    hx.syscall hx.compareWordsString
 
     jc .mountFilesysten
 
@@ -142,12 +142,12 @@ displayMounts:
 
     putNewLine
 
-    hx.syscall obterDisco
+    hx.syscall hx.getVolume
 
     push edi
     push eax
 
-    imprimirString
+    printString
 
     fputs mount.volumeInformation
 
@@ -196,9 +196,9 @@ displayMounts:
 
     mov esi, edi
 
-    hx.syscall cortarString
+    hx.syscall hx.trimString
 
-    imprimirString
+    printString
 
     jmp finish
 
@@ -214,10 +214,10 @@ mountPointError:
 
 openingError:
 
-    cmp eax, IO.operacaoNegada
+    cmp eax, IO.operationDenied
     je .operationDenied
 
-    cmp eax, IO.naoEncontrado
+    cmp eax, IO.notFound
     je .notFound
 
     fputs mount.openingError
@@ -240,7 +240,7 @@ openingError:
 
 finish:
 
-    hx.syscall encerrarProcesso
+    hx.syscall hx.exit
 
 ;;************************************************************************************
 
@@ -256,7 +256,7 @@ getParameters:
 
     mov al, ' '
 
-    hx.syscall encontrarCaractere
+    hx.syscall hx.findCharacter
 
     jc applicationUsage
 
@@ -318,7 +318,7 @@ applicationUsage:
 ;;
 ;;************************************************************************************
 
-VERSION equ "2.6.0"
+VERSION equ "2.7.0"
 
 mount:
 
