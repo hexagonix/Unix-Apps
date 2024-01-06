@@ -73,7 +73,7 @@ use32
 include "HAPP.s" ;; Here is a structure for the HAPP header
 
 ;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
-cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, applicationStart, 01h
+appHeader headerHAPP HAPP.Architectures.i386, 1, 00, applicationStart, 01h
 
 ;;************************************************************************************
 
@@ -87,7 +87,7 @@ include "macros.s"
 ;;
 ;;************************************************************************************
 
-VERSION equ "0.7.0"
+VERSION equ "0.8.0"
 
 fnt:
 
@@ -147,14 +147,14 @@ applicationStart:
     mov edi, fnt.helpParameter
     mov esi, [parameters]
 
-    hx.syscall compararPalavrasString
+    hx.syscall hx.compareWordsString
 
     jc applicationUsage
 
     mov edi, fnt.helpParameter2
     mov esi, [parameters]
 
-    hx.syscall compararPalavrasString
+    hx.syscall hx.compareWordsString
 
     jc applicationUsage
 
@@ -164,13 +164,13 @@ applicationStart:
 
     mov esi, [parameters]
 
-    hx.syscall cortarString ;; Remove extra spaces
+    hx.syscall hx.trimString ;; Remove extra spaces
 
     call validateFont
 
     jc .formatError
 
-    hx.syscall alterarFonte
+    hx.syscall hx.changeConsoleFont
 
     jc .textError
 
@@ -182,7 +182,7 @@ applicationStart:
 
     mov ebx, 00h
 
-    hx.syscall encerrarProcesso
+    hx.syscall hx.exit
 
 .textError:
 
@@ -208,7 +208,7 @@ finish:
 
     mov ebx, 00h
 
-    hx.syscall encerrarProcesso
+    hx.syscall hx.exit
 
 ;;************************************************************************************
 
@@ -245,7 +245,7 @@ validateFont:
 
 .validateSize:
 
-    hx.syscall arquivoExiste
+    hx.syscall hx.fileExists
 
 ;; In EAX, the file size. It must not be larger than 2000 bytes
 
