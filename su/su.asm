@@ -90,7 +90,7 @@ searchSizeLimit = 12288
 include "HAPP.s" ;; Here is a structure for the HAPP header
 
 ;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
-cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, suHexagonix, 01h
+appHeader headerHAPP HAPP.Architectures.i386, 1, 00, suHexagonix, 01h
 
 ;;************************************************************************************
 
@@ -107,14 +107,14 @@ suHexagonix: ;; Entry point
     mov edi, su.helpParameter
     mov esi, [userRequested]
 
-    hx.syscall compararPalavrasString
+    hx.syscall hx.compareWordsString
 
     jc applicationUsage
 
     mov edi, su.helpParameter2
     mov esi, [userRequested]
 
-    hx.syscall compararPalavrasString
+    hx.syscall hx.compareWordsString
 
     jc applicationUsage
 
@@ -143,13 +143,13 @@ startProcessing:
 
     mov ebx, 1234h ;; We don't want to echo the password!
 
-    hx.syscall obterString
+    hx.syscall hx.getString
 
-    hx.syscall cortarString
+    hx.syscall hx.trimString
 
     mov edi, passwordObtained
 
-    hx.syscall compararPalavrasString
+    hx.syscall hx.compareWordsString
 
     jc .loginAccepted
 
@@ -183,7 +183,7 @@ startProcessing:
 
     stc
 
-    hx.syscall iniciarProcesso ;; Request to load the Hexagonix shell
+    hx.syscall hx.exec ;; Request to load the Hexagonix shell
 
     jnc .shellFinished
 
@@ -194,7 +194,7 @@ startProcessing:
    cmp byte[tryDefaultShell], 0
    je .tryDefaultShell ;; If not, try loading the default Hexagonix shell
 
-   hx.syscall encerrarProcesso ;; If yes, the default shell cannot be run either
+   hx.syscall hx.exit ;; If yes, the default shell cannot be run either
 
 .tryDefaultShell: ;; Try loading the default Hexagonix shell
 
@@ -223,7 +223,7 @@ checkUser:
     mov esi, su.rootUser
     mov edi, user
 
-    hx.syscall compararPalavrasString
+    hx.syscall hx.compareWordsString
 
     ret
 
@@ -236,7 +236,7 @@ registerUser:
     mov esi, su.rootUser
     mov edi, user
 
-    hx.syscall compararPalavrasString
+    hx.syscall hx.compareWordsString
 
     jc .root
 
@@ -252,7 +252,7 @@ registerUser:
 
     mov esi, user
 
-    hx.syscall definirUsuario
+    hx.syscall hx.setUser
 
     ret
 
@@ -327,7 +327,7 @@ findUserName:
     mov edi, user
     mov esi, [userRequested]
 
-    hx.syscall compararPalavrasString
+    hx.syscall hx.compareWordsString
 
     jc .obtained
 
@@ -384,7 +384,7 @@ clearVariables:
 
     mov esi, user
 
-    hx.syscall tamanhoString
+    hx.syscall hx.stringSize
 
     push eax
 
@@ -602,7 +602,7 @@ getDefaultShell:
 
     mov esi, su.defaultShell
 
-    hx.syscall tamanhoString
+    hx.syscall hx.stringSize
 
     push eax
 
@@ -626,11 +626,11 @@ saveCurrentUser:
     push ds ;; User mode data segment (38h selector)
     pop es
 
-    hx.syscall obterUsuario
+    hx.syscall hx.getUser
 
     push esi
 
-    hx.syscall tamanhoString
+    hx.syscall hx.stringSize
 
     pop esi
 
@@ -644,7 +644,7 @@ saveCurrentUser:
 
     pop es
 
-    hx.syscall obterUsuario
+    hx.syscall hx.getUser
 
     mov [previousCode], eax
 
@@ -657,7 +657,7 @@ restoreUser:
     mov esi, previousUser
     mov eax, [previousCode]
 
-    hx.syscall definirUsuario
+    hx.syscall hx.setUser
 
     ret
 
@@ -681,7 +681,7 @@ finishExecution:
 
 finish:
 
-    hx.syscall encerrarProcesso
+    hx.syscall hx.exit
 
 ;;************************************************************************************
 
@@ -691,7 +691,7 @@ finish:
 ;;
 ;;************************************************************************************
 
-VERSION equ "1.8.0"
+VERSION equ "1.9.0"
 
 su:
 
