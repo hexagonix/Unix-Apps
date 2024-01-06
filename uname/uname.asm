@@ -73,7 +73,7 @@ use32
 include "HAPP.s" ;; Here is a structure for the HAPP header
 
 ;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
-cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, applicationStart, 01h
+appHeader headerHAPP HAPP.Architectures.i386, 1, 00, applicationStart, 01h
 
 ;;************************************************************************************
 
@@ -83,7 +83,7 @@ include "macros.s"
 
 ;;************************************************************************************
 
-VERSION equ "2.7.0"
+VERSION equ "2.8.0"
 
 uname:
 
@@ -175,14 +175,14 @@ applicationStart: ;; Entry point
     mov edi, uname.helpParameter
     mov esi, [parameters]
 
-    hx.syscall compararPalavrasString
+    hx.syscall hx.compareWordsString
 
     jc applicationUsage
 
     mov edi, uname.helpParameter2
     mov esi, [parameters]
 
-    hx.syscall compararPalavrasString
+    hx.syscall hx.compareWordsString
 
     jc applicationUsage
 
@@ -191,7 +191,7 @@ applicationStart: ;; Entry point
     mov edi, uname.showAllParameter
     mov esi, [parameters]
 
-    hx.syscall compararPalavrasString
+    hx.syscall hx.compareWordsString
 
     jc showAll
 
@@ -200,7 +200,7 @@ applicationStart: ;; Entry point
     mov edi, uname.showKernelNameParameter
     mov esi, [parameters]
 
-    hx.syscall compararPalavrasString
+    hx.syscall hx.compareWordsString
 
     jc showKernelName
 
@@ -209,7 +209,7 @@ applicationStart: ;; Entry point
     mov edi, uname.showHostnameParameter
     mov esi, [parameters]
 
-    hx.syscall compararPalavrasString
+    hx.syscall hx.compareWordsString
 
     jc showHostname
 
@@ -218,7 +218,7 @@ applicationStart: ;; Entry point
     mov edi, uname.showReleaseParameter
     mov esi, [parameters]
 
-    hx.syscall compararPalavrasString
+    hx.syscall hx.compareWordsString
 
     jc showRelease
 
@@ -227,7 +227,7 @@ applicationStart: ;; Entry point
     mov edi, uname.showMachineTypeParameter
     mov esi, [parameters]
 
-    hx.syscall compararPalavrasString
+    hx.syscall hx.compareWordsString
 
     jc showArch
 
@@ -236,7 +236,7 @@ applicationStart: ;; Entry point
     mov edi, uname.shorArchparameter
     mov esi, [parameters]
 
-    hx.syscall compararPalavrasString
+    hx.syscall hx.compareWordsString
 
     jc showArch
 
@@ -245,7 +245,7 @@ applicationStart: ;; Entry point
     mov edi, uname.showPlatformParameter
     mov esi, [parameters]
 
-    hx.syscall compararPalavrasString
+    hx.syscall hx.compareWordsString
 
     jc showPlatform
 
@@ -254,7 +254,7 @@ applicationStart: ;; Entry point
     mov edi, uname.showVersionParameter
     mov esi, [parameters]
 
-    hx.syscall compararPalavrasString
+    hx.syscall hx.compareWordsString
 
     jc showVersionOnly
 
@@ -263,7 +263,7 @@ applicationStart: ;; Entry point
     mov edi, uname.showOperatingSystemParameter
     mov esi, [parameters]
 
-    hx.syscall compararPalavrasString
+    hx.syscall hx.compareWordsString
 
     jc showOperatingSystemInfo
 
@@ -277,7 +277,7 @@ showKernelName:
 
     hx.syscall hx.uname
 
-    imprimirString
+    printString
 
     jmp finish
 
@@ -365,7 +365,7 @@ showAll:
 
     hx.syscall hx.uname
 
-    imprimirString
+    printString
 
 ;; Para ficar de acordo com o padrão do FreeBSD, a mensagem "version" não é exibida
 
@@ -421,7 +421,7 @@ showVersionOnly:
 
     hx.syscall hx.uname
 
-    imprimirString
+    printString
 
     fputs uname.space
 
@@ -440,13 +440,13 @@ kernelVersion:
     push ecx
     push ebx
 
-    imprimirInteiro
+    printInteger
 
     fputs uname.dot
 
     pop eax
 
-    imprimirInteiro
+    printInteger
 
     pop ecx
 
@@ -459,7 +459,7 @@ kernelVersion:
 
     pop eax
 
-    imprimirInteiro
+    printInteger
 
 .continue:
 
@@ -487,7 +487,7 @@ applicationUsage:
 
 finish:
 
-    hx.syscall encerrarProcesso
+    hx.syscall hx.exit
 
 ;;*****************************************************************************
 
@@ -516,14 +516,14 @@ getHostname:
 
     mov esi, appFileBuffer
 
-    hx.syscall tamanhoString
+    hx.syscall hx.stringSize
 
     mov edx, eax
     dec edx
 
     mov al, 0
 
-    hx.syscall inserirCaractere
+    hx.syscall hx.insertCharacter
 
     fputs appFileBuffer
 
