@@ -73,7 +73,7 @@ use32
 include "HAPP.s" ;; Here is a structure for the HAPP header
 
 ;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
-cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, shellStart, 01h
+appHeader headerHAPP HAPP.Architectures.i386, 1, 00, shellStart, 01h
 
 ;;************************************************************************************
 
@@ -91,14 +91,14 @@ shellStart:
     mov edi, sh.helpParameter
     mov esi, [commandLine]
 
-    hx.syscall compararPalavrasString
+    hx.syscall hx.compareWordsString
 
     jc applicationUsage
 
     mov edi, sh.helpParameter2
     mov esi, [commandLine]
 
-    hx.syscall compararPalavrasString
+    hx.syscall hx.compareWordsString
 
     jc applicationUsage
 
@@ -113,16 +113,16 @@ shellStart:
 
     putNewLine
 
-    hx.syscall obterInfoTela
+    hx.syscall hx.getConsoleInfo
 
     mov byte[numberColumns], bl
     mov byte[numberRows], bh
 
-    hx.syscall obterCursor
+    hx.syscall hx.getCursor
 
     dec dh
 
-    hx.syscall definirCursor
+    hx.syscall hx.setCursor
 
     putNewLine
 
@@ -130,7 +130,7 @@ shellStart:
 
     mov esi, sh.fileRC
 
-    hx.syscall arquivoExiste
+    hx.syscall hx.fileExists
 
     jc .continue
 
@@ -141,7 +141,7 @@ shellStart:
     mov esi, sh.fileRC
     mov edi, appFileBuffer
 
-    hx.syscall abrir
+    hx.syscall hx.open
 
     putNewLine
 
@@ -153,7 +153,7 @@ shellStart:
 
 .startSession:
 
-    hx.syscall obterUsuario
+    hx.syscall hx.getUser
 
     push eax
 
@@ -164,7 +164,7 @@ shellStart:
 
     push esi
 
-    hx.syscall tamanhoString
+    hx.syscall hx.stringSize
 
     pop esi
 
@@ -195,7 +195,7 @@ shellStart:
 
     mov esi, sh.commonUser
 
-    hx.syscall tamanhoString
+    hx.syscall hx.stringSize
 
     push eax
 
@@ -219,7 +219,7 @@ shellStart:
 
     mov esi, sh.rootUser
 
-    hx.syscall tamanhoString
+    hx.syscall hx.stringSize
 
     push eax
 
@@ -240,7 +240,7 @@ shellStart:
 
     mov esi, sh.promptSymbol
 
-    hx.syscall tamanhoString
+    hx.syscall hx.stringSize
 
     inc eax
 
@@ -254,9 +254,9 @@ shellStart:
 
     putNewLine
 
-    hx.syscall obterCursor
+    hx.syscall hx.getCursor
 
-    hx.syscall definirCursor
+    hx.syscall hx.setCursor
 
     fputs sh.userName
 
@@ -268,9 +268,9 @@ shellStart:
 
     sub al, 20
 
-    hx.syscall obterString
+    hx.syscall hx.getString
 
-    hx.syscall cortarString ;; Remove extra spaces
+    hx.syscall hx.trimString ;; Remove extra spaces
 
     cmp byte[esi], 0 ;; No command entered
     je .getCommandLine
@@ -281,7 +281,7 @@ shellStart:
 
     mov edi, commands.exit
 
-    hx.syscall compararPalavrasString
+    hx.syscall hx.compareWordsString
 
     jc finishShell
 
@@ -289,7 +289,7 @@ shellStart:
 
     mov edi, commands.rc
 
-    hx.syscall compararPalavrasString
+    hx.syscall hx.compareWordsString
 
     jc runShellScript ;; Start batch file execution
 
@@ -311,10 +311,10 @@ shellStart:
 ;; Now the error sent by the system will be analyzed, so that the shell
 ;; knows its nature
 
-    cmp eax, Hexagon.limiteProcessos ;; Limit of running processes reached
+    cmp eax, Hexagon.processesLimit ;; Limit of running processes reached
     je .limitReached                 ;; If yes, display the appropriate message
 
-    cmp eax, Hexagon.imagemInvalida
+    cmp eax, Hexagon.invalidImage
     je .invalidHAPPImage
 
     push esi
@@ -323,7 +323,7 @@ shellStart:
 
     pop esi
 
-    imprimirString
+    printString
 
     fputs sh.commandNotFound
 
@@ -347,7 +347,7 @@ shellStart:
 
     pop esi
 
-    imprimirString
+    printString
 
     fputs sh.invalidImage
 
@@ -361,7 +361,7 @@ shellStart:
 
     mov esi, edi
 
-    hx.syscall cortarString
+    hx.syscall hx.trimString
 
     pop esi
 
@@ -369,7 +369,7 @@ shellStart:
 
     stc
 
-    hx.syscall iniciarProcesso
+    hx.syscall hx.exec
 
     jc .executionFailure
 
@@ -383,7 +383,7 @@ runShellScript:
 
     add esi, 02h
 
-    hx.syscall cortarString
+    hx.syscall hx.trimString
 
     cmp byte[esi], 0
     je .argumentRequired
@@ -404,7 +404,7 @@ runShellScript:
 
     mov esi, sh.diskImage
 
-    hx.syscall arquivoExiste
+    hx.syscall hx.fileExists
 
     jc .nextCommand
 
@@ -413,7 +413,7 @@ runShellScript:
 
     stc
 
-    hx.syscall iniciarProcesso ;; Request execution of the first command
+    hx.syscall hx.exec ;; Request execution of the first command
 
     jnc .nextCommand
 
@@ -579,7 +579,7 @@ getArguments:
     mov byte[esi-1], 0
     mov ebx, esi
 
-    hx.syscall tamanhoString
+    hx.syscall hx.stringSize
 
     mov ecx, eax
 
@@ -621,7 +621,7 @@ finishShell:
 
     mov ebx, 00h
 
-    hx.syscall encerrarProcesso
+    hx.syscall hx.exit
 
 ;;************************************************************************************
 
@@ -633,7 +633,7 @@ finishShell:
 
 ;; TODO: improve shell scripting support
 
-VERSION equ "1.8.0"
+VERSION equ "1.9.0"
 
 searchSizeLimit = 32768
 
