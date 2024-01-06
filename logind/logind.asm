@@ -104,7 +104,7 @@ searchSizeLimit = 32768
 
 ;;************************************************************************************
 
-VERSION equ "1.12.0"
+VERSION equ "1.12.1"
 
 logind:
 
@@ -406,11 +406,11 @@ displaySystemInfo:
 
     fputs logind.systemVersion
 
-    call obterVersaoDistribuicao
+    call getHexagonixVersion
 
     jc .error
 
-    fputs versaoObtida
+    fputs versionObtained
 
     jmp .continue
 
@@ -459,7 +459,5 @@ checkDatabase:
     ret
 
 ;;************************************************************************************
-
-enderecoCarregamento:
 
 appFileBuffer: ;; Location where the configuration file will be opened
