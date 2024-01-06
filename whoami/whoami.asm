@@ -73,7 +73,7 @@ use32
 include "HAPP.s" ;; Here is a structure for the HAPP header
 
 ;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
-cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, applicationStart, 01h
+appHeader headerHAPP HAPP.Architectures.i386, 1, 00, applicationStart, 01h
 
 ;;************************************************************************************
 
@@ -90,28 +90,28 @@ applicationStart:
     mov edi, whoami.helpParameter
     mov esi, [parameters]
 
-    hx.syscall compararPalavrasString
+    hx.syscall hx.compareWordsString
 
     jc applicationUsage
 
     mov edi, whoami.helpParameter2
     mov esi, [parameters]
 
-    hx.syscall compararPalavrasString
+    hx.syscall hx.compareWordsString
 
     jc applicationUsage
 
     mov edi, whoami.parameterAll
     mov esi, [parameters]
 
-    hx.syscall compararPalavrasString
+    hx.syscall hx.compareWordsString
 
     jc userAndGroup
 
     mov edi, whoami.parameterUser
     mov esi, [parameters]
 
-    hx.syscall compararPalavrasString
+    hx.syscall hx.compareWordsString
 
     jc displayUser
 
@@ -123,9 +123,9 @@ displayUser:
 
     putNewLine
 
-    hx.syscall obterUsuario
+    hx.syscall hx.getUser
 
-    imprimirString
+    printString
 
     jmp finish
 
@@ -135,17 +135,17 @@ userAndGroup:
 
     putNewLine
 
-    hx.syscall obterUsuario
+    hx.syscall hx.getUser
 
     push eax
 
-    imprimirString
+    printString
 
     fputs whoami.group
 
     pop eax
 
-    imprimirInteiro
+    printInteger
 
     jmp finish
 
@@ -161,7 +161,7 @@ applicationUsage:
 
 finish:
 
-    hx.syscall encerrarProcesso
+    hx.syscall hx.exit
 
 ;;************************************************************************************
 
@@ -171,7 +171,7 @@ finish:
 ;;
 ;;************************************************************************************
 
-VERSION equ "1.2.0"
+VERSION equ "1.3.0"
 
 whoami:
 
