@@ -73,7 +73,7 @@ use32
 include "HAPP.s" ;; Here is a structure for the HAPP header
 
 ;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
-cabecalhoAPP cabecalhoHAPP HAPP.Arquiteturas.i386, 1, 00, applicationStart, 01h
+appHeader headerHAPP HAPP.Architectures.i386, 1, 00, applicationStart, 01h
 
 ;;************************************************************************************
 
@@ -91,8 +91,8 @@ applicationStart:
 
     mov [parameters], edi ;; Save command line parameters
 
-    logSistema shutdown.Verbose.start, 00h, Log.Prioridades.p4
-    logSistema shutdown.Verbose.status, 00h, Log.Prioridades.p4
+    systemLog shutdown.Verbose.start, 00h, Log.Priorities.p4
+    systemLog shutdown.Verbose.status, 00h, Log.Priorities.p4
 
     mov esi, [parameters]
 
@@ -102,49 +102,49 @@ applicationStart:
     mov edi, shutdown.helpParameter
     mov esi, [parameters]
 
-    hx.syscall compararPalavrasString
+    hx.syscall hx.compareWordsString
 
     jc applicationUsage
 
     mov edi, shutdown.helpParameter2
     mov esi, [parameters]
 
-    hx.syscall compararPalavrasString
+    hx.syscall hx.compareWordsString
 
     jc applicationUsage
 
     mov edi, shutdown.shutdownParameter
     mov esi, [parameters]
 
-    hx.syscall compararPalavrasString
+    hx.syscall hx.compareWordsString
 
     jc startShutdown
 
     mov edi, shutdown.shuydownNow
     mov esi, [parameters]
 
-    hx.syscall compararPalavrasString
+    hx.syscall hx.compareWordsString
 
     jc startShutdown
 
     mov edi, shutdown.rebootParameter
     mov esi, [parameters]
 
-    hx.syscall compararPalavrasString
+    hx.syscall hx.compareWordsString
 
     jc startReboot
 
     mov edi, shutdown.shutdownWithoutEchoParameter
     mov esi, [parameters]
 
-    hx.syscall compararPalavrasString
+    hx.syscall hx.compareWordsString
 
     jc startShutdownWithoutEcho
 
     mov edi, shutdown.rebootWithoutEchoParameter
     mov esi, [parameters]
 
-    hx.syscall compararPalavrasString
+    hx.syscall hx.compareWordsString
 
     jc startRebootWithoutEcho
 
@@ -166,13 +166,13 @@ startReboot:
 
 startShutdownWithoutEcho:
 
-    logSistema shutdown.Verbose.shutdownParameter, 00h, Log.Prioridades.p4
+    systemLog shutdown.Verbose.shutdownParameter, 00h, Log.Priorities.p4
 
     call prepareSystemWithoutEcho
 
-    logSistema shutdown.Verbose.parameterRequest, 00h, Log.Prioridades.p4
+    systemLog shutdown.Verbose.parameterRequest, 00h, Log.Priorities.p4
 
-    hx.syscall desligarPC
+    hx.syscall hx.shutdown
 
     jmp finish
 
@@ -180,13 +180,13 @@ startShutdownWithoutEcho:
 
 startRebootWithoutEcho:
 
-    logSistema shutdown.Verbose.rebootParameter, 00h, Log.Prioridades.p4
+    systemLog shutdown.Verbose.rebootParameter, 00h, Log.Priorities.p4
 
     call prepareSystemWithoutEcho
 
-    logSistema shutdown.Verbose.parameterRequest, 00h, Log.Prioridades.p4
+    systemLog shutdown.Verbose.parameterRequest, 00h, Log.Priorities.p4
 
-    hx.syscall reiniciarPC
+    hx.syscall hx.restart
 
     jmp finish
 
@@ -194,13 +194,13 @@ startRebootWithoutEcho:
 
 shutdownHexagon:
 
-    logSistema shutdown.Verbose.shutdownParameter, 00h, Log.Prioridades.p4
+    systemLog shutdown.Verbose.shutdownParameter, 00h, Log.Priorities.p4
 
     call prepareSystem
 
-    logSistema shutdown.Verbose.parameterRequest, 00h, Log.Prioridades.p4
+    systemLog shutdown.Verbose.parameterRequest, 00h, Log.Priorities.p4
 
-    hx.syscall desligarPC
+    hx.syscall hx.shutdown
 
     jmp finish
 
@@ -208,13 +208,13 @@ shutdownHexagon:
 
 rebootHexagon:
 
-    logSistema shutdown.Verbose.rebootParameter, 00h, Log.Prioridades.p4
+    systemLog shutdown.Verbose.rebootParameter, 00h, Log.Priorities.p4
 
     call prepareSystem
 
-    logSistema shutdown.Verbose.parameterRequest, 00h, Log.Prioridades.p4
+    systemLog shutdown.Verbose.parameterRequest, 00h, Log.Priorities.p4
 
-    hx.syscall reiniciarPC
+    hx.syscall hx.restart
 
     jmp finish
 
@@ -224,7 +224,7 @@ prepareSystemWithoutEcho:
 
     mov ecx, 20000
 
-    hx.syscall causarAtraso
+    hx.syscall hx.sleep
 
     ret
 
@@ -236,13 +236,13 @@ prepareSystem:
 
     mov ecx, 10000
 
-    hx.syscall causarAtraso
+    hx.syscall hx.sleep
 
     fputs shutdown.disksMessage
 
     mov ecx, 10000
 
-    hx.syscall causarAtraso
+    hx.syscall hx.sleep
 
     ret
 
@@ -266,9 +266,9 @@ argumentRequired:
 
 finish:
 
-    logSistema shutdown.Verbose.failedRequest, 00h, Log.Prioridades.p4
+    systemLog shutdown.Verbose.failedRequest, 00h, Log.Priorities.p4
 
-    hx.syscall encerrarProcesso
+    hx.syscall hx.exit
 
 ;;************************************************************************************
 ;;
@@ -278,7 +278,7 @@ finish:
 
 messageLabel equ "[shutdown]: "
 
-VERSION equ "1.6.0"
+VERSION equ "1.7.0"
 
 shutdown:
 
