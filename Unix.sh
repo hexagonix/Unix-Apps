@@ -68,9 +68,9 @@
 #
 # $HexagonixOS$
 
-# Versão 2.2
+# Version 3.0
 
-gerarBaseUnix(){
+buildUnixUtilities(){
 
 echo
 echo -e "\e[1;94mBuilding Hexagonix Unix applications...\e[0m {"
@@ -79,7 +79,7 @@ echo
 echo "Building Hexagonix Unix based applications... {" >> $LOG
 echo >> $LOG
 
-# Vamos agora automatizar a construção dos aplicativos base Unix
+# Let's now automate the construction of Unix base applications
 
 for i in */
 do
@@ -93,29 +93,30 @@ do
 
     echo " > Building Hexagonix Unix utility $(basename $h .asm)..." >> ../$LOG
 
-    fasm $h ../$DIRETORIO/bin/`basename $h .asm` -d $FLAGS_COMUM >> ../$LOG || desmontar
+    fasm $h ../$BUILD_DIRECTORY/bin/`basename $h .asm` -d $COMMON_FLAGS >> ../$LOG || unmount
 
     echo -e " [\e[32mOk\e[0m]"
 
     echo >> ../$LOG
 
-# Aqui vão aplicações específicas dentro dos pacotes que contêm arquivos auxiliares que devem
-# ser copiados, como os arquivos da ferramenta cowsay. Devem ser adicionados loops if para
-# identificar a presença de diretórios com arquivos auxiliares, um para cada pacote que dependa
-# de arquivos auxiliares. A mensagem deve ser padrão. Apenas o que está dentro dos '[ ]' do loop
-# for e o comando de cópia devem variar.
+# Here are specific applications within the packages that contain auxiliary files that must be copied,
+# such as the cowsay tool files.
+# If loops must be added to identify the presence of directories with auxiliary files, one for each
+# package that depends on auxiliary files.
+# The message must be standard. Only what is inside the '[ ]' of the for loop and the copy 
+# command should vary.
 
     if [ -e cows ] ; then
 
     echo -n " > Copying additional package files for" $i
 
-    cp cows/*.cow ../$DIRETORIO >> /dev/null
+    cp cows/*.cow ../$BUILD_DIRECTORY >> /dev/null
 
     echo -e " [\e[32mOk\e[0m]"
 
     fi
 
-# Fim da área de aplicações específicas
+# End of specific applications area
 
     done
 
@@ -135,16 +136,14 @@ echo >> $LOG
 
 }
 
-desmontar()
+unmount()
 {
 
 cd ..
 
 cd ..
 
-umount Sistema || exit
-
-# Desmontar tudo"
+umount SystemBuild || exit
 
 umount -a
 
@@ -160,10 +159,10 @@ exit
 }
 
 export LOG="../../log.log"
-export DIRETORIO="../../$1"
+export BUILD_DIRECTORY="../../$1"
 
 case $1 in
 
-*) gerarBaseUnix; exit;;
+*) buildUnixUtilities; exit;;
 
 esac
