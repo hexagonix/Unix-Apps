@@ -68,7 +68,7 @@
 #
 # $HexagonixOS$
 
-# Version 3.0
+# Version 3.1
 
 buildUnixUtilities(){
 
@@ -143,7 +143,7 @@ cd ..
 
 cd ..
 
-umount SystemBuild || exit
+umount $MOUNT_POINT_DIRECTORY || exit
 
 umount -a
 
