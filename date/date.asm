@@ -138,7 +138,7 @@ applicationStart:
 
     fputs date.year
 
-match =SIM, DIASEMANA
+match =YES, WEEKDAYS
 {
 
 ;; Now let's check the day of the week
@@ -342,7 +342,7 @@ finish:
 
 ;;************************************************************************************
 
-VERSION equ "1.4.0"
+VERSION equ "1.4.1"
 
 date:
 
