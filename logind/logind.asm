@@ -104,11 +104,11 @@ searchSizeLimit = 32768
 
 ;;************************************************************************************
 
-VERSION equ "1.13.0"
+VERSION equ "1.13.1"
 
 logind:
 
-match =Moderno, TIPOLOGIN
+match =Modern, LOGIN_STYLE
 {
 
 .aboutSystem:
@@ -129,7 +129,7 @@ db "                                     All rights reserved.", 10, 0
 
 }
 
-match =Hexagonix, TIPOLOGIN
+match =Hexagonix, LOGIN_STYLE
 {
 
 .aboutSystem: db 0
@@ -225,7 +225,7 @@ startProcessing:
 
     call checkDatabase
 
-match =Moderno, TIPOLOGIN
+match =Modern, LOGIN_STYLE
 {
 
     call verifyTheme
