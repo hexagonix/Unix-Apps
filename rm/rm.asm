@@ -215,7 +215,7 @@ finish:
 ;;
 ;;************************************************************************************
 
-VERSION equ "1.3.0"
+VERSION equ "1.3.1"
 
 rm:
 
@@ -243,7 +243,7 @@ db "--help", 0
 db 10, "A required filename is missing.", 10
 db "Use 'rm ?' for help with this utility.", 0
 .permissionDenied:
-db "Only an administrative (or root) user can complete this action.", 10
+db 10, "Only an administrative (or root) user can complete this action.", 10
 db "Login in this user to perform the desired operation.", 0
 
 parameters: dd ?
