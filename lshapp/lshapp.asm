@@ -89,7 +89,7 @@ include "macros.s"
 ;;
 ;;************************************************************************************
 
-VERSION equ "1.14.0"
+VERSION equ "1.14.1"
 
 lshapp:
 
@@ -110,8 +110,7 @@ db " bytes.", 0
 .invalidImage:
 db 10, "<!> This is not a valid HAPP image. Try another file.", 0
 .fileNotFound:
-db 10, 10, "<!> The requested file is not available on this volume.", 10, 10
-db "<!> Check the filename and try again.", 0
+db 10, "<!> The requested file is not available on this volume. Check the filename and try again.", 0
 .archType:
 db 10, "> Target architecture: ", 0
 .verHexagon:
