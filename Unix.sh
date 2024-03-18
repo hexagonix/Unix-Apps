@@ -68,8 +68,6 @@
 #
 # $HexagonixOS$
 
-# Version 3.1
-
 buildUnixUtilities(){
 
 echo
@@ -157,6 +155,8 @@ echo
 exit
 
 }
+
+export UNIX_MOD_VERSION="3.1.1"
 
 export LOG="../../log.log"
 export BUILD_DIRECTORY="../../$1"
