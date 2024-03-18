@@ -156,13 +156,22 @@ exit
 
 }
 
-export UNIX_MOD_VERSION="3.1.1"
+showVersion()
+{
+echo "hx build module for Unix utilities, version $UNIX_MOD_VERSION"
+echo
+echo -e "\e[0mCopyright (c) 2015-2024 Felipe Miguel Nery Lunkes\e[0m"
+echo -e "hx and hx modules are licensed under BSD-3-Clause and comes with no warranty."
+}
+
+export UNIX_MOD_VERSION="3.2.0"
 
 export LOG="../../log.log"
 export BUILD_DIRECTORY="../../$1"
 
 case $1 in
 
+--version) showVersion; exit;;
 *) buildUnixUtilities; exit;;
 
 esac
