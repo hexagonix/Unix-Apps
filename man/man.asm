@@ -85,8 +85,8 @@ include "macros.s"
 
 VERSION equ "2.5.0"
 
-CoreUtilsVersion equ "System I-CURRENT-8.0"
-UnixUtilsVersion equ "System I-CURRENT-8.0"
+CoreUtilsVersion equ "System I-RELEASE-9.0"
+UnixUtilsVersion equ "System I-RELEASE-9.0"
 
 man:
 
