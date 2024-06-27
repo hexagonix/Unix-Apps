@@ -68,7 +68,18 @@
 #
 # $HexagonixOS$
 
-buildUnixUtilities(){
+function main() {
+
+case $1 in
+
+--version) showVersion; exit;;
+*) buildUnixUtilities; exit;;
+
+esac
+
+}
+
+function buildUnixUtilities() {
 
 echo
 echo -e "\e[1;94mBuilding Hexagonix Unix applications...\e[0m {"
@@ -132,11 +143,9 @@ echo >> $LOG
 
 }
 
-unmount()
-{
+function unmount() {
 
 cd ..
-
 cd ..
 
 umount $MOUNT_POINT_DIRECTORY || exit
@@ -154,19 +163,15 @@ exit
 
 }
 
-showVersion()
-{
+function showVersion() {
+
 echo "hx build module for Unix utilities, version $UNIX_MOD_VERSION"
 echo
 echo -e "\e[0mCopyright (c) 2015-2024 Felipe Miguel Nery Lunkes\e[0m"
 echo -e "hx and hx modules are licensed under BSD-3-Clause and comes with no warranty."
+
 }
 
 export UNIX_MOD_VERSION="4.0.1"
 
-case $1 in
-
---version) showVersion; exit;;
-*) buildUnixUtilities; exit;;
-
-esac
+main $1
