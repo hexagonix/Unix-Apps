@@ -89,13 +89,13 @@ do
 
     echo -en "Building Hexagonix Unix utility \e[1;94m$(basename $h .asm)\e[0m..."
 
-    echo " > Building Hexagonix Unix utility $(basename $h .asm)..." >> ../$LOG
+    echo " > Building Hexagonix Unix utility $(basename $h .asm)..." >> $LOG
 
-    fasm $h ../$BUILD_DIRECTORY/bin/`basename $h .asm` -d $COMMON_FLAGS >> ../$LOG || unmount
+    fasm $h $BUILD_DIRECTORY/bin/`basename $h .asm` -d $COMMON_FLAGS >> $LOG || unmount
 
     echo -e " [\e[32mOk\e[0m]"
 
-    echo >> ../$LOG
+    echo >> $LOG
 
 # Here are specific applications within the packages that contain auxiliary files that must be copied,
 # such as the cowsay tool files.
@@ -108,7 +108,7 @@ do
 
     echo -n " > Copying additional package files for" $i
 
-    cp cows/*.cow ../$BUILD_DIRECTORY >> /dev/null
+    cp cows/*.cow $BUILD_DIRECTORY >> /dev/null
 
     echo -e " [\e[32mOk\e[0m]"
 
@@ -164,10 +164,7 @@ echo -e "\e[0mCopyright (c) 2015-2024 Felipe Miguel Nery Lunkes\e[0m"
 echo -e "hx and hx modules are licensed under BSD-3-Clause and comes with no warranty."
 }
 
-export UNIX_MOD_VERSION="3.2.0"
-
-export LOG="../../log.log"
-export BUILD_DIRECTORY="../../$1"
+export UNIX_MOD_VERSION="4.0.0"
 
 case $1 in
 
