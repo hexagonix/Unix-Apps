@@ -89,7 +89,7 @@ include "macros.s"
 ;;
 ;;************************************************************************************
 
-VERSION equ "1.14.1"
+VERSION equ "1.15.1"
 
 lshapp:
 
@@ -106,7 +106,7 @@ db 10, "> Filename: ", 0
 .fileSize:
 db 10, "> File size: ", 0
 .bytes:
-db " bytes.", 0
+db " bytes", 0
 .invalidImage:
 db 10, "<!> This is not a valid HAPP image. Try another file.", 0
 .fileNotFound:
@@ -115,22 +115,16 @@ db 10, "<!> The requested file is not available on this volume. Check the filena
 db 10, "> Target architecture: ", 0
 .verHexagon:
 db 10, "> Minimum version of Hexagon required to run: ", 0
-.fieldVersionHexagon:
-db " -> [HAPP:version and HAPP:subversion].", 0
 .header:
 db 10, "<+> This file contains a valid HAPP image.", 0
 .i386:
 db "i386", 0
 .amd64:
 db "amd64", 0
-.fieldArch:
-db " -> [HAPP:arch].", 0
 .invalidArch:
 db "unknown", 0
 .imageEntryPoint:
 db 10, "> Image entry point: ?:", 0
-.fieldEntryPoint:
-db " -> [HAPP:entryPoint].", 0
 .imageType:
 db 10, "> HAPP image format (type): ", 0
 .HAPPExec:
@@ -141,8 +135,6 @@ db "LibS", 0
 db "LibD", 0
 .unknownImagetype:
 db "?", 0
-.fieldImageType:
-db " -> [HAPP:imageFormat].", 0
 .helpParameter:
 db "?", 0
 .helpParameter2:
@@ -331,8 +323,6 @@ checkFileByHeader:
 
 ;; Version of Hexagon required for execution
 
-    fputs lshapp.fieldArch
-
     fputs lshapp.verHexagon
 
     mov dh, byte[lshapp.minimumVersion]
@@ -347,8 +337,6 @@ checkFileByHeader:
 
     printInteger
 
-    fputs lshapp.fieldVersionHexagon
-
 ;; Image entry point
 
     fputs lshapp.imageEntryPoint
@@ -356,8 +344,6 @@ checkFileByHeader:
     mov eax, dword[lshapp.entryPoint]
 
     printHexadecimal
-
-    fputs lshapp.fieldEntryPoint
 
 ;; HAPP type
 
@@ -395,8 +381,6 @@ checkFileByHeader:
     jmp .imageTypeField
 
 .imageTypeField:
-
-    fputs lshapp.fieldImageType
 
     ret
 
