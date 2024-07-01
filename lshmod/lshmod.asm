@@ -87,7 +87,7 @@ include "macros.s"
 ;;
 ;;************************************************************************************
 
-VERSION equ "0.9.1"
+VERSION equ "0.10.0"
 
 lshmod:
 
@@ -104,7 +104,7 @@ db 10, "> Filename: ", 0
 .fileSize:
 db 10, "> File size: ", 0
 .bytes:
-db " bytes.", 0
+db " bytes", 0
 .invalidImage:
 db 10, "<!> This is not an HBoot module image. Try another file.", 0
 .fileNotFound:
@@ -314,8 +314,6 @@ checkFileByHeader:
 
 .continue:
 
-    fputs lshmod.dot
-
     fputs lshmod.modVersion
 
     mov dh, byte[lshmod.verMod]
@@ -323,16 +321,16 @@ checkFileByHeader:
 
     printInteger
 
-    fputs lshmod.dot
-
     mov dh, byte[lshmod.subverMod]
     movzx eax, dh
 
     printInteger
 
-    fputs lshmod.dot
-
     fputs lshmod.imageInternalName
+
+    mov esi, moduleInternalName
+
+    hx.syscall hx.trimString
 
     fputs moduleInternalName
 
