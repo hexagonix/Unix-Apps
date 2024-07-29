@@ -80,6 +80,7 @@ appHeader headerHAPP HAPP.Architectures.i386, 1, 00, applicationStart, 01h
 include "hexagon.s"
 include "console.s"
 include "macros.s"
+include "memory.s"
 
 ;;************************************************************************************
 
@@ -124,11 +125,11 @@ displayProcesses:
 
     hx.syscall hx.memoryUsage
 
+    mov eax, ecx
+
     printInteger
 
     call setDefaultColor
-
-    fputs top.bytes
 
     fputs top.totalMemory
 
@@ -138,13 +139,27 @@ displayProcesses:
 
     hx.syscall hx.memoryUsage
 
-    mov eax, ecx
+    printInteger
+
+    call setDefaultColor
+
+    fputs top.usedMemory
+
+    mov eax, VERDE_FLORESTA
+
+    call setTextColor
+
+    hx.syscall hx.memoryUsage
+
+    mov ecx, edx
+
+    call convertToMegabytes
 
     printInteger
 
     call setDefaultColor
 
-    fputs top.mbytes
+    fputs top.reservedMemory
 
     putNewLine
 
@@ -177,13 +192,13 @@ displayProcesses:
 
     call readProcessList
 
-    fputs [currentProcess]
-
-    call putSpace
-
     mov eax, [PIDs]
 
     printInteger
+    
+    call putSpace
+
+    fputs [currentProcess]
 
     mov al, 10
 
@@ -256,11 +271,12 @@ putSpace:
     push ds ;; User mode data segment (38h selector)
     pop es
 
-    mov esi, [currentProcess]
+    mov esi, [PIDs]
 
+    hx.syscall hx.toString
     hx.syscall hx.stringSize
 
-    mov ebx, 17
+    mov ebx, 5
 
     sub ebx, eax
 
@@ -351,27 +367,23 @@ findCharacterInList:
 
 ;;************************************************************************************
 
-VERSION equ "1.6.0"
+VERSION equ "2.0.0"
 
 top:
 
 .start:
-db "Hexagonix process viewer", 10, 10, 0
-.pid:
-db "PID of this process: ", 0
+db "top version ", VERSION, 10, 10, 0
 .memoryUsage:
-db "Memory usage: ", 0
+db "Mem: ", 0
 .totalMemory:
-db 10, "Total installed memory identified: ", 0
-.bytes:
-db " bytes used by running processes.", 0
-.kbytes:
-db " kbytes.", 0
-.mbytes:
-db " megabytes.", 0
+db " total (megabytes), ", 0
+.usedMemory: 
+db " used memory (bytes), ", 0
+.reservedMemory:
+db " kernel memory (megabytes)", 0
 .header:
-db 10, "Process        | PID", 10
-db "---------------|----", 10, 10, 0
+db 10, "PID | Process name", 10
+db "----|---------------", 10, 10, 0
 .use:
 db "Usage: top", 10, 10
 db "Displays processes loaded on the system.", 10, 10
