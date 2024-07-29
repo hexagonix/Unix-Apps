@@ -80,6 +80,7 @@ appHeader headerHAPP HAPP.Architectures.i386, 1, 00, applicationStart, 01h
 include "hexagon.s"
 include "console.s"
 include "macros.s"
+include "memory.s"
 
 ;;************************************************************************************
 
@@ -134,16 +135,9 @@ applicationStart:
 
     hx.syscall hx.memoryUsage
 
-;; Now let's transform bytes into megabytes
+    mov ecx, edx 
 
-    mov ecx, edx
-
-    shr ecx, 10
-    shr ecx, 10
-
-;; Okay, now print this value in megabytes
-
-    mov eax, ecx
+    call convertToMegabytes
 
     printInteger
 
@@ -173,7 +167,7 @@ finish:
 ;;
 ;;************************************************************************************
 
-VERSION equ "1.3.0"
+VERSION equ "1.4.0"
 
 free:
 
@@ -184,7 +178,7 @@ db "free version ", VERSION, 10, 10
 db "Copyright (C) 2020-", __stringano, " Felipe Miguel Nery Lunkes", 10
 db "All rights reserved.", 0
 .memory:
-db "Installed memory  | Used memory       | Reserved memory", 10, 0
+db "Installed memory  | Used memory       | Kernel memory", 10, 0
 .kbytes:
 db " bytes           ", 0
 .megabytes:
