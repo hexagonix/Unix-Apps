@@ -117,49 +117,52 @@ displayProcesses:
 
     call setDefaultColor
 
-    fputs top.memoryUsage
+    mov esi, top.memoryDescription
 
-    mov eax, VERDE_FLORESTA
+    call makeDescriptionBanner
 
-    call setTextColor
+    hx.syscall hx.getCursor
+
+    mov byte[top.positionY], dh
 
     hx.syscall hx.memoryUsage
+
+    ;; Save memory used by processes
+
+    push eax
 
     mov eax, ecx
 
     printInteger
 
-    call setDefaultColor
-
-    fputs top.totalMemory
-
-    mov eax, VERDE_FLORESTA
-
-    call setTextColor
+    gotoxy 13, [top.positionY]
 
     hx.syscall hx.memoryUsage
 
     printInteger
 
-    call setDefaultColor
-
-    fputs top.usedMemory
-
-    mov eax, VERDE_FLORESTA
-
-    call setTextColor
+    gotoxy 40, [top.positionY]
 
     hx.syscall hx.memoryUsage
 
-    mov ecx, edx
+    ;; Save memory used by kernel
 
-    call convertToMegabytes
+    push edx
+
+    mov eax, edx
+
+    printInteger
+
+    gotoxy 64, [top.positionY]
+
+    pop eax
+    pop ebx
+    
+    add eax, ebx
 
     printInteger
 
     call setDefaultColor
-
-    fputs top.reservedMemory
 
     putNewLine
 
@@ -181,7 +184,11 @@ displayProcesses:
 
     mov dword[processCount], 00h
 
-    fputs top.header
+    putNewLine
+
+    mov esi, top.header
+
+    call makeDescriptionBanner
 
     inc dword[PIDs]
 
@@ -195,7 +202,7 @@ displayProcesses:
     mov eax, [PIDs]
 
     printInteger
-    
+
     call putSpace
 
     fputs [currentProcess]
@@ -264,42 +271,11 @@ setDefaultColor:
 
 putSpace:
 
-    push ecx
-    push ebx
-    push eax
+    hx.syscall hx.getCursor
 
-    push ds ;; User mode data segment (38h selector)
-    pop es
+    mov al, dh
 
-    mov esi, [PIDs]
-
-    hx.syscall hx.toString
-    hx.syscall hx.stringSize
-
-    mov ebx, 5
-
-    sub ebx, eax
-
-    mov ecx, ebx
-
-.spaceLoop:
-
-    mov al, ' '
-
-    hx.syscall hx.printCharacter
-
-    dec ecx
-
-    cmp ecx, 0
-    je .done
-
-    jmp .spaceLoop
-
-.done:
-
-    pop eax
-    pop ebx
-    pop ecx
+    gotoxy 6, dh
 
     ret
 
@@ -339,6 +315,45 @@ readProcessList:
 
 ;;************************************************************************************
 
+;; Create a banner for memory usage description
+;;
+;; Input:
+;;
+;; ESI - Text to show
+;;
+;; Output:
+;;
+;; Nothing
+
+makeDescriptionBanner:
+
+    push esi
+
+    mov eax, [top.backgroundColor]
+    mov ebx, [top.fontColor]
+
+    hx.syscall hx.setColor
+
+    ;; Get and set position on screen
+
+    hx.syscall hx.getCursor
+
+    mov al, dh
+
+    hx.syscall hx.clearLine
+
+    pop esi
+
+    fputs esi
+
+    call setDefaultColor
+
+    putNewLine
+
+    ret
+
+;;************************************************************************************
+
 ;; Searches for a specific character in the given String
 ;;
 ;; Input:
@@ -367,23 +382,16 @@ findCharacterInList:
 
 ;;************************************************************************************
 
-VERSION equ "2.0.0"
+VERSION equ "3.0.0"
 
 top:
 
 .start:
-db "top version ", VERSION, 10, 10, 0
-.memoryUsage:
-db "Mem: ", 0
-.totalMemory:
-db " total (megabytes), ", 0
-.usedMemory: 
-db " used memory (bytes), ", 0
-.reservedMemory:
-db " kernel memory (megabytes)", 0
+db "top version ", VERSION, 10, 0
+.memoryDescription:
+db "Total (MB) | User memory used (bytes) | Kernel memory (bytes) | Total used (bytes, kernel+user)", 0
 .header:
-db 10, "PID | Process name", 10
-db "----|---------------", 10, 10, 0
+db "PID | Process name", 0
 .use:
 db "Usage: top", 10, 10
 db "Displays processes loaded on the system.", 10, 10
@@ -397,6 +405,7 @@ db "?", 0
 db "--help", 0
 .fontColor:       dd 0
 .backgroundColor: dd 0
+.positionY: db 0
 
 ;;************************************************************************************
 
