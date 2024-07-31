@@ -135,7 +135,7 @@ applicationStart:
 
     hx.syscall hx.memoryUsage
 
-    mov ecx, edx 
+    mov ecx, edx
 
     call convertToMegabytes
 
