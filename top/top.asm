@@ -157,7 +157,7 @@ displayProcesses:
 
     pop eax
     pop ebx
-    
+
     add eax, ebx
 
     printInteger
