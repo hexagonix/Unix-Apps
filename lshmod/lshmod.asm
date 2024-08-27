@@ -87,7 +87,7 @@ include "macros.s"
 ;;
 ;;************************************************************************************
 
-VERSION equ "0.10.0"
+VERSION equ "0.10.1"
 
 lshmod:
 
@@ -320,6 +320,8 @@ checkFileByHeader:
     movzx eax, dh
 
     printInteger
+
+    fputs lshmod.dot
 
     mov dh, byte[lshmod.subverMod]
     movzx eax, dh
