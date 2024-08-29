@@ -68,10 +68,10 @@
 
 ;;************************************************************************************
 ;;
-;;                       Utilitário Unix init para Hexagonix
+;;                       Unix utility init for Hexagonix
 ;;
 ;;                 Copyright (c) 2015-2024 Felipe Miguel Nery Lunkes
-;;                          Todos os direitos reservados.
+;;                              All rights reserved.
 ;;
 ;;************************************************************************************
 
@@ -93,7 +93,7 @@ include "dev.s"
 
 ;;************************************************************************************
 
-VERSION equ "2.8.0"
+VERSION equ "2.8.1"
 
 searchSizeLimit = 32768 ;; Maximum file size: 32 kbytes
 
