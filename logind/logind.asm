@@ -68,10 +68,10 @@
 
 ;;************************************************************************************
 ;;
-;;                          Daemon de login para Hexagonix
+;;                          Login daemon for Hexagonix
 ;;
 ;;                 Copyright (c) 2015-2024 Felipe Miguel Nery Lunkes
-;;                          Todos os direitos reservados.
+;;                              All rights reserved.
 ;;
 ;;************************************************************************************
 
@@ -104,7 +104,7 @@ searchSizeLimit = 32768
 
 ;;************************************************************************************
 
-VERSION equ "1.13.1"
+VERSION equ "1.13.2"
 
 logind:
 
