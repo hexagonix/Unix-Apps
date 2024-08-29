@@ -80,7 +80,7 @@ appHeader headerHAPP HAPP.Architectures.i386, 1, 00, shellStart, 01h
 include "hexagon.s"
 include "console.s"
 include "macros.s"
-include "erros.s"
+include "errors.s"
 
 ;;************************************************************************************
 
@@ -633,7 +633,7 @@ finishShell:
 
 ;; TODO: improve shell scripting support
 
-VERSION equ "1.9.0"
+VERSION equ "1.9.1"
 
 searchSizeLimit = 32768
 
