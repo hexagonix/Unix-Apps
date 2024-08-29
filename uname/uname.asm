@@ -83,7 +83,7 @@ include "macros.s"
 
 ;;************************************************************************************
 
-VERSION equ "2.8.0"
+VERSION equ "2.8.1"
 
 uname:
 
@@ -367,7 +367,7 @@ showAll:
 
     printString
 
-;; Para ficar de acordo com o padrão do FreeBSD, a mensagem "version" não é exibida
+;; To comply with the FreeBSD standard, the "version" message is not displayed
 
     ;; fputs uname.version
 
