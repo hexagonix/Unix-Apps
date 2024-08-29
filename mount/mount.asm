@@ -80,7 +80,7 @@ appHeader headerHAPP HAPP.Architectures.i386, 1, 00, applicationStart, 01h
 include "hexagon.s"
 include "console.s"
 include "macros.s"
-include "erros.s"
+include "errors.s"
 
 ;;************************************************************************************
 
@@ -318,7 +318,7 @@ applicationUsage:
 ;;
 ;;************************************************************************************
 
-VERSION equ "2.7.0"
+VERSION equ "2.7.1"
 
 mount:
 
