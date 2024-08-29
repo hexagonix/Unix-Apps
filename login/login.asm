@@ -68,10 +68,10 @@
 
 ;;************************************************************************************
 ;;
-;;                        Utilitário Unix login para Hexagonix
+;;                       Unix utility login for Hexagonix
 ;;
 ;;                 Copyright (c) 2015-2024 Felipe Miguel Nery Lunkes
-;;                          Todos os direitos reservados.
+;;                              All rights reserved.
 ;;
 ;;************************************************************************************
 
@@ -103,7 +103,7 @@ searchSizeLimit = 32768
 
 ;;************************************************************************************
 
-VERSION equ "4.11.0"
+VERSION equ "4.11.1"
 
 login:
 
