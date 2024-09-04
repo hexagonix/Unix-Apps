@@ -629,7 +629,6 @@ checkFile:
     jc finish
 
     putNewLine
-    putNewLine
 
     mov esi, [parameters]
 
@@ -649,7 +648,7 @@ checkFile:
 ;;
 ;;************************************************************************************
 
-VERSION equ "3.4.0"
+VERSION equ "3.4.1"
 
 ls:
 
