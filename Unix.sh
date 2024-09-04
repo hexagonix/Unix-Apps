@@ -82,13 +82,13 @@ esac
 function buildUnixUtilities() {
 
 echo
-echo -e "\e[1;94mBuilding Hexagonix Unix applications...\e[0m {"
+echo -e "\e[1;94mBuilding Unix utilities...\e[0m {"
 echo
 
-echo "Building Hexagonix Unix based applications... {" >> $LOG
+echo "Building Unix utilities... {" >> $LOG
 echo >> $LOG
 
-# Let's now automate the construction of Unix base applications
+# Let's now automate the construction of Unix base utilities
 
 for i in */
 do
@@ -98,9 +98,9 @@ do
     for h in *.asm
     do
 
-    echo -en "Building Hexagonix Unix utility \e[1;94m$(basename $h .asm)\e[0m..."
+    echo -en "Building Unix utility \e[1;94m$(basename $h .asm)\e[0m..."
 
-    echo " > Building Hexagonix Unix utility $(basename $h .asm)..." >> $LOG
+    echo " > Building Unix utility $(basename $h .asm)..." >> $LOG
 
     fasm $h $BUILD_DIRECTORY/bin/`basename $h .asm` -d $COMMON_FLAGS >> $LOG || unmount
 
@@ -133,10 +133,9 @@ cd ..
 
 done
 
-echo -e "\n} [\e[32mHexagonix utilities built successfully\e[0m]."
+echo -e "\n} [\e[32mUnix utilities built successfully\e[0m]."
 
-echo >> $LOG
-echo -e "} Hexagonix utilities built successfully." >> $LOG
+echo -e "} Unix utilities built successfully." >> $LOG
 echo >> $LOG
 echo "----------------------------------------------------------------------" >> $LOG
 echo >> $LOG
@@ -152,7 +151,7 @@ umount $MOUNT_POINT_DIRECTORY || exit
 
 umount -a
 
-echo "An error occurred while building some system component."
+echo "An error occurred while building at least one Unix utility"
 echo
 echo "Check the status of the components and use the above error outputs to verify the problem."
 echo
@@ -172,6 +171,6 @@ echo -e "hx and hx modules are licensed under BSD-3-Clause and comes with no war
 
 }
 
-export UNIX_MOD_VERSION="4.0.1"
+export UNIX_MOD_VERSION="4.1.0"
 
 main $1
