@@ -104,7 +104,7 @@ searchSizeLimit = 32768
 
 ;;************************************************************************************
 
-VERSION equ "1.13.2"
+VERSION equ "1.13.3"
 
 logind:
 
@@ -136,8 +136,8 @@ match =Hexagonix, LOGIN_STYLE
 
 }
 
-.file:
-db "passwd", 0 ;; Login configuration filename
+.file: ;; Login configuration filename
+db "passwd", 0
 .positionBX: ;; Marking the search position in the file content
 dw 0
 .systemVersion:
