@@ -124,7 +124,7 @@ db "  88       88  `'Pbbd8'' 8P'     `P8 `'8bbdP'P8  `'PbbdP'P8  `'PbbdP''  88  
 db "                                                 aa,    ,88", 10
 db "                                                  'P8bbdP'", 10, 10
 db "                                  Hexagonix Operating System", 10, 10
-db "                       Copyright (C) 2015-", __stringano, " Felipe Miguel Nery Lunkes", 10
+db "                       Copyright (C) 2015-", __stringYear, " Felipe Miguel Nery Lunkes", 10
 db "                                     All rights reserved.", 10, 0
 
 }

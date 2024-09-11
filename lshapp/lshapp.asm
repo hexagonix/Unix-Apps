@@ -97,7 +97,7 @@ lshapp:
 db 10, "Usage: lshapp [file]", 10, 10
 db "Retrieve and display information from a HAPP image.", 10, 10
 db "lshapp version ", VERSION, 10, 10
-db "Copyright (C) 2020-", __stringano, " Felipe Miguel Nery Lunkes", 10
+db "Copyright (C) 2020-", __stringYear, " Felipe Miguel Nery Lunkes", 10
 db "All rights reserved.", 0
 .invalidFile:
 db 10, 10, "The filename is invalid. Please enter a valid filename.", 10, 0

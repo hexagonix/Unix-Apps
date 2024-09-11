@@ -425,7 +425,7 @@ fileUnix:
 db 10, "Usage: file [file]", 10, 10
 db "Retrieve information from the file and send it to the console.", 10, 10
 db "file version ", VERSION, 10, 10
-db "Copyright (C) 2017-", __stringano, " Felipe Miguel Nery Lunkes", 10
+db "Copyright (C) 2017-", __stringYear, " Felipe Miguel Nery Lunkes", 10
 db "All rights reserved.", 0
 .arquivoInvalido:
 db 10, "The file name is invalid. Please enter a valid filename.", 0

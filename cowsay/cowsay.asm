@@ -410,7 +410,7 @@ db "You can change the entity that displays the message.", 10
 db "This change must be requested BEFORE the message.", 10
 db 'In the case of a sentence, the character " must appear before and after the sentence.', 10, 10
 db "cowsay version ", VERSION, 10, 10
-db "Copyright (C) 2020-", __stringano, " Felipe Miguel Nery Lunkes", 10
+db "Copyright (C) 2020-", __stringYear, " Felipe Miguel Nery Lunkes", 10
 db "All rights reserved.", 0
 .helpParameter:
 db "?", 0

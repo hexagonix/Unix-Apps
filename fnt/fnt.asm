@@ -95,7 +95,7 @@ fnt:
 db 10, "Usage: fnt [graphic font file]", 10, 10
 db "Changes the system font.", 10, 10
 db "fnt version ", VERSION, 10, 10
-db "Copyright (C) 2022-", __stringano, " Felipe Miguel Nery Lunkes", 10
+db "Copyright (C) 2022-", __stringYear, " Felipe Miguel Nery Lunkes", 10
 db "All rights reserved.", 0
 .fileName:
 db 10, "Font filename: ", 0

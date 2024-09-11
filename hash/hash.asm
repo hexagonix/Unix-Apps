@@ -627,7 +627,7 @@ db "# ", 0
 db 10, 10, "Usage: hash", 10, 10
 db "Start a Unix shell for the current user.", 10, 10
 db "hash version ", VERSION, 10, 10
-db "Copyright (C) 2020-", __stringano, " Felipe Miguel Nery Lunkes", 10
+db "Copyright (C) 2020-", __stringYear, " Felipe Miguel Nery Lunkes", 10
 db "All rights reserved.", 10, 0
 .helpParameter:
 db "?", 0

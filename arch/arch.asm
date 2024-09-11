@@ -174,7 +174,7 @@ db 10, "Usage: arch", 10
 db "This utility does not accept arguments.", 10, 10
 db "Displays the architecture of this system and device.", 10, 10
 db "arch version ", VERSION, 10, 10
-db "Copyright (C) 2021-", __stringano, " Felipe Miguel Nery Lunkes", 10
+db "Copyright (C) 2021-", __stringYear, " Felipe Miguel Nery Lunkes", 10
 db "All rights reserved.", 0
 .notSupported:
 db 10, "Unknown architecture.", 0

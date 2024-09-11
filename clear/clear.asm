@@ -167,7 +167,7 @@ db 10, "Error opening a console.", 10, 10, 0
 db 10, "Usage: clear", 10, 10
 db "Clears the contents of the console (tty0) and virtual consoles.", 10, 10
 db "clear version ", VERSION, 10, 10
-db "Copyright (C) 2017-", __stringano, " Felipe Miguel Nery Lunkes", 10
+db "Copyright (C) 2017-", __stringYear, " Felipe Miguel Nery Lunkes", 10
 db "All rights reserved.", 0
 .helpParameter:
 db "?", 0

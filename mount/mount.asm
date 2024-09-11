@@ -333,7 +333,7 @@ db 10, "Usage: mount [volume] [mount point]", 10, 10
 db "Performs mounting a volume to a file system mount point.", 10, 10
 db "If no parameter is provided, the mounting points will be displayed.", 10, 10
 db "mount version ", VERSION, 10, 10
-db "Copyright (C) 2017-", __stringano, " Felipe Miguel Nery Lunkes", 10
+db "Copyright (C) 2017-", __stringYear, " Felipe Miguel Nery Lunkes", 10
 db "All rights reserved.", 0
 .openingError:
 db 10, "Error mounting volume at specified mount point.", 10

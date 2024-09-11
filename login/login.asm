@@ -121,7 +121,7 @@ db 10, "Password: ", 0
 db 10, 10, "Usage: login [user]", 10, 10
 db "Log in a registered user.", 10, 10
 db "login version ", VERSION, 10, 10
-db "Copyright (C) 2017-", __stringano, " Felipe Miguel Nery Lunkes", 10
+db "Copyright (C) 2017-", __stringYear, " Felipe Miguel Nery Lunkes", 10
 db "All rights reserved.", 10, 0
 .helpParameter:
 db "?", 0

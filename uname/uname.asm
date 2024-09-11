@@ -159,7 +159,7 @@ db " -p: System processor architecture.", 10
 db " -i: System hardware platform.", 10
 db " -o: Name of running operating system.", 10, 10
 db "uname version ", VERSION, 10, 10
-db "Copyright (C) 2017-", __stringano, " Felipe Miguel Nery Lunkes", 10
+db "Copyright (C) 2017-", __stringYear, " Felipe Miguel Nery Lunkes", 10
 db "All rights reserved.", 0
 .dot:
 db ".", 0

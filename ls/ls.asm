@@ -680,7 +680,7 @@ db "Lists and displays the files present on the current volume, sorting them by 
 db "Available parameters:", 10, 10
 db "-a - List all files available on the volume.", 10, 10
 db "ls version ", VERSION, 10, 10
-db "Copyright (C) 2017-", __stringano, " Felipe Miguel Nery Lunkes", 10
+db "Copyright (C) 2017-", __stringYear, " Felipe Miguel Nery Lunkes", 10
 db "All rights reserved.", 0
 .helpParameter:
 db "?", 0

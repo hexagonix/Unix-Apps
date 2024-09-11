@@ -350,7 +350,7 @@ date:
 db 10, "Usage: date", 10, 10
 db "Display system date and time.", 10, 10
 db "date version ", VERSION, 10, 10
-db "Copyright (C) 2020-", __stringano, " Felipe Miguel Nery Lunkes", 10
+db "Copyright (C) 2020-", __stringYear, " Felipe Miguel Nery Lunkes", 10
 db "All rights reserved.", 0
 .sunday:
 db " (Sunday)", 0

@@ -171,7 +171,7 @@ db 10, "Host file not found. Check that it has been set.", 0
 db 10, "Usage: hostname", 10, 10
 db "Displays the hostname defined for this device.", 10, 10
 db "hostname version ", VERSION, 10, 10
-db "Copyright (C) 2021-", __stringano, " Felipe Miguel Nery Lunkes", 10
+db "Copyright (C) 2021-", __stringYear, " Felipe Miguel Nery Lunkes", 10
 db "All rights reserved.", 0
 .helpParameter:
 db "?", 0

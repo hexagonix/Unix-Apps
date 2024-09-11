@@ -98,7 +98,7 @@ syslogd:
 db 10, "Usage: syslogd [message]", 10, 10
 db "Send a message from Hexagonix components and utilities to the system log.", 10, 10
 db "syslogd version ", VERSION, 10, 10
-db "Copyright (C) 2022-", __stringano, " Felipe Miguel Nery Lunkes", 10
+db "Copyright (C) 2022-", __stringYear, " Felipe Miguel Nery Lunkes", 10
 db "All rights reserved.", 0
 .helpParameter:
 db "?", 0

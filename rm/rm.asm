@@ -225,7 +225,7 @@ db 10, "File not found.", 0
 db 10, "Usage: rm [file]", 10, 10
 db "Requests to delete a file on the current volume.", 10, 10
 db "rm version ", VERSION, 10, 10
-db "Copyright (C) 2017-", __stringano, " Felipe Miguel Nery Lunkes", 10
+db "Copyright (C) 2017-", __stringYear, " Felipe Miguel Nery Lunkes", 10
 db "All rights reserved.", 0
 .confimation:
 db "Are you sure you want to delete this file (y/N)? ", 0

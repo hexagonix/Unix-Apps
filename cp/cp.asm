@@ -276,7 +276,7 @@ db 10, "Usage: cp [input file] [output file]", 10, 10
 db "Performs a copy of a given file into another. Two file names are required, one being", 10
 db "for input and another for output.", 10, 10
 db "cp version ", VERSION, 10, 10
-db "Copyright (C) 2017-", __stringano, " Felipe Miguel Nery Lunkes", 10
+db "Copyright (C) 2017-", __stringYear, " Felipe Miguel Nery Lunkes", 10
 db "All rights reserved.", 0
 .sourceNotFound:
 db 10, "The source file cannot be found on this volume.", 0

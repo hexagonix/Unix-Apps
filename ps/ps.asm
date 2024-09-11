@@ -214,7 +214,7 @@ db "-t - Displays all possible process and system resource information.", 10
 db "-v - Displays only memory usage of running processes.", 10, 10
 db "-o - Displays the number of processes in the execution queue.", 10, 10
 db "ps version ", VERSION, 10, 10
-db "Copyright (C) 2017-", __stringano, " Felipe Miguel Nery Lunkes", 10
+db "Copyright (C) 2017-", __stringYear, " Felipe Miguel Nery Lunkes", 10
 db "All rights reserved.", 0
 .helpParameter:
 db "?", 0

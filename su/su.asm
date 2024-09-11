@@ -704,7 +704,7 @@ db "Enter your UNIX password: ", 0
 db 10, "Usage: su [user]", 10, 10
 db "Change to a registered user.", 10, 10
 db "su version ", VERSION, 10, 10
-db "Copyright (C) 2017-", __stringano, " Felipe Miguel Nery Lunkes", 10
+db "Copyright (C) 2017-", __stringYear, " Felipe Miguel Nery Lunkes", 10
 db "All rights reserved.", 0
 .fileNotFound:
 db 10, "The user database was not found on the volume.", 0

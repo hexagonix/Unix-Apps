@@ -314,7 +314,7 @@ db "-d  - Power the computer off.", 10
 db "-r  - Reboot the computer.", 10
 db "now - Same as -d.", 10, 10
 db "shutdown version ", VERSION, 10, 10
-db "Copyright (C) 2022-", __stringano, " Felipe Miguel Nery Lunkes", 10
+db "Copyright (C) 2022-", __stringYear, " Felipe Miguel Nery Lunkes", 10
 db "All rights reserved.", 0
 
 shutdown.Verbose:

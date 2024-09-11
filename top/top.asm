@@ -397,7 +397,7 @@ db "Usage: top", 10, 10
 db "Displays processes loaded on the system.", 10, 10
 db "Kernel processes are filtered and not displayed in this list.", 10, 10
 db "top version ", VERSION, 10, 10
-db "Copyright (C) 2017-", __stringano, " Felipe Miguel Nery Lunkes", 10
+db "Copyright (C) 2017-", __stringYear, " Felipe Miguel Nery Lunkes", 10
 db "All rights reserved.", 0
 .helpParameter:
 db "?", 0

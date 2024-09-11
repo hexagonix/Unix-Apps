@@ -175,7 +175,7 @@ free:
 db 10, "Usage: free", 10, 10
 db "Display information about system memory usage.", 10, 10
 db "free version ", VERSION, 10, 10
-db "Copyright (C) 2020-", __stringano, " Felipe Miguel Nery Lunkes", 10
+db "Copyright (C) 2020-", __stringYear, " Felipe Miguel Nery Lunkes", 10
 db "All rights reserved.", 0
 .memory:
 db "Installed memory  | Used memory       | Kernel memory", 10, 0

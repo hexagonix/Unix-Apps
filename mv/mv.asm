@@ -251,7 +251,7 @@ mv:
 db 10, "Usage: mv [file1] [file2]", 10, 10
 db "Renames file1 into file2.", 10, 10
 db "mv version ", VERSION, 10, 10
-db "Copyright (C) 2023-", __stringano, " Felipe Miguel Nery Lunkes", 10
+db "Copyright (C) 2023-", __stringYear, " Felipe Miguel Nery Lunkes", 10
 db "All rights reserved.", 0
 .sourceNotFound:
 db 10, "The source file cannot be found on this volume.", 0

@@ -95,7 +95,7 @@ lshmod:
 db 10, "Usage: lshmod [file]", 10, 10
 db "Retrieve information from an HBoot image or module.", 10, 10
 db "lshmod version ", VERSION, 10, 10
-db "Copyright (C) 2022-", __stringano, " Felipe Miguel Nery Lunkes", 10
+db "Copyright (C) 2022-", __stringYear, " Felipe Miguel Nery Lunkes", 10
 db "All rights reserved.", 0
 .invalidFile:
 db 10, "The file name is invalid. Please enter a valid filename.", 0

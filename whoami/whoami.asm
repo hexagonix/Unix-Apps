@@ -182,7 +182,7 @@ db "Possible parameters (in case of missing parameters, the '-u' option will be 
 db "-t - Displays all possible information of the currently logged in user", 10
 db "-u - Display only the name of the logged in user", 10, 10
 db "whoami version ", VERSION, 10, 10
-db "Copyright (C) 2017-", __stringano, " Felipe Miguel Nery Lunkes", 10
+db "Copyright (C) 2017-", __stringYear, " Felipe Miguel Nery Lunkes", 10
 db "All rights reserved.", 0
 .helpParameter:
 db "?", 0

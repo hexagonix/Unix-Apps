@@ -660,7 +660,7 @@ db "# ", 0
 db 10, 10, "Usage: sh", 10, 10
 db "Start a Unix shell for the current user.", 10, 10
 db "sh version ", VERSION, 10, 10
-db "Copyright (C) 2017-", __stringano, " Felipe Miguel Nery Lunkes", 10
+db "Copyright (C) 2017-", __stringYear, " Felipe Miguel Nery Lunkes", 10
 db "All rights reserved.", 10, 0
 .helpParameter:
 db "?", 0

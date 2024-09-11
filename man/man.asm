@@ -102,7 +102,7 @@ db "Display detailed help for installed Unix utilities.", 10, 10
 db "CoreUtils version: ", CoreUtilsVersion, 10
 db "UnixUtils Version: ", UnixUtilsVersion, 10, 10
 db "man version ", VERSION, 10, 10
-db "Copyright (C) 2018-", __stringano, " Felipe Miguel Nery Lunkes", 10
+db "Copyright (C) 2018-", __stringYear, " Felipe Miguel Nery Lunkes", 10
 db "All rights reserved.", 10, 10
 db "Hexagonix is distributed under the BSD-3-Clause license.", 0
 .waitKeyPress:
