@@ -75,16 +75,16 @@ include "HAPP.s" ;; Here is a structure for the HAPP header
 ;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
 appHeader headerHAPP HAPP.Architectures.i386, 1, 00, applicationStart, 01h
 
-
 ;;************************************************************************************
 
 include "hexagon.s"
 include "console.s"
 include "macros.s"
+include "memory.s"
 
 ;;************************************************************************************
 
-applicationStart: ;; Ponto de entryPoint do aplicativo
+applicationStart: ;; Entry point
 
     mov [parameters], edi
 
@@ -104,12 +104,12 @@ applicationStart: ;; Ponto de entryPoint do aplicativo
 
     jc applicationUsage
 
-    mov edi, ps.parameterPID
+    mov edi, ps.parameterProcesses
     mov esi, [parameters]
 
     hx.syscall hx.compareWordsString
 
-    jc parameterPID
+    jc displayProcesses
 
     mov edi, ps.parameterMemory
     mov esi, [parameters]
@@ -125,32 +125,155 @@ applicationStart: ;; Ponto de entryPoint do aplicativo
 
     jc parameterOtherProcesses
 
-    jmp parameterMemory
+    jmp displayProcesses
 
 ;;************************************************************************************
 
-parameterPID:
+displayProcesses:
 
-    hx.syscall hx.pid
+    fputs ps.header
+
+    hx.syscall hx.getProcesses
+
+    mov [remainingList], esi
+    mov dword[numbersPID], eax
 
     push eax
 
-    fputs ps.pid
+    pop ebx
 
-    pop eax
+    xor ecx, ecx
+    xor edx, edx
+
+    push eax
+
+    mov edx, eax
+
+    mov dword[processCount], 00h
+
+    inc dword[PIDs]
+
+.processLoop:
+
+    push ds ;; User mode data segment (38h selector)
+    pop es
+
+    call readProcessList
+
+    mov eax, [PIDs]
 
     printInteger
 
-    putNewLine
+    call putSpace
+
+    fputs [currentProcess]
+
+    cmp dword[numbersPID], 01h
+    je .continue
+
+    inc dword[processCount]
+    inc dword[PIDs]
+    dec dword[numbersPID]
+
     putNewLine
 
-    jmp parameterMemory.line
+    jmp .processLoop
+
+.continue:
+
+    jmp finish
+
+;;************************************************************************************
+
+applicationUsage:
+
+    fputs ps.use
+
+    jmp finish
+
+;;************************************************************************************
+
+finish:
+
+    hx.syscall hx.exit
+
+;;************************************************************************************
+
+putSpace:
+
+    hx.syscall hx.getCursor
+
+    mov al, dh
+
+    gotoxy 5, dh
+
+    ret
+
+;;************************************************************************************
+
+;; Get parameters directly from the command line
+
+readProcessList:
+
+    push ds ;; User mode data segment (38h selector)
+    pop es
+
+    mov esi, [remainingList]
+    mov [currentProcess], esi
+
+    mov al, ' '
+
+    hx.syscall hx.findCharacter
+
+    jc .done
+
+    mov al, ' '
+
+    call findCharacterInList
+
+    hx.syscall hx.trimString
+
+    mov [remainingList], esi
+
+    jmp .done
+
+.done:
+
+    clc
+
+    ret
+
+;;************************************************************************************
+
+;; Searches for a specific character in the given String
+;;
+;; Input:
+;;
+;; ESI - String to be checked
+;; AL  - Character to search for
+;;
+;; Output:
+;;
+;; ESI - Character position in the given String
+
+findCharacterInList:
+
+    lodsb
+
+    cmp al, ' '
+    je .done
+
+    jmp findCharacterInList
+
+.done:
+
+    mov byte[esi-1], 0
+
+    ret
 
 ;;************************************************************************************
 
 parameterMemory:
-
-.line:
 
     fputs ps.memoryUsage
 
@@ -182,53 +305,47 @@ parameterOtherProcesses:
 
 ;;************************************************************************************
 
-applicationUsage:
-
-    fputs ps.use
-
-    jmp finish
-
-;;************************************************************************************
-
-finish:
-
-    hx.syscall hx.exit
-
-;;************************************************************************************
-
-VERSION equ "1.3.0"
+VERSION equ "2.0.0"
 
 ps:
 
-.pid:
-db "PID of this process: ", 0
-.memoryUsage:
-db "Memory usage: ", 0
-.kbytes:
-db " bytes used by running processes.", 0
+.header:
+db "PID  PROCESS", 10, 0
 .use:
 db "Usage: ps [parameter]", 10, 10
 db "Displays process information and usage of memory and system resources.", 10, 10
-db "Possible parameters (in case of missing parameters, the '-v' option will be selected):", 10, 10
-db "-t - Displays all possible process and system resource information.", 10
-db "-v - Displays only memory usage of running processes.", 10, 10
-db "-o - Displays the number of processes in the execution queue.", 10, 10
+db "Possible parameters (in case of missing parameters, the '-a' option will be selected):", 10, 10
+db "-a - Display user processes running on device.", 10
+db "-m - Display all memory usage (user+kernel).", 10
+db "-o - Displays the number of processes currently running.", 10, 10
 db "ps version ", VERSION, 10, 10
 db "Copyright (C) 2017-", __stringYear, " Felipe Miguel Nery Lunkes", 10
 db "All rights reserved.", 0
+.memoryUsage:
+db "Memory usage: ", 0
+.kbytes:
+db " bytes used by running processes (user+kernel).", 0
 .helpParameter:
 db "?", 0
 .helpParameter2:
 db "--help", 0
-.parameterPID:
-db "-t", 0
 .parameterOtherProcesses:
 db "-o", 0
+.parameterProcesses:
+db "-a", 0
 .parameterMemory:
-db "-v", 0
+db "-m", 0
 .numberOfProcesses:
 db "There are currently ", 0
 .processes:
-db " processes in the Hexagonix runtime stack.", 0
+db " processes running.", 0
+.positionY: db 0
 
-parameters: dd ?
+;;************************************************************************************
+
+remainingList:  dd ?
+processCount:   dd 0
+PIDs:           dd 0
+numbersPID:     dd 0
+currentProcess: dd ' '
+parameters:     dd ?
