@@ -207,16 +207,14 @@ displayProcesses:
 
     fputs [currentProcess]
 
-    mov al, 10
-
-    hx.syscall hx.printCharacter
-
     cmp dword[numbersPID], 01h
     je .continue
 
     inc dword[processCount]
     inc dword[PIDs]
     dec dword[numbersPID]
+
+    putNewLine
 
     jmp .processLoop
 
@@ -382,7 +380,7 @@ findCharacterInList:
 
 ;;************************************************************************************
 
-VERSION equ "3.0.0.2"
+VERSION equ "3.1.0"
 
 top:
 
