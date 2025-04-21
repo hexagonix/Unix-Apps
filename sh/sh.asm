@@ -285,6 +285,14 @@ shellStart:
 
     jc finishShell
 
+    ;; CD command
+
+    mov edi, commands.cd
+
+    hx.syscall hx.compareWordsString
+
+    jc commandCD
+
     ;; RC command
 
     mov edi, commands.rc
@@ -374,6 +382,39 @@ shellStart:
     jc .executionFailure
 
     jmp .getCommandLine
+
+;;************************************************************************************
+
+commandCD:
+
+    add esi, 02h
+
+    hx.syscall hx.trimString
+
+    cmp byte[esi], 0
+    je .argumentRequired
+
+    clc
+
+    hx.syscall hx.changeDirectory
+
+    jc .errorChangingDirectory
+
+    pop esi
+
+    jmp shellStart.getCommandLine
+
+.errorChangingDirectory:
+
+    fputs sh.errorChangingDirectory
+
+    jmp shellStart.getCommandLine
+
+.argumentRequired:
+
+    fputs sh.argumentRequired
+
+    jmp shellStart.getCommandLine
 
 ;;************************************************************************************
 
@@ -633,7 +674,7 @@ finishShell:
 
 ;; TODO: improve shell scripting support
 
-VERSION equ "1.9.1"
+VERSION equ "2.0.0"
 
 searchSizeLimit = 32768
 
@@ -670,6 +711,8 @@ db "--help", 0
 db 10, "Shell script not found.", 0
 .argumentRequired:
 db 10, "An argument is necessary.", 0
+.errorChangingDirectory:
+db 10, "Directory not found or invalid.", 0
 
 .positionBX: dw 0 ;; Marking the search position in the file content
 
@@ -684,6 +727,8 @@ times 8 db 0
 
 commands:
 
+.cd:
+db "cd", 0
 .exit:
 db "exit", 0
 .rc:
