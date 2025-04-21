@@ -198,6 +198,12 @@ list:
 
     push esi
 
+    cmp eax, 02h
+    je .printDirectory
+
+    cmp eax, 00h
+    je finish
+
     sub esi, 5
 
     mov edi, ls.extensionAPP
@@ -261,6 +267,20 @@ list:
     jc .fileMAN
 
     jmp .commonFile
+
+.printDirectory:
+
+    pop esi
+
+    mov eax, AZUL_MEDIO
+
+    call setFileColor
+
+    fputs [currentFile]
+
+    call setDefaultColor
+
+    jmp .continue
 
 .application:
 
@@ -560,61 +580,56 @@ putSpace:
 
 ;;************************************************************************************
 
-;; Get parameters directly from the command line
+;; Get a file/directory name from list and get entry type
+;;
+;; Output:
+;;
+;; ESI - Entry content
+;; EAX - Entry type (01h = file, 02h = directory, 00h = reached the end of list)
 
 readFileList:
 
-    push ds ;; User mode data segment (38h selector)
+    push ds
     pop es
 
     mov esi, [remainingList]
     mov [currentFile], esi
 
-    mov al, ' '
+.findDelimiter:
 
-    hx.syscall hx.findCharacter
+    lodsb ;; Load byte from [ESI] in AL and increase ESI
 
-    jc .done
+    cmp al, 0x90
+    je .foundFile
 
-    mov al, ' '
+    cmp al, 0x80
+    je .foundDirectory
 
-    call findCharacterFileList
+    cmp al, 0 ;; End of string
+    je .endList
 
+    jmp .findDelimiter
+
+.foundFile:
+
+    mov byte [esi - 1], 0 ;; End string
     mov [remainingList], esi
-
-    jmp .done
-
-.done:
-
-    clc
+    mov eax, 01h
 
     ret
 
-;;************************************************************************************
+.foundDirectory:
 
-;; Searches for a specific character in the given String
-;;
-;; Input:
-;;
-;; ESI - String to be checked
-;; AL  - Character to search for
-;;
-;; Output:
-;;
-;; ESI - Character position in the given String
+    mov byte [esi - 1], 0 ;; End string
+    mov [remainingList], esi
+    mov eax, 02h
 
-findCharacterFileList:
+    ret
 
-    lodsb
+.endList:
 
-    cmp al, ' '
-    je .done
-
-    jmp findCharacterFileList
-
-.done:
-
-    mov byte[esi-1], 0
+    mov dword [currentFile], 0  ;; The list reached the end
+    xor eax, eax
 
     ret
 
@@ -648,7 +663,7 @@ checkFile:
 ;;
 ;;************************************************************************************
 
-VERSION equ "3.4.1"
+VERSION equ "4.0.0"
 
 ls:
 
