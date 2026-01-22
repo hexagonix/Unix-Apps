@@ -23,8 +23,8 @@
 # Apps Unix-like do Hexagonix/Hexagonix Unix-like apps
 
 <details title="Português (Brasil)" align='left'>
-<br>
 <summary align='left'>🇧🇷 Português (Brasil)</summary>
+<br>
 
 # Aplicativos e utilitários do Hexagonix
 
@@ -74,8 +74,8 @@ Outros utilitários são exclusivos do Hexagonix. São eles:
 </details>
 
 <details title="English" align='left'>
-<br>
 <summary align='left'>🇬🇧 English</summary>
+<br>
 
 # Hexagonix apps and utilities
 
@@ -125,8 +125,8 @@ Other utilities are exclusive to Hexagonix. Are they:
 </details>
 
 <details title="Unix utilities License" align='left'>
-<br>
 <summary align='left'>Licença dos utilitários Unix/Unix Utilities License</summary>
+<br>
 
 <div align="justify">
 
