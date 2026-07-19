@@ -166,23 +166,10 @@ displayProcesses:
 
     putNewLine
 
-    hx.syscall hx.getProcesses
+    hx.syscall hx.getProcesses ;; eax = record count, esi = fixed-size process records
 
-    mov [remainingList], esi
-    mov dword[numbersPID], eax
-
-    push eax
-
-    pop ebx
-
-    xor ecx, ecx
-    xor edx, edx
-
-    push eax
-
-    mov edx, eax
-
-    mov dword[processCount], 00h
+    mov [recordsPointer], esi
+    mov dword[remainingCount], eax
 
     putNewLine
 
@@ -190,29 +177,48 @@ displayProcesses:
 
     call makeDescriptionBanner
 
-    inc dword[PIDs]
-
 .processLoop:
+
+    cmp dword[remainingCount], 0
+    je .continue
 
     push ds ;; User mode data segment (38h selector)
     pop es
 
-    call readProcessList
+    mov esi, [recordsPointer]
 
-    mov eax, [PIDs]
+    mov eax, dword[esi] ;; PID
 
     printInteger
 
     call putSpace
 
+    mov edx, esi
+
+    add edx, 9 ;; process name field
+
+    mov [currentProcess], edx
+
     fputs [currentProcess]
 
-    cmp dword[numbersPID], 01h
-    je .continue
+    mov esi, [recordsPointer]
 
-    inc dword[processCount]
-    inc dword[PIDs]
-    dec dword[numbersPID]
+    mov al, byte[esi+8] ;; state
+
+    call putStatus
+
+    mov esi, [recordsPointer]
+
+    mov ebx, dword[esi+4] ;; parent PID
+
+    call putParent
+
+    add dword[recordsPointer], processRecordSize
+
+    dec dword[remainingCount]
+
+    cmp dword[remainingCount], 0
+    je .continue
 
     putNewLine
 
@@ -271,43 +277,99 @@ putSpace:
 
     hx.syscall hx.getCursor
 
-    mov al, dh
-
     gotoxy 6, dh
 
     ret
 
 ;;************************************************************************************
 
-;; Get parameters directly from the command line
+;; Prints the status text for a process at a fixed column
+;;
+;; Input:
+;;
+;; AL - State byte, as returned by hx.getProcesses
 
-readProcessList:
+putStatus:
 
-    push ds ;; User mode data segment (38h selector)
-    pop es
+    push eax
 
-    mov esi, [remainingList]
-    mov [currentProcess], esi
+    hx.syscall hx.getCursor
 
-    mov al, ' '
+    gotoxy 21, dh
 
-    hx.syscall hx.findCharacter
+    pop eax
 
-    jc .done
+    cmp al, 1
+    je .ready
 
-    mov al, ' '
+    cmp al, 2
+    je .running
 
-    call findCharacterInList
+    cmp al, 3
+    je .blocked
 
-    hx.syscall hx.trimString
+    cmp al, 4
+    je .zombie
 
-    mov [remainingList], esi
+    fputs top.statusUnknown
 
-    jmp .done
+    ret
 
-.done:
+.ready:
 
-    clc
+    fputs top.statusReady
+
+    ret
+
+.running:
+
+    fputs top.statusRunning
+
+    ret
+
+.blocked:
+
+    fputs top.statusBlocked
+
+    ret
+
+.zombie:
+
+    fputs top.statusZombie
+
+    ret
+
+;;************************************************************************************
+
+;; Prints the parent PID at a fixed column, or KERNEL if the process was
+;; launched directly by the kernel rather than by another process
+;;
+;; Input:
+;;
+;; EBX - Parent PID, as returned by hx.getProcesses (0 = no parent)
+
+putParent:
+
+    push ebx
+
+    hx.syscall hx.getCursor
+
+    gotoxy 32, dh
+
+    pop ebx
+
+    cmp ebx, 0
+    je .kernel
+
+    mov eax, ebx
+
+    printInteger
+
+    ret
+
+.kernel:
+
+    fputs top.statusKernel
 
     ret
 
@@ -352,34 +414,6 @@ makeDescriptionBanner:
 
 ;;************************************************************************************
 
-;; Searches for a specific character in the given String
-;;
-;; Input:
-;;
-;; ESI - String to be checked
-;; AL  - Character to search for
-;;
-;; Output:
-;;
-;; ESI - Character position in the given String
-
-findCharacterInList:
-
-    lodsb
-
-    cmp al, ' '
-    je .done
-
-    jmp findCharacterInList
-
-.done:
-
-    mov byte[esi-1], 0
-
-    ret
-
-;;************************************************************************************
-
 VERSION equ "3.1.0"
 
 top:
@@ -389,7 +423,7 @@ db "top version ", VERSION, 10, 0
 .memoryDescription:
 db "Total (MB) | User memory used (bytes) | Kernel memory (bytes) | Total used (bytes, kernel+user)", 0
 .header:
-db "PID | Process name", 0
+db "PID   NAME          STATUS    PARENT", 0
 .use:
 db "Usage: top", 10, 10
 db "Displays processes loaded on the system.", 10, 10
@@ -401,15 +435,27 @@ db "All rights reserved.", 0
 db "?", 0
 .helpParameter2:
 db "--help", 0
+.statusReady:
+db "READY", 0
+.statusRunning:
+db "RUNNING", 0
+.statusBlocked:
+db "BLOCKED", 0
+.statusZombie:
+db "ZOMBIE", 0
+.statusUnknown:
+db "UNKNOWN", 0
+.statusKernel:
+db "KERNEL", 0
 .fontColor:       dd 0
 .backgroundColor: dd 0
 .positionY: db 0
 
 ;;************************************************************************************
 
-remainingList:  dd ?
-processCount:   dd 0
-PIDs:           dd 0
-numbersPID:     dd 0
+processRecordSize = 22 ;; must match Hexagon.Kern.Proc.getProcessTable.recordSize in the kernel
+
+recordsPointer: dd ?
+remainingCount: dd 0
 currentProcess: dd ' '
 parameters:     dd ?
