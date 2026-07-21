@@ -166,10 +166,17 @@ displayProcesses:
 
     putNewLine
 
-    hx.syscall hx.getProcesses ;; eax = record count, esi = fixed-size process records
+    hx.syscall hx.getProcesses ;; eax = record count, esi = record size (dd) + records
+
+    mov dword[remainingCount], eax
+
+    mov eax, dword[esi] ;; record size, read from the message itself
+
+    mov dword[processRecordSize], eax
+
+    add esi, 4 ;; skip past the record size
 
     mov [recordsPointer], esi
-    mov dword[remainingCount], eax
 
     putNewLine
 
@@ -213,7 +220,9 @@ displayProcesses:
 
     call putParent
 
-    add dword[recordsPointer], processRecordSize
+    mov eax, dword[processRecordSize]
+
+    add dword[recordsPointer], eax
 
     dec dword[remainingCount]
 
@@ -453,7 +462,7 @@ db "KERNEL", 0
 
 ;;************************************************************************************
 
-processRecordSize = 22 ;; must match Hexagon.Kern.Proc.getProcessTable.recordSize in the kernel
+processRecordSize: dd 0 ;; read from the hx.getProcesses response itself
 
 recordsPointer: dd ?
 remainingCount: dd 0
