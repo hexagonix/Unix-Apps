@@ -166,15 +166,15 @@ displayProcesses:
 
     putNewLine
 
-    hx.syscall hx.getProcesses ;; eax = record count, esi = record size (dd) + records
+    hx.syscall hx.getProcesses ;; EAX = record count, ESI = record size (dd) + records
 
     mov dword[remainingCount], eax
 
-    mov eax, dword[esi] ;; record size, read from the message itself
+    mov eax, dword[esi] ;; Record size, read from the message itself
 
     mov dword[processRecordSize], eax
 
-    add esi, 4 ;; skip past the record size
+    add esi, 4 ;; Skip past the record size
 
     mov [recordsPointer], esi
 
@@ -202,7 +202,7 @@ displayProcesses:
 
     mov edx, esi
 
-    add edx, 9 ;; process name field
+    add edx, 9 ;; Process name field
 
     mov [currentProcess], edx
 
@@ -210,13 +210,13 @@ displayProcesses:
 
     mov esi, [recordsPointer]
 
-    mov al, byte[esi+8] ;; state
+    mov al, byte[esi+8] ;; State
 
     call putStatus
 
     mov esi, [recordsPointer]
 
-    mov ebx, dword[esi+4] ;; parent PID
+    mov ebx, dword[esi+4] ;; Parent PID
 
     call putParent
 
@@ -286,7 +286,7 @@ putSpace:
 
     hx.syscall hx.getCursor
 
-    gotoxy 6, dh
+    gotoxy 7, dh
 
     ret
 
@@ -304,7 +304,7 @@ putStatus:
 
     hx.syscall hx.getCursor
 
-    gotoxy 21, dh
+    gotoxy 20, dh
 
     pop eax
 
@@ -363,7 +363,7 @@ putParent:
 
     hx.syscall hx.getCursor
 
-    gotoxy 32, dh
+    gotoxy 30, dh
 
     pop ebx
 
