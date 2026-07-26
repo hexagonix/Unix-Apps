@@ -286,7 +286,7 @@ putSpace:
 
     hx.syscall hx.getCursor
 
-    gotoxy 7, dh
+    gotoxy 6, dh
 
     ret
 
