@@ -83,10 +83,13 @@ include "macros.s"
 
 ;;************************************************************************************
 
-VERSION equ "2.5.0"
+VERSION equ "3.0.0"
 
-CoreUtilsVersion equ "System I-RELEASE-9.0"
-UnixUtilsVersion equ "System I-RELEASE-9.0"
+CoreUtilsVersion equ "Dormin-1.0"
+UnixUtilsVersion equ "Dormin-1.0"
+
+manBarColor     = AZUL_CALMANTE
+manBarFontColor = HEXAGONIX_CLASSICO_BRANCO
 
 man:
 
@@ -94,8 +97,6 @@ man:
 db "?", 0
 .helpParameter2:
 db "--help",0
-.man:
-db "Hexagonix manual", 0
 .use:
 db 10, "Usage: man [utility]", 10, 10
 db "Display detailed help for installed Unix utilities.", 10, 10
@@ -111,8 +112,21 @@ db "Press <q> to exit.", 0
 db ": manual not found for this utility.", 0
 .manFileExtension:
 db ".man", 0
+.morePrompt:
+db "-- More -- (press any key to continue, <q> to quit)", 0
+.endPrompt:
+db "(END) (press <q> to quit)", 0
+.systemName:
+db "Hexagonix", 0
 
-utility: dd ?
+utility:              dd ?
+nameLength:           db 0 ;; Length of the utility name, before ".man" is appended to it
+pageSize:             db 0 ;; Content lines per screen, computed from the console info
+lineCount:            db 0 ;; Content lines printed on the current page so far
+readPos:              dd ? ;; Where the next page starts reading from in appFileBuffer
+numberColumns:        db 0
+savedFontColor:       dd 0
+savedBackgroundColor: dd 0
 
 ;;************************************************************************************
 
@@ -142,6 +156,8 @@ applicationStart:
     hx.syscall hx.stringSize
 
     mov ebx, eax
+
+    mov byte[nameLength], bl
 
     mov al, byte[man.manFileExtension+0]
 
@@ -173,11 +189,23 @@ applicationStart:
 
     jc manNotFound
 
+;; The file has been located and opened, "utility" is no longer needed with
+;; the ".man" extension appended to it, so strip it back to just the plain
+;; name for display
+
+    mov esi, [utility]
+
+    movzx ecx, byte[nameLength]
+
+    mov byte[esi+ecx], 0
+
 ;; Environment preparation
 
     call buildInterface
 
-    fputs appFileBuffer
+    mov esi, appFileBuffer
+
+    call showPaginated
 
     jmp finish
 
@@ -187,12 +215,216 @@ buildInterface:
 
     hx.syscall hx.clearConsole
 
-    fputs man.man
+    hx.syscall hx.getConsoleInfo
 
-    xyfputs 40, 0, [utility]
+    mov byte[numberColumns], bl
+
+;; BH is the row count. Row 0 is the bar and the last row (BH - 1) is the
+;; "-- More --"/"(END)" prompt, so content gets the rest
+
+    mov al, bh
+    sub al, 2
+
+    mov byte[pageSize], al
+
+    ret
+
+;;************************************************************************************
+
+;; Redraws the bar at row 0 without disturbing the rest of the screen,
+;; restoring the cursor to wherever it was so content printing can continue
+;; right where it left off. Used to keep the bar visible after a page turn
+;; that scrolls rather than clears
+
+refreshBar:
+
+    hx.syscall hx.getCursor
+
+    push edx
+
+    call drawBar
+
+    pop edx
+
+    hx.syscall hx.setCursor
+
+    ret
+
+;;************************************************************************************
+
+;; Draws the header bar on row 0: the system name on the left, the manual
+;; name centered on top of it
+
+drawBar:
+
+    hx.syscall hx.getColor
+
+    mov dword[savedFontColor], eax
+    mov dword[savedBackgroundColor], ebx
+
+    mov eax, manBarFontColor
+    mov ebx, manBarColor
+
+    hx.syscall hx.setColor
+
+    mov al, 0
+
+    hx.syscall hx.clearLine ;; Fills row 0 with the current background color
+
+    gotoxy 0, 0
+
+    fputs man.systemName
+
+    mov esi, [utility]
+
+    hx.syscall hx.stringSize
+
+    mov ecx, eax
+
+    movzx eax, byte[numberColumns]
+
+    sub eax, ecx
+
+    shr eax, 1 ;; (columns - name length) / 2, to center the name on the bar
+
+    gotoxy al, 0
+
+    fputs [utility]
+
+    mov eax, dword[savedFontColor]
+    mov ebx, dword[savedBackgroundColor]
+
+    hx.syscall hx.setColor
+
+    ret
+
+;;************************************************************************************
+
+;; Prints a NUL terminated buffer one page at a time, like a classic pager.
+;; The console is only cleared once, by buildInterface, before this is ever
+;; called. From then on, a page turn scrolls the existing content up (via a
+;; newline printed from the bottom row) instead of clearing the screen, and
+;; the bar is simply redrawn on top afterward. Pressing <q> or <Q> at a
+;; pause stops early
+;;
+;; Input:
+;;
+;; ESI - Buffer to print
+
+showPaginated:
+
+    mov dword[readPos], esi ;; drawBar uses ESI internally, save this first
+
+    call drawBar
+
+    gotoxy 0, 1
+
+.pageLoop:
+
+    mov esi, dword[readPos]
+
+    mov byte[lineCount], 0
+
+.charLoop:
+
+    lodsb
+
+    cmp al, 0
+    je .documentEnd
+
+    hx.syscall hx.printCharacter
+
+    cmp al, 10
+    jne .charLoop
+
+    inc byte[lineCount]
+
+    mov al, byte[lineCount]
+
+    cmp al, byte[pageSize]
+
+    jb .charLoop
+
+;; A full page has been printed. Remember where the next one continues from
+;; before pausing, so pauseForKeyPress doesn't need to preserve ESI
+
+    mov dword[readPos], esi
+
+    call pauseForKeyPress
+
+    jc .end ;; The user pressed <q> or <Q>
+
+    putNewLine ;; Scrolls the screen up, since we are on the bottom row
+
+    call refreshBar
+
+    jmp .pageLoop ;; Reloads ESI from readPos at the top
+
+.documentEnd:
+
+    call waitForQuit
+
+.end:
+
+    ret
+
+;;************************************************************************************
+
+;; Shown once the manual body has been fully printed. Unlike
+;; pauseForKeyPress, only <q> or <Q> is accepted here, so the manual stays
+;; on screen until the user explicitly asks to leave it, like a real pager
+
+waitForQuit:
 
     putNewLine
-    putNewLine
+
+    fputs man.endPrompt
+
+.waitLoop:
+
+    hx.syscall hx.waitKeyboard
+
+    cmp al, 'q'
+    je .done
+
+    cmp al, 'Q'
+    je .done
+
+    jmp .waitLoop
+
+.done:
+
+    ret
+
+;;************************************************************************************
+
+;; Shows the pager prompt on the current row and waits for a key. The
+;; caller is responsible for scrolling past this line afterward, so there
+;; is nothing to clean up here
+;;
+;; Output:
+;;
+;; CF - Set if the user pressed <q> or <Q> to stop early
+
+pauseForKeyPress:
+
+    fputs man.morePrompt
+
+    hx.syscall hx.waitKeyboard
+
+    cmp al, 'q'
+    je .stop
+
+    cmp al, 'Q'
+    je .stop
+
+    clc
+
+    ret
+
+.stop:
+
+    stc
 
     ret
 
