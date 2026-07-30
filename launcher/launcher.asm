@@ -1,4 +1,4 @@
-;; Temporary diagnostic app - not part of the distribution.
+;; Temporary diagnostic app, not part of the distribution.
 ;; Spawns workera and workerb (non-blocking) and then loops printing its own
 ;; tick too, so the log shows three independent contexts (this process plus
 ;; the two spawned workers) interleaved by the round-robin scheduler.
