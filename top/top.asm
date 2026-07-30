@@ -127,7 +127,7 @@ displayProcesses:
 
     hx.syscall hx.memoryUsage
 
-    ;; Save memory used by processes
+;; Save memory used by processes
 
     push eax
 
@@ -145,7 +145,7 @@ displayProcesses:
 
     hx.syscall hx.memoryUsage
 
-    ;; Save memory used by kernel
+;; Save memory used by kernel
 
     push edx
 
@@ -423,7 +423,7 @@ makeDescriptionBanner:
 
 ;;************************************************************************************
 
-VERSION equ "3.1.0"
+VERSION equ "4.0.0"
 
 top:
 
