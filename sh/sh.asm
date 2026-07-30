@@ -423,8 +423,6 @@ shellStart:
 
     fputs sh.backgroundEnd
 
-    putNewLine
-
     jmp .getCommandLine
 
 ;;************************************************************************************
@@ -718,7 +716,7 @@ finishShell:
 
 ;; TODO: improve shell scripting support
 
-VERSION equ "2.2.0"
+VERSION equ "2.2.1"
 
 searchSizeLimit = 32768
 
