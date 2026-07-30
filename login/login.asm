@@ -103,7 +103,7 @@ searchSizeLimit = 32768
 
 ;;************************************************************************************
 
-VERSION equ "4.11.1"
+VERSION equ "5.0.0"
 
 login:
 
@@ -161,8 +161,6 @@ previousCode:
 dd 0
 wrong:
 db 0
-startedByInit:
-db 0
 parameters: ;; If the application received any parameters
 db 0
 positionBX: ;; Marking the search position in the file content
@@ -204,21 +202,6 @@ loginHexagonix: ;; Entry point
     systemLog login.verboseLogin, 0, Log.Priorities.p4
 
 startProcessing:
-
-    hx.syscall hx.pid
-
-    cmp eax, 02h
-    je .viaInit
-
-    mov byte [startedByInit], 00h
-
-    jmp .continueAfterValidation
-
-.viaInit:
-
-    mov byte [startedByInit], 01h
-
-.continueAfterValidation:
 
     call runLogind
 
@@ -338,22 +321,19 @@ startProcessing:
 
    jmp .startShell ;; Try loading the default Hexagonix shell
 
-.shellFinished: ;; Try loading the shell again
+.shellFinished:
 
     hx.syscall hx.lock
 
     systemLog login.verboseLogout, 0, Log.Priorities.p4
 
-;; Here we will implement a change in the way login should interpret shell exit.
-;; If login has PID 2, it means it was invoked via init. Therefore, he must remain
-;;  a resident at this time. If PID 2, request user input again
+;; login is one-shot: one session, then it exits. Whatever launched it (a
+;; respawn= entry in /rc, or a user running it directly) is responsible for
+;; deciding whether to run it again
 
     putNewLine
 
-    cmp byte [startedByInit], 01h
-    jne finish
-
-    jmp .initialRun
+    jmp finish
 
 .notFound: ;; The shell could not be located
 
@@ -734,7 +714,7 @@ findUserShell:
     push ds ;; User mode data segment (38h selector)
     pop es
 
-    mov di, hexagonixShell ;; The shell name will be copied to ES:DI - hexagonixShell
+    mov di, hexagonixShell ;; The shell name will be copied to ES:DI: hexagonixShell
 
     mov si, appFileBuffer
 
