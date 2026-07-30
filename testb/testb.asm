@@ -1,4 +1,4 @@
-;; Temporary diagnostic app - not part of the distribution.
+;; Temporary diagnostic app, not part of the distribution.
 ;; Minimal child process: prints a message and exits immediately.
 ;; Used together with testa to isolate the process allocator's malloc/free
 ;; cycle from the complexity of the real login/logind/sh chain.

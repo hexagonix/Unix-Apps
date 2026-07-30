@@ -1,4 +1,4 @@
-;; Temporary diagnostic app - not part of the distribution.
+;; Temporary diagnostic app, not part of the distribution.
 ;; Calls hx.spawn on testb and confirms the caller keeps running immediately
 ;; afterward (proving spawn does not block), logging the returned PID/error.
 
@@ -38,10 +38,6 @@ applicationStart:
     systemLog testa.spawnFailed, 0, Log.Priorities.p4
 
 .stillAlive:
-
-;; If we reach this and log it, hx.spawn returned control to us immediately
-;; instead of blocking until testb finished (there is no scheduler yet, so
-;; testb never actually runs - this only proves spawn itself is non-blocking)
 
     systemLog testa.stillRunning, 0, Log.Priorities.p4
 

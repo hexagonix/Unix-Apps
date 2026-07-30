@@ -1,5 +1,5 @@
-;; Temporary diagnostic app - not part of the distribution.
-;; Loops forever, logging a tick and sleeping briefly - used together with
+;; Temporary diagnostic app, not part of the distribution.
+;; Loops forever, logging a tick and sleeping briefly, used together with
 ;; workerb and launcher to prove the round-robin scheduler actually
 ;; interleaves independent spawned processes.
 
