@@ -222,7 +222,7 @@ rebootHexagon:
 
 prepareSystemWithoutEcho:
 
-    mov ecx, 20000
+    mov ecx, 100
 
     hx.syscall hx.sleep
 
@@ -234,13 +234,13 @@ prepareSystem:
 
     fputs shutdown.systemMessage
 
-    mov ecx, 10000
+    mov ecx, 100
 
     hx.syscall hx.sleep
 
     fputs shutdown.disksMessage
 
-    mov ecx, 10000
+    mov ecx, 100
 
     hx.syscall hx.sleep
 
@@ -278,7 +278,7 @@ finish:
 
 messageLabel equ "[shutdown]: "
 
-VERSION equ "1.7.0"
+VERSION equ "1.8.0"
 
 shutdown:
 
