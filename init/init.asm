@@ -70,7 +70,7 @@
 ;;
 ;;                       Unix utility init for Hexagonix
 ;;
-;;                 Copyright (c) 2015-2025 Felipe Miguel Nery Lunkes
+;;                 Copyright (c) 2015-2026 Felipe Miguel Nery Lunkes
 ;;                              All rights reserved.
 ;;
 ;;************************************************************************************
@@ -82,7 +82,7 @@ use32
 include "HAPP.s" ;; Here is a structure for the HAPP header
 
 ;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
-appHeader headerHAPP HAPP.Architectures.i386, 1, 00, initHexagonix, 01h
+appHeader headerHAPP HAPP.Architectures.i386, 1, 5, initHexagonix, 01h
 
 ;;************************************************************************************
 
@@ -93,20 +93,25 @@ include "dev.s"
 
 ;;************************************************************************************
 
-VERSION equ "2.8.1"
+VERSION equ "3.0.0"
 
-searchSizeLimit = 32768 ;; Maximum file size: 32 kbytes
+searchSizeLimit = 32768 ;; Maximum /rc size read while parsing: 32 kbytes
+
+lineBufferSize = 64 ;; Big enough for "respawn=" plus a 12 character name
+
+respawnTable.limit = 8 ;; How many respawn= services init can supervise at once
 
 defaultShell: ;; Name of the file containing the default Unix shell
 db "sh", 0
 rcFile: ;; init configuration file name
 db "rc", 0
-tryDefaultShell: ;; Signals an attempt to load the default shell
-db 0
-positionBX: ;; Marking the search position in the file content
-dw 0
-hexagonixService: ;; Stores the name of the shell to be used by the system
-times 12 db 0
+
+keyStart:
+db "start", 0
+keySpawn:
+db "spawn", 0
+keyRespawn:
+db "respawn", 0
 
 init:
 
@@ -114,20 +119,26 @@ init:
 db "init version ", VERSION, ".", 0
 .startingSystem:
 db "The system is coming up. Please wait.", 0
-.systemReady:
-db "The system is ready.", 0
 .searchFile:
 db "Looking for /rc...", 0
 .fileFound:
 db "Configuration file (/rc) found.", 0
 .fileNotFound:
 db "Configuration file (/rc) not found. The default shell will be executed (sh).", 0
-.generalError:
-db "An unhandled error was encountered.", 0
-.registeringComponents:
-db "Starting service...", 0
 .setupConsole:
 db "Setting up consoles (tty0, tty1)...", 0
+.willStart:
+db "Process will be started and will block until it exits (start):", 0
+.startFailed:
+db "Process failed to start (start):", 0
+.spawnOK:
+db "Process started successfully (spawn), not monitored:", 0
+.spawnFailed:
+db "Process failed to start (spawn):", 0
+.respawnOK:
+db "Process started and is being monitored (respawn):", 0
+.respawnFailed:
+db "Process failed to start (respawn):", 0
 
 ;;************************************************************************************
 
@@ -163,67 +174,44 @@ initHexagonix: ;; Entry point
 
 startProcessing:
 
-    hx.syscall hx.lock ;; Prevents the user from killing the login process with a special key
+    hx.syscall hx.lock ;; Prevents the user from killing the current foreground process with a special key
 
-;; Now init will check the existence of the rc configuration file.
-;; If this file is present, init will look for the declaration of an image to be used with the
-;; system, as well as Hexagonix configuration declarations.
-;; If this file is not found, init will load the default shell. The default is the Hexagonix login
-;; utility.
+;; Read /rc line by line. Each recognized "key=value" line either blocks
+;; (start=), fires and forgets (spawn=), or fires and gets supervised from
+;; then on (respawn=). Once the whole file has been processed, init falls
+;; into monitorLoop and never returns
 
     systemLog init.searchFile, 0, Log.Priorities.p4
 
-    mov word[positionBX], 0FFFFh ;; Starts at position -1, so you can find the delimiters
+    mov esi, rcFile
+    mov edi, appFileBuffer
 
-    call findConfigurationFile
+    hx.syscall hx.open
 
-    systemLog init.systemReady, 0, Log.Priorities.p5
+    jc .rcNotFound
 
-.loadService:
+    systemLog init.fileFound, 0, Log.Priorities.p4
 
-    systemLog init.registeringComponents, 0, Log.Priorities.p4
+    call parseConfig
 
-    mov esi, hexagonixService
+    jmp monitorLoop
 
-    hx.syscall hx.fileExists
+.rcNotFound:
 
-    jc .nextService
+;; No /rc at all. Fall back to supervising the default shell directly, the
+;; same way a lone "respawn=sh" line would
 
-    mov eax, 0 ;; Do not pass arguments
-    mov esi, hexagonixService ;; Service name
+    systemLog init.fileNotFound, 0, Log.Priorities.p4
 
-    stc
+    mov esi, defaultShell
 
-    hx.syscall hx.exec ;; Request loading of the service
+    hx.syscall hx.spawn
 
-    jnc .nextService
+    jc monitorLoop ;; Nothing could be started at all, just idle
 
-.nextService:
+    call registerRespawn
 
-    clc
-
-    call findConfigurationFile
-
-    jmp .loadService
-
-.serviceNotFound: ;; The service could not be located
-
-;; Check if you have already tried to load the default Hexagonix shell
-
-    cmp byte[tryDefaultShell], 0
-    je .tryDefaultShell          ;; If not, try loading the default Hexagonix shell
-
-    hx.syscall hx.exit ;; If yes, the default shell cannot be run either
-
-.tryDefaultShell: ;; Try loading the default Hexagonix shell
-
-    call findDefaultShell ;; Configure Hexagonix default shell name
-
-    mov byte[tryDefaultShell], 1 ;; Try loading the default Hexagonix shell
-
-    hx.syscall hx.unlock ;; The shell can be terminated using a special key
-
-    jmp .loadService ;; Try loading the default Hexagonix shell
+    jmp monitorLoop
 
 ;;************************************************************************************
 
@@ -243,160 +231,480 @@ clearConsole:
 
 ;;************************************************************************************
 
-findConfigurationFile:
+;; Walks appFileBuffer (already opened by initHexagonix) one line at a time,
+;; up to searchSizeLimit bytes, handing each line to processLine
 
-    pusha
+parseConfig:
 
-    push es
+    mov esi, appFileBuffer
 
-    push ds ;; User mode data segment (38h selector)
-    pop es
+    mov dword[rcPosition], 0
 
-    mov esi, rcFile
-    mov edi, appFileBuffer
+.lineLoop:
 
-    hx.syscall hx.open
+    mov edi, lineBuffer
 
-    jc .rcFileNotFound
+.copyChar:
 
-    mov si, appFileBuffer ;; Points to the buffer with the file contents
-    mov bx, word[positionBX]
+    lodsb
 
-    jmp .searchBetweenDelimiters
+    inc dword[rcPosition]
 
-.searchBetweenDelimiters:
+    cmp dword[rcPosition], searchSizeLimit
+    jae .done
 
-    inc bx
+    cmp al, 0
+    je .lastLine
 
-    mov word[positionBX], bx
+    cmp al, 10
+    je .lineComplete
 
-;; If nothing is found within the size limit, cancel the search
+;; Skip CR outright rather than copying it. /rc is generated by configure.sh
+;; from rc.conf via "echo -e", which produces real CRLF line endings, and
+;; hx.trimString only strips spaces, not carriage returns
 
-    cmp bx, searchSizeLimit
-    je startProcessing.tryDefaultShell
+    cmp al, 13
+    je .copyChar
 
-    mov al, [ds:si+bx]
+    mov byte[edi], al
 
-    cmp al, ':'
-    jne .searchBetweenDelimiters ;; The initial delimiter has been found
+    inc edi
 
-;; BX now points to the first character of the shell name retrieved from the file
+    cmp edi, lineBuffer+lineBufferSize - 1
+    jae .lineComplete ;; Line too long for the buffer, process what fits
 
-    push ds ;; User mode data segment (38h selector)
-    pop es
+    jmp .copyChar
 
-    mov di, hexagonixService ;; The shell name will be copied to ES:DI - hexagonixService
+.lineComplete:
 
-    mov si, appFileBuffer
+    mov byte[edi], 0
 
-    add si, bx ;; Move SI to where BX points
+    push esi ;; processLine uses ESI internally (trimString, compareWordsString,
+             ;; systemLog, ...) and never restores our read position in
+             ;; appFileBuffer, so it has to be saved across the call
 
-    mov bx, 0 ;; Start at 0
+    call processLine
 
-.getServiceName:
+    pop esi
 
-    inc bx
+    jmp .lineLoop
 
-    cmp bx, 13
-    je .invalidServiceName ;; If file name greater than 11, the name is invalid
+.lastLine: ;; End of the file, possibly without a trailing newline
 
-    mov al, [ds:si+bx]
+    mov byte[edi], 0
 
-;; Now let's look for the final delimiters of a service name, which could be:
-;;
-;; EOL - new line (10)
-;; Space - a space after the last character
-;; # - If used after the last character of the service name, mark as a comment
+    call processLine
 
-    cmp al, 10 ;; If another delimiter is found, the name was loaded successfully
-    je .serviceNameObtained
-
-    cmp al, ' ' ;; If another delimiter is found, the name was loaded successfully
-    je .serviceNameObtained
-
-    cmp al, '#' ;; If another delimiter is found, the name was loaded successfully
-    je .serviceNameObtained
-
-;; If not ready, store the obtained character
-
-    stosb
-
-    jmp .getServiceName
-
-.serviceNameObtained:
-
-    pop es
-
-    popa
-
-    systemLog init.fileFound, 0, Log.Priorities.p4
+.done:
 
     ret
-
-.invalidServiceName:
-
-    pop es
-
-    popa
-
-    jmp findDefaultShell
-
-
-.rcFileNotFound:
-
-    pop es
-
-    popa
-
-    systemLog init.fileNotFound, 0, Log.Priorities.p4
-
-    jmp findDefaultShell
 
 ;;************************************************************************************
 
-findDefaultShell:
+;; Logs a static prefix followed by the current process name (dword[valuePtr])
+;; as a single line. systemLog always ends its own output with a newline, so
+;; logging the prefix and the name as two separate calls would print them as
+;; two separate lines instead of one. This function builds them into one buffer first
+;;
+;; Input:
+;;
+;; ESI - Prefix message (NUL terminated)
+
+logWithName:
 
     push es
 
     push ds ;; User mode data segment (38h selector)
     pop es
 
-    mov esi, hexagonixService
+    mov edi, logBuffer
 
-    hx.syscall hx.stringSize
+.copyPrefix:
 
-    push eax
+    lodsb
 
-    mov edi, hexagonixService
-    mov esi, ' '
+    cmp al, 0
+    je .addSpace
 
-    pop ecx
+    stosb
 
-    rep movsb
+    jmp .copyPrefix
+
+.addSpace:
+
+    mov al, ' '
+
+    stosb
+
+    mov esi, dword[valuePtr]
+
+.copyName:
+
+    lodsb
+
+    stosb
+
+    cmp al, 0
+    jne .copyName
 
     pop es
+
+    systemLog logBuffer, 0, Log.Priorities.p4
+
+    ret
+
+;;************************************************************************************
+
+;; Parses one NUL terminated line from lineBuffer and dispatches it. Blank
+;; lines, lines starting with '#', and lines without a real "key=value"
+;; shape are silently ignored
+
+processLine:
+
+    mov esi, lineBuffer
+
+    hx.syscall hx.trimString
+
+    cmp byte[esi], 0
+    je .ignore
+
+    cmp byte[esi], '#'
+    je .ignore
+
+    mov dword[keyPtr], esi
+
+.findEquals:
+
+    lodsb
+
+    cmp al, 0
+    je .ignore ;; No '=' on this line, nothing to do with it
+
+    cmp al, '='
+    jne .findEquals
+
+    mov byte[esi - 1], 0 ;; Split the line in place, terminating the key here
+
+    mov dword[valuePtr], esi
+
+    hx.syscall hx.trimString
+
+    mov dword[valuePtr], esi
+
+    mov esi, dword[keyPtr]
+    mov edi, keyStart
+
+    hx.syscall hx.compareWordsString
+
+    jc .doStart
+
+    mov esi, dword[keyPtr]
+    mov edi, keyRespawn
+
+    hx.syscall hx.compareWordsString
+
+    jc .doRespawn
+
+    mov esi, dword[keyPtr]
+    mov edi, keySpawn
+
+    hx.syscall hx.compareWordsString
+
+    jc .doSpawn
+
+    ret ;; Unknown key, ignore
+
+.doStart:
+
+    mov esi, init.willStart
+
+    call logWithName
+
+    mov esi, dword[valuePtr]
+
+    mov eax, 0
+
+    stc
+
+    hx.syscall hx.exec
+
+    jc .startFailed
+
+    ret
+
+.startFailed:
+
+    mov esi, init.startFailed
+
+    call logWithName
+
+    ret
+
+.doSpawn:
+
+    mov esi, dword[valuePtr]
+
+    hx.syscall hx.spawn
+
+    jc .spawnFailed
+
+    mov esi, init.spawnOK
+
+    call logWithName
+
+    ret
+
+.spawnFailed:
+
+    mov esi, init.spawnFailed
+
+    call logWithName
+
+    ret
+
+.doRespawn:
+
+    mov esi, dword[valuePtr]
+
+    hx.syscall hx.spawn
+
+    jc .respawnFailed
+
+    mov esi, dword[valuePtr]
+
+    call registerRespawn
+
+    mov esi, init.respawnOK
+
+    call logWithName
+
+    ret
+
+.respawnFailed:
+
+    mov esi, init.respawnFailed
+
+    call logWithName
+
+    ret
+
+.ignore:
+
+    ret
+
+;;************************************************************************************
+
+;; Records a newly (re)spawned process for supervision
+;;
+;; Input:
+;;
+;; EAX - PID of the process
+;; ESI - Name of the service (NUL terminated)
+
+registerRespawn:
+
+    push eax
+    push esi
+
+    xor ecx, ecx
+
+.findSlot:
+
+    cmp ecx, respawnTable.limit
+    jae .noSlot ;; Table full, this one just won't be supervised
+
+    cmp byte[respawnTable.used+ecx], 0
+    je .slotFound
+
+    inc ecx
+
+    jmp .findSlot
+
+.slotFound:
+
+    pop esi
+    pop eax
+
+    mov dword[respawnTable.pid+ecx*4], eax
+
+    mov byte[respawnTable.used+ecx], 1
+
+    imul edi, ecx, 13
+    add edi, respawnTable.name
 
     push es
 
     push ds ;; User mode data segment (38h selector)
     pop es
 
-    mov esi, defaultShell
+    mov ecx, 12
 
-    hx.syscall hx.stringSize
+.copyName:
 
-    push eax
+    lodsb
 
-    mov edi, hexagonixService
-    mov esi, defaultShell
+    cmp al, 0
+    je .namePadded
 
-    pop ecx
+    stosb
 
-    rep movsb
+    loop .copyName
+
+.namePadded:
+
+    mov byte[edi], 0
 
     pop es
 
     ret
+
+.noSlot:
+
+    pop esi
+    pop eax
+
+    ret
+
+;;************************************************************************************
+
+;; Never returns. Once a second, checks every supervised PID against the
+;; current process table and relaunches whichever one has disappeared,
+;; remembering its new PID
+
+monitorLoop:
+
+    mov ecx, 100 ;; ~1 second, at the kernel's 100 Hz timer rate
+
+    hx.syscall hx.sleep
+
+    hx.syscall hx.getProcesses ;; EAX = record count, ESI = record size (dd) + records
+
+    mov dword[procCount], eax
+
+    mov ecx, dword[esi]
+    mov dword[procRecordSize], ecx
+
+    add esi, 4
+
+    mov dword[procRecords], esi
+
+    xor ebx, ebx
+
+.checkSlot:
+
+    cmp ebx, respawnTable.limit
+    jae monitorLoop
+
+    cmp byte[respawnTable.used+ebx], 0
+    je .nextSlot
+
+    mov eax, dword[respawnTable.pid+ebx*4]
+
+    call isPidAlive
+
+    jnc .nextSlot ;; Still running
+
+;; Gone. Relaunch it and remember the new PID
+
+    push ebx
+
+    imul esi, ebx, 13
+    add esi, respawnTable.name
+
+    hx.syscall hx.spawn
+
+    pop ebx
+
+    jc .nextSlot ;; Relaunch failed, try again on the next tick
+
+    mov dword[respawnTable.pid+ebx*4], eax
+
+.nextSlot:
+
+    inc ebx
+
+    jmp .checkSlot
+
+;;************************************************************************************
+
+;; Checks whether a PID is present in the process table snapshot taken by
+;; the current monitorLoop tick (procCount/procRecords/procRecordSize)
+;;
+;; Input:
+;;
+;; EAX - PID to look for
+;;
+;; Output:
+;;
+;; CF - Set if the PID is not present (the process has exited)
+
+isPidAlive:
+
+    push ebx
+    push ecx
+    push esi
+
+    mov ebx, eax
+
+    mov ecx, dword[procCount]
+    mov esi, dword[procRecords]
+
+.scan:
+
+    cmp ecx, 0
+    je .notFound
+
+    cmp dword[esi], ebx ;; PID field, at offset 0 of each record
+
+    je .found
+
+    add esi, dword[procRecordSize]
+
+    dec ecx
+
+    jmp .scan
+
+.found:
+
+    pop esi
+    pop ecx
+    pop ebx
+
+    clc
+
+    ret
+
+.notFound:
+
+    pop esi
+    pop ecx
+    pop ebx
+
+    stc
+
+    ret
+
+;;************************************************************************************
+
+rcPosition:     dd 0
+keyPtr:         dd ?
+valuePtr:       dd ?
+procCount:      dd 0
+procRecordSize: dd 0
+procRecords:    dd ?
+
+respawnTable.pid: 
+times respawnTable.limit dd 0
+respawnTable.used: 
+times respawnTable.limit    db 0
+respawnTable.name: 
+times respawnTable.limit*13 db 0
+
+lineBuffer:
+times lineBufferSize db 0
+
+logBuffer: ;; Scratch space for logWithName, prefix + " " + a 12 character name
+times 96 db 0
 
 ;;************************************************************************************
 
