@@ -301,6 +301,27 @@ shellStart:
 
     jc runShellScript ;; Start batch file execution
 
+;; Check for a trailing "&", which backgrounds the command instead of
+;; blocking the shell until it exits
+
+    hx.syscall hx.stringSize
+
+    mov byte[sh.background], 0
+
+    cmp eax, 0
+    je .checkedBackground
+
+    cmp byte[esi+eax-1], '&'
+    jne .checkedBackground
+
+    mov byte[esi+eax-1], 0
+
+    hx.syscall hx.trimString
+
+    mov byte[sh.background], 1
+
+.checkedBackground:
+
 ;; Try to load an image
 
     call getArguments ;; Separate command and arguments
@@ -373,6 +394,9 @@ shellStart:
 
     pop esi
 
+    cmp byte[sh.background], 1
+    je .loadBackground
+
     mov eax, edi
 
     stc
@@ -380,6 +404,26 @@ shellStart:
     hx.syscall hx.exec
 
     jc .executionFailure
+
+    jmp .getCommandLine
+
+.loadBackground:
+
+    hx.syscall hx.spawn
+
+    jc .executionFailure
+
+    push eax
+
+    fputs sh.backgroundStart
+
+    pop eax
+
+    printInteger
+
+    fputs sh.backgroundEnd
+
+    putNewLine
 
     jmp .getCommandLine
 
@@ -674,7 +718,7 @@ finishShell:
 
 ;; TODO: improve shell scripting support
 
-VERSION equ "2.0.1"
+VERSION equ "2.1.0"
 
 searchSizeLimit = 32768
 
@@ -713,6 +757,10 @@ db 10, "Shell script not found.", 0
 db 10, "An argument is necessary.", 0
 .errorChangingDirectory:
 db 10, "Directory not found or invalid.", 0
+.backgroundStart:
+db 10, "Process in background: [", 0
+.backgroundEnd:
+db "]", 0
 
 .positionBX: dw 0 ;; Marking the search position in the file content
 
@@ -722,6 +770,7 @@ times 12 db 0
 times 64 db 0
 .promptSymbol: ;; Stores # or $
 times 8 db 0
+.background: db 0 ;; Set to 1 when the current command line ends in "&"
 
 ;;**************************
 
