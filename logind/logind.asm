@@ -104,7 +104,7 @@ searchSizeLimit = 32768
 
 ;;************************************************************************************
 
-VERSION equ "1.13.3"
+VERSION equ "1.14.0"
 
 logind:
 
@@ -170,15 +170,8 @@ times 7 db 0
 
 daemonStart: ;; Entry point
 
-;; logind is a daemon that should only be used during startup.
-;; To do this, it must check if the PID is 3 (init=1 and login=2).
-
-    hx.syscall hx.pid
-
-    cmp eax, 03h
-    je startProcessing
-
-    hx.syscall hx.exit
+;; logind is a daemon that should only be used during startup, launched by
+;; login's own runLogind. This daemon should not be called directly
 
 startProcessing:
 
