@@ -73,7 +73,7 @@ use32
 include "HAPP.s" ;; Here is a structure for the HAPP header
 
 ;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
-appHeader headerHAPP HAPP.Architectures.i386, 1, 3, shellStart, 01h
+appHeader headerHAPP HAPP.Architectures.i386, 1, 5, shellStart, 01h
 
 ;;************************************************************************************
 
@@ -718,7 +718,7 @@ finishShell:
 
 ;; TODO: improve shell scripting support
 
-VERSION equ "2.1.0"
+VERSION equ "2.2.0"
 
 searchSizeLimit = 32768
 
