@@ -392,8 +392,6 @@ shellStart:
 
     fputs hash.backgroundEnd
 
-    putNewLine
-
     jmp .getCommandLine
 
 ;;************************************************************************************
@@ -687,7 +685,7 @@ finishShell:
 
 ;; TODO: improve shell scripting support
 
-VERSION equ "0.4.0"
+VERSION equ "0.4.1"
 
 searchSizeLimit = 32768
 
