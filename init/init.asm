@@ -93,7 +93,7 @@ include "dev.s"
 
 ;;************************************************************************************
 
-VERSION equ "3.0.0"
+VERSION equ "3.0.1"
 
 searchSizeLimit = 32768 ;; Maximum /rc size read while parsing: 32 kbytes
 
@@ -132,13 +132,15 @@ db "Process will be started and will block until it exits (start):", 0
 .startFailed:
 db "Process failed to start (start):", 0
 .spawnOK:
-db "Process started successfully (spawn), not monitored:", 0
+db "Process started, not monitored (spawn):", 0
 .spawnFailed:
 db "Process failed to start (spawn):", 0
 .respawnOK:
-db "Process started and is being monitored (respawn):", 0
+db "Process started, being monitored (respawn):", 0
 .respawnFailed:
 db "Process failed to start (respawn):", 0
+.respawned:
+db "Process respawned:", 0
 
 ;;************************************************************************************
 
@@ -513,7 +515,7 @@ registerRespawn:
     cmp ecx, respawnTable.limit
     jae .noSlot ;; Table full, this one just won't be supervised
 
-    cmp byte[respawnTable.used+ecx], 0
+    cmp byte[respawnTable.used + ecx], 0
     je .slotFound
 
     inc ecx
@@ -525,9 +527,9 @@ registerRespawn:
     pop esi
     pop eax
 
-    mov dword[respawnTable.pid+ecx*4], eax
+    mov dword[respawnTable.pid + ecx * 4], eax
 
-    mov byte[respawnTable.used+ecx], 1
+    mov byte[respawnTable.used + ecx], 1
 
     imul edi, ecx, 13
     add edi, respawnTable.name
@@ -595,10 +597,10 @@ monitorLoop:
     cmp ebx, respawnTable.limit
     jae monitorLoop
 
-    cmp byte[respawnTable.used+ebx], 0
+    cmp byte[respawnTable.used + ebx], 0
     je .nextSlot
 
-    mov eax, dword[respawnTable.pid+ebx*4]
+    mov eax, dword[respawnTable.pid + ebx * 4]
 
     call isPidAlive
 
@@ -617,7 +619,20 @@ monitorLoop:
 
     jc .nextSlot ;; Relaunch failed, try again on the next tick
 
-    mov dword[respawnTable.pid+ebx*4], eax
+    mov dword[respawnTable.pid + ebx * 4], eax
+
+    push ebx ;; logWithName -> systemLog uses EBX, our slot index
+
+    imul esi, ebx, 13
+    add esi, respawnTable.name
+
+    mov dword[valuePtr], esi
+
+    mov esi, init.respawned
+
+    call logWithName
+
+    pop ebx
 
 .nextSlot:
 
@@ -696,7 +711,7 @@ procRecords:    dd ?
 respawnTable.pid: 
 times respawnTable.limit dd 0
 respawnTable.used: 
-times respawnTable.limit    db 0
+times respawnTable.limit db 0
 respawnTable.name: 
 times respawnTable.limit*13 db 0
 
