@@ -13,7 +13,7 @@
 ;;
 ;;                     Sistema Operacional Hexagonix - Hexagonix Operating System
 ;;
-;;                         Copyright (c) 2015-2025 Felipe Miguel Nery Lunkes
+;;                         Copyright (c) 2015-2026 Felipe Miguel Nery Lunkes
 ;;                        Todos os direitos reservados - All rights reserved.
 ;;
 ;;*************************************************************************************************
@@ -36,7 +36,7 @@
 ;;
 ;; BSD 3-Clause License
 ;;
-;; Copyright (c) 2015-2025, Felipe Miguel Nery Lunkes
+;; Copyright (c) 2015-2026, Felipe Miguel Nery Lunkes
 ;; All rights reserved.
 ;;
 ;; Redistribution and use in source and binary forms, with or without
@@ -70,7 +70,7 @@
 ;;
 ;;                       Unix utility login for Hexagonix
 ;;
-;;                 Copyright (c) 2015-2025 Felipe Miguel Nery Lunkes
+;;                 Copyright (c) 2015-2026 Felipe Miguel Nery Lunkes
 ;;                              All rights reserved.
 ;;
 ;;************************************************************************************
@@ -82,7 +82,7 @@ use32
 include "HAPP.s" ;; Here is a structure for the HAPP header
 
 ;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
-appHeader headerHAPP HAPP.Architectures.i386, 1, 00, loginHexagonix, 01h
+appHeader headerHAPP HAPP.Architectures.i386, 1, 6, loginHexagonix, 01h
 
 ;;************************************************************************************
 
@@ -90,8 +90,8 @@ include "hexagon.s"
 include "console.s"
 include "macros.s"
 include "log.s"
-
-searchSizeLimit = 32768
+include "dev.s"
+include "passwdHash.s"
 
 ;;************************************************************************************
 
@@ -103,14 +103,12 @@ searchSizeLimit = 32768
 
 ;;************************************************************************************
 
-VERSION equ "5.0.0"
+VERSION equ "6.0.0"
 
 login:
 
 .defaultShell: ;; Name of the file containing the default Hexagonix shell
 db "sh", 0
-.file: ;; Login management filename
-db "passwd", 0
 .fileNotFound:
 db 10, 10, "The user database was not found on the volume.", 10, 0
 .requestUser:
@@ -127,12 +125,14 @@ db "All rights reserved.", 10, 0
 db "?", 0
 .helpParameter2:
 db "--help", 0
-.rootUser:
-db "root", 0
 .wrongData:
 db 10, "Login incorrect", 0
 .logind:
 db "logind", 0
+.lightTheme:
+db "light", 0
+.darkTheme:
+db "dark", 0
 
 ;; Verbose Messages
 
@@ -152,6 +152,8 @@ db "Login accepted.", 0
 db "Login attempt prevented by authentication failure.", 0
 .verboseLogout:
 db "Logout performed successfully.", 0
+.rootUser:
+db "root", 0
 
 ;; Buffers
 
@@ -163,15 +165,9 @@ wrong:
 db 0
 parameters: ;; If the application received any parameters
 db 0
-positionBX: ;; Marking the search position in the file content
-dw 0
 
 hexagonixShell: ;; Stores the name of the shell to be used
-times 11 db 0
-user: ;; Username obtained from the file
-times 15 db 0
-passwordObtained:;; Password obtained from the file
-times 64 db 0
+times 12 db 0
 requestedUser:
 times 17 db 0
 previousUser:
@@ -224,8 +220,6 @@ startProcessing:
 
     systemLog login.verboseFindFile, 0, Log.Priorities.p4
 
-    call clearUserVariables
-
     fputs login.requestUser
 
     mov eax, 15
@@ -238,11 +232,11 @@ startProcessing:
 
     mov [requestedUser], esi
 
-    call findUserName
+    mov esi, [requestedUser]
+
+    call Hexagon.LibASM.PasswdHash.findUser
 
     jc .withoutUser
-
-    call findUserPassword
 
     fputs login.requestPassword
 
@@ -261,7 +255,10 @@ startProcessing:
 
 .continueProcessing:
 
-    mov edi, passwordObtained
+    call Hexagon.LibASM.PasswdHash.hash ;; ESI still points at the trimmed, typed password
+
+    mov esi, Hexagon.LibASM.PasswdHash.hashBuffer
+    mov edi, Hexagon.LibASM.PasswdHash.hashFound
 
     hx.syscall hx.compareWordsString
 
@@ -286,7 +283,14 @@ startProcessing:
 
     call registerUser
 
-    call findUserShell
+match =Modern, LOGIN_STYLE
+{
+
+    call applyTheme
+
+}
+
+    call copyFoundShell
 
     hx.syscall hx.unlock
 
@@ -346,424 +350,167 @@ startProcessing:
 
 ;;************************************************************************************
 
-registerUser:
+;; Copies Hexagon.LibASM.PasswdHash.shellFound (the authenticated user's shell
+;; field) into hexagonixShell, the buffer .startShell/.tryDefaultShell already
+;; share. hexagonixShell starts zero-filled and login only ever does this copy
+;; once per run, so no explicit NUL padding is needed, same assumption
+;; getDefaultShell below already relies on
 
-    clc
+copyFoundShell:
 
-    mov esi, login.rootUser
-    mov edi, user
+    push es
+
+    push ds ;; User mode data segment (38h selector)
+    pop es
+
+    mov esi, Hexagon.LibASM.PasswdHash.shellFound
+
+    hx.syscall hx.stringSize
+
+    push eax
+
+    mov edi, hexagonixShell
+    mov esi, Hexagon.LibASM.PasswdHash.shellFound
+
+    pop ecx
+
+    rep movsb
+
+    pop es
+
+    ret
+
+;;************************************************************************************
+
+;; Colors the console to match the authenticated user's theme field. Checks
+;; tty0's actual current colors against the target theme's pair first, since
+;; the console may already be showing it (Apps/Unix/logind/logind.asm's
+;; verifyTheme paints its own fixed default before any user is known), and
+;; skips the repaint if so; whatever painted the console before is not
+;; assumed to be any particular theme
+
+applyTheme:
+
+    push es
+
+    push ds ;; User mode data segment (38h selector)
+    pop es
+
+    mov edi, Hexagon.LibASM.PasswdHash.themeFound
+    mov esi, login.lightTheme
 
     hx.syscall hx.compareWordsString
 
-    jc .root
+    jc .light
 
-    mov eax, 555 ;; Common user code
+    mov edi, Hexagon.LibASM.PasswdHash.themeFound
+    mov esi, login.darkTheme
 
-    jmp .register
+    hx.syscall hx.compareWordsString
 
-.root:
+    jc .dark
 
-    mov eax, 777 ;; Root user code
+    jmp .done ;; Unrecognized theme value, leave the colors as they are
 
-.register:
+.light:
 
-    mov esi, user
+    mov esi, Hexagon.LibASM.Dev.video.tty0
+
+    hx.syscall hx.open
+
+    hx.syscall hx.getColor ;; EAX = current font color, EBX = current background
+
+    cmp eax, PRETO
+    jne .lightApply
+
+    cmp ebx, BRANCO_ANDROMEDA
+    jne .lightApply
+
+    jmp .done ;; Console already matches light, nothing to repaint
+
+.lightApply:
+
+    mov esi, Hexagon.LibASM.Dev.video.tty1 ;; Open first virtual console
+
+    hx.syscall hx.open
+
+    mov eax, HEXAGONIX_CLASSICO_PRETO
+    mov ebx, HEXAGONIX_CLASSICO_BRANCO
+
+    hx.syscall hx.setColor
+
+    hx.syscall hx.clearConsole
+
+    mov esi, Hexagon.LibASM.Dev.video.tty0 ;; Reopens the standard console
+
+    hx.syscall hx.open
+
+    mov eax, PRETO
+    mov ebx, BRANCO_ANDROMEDA
+
+    hx.syscall hx.setColor
+
+    hx.syscall hx.clearConsole
+
+    jmp .done
+
+.dark:
+
+    mov esi, Hexagon.LibASM.Dev.video.tty0
+
+    hx.syscall hx.open
+
+    hx.syscall hx.getColor ;; EAX = current font color, EBX = current background
+
+    cmp eax, BRANCO_ANDROMEDA
+    jne .darkApply
+
+    cmp ebx, PRETO
+    jne .darkApply
+
+    jmp .done ;; Console already matches dark, nothing to repaint
+
+.darkApply:
+
+    mov esi, Hexagon.LibASM.Dev.video.tty1 ;; Open first virtual console
+
+    hx.syscall hx.open
+
+    mov eax, HEXAGONIX_BLOSSOM_AMARELO
+    mov ebx, HEXAGONIX_BLOSSOM_CINZA
+
+    hx.syscall hx.setColor
+
+    hx.syscall hx.clearConsole
+
+    mov esi, Hexagon.LibASM.Dev.video.tty0 ;; Reopens the standard console
+
+    hx.syscall hx.open
+
+    mov eax, BRANCO_ANDROMEDA
+    mov ebx, PRETO
+
+    hx.syscall hx.setColor
+
+    hx.syscall hx.clearConsole
+
+.done:
+
+    pop es
+
+    ret
+
+;;************************************************************************************
+
+registerUser:
+
+    mov eax, [Hexagon.LibASM.PasswdHash.codeFound]
+
+    mov esi, [requestedUser]
 
     hx.syscall hx.setUser
 
     ret
-
-;;************************************************************************************
-
-findUserName:
-
-    clc
-
-    pusha
-
-    push es
-
-    push ds ;; User mode data segment (38h selector)
-    pop es
-
-    mov esi, login.file
-    mov edi, appFileBuffer
-
-    hx.syscall hx.open
-
-    jc .userFileNotFound
-
-    mov si, appFileBuffer ;; Points to the buffer with the file contents
-    mov bx, 0FFFFh ;; Starts at position -1, so you can find the delimiters
-
-.searchBetweenDelimiters:
-
-    inc bx
-
-    mov word[positionBX], bx
-
-    cmp bx, searchSizeLimit
-    je .invalidUserName ;; If nothing is found within the size limit, cancel the search
-
-    mov al, [ds:si+bx]
-
-    cmp al, '@'
-    jne .searchBetweenDelimiters ;; The initial delimiter has been found
-
-;; BX now points to the first character of the username retrieved from the file
-
-    push ds ;; User mode data segment (38h selector)
-    pop es
-
-    mov di, user ;; The username will be copied to ES:DI
-
-    mov si, appFileBuffer
-
-    add si, bx ;; Move SI to where BX points
-
-    mov bx, 0 ;; Start at 0
-
-.getUserName:
-
-    inc bx
-
-    cmp bx, 17
-    je .invalidUserName ;; If username is greater than 15, it is invalid
-
-    mov al, [ds:si+bx]
-
-    cmp al, '|' ;; If another delimiter is found, the username was loaded successfully
-    je .userNameObtained
-
-;; If not ready, store the obtained character
-
-    stosb
-
-    jmp .getUserName
-
-.userNameObtained:
-
-    mov edi, user
-    mov esi, [requestedUser]
-
-    hx.syscall hx.compareWordsString
-
-    jc .obtained
-
-    call clearVariable
-
-    mov word bx, [positionBX]
-
-    mov si, appFileBuffer
-
-    jmp .searchBetweenDelimiters
-
-.obtained:
-
-    pop es
-
-    popa
-
-    clc
-
-    ret
-
-.invalidUserName:
-
-    pop es
-
-    popa
-
-    mov byte[wrong], 1
-
-    clc
-
-    ret
-
-.userFileNotFound:
-
-    pop es
-
-    popa
-
-    fputs login.fileNotFound
-
-    jmp finish
-
-;;************************************************************************************
-
-clearVariable:
-
-    push es
-
-    push ds ;; User mode data segment (38h selector)
-    pop es
-
-    mov esi, user
-
-    hx.syscall hx.stringSize
-
-    push eax
-
-    mov esi, 0
-
-    mov edi, user
-
-    pop ecx
-
-    rep movsb
-
-    pop es
-
-    ret
-
-;;************************************************************************************
-
-clearUserVariables:
-
-    push es
-
-    push ds ;; User mode data segment (38h selector)
-    pop es
-
-    mov esi, user
-
-    hx.syscall hx.stringSize
-
-    push eax
-
-    mov esi, ' '
-
-    mov edi, user
-
-    pop ecx
-
-    rep movsb
-
-    mov esi, requestedUser
-
-    hx.syscall hx.stringSize
-
-    push eax
-
-    mov esi, ' '
-
-    mov edi, passwordObtained
-
-    pop ecx
-
-    rep movsb
-
-    mov esi, hexagonixShell
-
-    hx.syscall hx.stringSize
-
-    push eax
-
-    mov esi, " "
-
-    mov edi, hexagonixShell
-
-    pop ecx
-
-    rep movsb
-
-    pop es
-
-    ret
-
-;;************************************************************************************
-
-findUserPassword:
-
-    pusha
-
-    push es
-
-    push ds ;; User mode data segment (38h selector)
-    pop es
-
-    mov esi, login.file
-    mov edi, appFileBuffer
-
-    hx.syscall hx.open
-
-    jc .userFileNotFound
-
-    mov si, appFileBuffer    ;; Points to the buffer with the file contents
-    mov bx, word [positionBX] ;; Continua de onde a opção anterior parou
-
-    dec bx
-
-.searchBetweenDelimiters:
-
-    inc bx
-
-    mov word[positionBX], bx
-
-    cmp bx, searchSizeLimit
-
-    je .invalidUserPassword ;; If nothing is found within the size limit, cancel the search
-
-    mov al, [ds:si+bx]
-
-    cmp al, '|'
-    jne .searchBetweenDelimiters ;; The initial delimiter has been found
-
-;; BX now points to the first character of the password retrieved from the file
-
-    push ds ;; User mode data segment (38h selector)
-    pop es
-
-    mov di, passwordObtained ;; The password will be copied to ES:DI
-
-    mov si, appFileBuffer
-
-    add si, bx ;; Move SI to where BX points
-
-    mov bx, 0 ;; Start at 0
-
-.getUserPassword:
-
-    inc bx
-
-    cmp bx, 66
-    je .invalidUserPassword ;; If password greater than 66, it is invalid
-
-    mov al, [ds:si+bx]
-
-    cmp al, '&' ;; If another delimiter is found, the password has been loaded successfully
-    je .userPasswordObtained
-
-;; If not ready, store the obtained character
-
-    stosb
-
-    jmp .getUserPassword
-
-.userPasswordObtained:
-
-    pop es
-
-    popa
-
-    ret
-
-.invalidUserPassword:
-
-    pop es
-
-    popa
-
-    mov byte[wrong], 1
-
-    clc
-
-    ret
-
-.userFileNotFound:
-
-    pop es
-
-    popa
-
-    fputs login.fileNotFound
-
-    jmp finish
-
-;;************************************************************************************
-
-findUserShell:
-
-    pusha
-
-    push es
-
-    push ds ;; User mode data segment (38h selector)
-    pop es
-
-    mov esi, login.file
-    mov edi, appFileBuffer
-
-    hx.syscall hx.open
-
-    jc .configurationFileNotFound
-
-    mov si, appFileBuffer   ;; Points to the buffer with the file contents
-    mov bx, word[positionBX] ;; Continue where the previous option left off
-
-    dec bx
-
-.searchBetweenDelimiters:
-
-    inc bx
-
-    mov word[positionBX], bx
-
-    cmp bx, searchSizeLimit
-
-    je .configurationFileNotFound  ;; If nothing is found within the size limit, cancel the search
-
-    mov al, [ds:si+bx]
-
-    cmp al, '&'
-    jne .searchBetweenDelimiters ;; The initial limiter has been found
-
-;; BX now points to the first character of the shell name retrieved from the file
-
-    push ds ;; User mode data segment (38h selector)
-    pop es
-
-    mov di, hexagonixShell ;; The shell name will be copied to ES:DI: hexagonixShell
-
-    mov si, appFileBuffer
-
-    add si, bx ;; Move SI to where BX points
-
-    mov bx, 0 ;; Start at 0
-
-.getShellName:
-
-    inc bx
-
-    cmp bx, 13
-    je .invalidShellName ;; If file name greater than 11, the name is invalid
-
-    mov al, [ds:si+bx]
-
-    cmp al, '#' ;; If another delimiter is found, the name was loaded successfully
-    je .shellNameObtained
-
-;; If not ready, store the obtained character
-
-    stosb
-
-    jmp .getShellName
-
-.shellNameObtained:
-
-    pop es
-
-    popa
-
-    ret
-
-.invalidShellName:
-
-    pop es
-
-    popa
-
-    jmp getDefaultShell
-
-
-.configurationFileNotFound:
-
-    pop es
-
-    popa
-
-    jmp getDefaultShell
 
 ;;************************************************************************************
 
@@ -896,14 +643,10 @@ checkDatabase:
 
     clc
 
-    mov esi, login.file
+    mov esi, Hexagon.LibASM.PasswdHash.file
 
     hx.syscall hx.fileExists
 
     jc defaultLogin
 
     ret
-
-;;************************************************************************************
-
-appFileBuffer: ;; Location where the configuration file will be opened
