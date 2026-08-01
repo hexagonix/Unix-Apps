@@ -83,10 +83,10 @@ include "macros.s"
 
 ;;************************************************************************************
 
-VERSION equ "3.0.1"
+VERSION equ "3.0.2"
 
-CoreUtilsVersion equ "Dormin-1.0"
-UnixUtilsVersion equ "Dormin-1.0"
+CoreUtilsVersion equ "Dormin-1.1"
+UnixUtilsVersion equ "Dormin-1.1"
 
 manBarColor     = AZUL_CALMANTE
 manBarFontColor = HEXAGONIX_CLASSICO_BRANCO
