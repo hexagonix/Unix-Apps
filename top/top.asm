@@ -13,7 +13,7 @@
 ;;
 ;;                     Sistema Operacional Hexagonix - Hexagonix Operating System
 ;;
-;;                         Copyright (c) 2015-2025 Felipe Miguel Nery Lunkes
+;;                         Copyright (c) 2015-2026 Felipe Miguel Nery Lunkes
 ;;                        Todos os direitos reservados - All rights reserved.
 ;;
 ;;*************************************************************************************************
@@ -36,7 +36,7 @@
 ;;
 ;; BSD 3-Clause License
 ;;
-;; Copyright (c) 2015-2025, Felipe Miguel Nery Lunkes
+;; Copyright (c) 2015-2026, Felipe Miguel Nery Lunkes
 ;; All rights reserved.
 ;;
 ;; Redistribution and use in source and binary forms, with or without
@@ -73,7 +73,7 @@ use32
 include "HAPP.s" ;; Here is a structure for the HAPP header
 
 ;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
-appHeader headerHAPP HAPP.Architectures.i386, 1, 4, applicationStart, 01h
+appHeader headerHAPP HAPP.Architectures.i386, 1, 6, applicationStart, 01h
 
 ;;************************************************************************************
 
@@ -320,6 +320,9 @@ putStatus:
     cmp al, 4
     je .zombie
 
+    cmp al, 5
+    je .sleeping
+
     fputs top.statusUnknown
 
     ret
@@ -345,6 +348,12 @@ putStatus:
 .zombie:
 
     fputs top.statusZombie
+
+    ret
+
+.sleeping:
+
+    fputs top.statusSleeping
 
     ret
 
@@ -423,7 +432,7 @@ makeDescriptionBanner:
 
 ;;************************************************************************************
 
-VERSION equ "4.1.0"
+VERSION equ "4.2.0"
 
 top:
 
@@ -452,6 +461,8 @@ db "RUNNING", 0
 db "BLOCKED", 0
 .statusZombie:
 db "ZOMBIE", 0
+.statusSleeping:
+db "SLEEPING", 0
 .statusUnknown:
 db "UNKNOWN", 0
 .statusKernel:
