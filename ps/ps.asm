@@ -73,7 +73,7 @@ use32
 include "HAPP.s" ;; Here is a structure for the HAPP header
 
 ;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
-appHeader headerHAPP HAPP.Architectures.i386, 1, 4, applicationStart, 01h
+appHeader headerHAPP HAPP.Architectures.i386, 1, 6, applicationStart, 01h
 
 ;;************************************************************************************
 
@@ -252,6 +252,9 @@ putStatus:
     cmp al, 4
     je .zombie
 
+    cmp al, 5
+    je .sleeping
+
     fputs ps.statusUnknown
 
     ret
@@ -277,6 +280,12 @@ putStatus:
 .zombie:
 
     fputs ps.statusZombie
+
+    ret
+
+.sleeping:
+
+    fputs ps.statusSleeping
 
     ret
 
@@ -348,7 +357,7 @@ parameterOtherProcesses:
 
 ;;************************************************************************************
 
-VERSION equ "3.1.0"
+VERSION equ "3.2.0"
 
 ps:
 
@@ -390,6 +399,8 @@ db "RUNNING", 0
 db "BLOCKED", 0
 .statusZombie:
 db "ZOMBIE", 0
+.statusSleeping:
+db "SLEEPING", 0
 .statusUnknown:
 db "UNKNOWN", 0
 .statusKernel:
