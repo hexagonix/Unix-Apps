@@ -292,7 +292,7 @@ putSpace:
 
 ;;************************************************************************************
 
-;; Prints the status text for a process at a fixed column
+;; Prints the state text for a process at a fixed column
 ;;
 ;; Input:
 ;;
@@ -323,37 +323,46 @@ putStatus:
     cmp al, 5
     je .sleeping
 
-    fputs top.statusUnknown
+    cmp al, 6
+    je .idle
+
+    fputs top.stateUnknown
 
     ret
 
 .ready:
 
-    fputs top.statusReady
+    fputs top.stateReady
 
     ret
 
 .running:
 
-    fputs top.statusRunning
+    fputs top.stateRunning
 
     ret
 
 .blocked:
 
-    fputs top.statusBlocked
+    fputs top.stateBlocked
 
     ret
 
 .zombie:
 
-    fputs top.statusZombie
+    fputs top.stateZombie
 
     ret
 
 .sleeping:
 
-    fputs top.statusSleeping
+    fputs top.stateSleeping
+
+    ret
+
+.idle:
+
+    fputs top.stateIdle
 
     ret
 
@@ -387,7 +396,7 @@ putParent:
 
 .kernel:
 
-    fputs top.statusKernel
+    fputs top.stateKernel
 
     ret
 
@@ -432,7 +441,7 @@ makeDescriptionBanner:
 
 ;;************************************************************************************
 
-VERSION equ "4.2.0"
+VERSION equ "4.3.0"
 
 top:
 
@@ -453,19 +462,21 @@ db "All rights reserved.", 0
 db "?", 0
 .helpParameter2:
 db "--help", 0
-.statusReady:
+.stateReady:
 db "READY", 0
-.statusRunning:
+.stateRunning:
 db "RUNNING", 0
-.statusBlocked:
+.stateBlocked:
 db "BLOCKED", 0
-.statusZombie:
+.stateZombie:
 db "ZOMBIE", 0
-.statusSleeping:
+.stateSleeping:
 db "SLEEPING", 0
-.statusUnknown:
+.stateUnknown:
 db "UNKNOWN", 0
-.statusKernel:
+.stateIdle:
+db "IDLE", 0
+.stateKernel:
 db "KERNEL", 0
 .fontColor:       dd 0
 .backgroundColor: dd 0
