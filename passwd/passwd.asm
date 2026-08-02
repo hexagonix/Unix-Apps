@@ -195,8 +195,6 @@ applicationStart:
 
     call Hexagon.LibASM.PasswdHash.copyString
 
-    putNewLine
-
     fputs passwd.promptNewAgain
 
     mov eax, 64
@@ -320,7 +318,7 @@ finish:
 ;;
 ;;************************************************************************************
 
-VERSION equ "0.1.0"
+VERSION equ "0.1.1"
 
 passwd:
 
