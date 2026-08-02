@@ -224,7 +224,7 @@ putSpace:
 
 ;;************************************************************************************
 
-;; Prints the status text for a process at a fixed column
+;; Prints the state text for a process at a fixed column
 ;;
 ;; Input:
 ;;
@@ -255,37 +255,46 @@ putStatus:
     cmp al, 5
     je .sleeping
 
-    fputs ps.statusUnknown
+    cmp al, 6
+    je .idle
+
+    fputs ps.stateUnknown
 
     ret
 
 .ready:
 
-    fputs ps.statusReady
+    fputs ps.stateReady
 
     ret
 
 .running:
 
-    fputs ps.statusRunning
+    fputs ps.stateRunning
 
     ret
 
 .blocked:
 
-    fputs ps.statusBlocked
+    fputs ps.stateBlocked
 
     ret
 
 .zombie:
 
-    fputs ps.statusZombie
+    fputs ps.stateZombie
 
     ret
 
 .sleeping:
 
-    fputs ps.statusSleeping
+    fputs ps.stateSleeping
+
+    ret
+
+.idle:
+
+    fputs ps.stateIdle
 
     ret
 
@@ -319,7 +328,7 @@ putParent:
 
 .kernel:
 
-    fputs ps.statusKernel
+    fputs ps.stateKernel
 
     ret
 
@@ -357,7 +366,7 @@ parameterOtherProcesses:
 
 ;;************************************************************************************
 
-VERSION equ "3.2.0"
+VERSION equ "3.3.0"
 
 ps:
 
@@ -391,19 +400,21 @@ db "-m", 0
 db "There are currently ", 0
 .processes:
 db " processes running.", 0
-.statusReady:
+.stateReady:
 db "READY", 0
-.statusRunning:
+.stateRunning:
 db "RUNNING", 0
-.statusBlocked:
+.stateBlocked:
 db "BLOCKED", 0
-.statusZombie:
+.stateZombie:
 db "ZOMBIE", 0
-.statusSleeping:
+.stateSleeping:
 db "SLEEPING", 0
-.statusUnknown:
+.stateIdle:
+db "IDLE", 0
+.stateUnknown:
 db "UNKNOWN", 0
-.statusKernel:
+.stateKernel:
 db "KERNEL", 0
 .positionY: db 0
 
