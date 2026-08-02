@@ -103,7 +103,7 @@ include "passwdHash.s"
 
 ;;************************************************************************************
 
-VERSION equ "6.0.0"
+VERSION equ "6.1.0"
 
 login:
 
@@ -157,14 +157,14 @@ db "root", 0
 
 ;; Buffers
 
-tryDefaultShell: ;; Signals an attempt to load the default shell
-db 0
-previousCode:
-dd 0
-wrong:
-db 0
-parameters: ;; If the application received any parameters
-db 0
+tryDefaultShell: db 0;; Signals an attempt to load the default shell
+previousCode:    dd 0
+wrong:           db 0
+;; Set when the typed username wasn't found, so the password
+;; prompt still runs and only .loginRefused reveals it, instead
+;; of leaking account existence through an early exit
+userMissing:     db 0
+
 
 hexagonixShell: ;; Stores the name of the shell to be used
 times 12 db 0
@@ -236,7 +236,17 @@ startProcessing:
 
     call Hexagon.LibASM.PasswdHash.findUser
 
-    jc .withoutUser
+    mov byte[userMissing], 0
+
+    jnc .askPassword
+
+    mov byte[userMissing], 1
+
+;; The password prompt runs the same either way. Exiting early here instead
+;; would let an attacker tell which usernames exist in /shadow just from
+;; whether the prompt appears at all
+
+.askPassword:
 
     fputs login.requestPassword
 
@@ -255,6 +265,15 @@ startProcessing:
 
 .continueProcessing:
 
+;; hashFound (and codeFound/shellFound/themeFound) are left over from the
+;; last username that was actually found, if any: Hexagon.LibASM.PasswdHash.findUser
+;; never clears them on a miss. Comparing against them here for a username
+;; that wasn't found would risk accepting a stale, unrelated hash, so this
+;; case is refused outright without even hashing the typed password
+
+    cmp byte[userMissing], 1
+    je .loginRefused
+
     call Hexagon.LibASM.PasswdHash.hash ;; ESI still points at the trimmed, typed password
 
     mov esi, Hexagon.LibASM.PasswdHash.hashBuffer
@@ -271,11 +290,6 @@ startProcessing:
     mov byte[wrong], 1
 
     jmp startProcessing.continueAfterLoginRefused
-
-.withoutUser:
-
-    cmp byte[parameters], 0
-    je finish
 
 .loginAccepted:
 
