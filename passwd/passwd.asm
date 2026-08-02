@@ -318,14 +318,14 @@ finish:
 ;;
 ;;************************************************************************************
 
-VERSION equ "0.1.1"
+VERSION equ "0.1.2"
 
 passwd:
 
 .use:
 db 10, "Usage: passwd [user]", 10, 10
 db "With no argument, changes your own password (your current password is", 10
-db "required). Root can pass a username to change someone else's password", 10
+db "required). root user can pass a username to change someone else's password", 10
 db "without knowing their current one.", 10, 10
 db "passwd version ", VERSION, 10, 10
 db "Copyright (C) 2017-", __stringYear, " Felipe Miguel Nery Lunkes", 10
