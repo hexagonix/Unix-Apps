@@ -13,7 +13,7 @@
 ;;
 ;;                     Sistema Operacional Hexagonix - Hexagonix Operating System
 ;;
-;;                         Copyright (c) 2015-2025 Felipe Miguel Nery Lunkes
+;;                         Copyright (c) 2015-2026 Felipe Miguel Nery Lunkes
 ;;                        Todos os direitos reservados - All rights reserved.
 ;;
 ;;*************************************************************************************************
@@ -36,7 +36,7 @@
 ;;
 ;; BSD 3-Clause License
 ;;
-;; Copyright (c) 2015-2025, Felipe Miguel Nery Lunkes
+;; Copyright (c) 2015-2026, Felipe Miguel Nery Lunkes
 ;; All rights reserved.
 ;;
 ;; Redistribution and use in source and binary forms, with or without
@@ -70,7 +70,7 @@
 ;;
 ;;                          Login daemon for Hexagonix
 ;;
-;;                 Copyright (c) 2015-2025 Felipe Miguel Nery Lunkes
+;;                 Copyright (c) 2015-2026 Felipe Miguel Nery Lunkes
 ;;                              All rights reserved.
 ;;
 ;;************************************************************************************
@@ -93,8 +93,7 @@ include "macros.s"
 include "log.s"
 include "dev.s"
 include "verUtils.s"
-
-searchSizeLimit = 32768
+include "passwdHash.s"
 
 ;;************************************************************************************
 ;;
@@ -104,7 +103,7 @@ searchSizeLimit = 32768
 
 ;;************************************************************************************
 
-VERSION equ "1.14.0"
+VERSION equ "2.0.0"
 
 logind:
 
@@ -136,35 +135,20 @@ match =Hexagonix, LOGIN_STYLE
 
 }
 
-.file: ;; Login configuration filename
-db "passwd", 0
-.positionBX: ;; Marking the search position in the file content
-dw 0
 .systemVersion:
 db 10, "Hexagonix ", 0
 .console:
 db " (tty0)", 0
-.fileNotFound:
-db 10, 10, "The user database was not found on the volume.", 10, 0
 .leftBracket:
 db " [", 0
 .rightBracket:
 db "]", 0
-.lightTheme:
-db "light", 0
-.darkTheme:
-db "dark", 0
 .unknownVersion:
 db "[unknown]", 0
 .verboseLogind:
 db "logind version ", VERSION, ".", 0
 .OOBE:
 db "oobe", 0
-
-;; Buffers
-
-themeChosen: ;; Buffer for user-defined theme
-times 7 db 0
 
 ;;************************************************************************************
 
@@ -233,123 +217,16 @@ match =Modern, LOGIN_STYLE
 
 ;;************************************************************************************
 
+;; Colors the login screen itself, before any user is known. Theme is a
+;; per-user /shadow field now (see Apps/Unix/login/login.asm's applyTheme),
+;; which only exists once a user has actually authenticated. logind is a
+;; one-shot daemon that exits before that ever happens, so there is no user
+;; to look up here; this just applies a fixed default so the login prompt
+;; still has a consistent, deliberate appearance
+
 verifyTheme:
 
     pusha
-
-    push es
-
-    push ds ;; User mode data segment (38h selector)
-    pop es
-
-    mov esi, logind.file
-    mov edi, appFileBuffer
-
-    hx.syscall hx.open
-
-    jc .fileNotFound
-
-    mov si, appFileBuffer ;; Points to the buffer with the file contents
-    mov bx, 0FFFFh ;; Starts at position -1, so you can find the delimiters
-
-.searchBetweenDelimiters:
-
-    inc bx
-
-    mov word[logind.positionBX], bx
-
-    cmp bx, searchSizeLimit
-    je .invalidThemeName ;; If nothing is found within the size limit, cancel the search
-
-    mov al, [ds:si+bx]
-
-    cmp al, '<'
-    jne .searchBetweenDelimiters ;; The initial limiter has been found
-
-;; BX now points to the first character of the username retrieved from the file
-
-    push ds ;; User mode data segment (38h selector)
-    pop es
-
-    mov di, themeChosen ;; The theme will be copied to ES:DI
-
-    mov si, appFileBuffer
-
-    add si, bx ;; Move SI to where BX points
-
-    mov bx, 0 ;; Start at 0
-
-.getTheme:
-
-    inc bx
-
-    cmp bx, 7
-    je .invalidThemeName ;; If username is greater than 7, it is invalid
-
-    mov al, [ds:si+bx]
-
-    cmp al, '>' ;; If another delimiter is found, the username was loaded successfully
-    je .themeObtained
-
-;; If not ready, store the obtained character
-
-    stosb
-
-    jmp .getTheme
-
-.themeObtained:
-
-    mov edi, themeChosen
-    mov esi, logind.lightTheme
-
-    hx.syscall hx.compareWordsString
-
-    jc .selectLightTheme
-
-    mov edi, themeChosen
-    mov esi, logind.darkTheme
-
-    hx.syscall hx.compareWordsString
-
-    jc .selectDarkTheme
-
-    mov word bx, [logind.positionBX]
-
-    mov si, appFileBuffer
-
-    jmp .searchBetweenDelimiters
-
-.selectLightTheme:
-
-    pop es
-
-    popa
-
-    mov esi, Hexagon.LibASM.Dev.video.tty1 ;; Open first virtual console
-
-    hx.syscall hx.open ;; Open the device
-
-    mov eax, HEXAGONIX_CLASSICO_PRETO
-    mov ebx, HEXAGONIX_CLASSICO_BRANCO
-
-    hx.syscall hx.setColor
-
-    hx.syscall hx.clearConsole ;; Clean the console
-
-    mov esi, Hexagon.LibASM.Dev.video.tty0 ;; Reopens the standard console
-
-    hx.syscall hx.open ;; Open the device
-
-    mov eax, PRETO
-    mov ebx, BRANCO_ANDROMEDA
-
-    hx.syscall hx.setColor
-
-    hx.syscall hx.clearConsole ;; Clean the console
-
-    ret
-
-.selectDarkTheme:
 
     mov esi, Hexagon.LibASM.Dev.video.tty1 ;; Open first virtual console
 
@@ -373,23 +250,9 @@ verifyTheme:
 
     hx.syscall hx.clearConsole ;; Clean the console
 
-.invalidThemeName:
-
-    pop es
-
     popa
 
     ret
-
-.fileNotFound:
-
-    pop es
-
-    popa
-
-    fputs logind.fileNotFound
-
-    jmp finish
 
 ;;************************************************************************************
 
@@ -445,7 +308,7 @@ checkDatabase:
 
     clc
 
-    mov esi, logind.file
+    mov esi, Hexagon.LibASM.PasswdHash.file
 
     hx.syscall hx.fileExists
 
@@ -453,4 +316,4 @@ checkDatabase:
 
 ;;************************************************************************************
 
-appFileBuffer: ;; Location where the configuration file will be opened
+appFileBuffer: ;; Scratch buffer verUtils.s's getHexagonixVersion reads into

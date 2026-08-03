@@ -13,7 +13,7 @@
 ;;
 ;;                     Sistema Operacional Hexagonix - Hexagonix Operating System
 ;;
-;;                         Copyright (c) 2015-2025 Felipe Miguel Nery Lunkes
+;;                         Copyright (c) 2015-2026 Felipe Miguel Nery Lunkes
 ;;                        Todos os direitos reservados - All rights reserved.
 ;;
 ;;*************************************************************************************************
@@ -36,7 +36,7 @@
 ;;
 ;; BSD 3-Clause License
 ;;
-;; Copyright (c) 2015-2025, Felipe Miguel Nery Lunkes
+;; Copyright (c) 2015-2026, Felipe Miguel Nery Lunkes
 ;; All rights reserved.
 ;;
 ;; Redistribution and use in source and binary forms, with or without
@@ -276,10 +276,6 @@ list:
 
     call setFileColor
 
-    fputs [currentFile]
-
-    call setDefaultColor
-
     jmp .continue
 
 .application:
@@ -289,10 +285,6 @@ list:
     mov eax, VERDE_FLORESTA
 
     call setFileColor
-
-    fputs [currentFile]
-
-    call setDefaultColor
 
     jmp .continue
 
@@ -304,10 +296,6 @@ list:
 
     call setFileColor
 
-    fputs [currentFile]
-
-    call setDefaultColor
-
     jmp .continue
 
 .fileASM:
@@ -317,10 +305,6 @@ list:
     mov eax, VERMELHO
 
     call setFileColor
-
-    fputs [currentFile]
-
-    call setDefaultColor
 
     jmp .continue
 
@@ -332,10 +316,6 @@ list:
 
     call setFileColor
 
-    fputs [currentFile]
-
-    call setDefaultColor
-
     jmp .continue
 
 .fileUNX:
@@ -345,10 +325,6 @@ list:
     mov eax, MARROM_PERU
 
     call setFileColor
-
-    fputs [currentFile]
-
-    call setDefaultColor
 
     jmp .continue
 
@@ -369,10 +345,6 @@ list:
 
     call setFileColor
 
-    fputs [currentFile]
-
-    call setDefaultColor
-
     jmp .continue
 
 .fileCOW: ;; It must not be displayed
@@ -385,10 +357,6 @@ list:
     mov eax, HEXAGONIX_BLOSSOM_VERDE
 
     call setFileColor
-
-    fputs [currentFile]
-
-    call setDefaultColor
 
     jmp .continue
 
@@ -403,10 +371,6 @@ list:
 
     call setFileColor
 
-    fputs [currentFile]
-
-    call setDefaultColor
-
     jmp .continue
 
 .fileFNT:
@@ -419,10 +383,6 @@ list:
     mov eax, HEXAGONIX_BLOSSOM_AZUL_PO
 
     call setFileColor
-
-    fputs [currentFile]
-
-    call setDefaultColor
 
     jmp .continue
 
@@ -440,13 +400,28 @@ list:
 
     call setFileColor
 
-    fputs [currentFile]
-
-    call setDefaultColor
-
     jmp .continue
 
 .continue:
+
+;; A file that will really be shown is about to be printed here. Any new
+;; line requested by a previous, now-full row is only flushed at this
+;; point, so a row that ends up with nothing displayable on it (for
+;; example, one made up entirely of hidden files skipped further up) never
+;; gets a blank line of its own
+
+    cmp byte[ls.pendingNewLine], 0
+    je .noPendingNewLine
+
+    mov byte[ls.pendingNewLine], 0
+
+    putNewLine
+
+.noPendingNewLine:
+
+    fputs [currentFile]
+
+    call setDefaultColor
 
     call putSpace
 
@@ -474,9 +449,7 @@ list:
 
     add ecx, 1
 
-;; Continue
-
-    putNewLine
+    mov byte[ls.pendingNewLine], 1
 
     jmp .loopFiles
 
@@ -663,7 +636,7 @@ checkFile:
 ;;
 ;;************************************************************************************
 
-VERSION equ "4.0.1"
+VERSION equ "4.1.0"
 
 ls:
 
@@ -704,6 +677,8 @@ db "--help", 0
 .parameterAllFiles:
 db "-a" ,0
 .listAll:
+db 0
+.pendingNewLine:
 db 0
 .fontColor:
 dd 0

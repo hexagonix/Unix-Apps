@@ -66,6 +66,15 @@
 ;;
 ;; $HexagonixOS$
 
+;;************************************************************************************
+;;
+;;                          deluser utility for Hexagonix
+;;
+;;                 Copyright (c) 2015-2026 Felipe Miguel Nery Lunkes
+;;                              All rights reserved.
+;;
+;;************************************************************************************
+
 use32
 
 ;; Now let's create a HAPP header for the application
@@ -73,13 +82,14 @@ use32
 include "HAPP.s" ;; Here is a structure for the HAPP header
 
 ;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
-appHeader headerHAPP HAPP.Architectures.i386, 1, 00, applicationStart, 01h
+appHeader headerHAPP HAPP.Architectures.i386, 1, 5, applicationStart, 01h
 
 ;;************************************************************************************
 
 include "hexagon.s"
 include "console.s"
 include "macros.s"
+include "passwdHash.s"
 
 ;;************************************************************************************
 
@@ -93,53 +103,106 @@ applicationStart:
     mov esi, [parameters]
 
     cmp byte[esi], 0
-    jne applicationUsage
+    je withoutParameter
 
-    mov edi, arch.helpParameter
+    mov edi, deluser.helpParameter
     mov esi, [parameters]
 
     hx.syscall hx.compareWordsString
 
     jc applicationUsage
 
-    mov edi, arch.helpParameter2
+    mov edi, deluser.helpParameter2
     mov esi, [parameters]
 
     hx.syscall hx.compareWordsString
 
     jc applicationUsage
 
-.requestHexagon:
+    hx.syscall hx.getUser
+
+    cmp eax, 777
+    je .isRoot
+
+    fputs deluser.permissionDenied
+
+    jmp finish
+
+.isRoot:
+
+    mov edi, deluser.rootUser
+    mov esi, [parameters]
+
+    hx.syscall hx.compareWordsString
+
+    jc .cannotRemoveRoot
+
+    mov esi, [parameters]
+
+    call Hexagon.LibASM.PasswdHash.findUser
+
+    jc .userNotFound
 
     putNewLine
 
-    hx.syscall hx.uname
+    fputs deluser.confirmation
 
-;; In EDX we have the architecture
+.getConfirmationKeys:
 
-    cmp edx, 01
-    je .i386
+    hx.syscall hx.waitKeyboard
 
-    cmp edx, 02
-    je .x86_64
+    cmp al, 'y'
+    je .confirmed
 
-    fputs arch.notSupported
+    cmp al, 'Y'
+    je .confirmed
 
-    jmp .finish
+    cmp al, 'n'
+    je .cancelled
 
-.i386:
+    cmp al, 'N'
+    je .cancelled
 
-    fputs arch.i386
+    jmp .getConfirmationKeys
 
-    jmp .finish
+.confirmed:
 
-.x86_64:
+    hx.syscall hx.printCharacter
 
-    fputs arch.x86_64
+    mov esi, [parameters]
+    mov edi, 0
 
-    jmp .finish
+    call Hexagon.LibASM.PasswdHash.rewriteUser
 
-.finish:
+    jc .writeError
+
+    fputs deluser.success
+
+    jmp finish
+
+.cancelled:
+
+    hx.syscall hx.printCharacter
+
+    fputs deluser.cancel
+
+    jmp finish
+
+.cannotRemoveRoot:
+
+    fputs deluser.cannotRemoveRoot
+
+    jmp finish
+
+.userNotFound:
+
+    fputs deluser.userNotFound
+
+    jmp finish
+
+.writeError:
+
+    fputs deluser.writeError
 
     jmp finish
 
@@ -147,7 +210,15 @@ applicationStart:
 
 applicationUsage:
 
-    fputs arch.use
+    fputs deluser.use
+
+    jmp finish
+
+;;************************************************************************************
+
+withoutParameter:
+
+    fputs deluser.withoutParameter
 
     jmp finish
 
@@ -165,26 +236,39 @@ finish:
 ;;
 ;;************************************************************************************
 
-VERSION equ "1.4.0"
+VERSION equ "0.1.0"
 
-arch:
+deluser:
 
 .use:
-db 10, "Usage: arch", 10
-db "This utility does not accept arguments.", 10, 10
-db "Displays the architecture of this system and device.", 10, 10
-db "arch version ", VERSION, 10, 10
-db "Copyright (C) 2021-", __stringYear, " Felipe Miguel Nery Lunkes", 10
+db 10, "Usage: deluser [user]", 10, 10
+db "Removes a user account.", 10, 10
+db "deluser version ", VERSION, 10, 10
+db "Copyright (C) 2015-", __stringYear, " Felipe Miguel Nery Lunkes", 10
 db "All rights reserved.", 0
-.notSupported:
-db 10, "Unknown architecture.", 0
-.i386:
-db "i386", 0
-.x86_64:
-db "x86_64", 0
+.permissionDenied:
+db 10, "Only an administrative (or root) user can complete this action.", 10
+db "Login in this user to perform the desired operation.", 0
+.cannotRemoveRoot:
+db 10, "The root user cannot be removed.", 0
+.userNotFound:
+db 10, "That user was not found.", 0
+.confirmation:
+db "Are you sure you want to delete this user (y/N)? ", 0
+.cancel:
+db 10, "The operation was aborted by the user.", 0
+.success:
+db 10, "User removed.", 0
+.writeError:
+db 10, "Could not write /shadow. No user was removed.", 0
+.withoutParameter:
+db 10, "A username is required.", 10
+db "Use 'deluser ?' for help with this utility.", 0
 .helpParameter:
 db "?", 0
 .helpParameter2:
 db "--help", 0
+.rootUser:
+db "root", 0
 
 parameters: dd ?

@@ -66,6 +66,15 @@
 ;;
 ;; $HexagonixOS$
 
+;;************************************************************************************
+;;
+;;                          passwd utility for Hexagonix
+;;
+;;                 Copyright (c) 2015-2026 Felipe Miguel Nery Lunkes
+;;                              All rights reserved.
+;;
+;;************************************************************************************
+
 use32
 
 ;; Now let's create a HAPP header for the application
@@ -73,13 +82,14 @@ use32
 include "HAPP.s" ;; Here is a structure for the HAPP header
 
 ;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
-appHeader headerHAPP HAPP.Architectures.i386, 1, 00, applicationStart, 01h
+appHeader headerHAPP HAPP.Architectures.i386, 1, 5, applicationStart, 01h
 
 ;;************************************************************************************
 
 include "hexagon.s"
 include "console.s"
 include "macros.s"
+include "passwdHash.s"
 
 ;;************************************************************************************
 
@@ -90,56 +100,199 @@ applicationStart:
 
     mov [parameters], edi
 
+    mov edi, passwd.helpParameter
+    mov esi, [parameters]
+
+    hx.syscall hx.compareWordsString
+
+    jc applicationUsage
+
+    mov edi, passwd.helpParameter2
+    mov esi, [parameters]
+
+    hx.syscall hx.compareWordsString
+
+    jc applicationUsage
+
     mov esi, [parameters]
 
     cmp byte[esi], 0
-    jne applicationUsage
+    je .ownPassword
 
-    mov edi, arch.helpParameter
+;; A username argument was given, only root may do this without knowing
+;; the target's current password
+
+    hx.syscall hx.getUser
+
+    cmp eax, 777
+    je .targetGiven
+
+    fputs passwd.permissionDenied
+
+    jmp finish
+
+.targetGiven:
+
     mov esi, [parameters]
+    mov edi, targetUser
+
+    call Hexagon.LibASM.PasswdHash.copyString
+
+    mov esi, targetUser
+
+    call Hexagon.LibASM.PasswdHash.findUser
+
+    jc .userNotFound
+
+    jmp .newPassword
+
+.ownPassword:
+
+    hx.syscall hx.getUser ;; ESI = own username
+
+    mov edi, targetUser
+
+    call Hexagon.LibASM.PasswdHash.copyString
+
+    mov esi, targetUser
+
+    call Hexagon.LibASM.PasswdHash.findUser
+
+    jc .userNotFound
+
+    fputs passwd.promptCurrent
+
+    mov eax, 64
+
+    mov ebx, 1234h ;; We don't want to echo the password!
+
+    hx.syscall hx.getString
+
+    hx.syscall hx.trimString
+
+    call Hexagon.LibASM.PasswdHash.hash
+
+    mov esi, Hexagon.LibASM.PasswdHash.hashBuffer
+    mov edi, Hexagon.LibASM.PasswdHash.hashFound
 
     hx.syscall hx.compareWordsString
 
-    jc applicationUsage
+    jnc .wrongCurrent
 
-    mov edi, arch.helpParameter2
-    mov esi, [parameters]
+.newPassword:
+
+    fputs passwd.promptNew
+
+    mov eax, 64
+
+    mov ebx, 1234h
+
+    hx.syscall hx.getString
+
+    hx.syscall hx.trimString
+
+    mov edi, newPasswordFirst
+
+    call Hexagon.LibASM.PasswdHash.copyString
+
+    fputs passwd.promptNewAgain
+
+    mov eax, 64
+
+    mov ebx, 1234h
+
+    hx.syscall hx.getString
+
+    hx.syscall hx.trimString
+
+    mov edi, newPasswordFirst
 
     hx.syscall hx.compareWordsString
 
-    jc applicationUsage
+    jnc .mismatch
 
-.requestHexagon:
+    mov esi, newPasswordFirst
 
-    putNewLine
+    call Hexagon.LibASM.PasswdHash.hash
 
-    hx.syscall hx.uname
+;; Build the replacement line: username:newhash:code:shell:theme, reusing
+;; the code/shell/theme fields Hexagon.LibASM.PasswdHash.findUser already
+;; resolved for targetUser, only the hash field actually changes
 
-;; In EDX we have the architecture
+    mov edi, replacementLine
 
-    cmp edx, 01
-    je .i386
+    mov esi, targetUser
 
-    cmp edx, 02
-    je .x86_64
+    call Hexagon.LibASM.PasswdHash.appendString
 
-    fputs arch.notSupported
+    mov byte[edi], ':'
 
-    jmp .finish
+    inc edi
 
-.i386:
+    mov esi, Hexagon.LibASM.PasswdHash.hashBuffer
 
-    fputs arch.i386
+    call Hexagon.LibASM.PasswdHash.appendString
 
-    jmp .finish
+    mov byte[edi], ':'
 
-.x86_64:
+    inc edi
 
-    fputs arch.x86_64
+    mov eax, [Hexagon.LibASM.PasswdHash.codeFound]
 
-    jmp .finish
+    hx.syscall hx.toString
 
-.finish:
+    call Hexagon.LibASM.PasswdHash.appendString
+
+    mov byte[edi], ':'
+
+    inc edi
+
+    mov esi, Hexagon.LibASM.PasswdHash.shellFound
+
+    call Hexagon.LibASM.PasswdHash.appendString
+
+    mov byte[edi], ':'
+
+    inc edi
+
+    mov esi, Hexagon.LibASM.PasswdHash.themeFound
+
+    call Hexagon.LibASM.PasswdHash.appendString
+
+    mov byte[edi], 0
+
+    mov esi, targetUser
+    mov edi, replacementLine
+
+    call Hexagon.LibASM.PasswdHash.rewriteUser
+
+    jc .writeError
+
+    fputs passwd.success
+
+    jmp finish
+
+.userNotFound:
+
+    fputs passwd.userNotFound
+
+    jmp finish
+
+.wrongCurrent:
+
+    fputs passwd.wrongCurrent
+
+    jmp finish
+
+.mismatch:
+
+    fputs passwd.mismatch
+
+    jmp finish
+
+.writeError:
+
+    fputs passwd.writeError
 
     jmp finish
 
@@ -147,7 +300,7 @@ applicationStart:
 
 applicationUsage:
 
-    fputs arch.use
+    fputs passwd.use
 
     jmp finish
 
@@ -165,26 +318,45 @@ finish:
 ;;
 ;;************************************************************************************
 
-VERSION equ "1.4.0"
+VERSION equ "0.1.2"
 
-arch:
+passwd:
 
 .use:
-db 10, "Usage: arch", 10
-db "This utility does not accept arguments.", 10, 10
-db "Displays the architecture of this system and device.", 10, 10
-db "arch version ", VERSION, 10, 10
-db "Copyright (C) 2021-", __stringYear, " Felipe Miguel Nery Lunkes", 10
+db 10, "Usage: passwd [user]", 10, 10
+db "With no argument, changes your own password (your current password is", 10
+db "required). root user can pass a username to change someone else's password", 10
+db "without knowing their current one.", 10, 10
+db "passwd version ", VERSION, 10, 10
+db "Copyright (C) 2017-", __stringYear, " Felipe Miguel Nery Lunkes", 10
 db "All rights reserved.", 0
-.notSupported:
-db 10, "Unknown architecture.", 0
-.i386:
-db "i386", 0
-.x86_64:
-db "x86_64", 0
+.permissionDenied:
+db 10, "Only an administrative (or root) user can change another user's password.", 0
+.userNotFound:
+db 10, "That user was not found.", 0
+.promptCurrent:
+db 10, "Current password: ", 0
+.wrongCurrent:
+db 10, "Wrong current password.", 0
+.promptNew:
+db 10, "New password: ", 0
+.promptNewAgain:
+db 10, "Repeat new password: ", 0
+.mismatch:
+db 10, "The passwords entered do not match.", 0
+.writeError:
+db 10, "Could not write /shadow. The password was not changed.", 0
+.success:
+db 10, "Password changed.", 0
 .helpParameter:
 db "?", 0
 .helpParameter2:
 db "--help", 0
 
 parameters: dd ?
+targetUser:
+times 17 db 0
+newPasswordFirst:
+times 65 db 0
+replacementLine:
+times 96 db 0

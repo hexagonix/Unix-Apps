@@ -66,6 +66,15 @@
 ;;
 ;; $HexagonixOS$
 
+;;************************************************************************************
+;;
+;;                          adduser utility for Hexagonix
+;;
+;;                 Copyright (c) 2015-2026 Felipe Miguel Nery Lunkes
+;;                              All rights reserved.
+;;
+;;************************************************************************************
+
 use32
 
 ;; Now let's create a HAPP header for the application
@@ -73,14 +82,14 @@ use32
 include "HAPP.s" ;; Here is a structure for the HAPP header
 
 ;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
-appHeader headerHAPP HAPP.Architectures.i386, 1, 00, applicationStart, 01h
+appHeader headerHAPP HAPP.Architectures.i386, 1, 5, applicationStart, 01h
 
 ;;************************************************************************************
 
 include "hexagon.s"
 include "console.s"
 include "macros.s"
-include "errors.s"
+include "passwdHash.s"
 
 ;;************************************************************************************
 
@@ -89,115 +98,260 @@ applicationStart:
     push ds ;; User mode data segment (38h selector)
     pop es
 
-    mov [parameters], edi
+    hx.syscall hx.getUser
 
-    mov esi, [parameters]
+    cmp eax, 777
+    je .isRoot
 
-    cmp byte[esi], 0
-    je withoutParameter
-
-    mov edi, rm.helpParameter
-    mov esi, [parameters]
-
-    hx.syscall hx.compareWordsString
-
-    jc applicationUsage
-
-    mov edi, rm.helpParameter2
-    mov esi, [parameters]
-
-    hx.syscall hx.compareWordsString
-
-    jc applicationUsage
-
-    mov esi, [parameters]
-
-    hx.syscall hx.fileExists
-
-    jc .fileNotFound
-
-    putNewLine
-
-    fputs rm.confimation
-
-.getConfirmationKeys:
-
-    hx.syscall hx.waitKeyboard
-
-    cmp al, 'y'
-    je .safeDelete
-
-    cmp al, 'Y'
-    je .safeDelete
-
-    cmp al, 'n'
-    je .cancel
-
-    cmp al, 'N'
-    je .cancel
-
-    jmp .getConfirmationKeys
-
-.fileNotFound:
-
-    fputs rm.fileNotFound
+    fputs adduser.permissionDenied
 
     jmp finish
 
-.safeDelete:
+.isRoot:
 
-    hx.syscall hx.printCharacter
+    fputs adduser.promptUser
 
-    mov esi, [parameters]
+    mov eax, 15
+
+    mov ebx, 1
+
+    hx.syscall hx.getString
+
+    hx.syscall hx.trimString
+
+    cmp byte[esi], 0
+    je .noUsername
+
+    mov edi, newUser
+
+    call Hexagon.LibASM.PasswdHash.copyString
+
+    mov esi, newUser
+
+    call Hexagon.LibASM.PasswdHash.findUser
+
+    jnc .alreadyExists
+
+    fputs adduser.promptPassword
+
+    mov eax, 64
+
+    mov ebx, 1234h ;; We don't want to echo the password!
+
+    hx.syscall hx.getString
+
+    hx.syscall hx.trimString
+
+    mov edi, passwordFirst
+
+    call Hexagon.LibASM.PasswdHash.copyString
+
+    fputs adduser.promptPasswordAgain
+
+    mov eax, 64
+
+    mov ebx, 1234h
+
+    hx.syscall hx.getString
+
+    hx.syscall hx.trimString
+
+    mov edi, passwordFirst
+
+    hx.syscall hx.compareWordsString
+
+    jnc .passwordMismatch
+
+    mov esi, passwordFirst
+
+    call Hexagon.LibASM.PasswdHash.hash
+
+    fputs adduser.promptShell
+
+    mov eax, 11
+
+    mov ebx, 1
+
+    hx.syscall hx.getString
+
+    hx.syscall hx.trimString
+
+    cmp byte[esi], 0
+    jne .shellGiven
+
+    mov esi, adduser.defaultShell
+
+.shellGiven:
+
+    mov edi, newShell
+
+    call Hexagon.LibASM.PasswdHash.copyString
+
+    fputs adduser.promptTheme
+
+    mov eax, 7
+
+    mov ebx, 1
+
+    hx.syscall hx.getString
+
+    hx.syscall hx.trimString
+
+    cmp byte[esi], 0
+    jne .themeGiven
+
+    mov esi, adduser.defaultTheme
+
+.themeGiven:
+
+    mov edi, newTheme
+
+    call Hexagon.LibASM.PasswdHash.copyString
+
+    call appendUser
+
+    jc .writeError
+
+    fputs adduser.success
+
+    jmp finish
+
+.noUsername:
+
+    fputs adduser.withoutUsername
+
+    jmp finish
+
+.alreadyExists:
+
+    fputs adduser.userExists
+
+    jmp finish
+
+.passwordMismatch:
+
+    fputs adduser.passwordMismatch
+
+    jmp finish
+
+.writeError:
+
+    fputs adduser.writeError
+
+    jmp finish
+
+;;************************************************************************************
+
+;; Appends a new username:hash:555:shell:theme line to /shadow and writes the
+;; whole file back (hx.unlink then hx.create, see the plan's Decisions:
+;; hx.create's own overwrite behavior is never relied on)
+;;
+;; Input: newUser, Hexagon.LibASM.PasswdHash.hashBuffer, newShell, newTheme
+;; already filled in by the caller
+;;
+;; Output: CF set on write failure
+
+appendUser:
+
+    mov esi, Hexagon.LibASM.PasswdHash.file
+    mov edi, Hexagon.LibASM.PasswdHash.fileBuffer
+
+    hx.syscall hx.open
+
+    jc .empty
+
+    mov esi, Hexagon.LibASM.PasswdHash.fileBuffer
+
+    hx.syscall hx.stringSize
+
+    mov edi, Hexagon.LibASM.PasswdHash.fileBuffer
+
+    add edi, eax
+
+    cmp eax, 0
+    je .buildLine
+
+    mov esi, edi
+
+    dec esi ;; ESI -> last real byte of the existing content
+
+    cmp byte[esi], 10
+    je .buildLine ;; Already ends in a newline
+
+    mov byte[edi], 10 ;; Separator newline before the new record
+
+    inc edi
+
+    jmp .buildLine
+
+.empty:
+
+    mov edi, Hexagon.LibASM.PasswdHash.fileBuffer
+
+.buildLine:
+
+    mov esi, newUser
+
+    call Hexagon.LibASM.PasswdHash.appendString
+
+    mov byte[edi], ':'
+
+    inc edi
+
+    mov esi, Hexagon.LibASM.PasswdHash.hashBuffer
+
+    call Hexagon.LibASM.PasswdHash.appendString
+
+    mov byte[edi], ':'
+
+    inc edi
+
+    mov esi, adduser.defaultCode
+
+    call Hexagon.LibASM.PasswdHash.appendString
+
+    mov byte[edi], ':'
+
+    inc edi
+
+    mov esi, newShell
+
+    call Hexagon.LibASM.PasswdHash.appendString
+
+    mov byte[edi], ':'
+
+    inc edi
+
+    mov esi, newTheme
+
+    call Hexagon.LibASM.PasswdHash.appendString
+
+    mov byte[edi], 10
+
+    inc edi
+
+    mov byte[edi], 0
+
+    mov esi, Hexagon.LibASM.PasswdHash.file
 
     hx.syscall hx.unlink
 
-    jc .unlinkError
+    mov esi, Hexagon.LibASM.PasswdHash.fileBuffer
 
-    ;; fputs rm.unlinking
+    hx.syscall hx.stringSize
 
-    jmp finish
+    mov esi, Hexagon.LibASM.PasswdHash.file
+    mov edi, Hexagon.LibASM.PasswdHash.fileBuffer
 
-.cancel:
+    hx.syscall hx.create
 
-    hx.syscall hx.printCharacter
-
-    fputs rm.cancel
-
-    jmp finish
-
-.unlinkError:
-
-    push eax
-
-    fputs rm.unlinkError
-
-    pop eax
-
-    cmp eax, IO.operationDenied
-    je .permissionDenied
-
-    jmp finish
-
-.permissionDenied:
-
-    fputs rm.permissionDenied
-
-    jmp finish
+    ret
 
 ;;************************************************************************************
 
 applicationUsage:
 
-    fputs rm.use
-
-    jmp finish
-
-;;************************************************************************************
-
-withoutParameter:
-
-    fputs rm.withoutParameter
+    fputs adduser.use
 
     jmp finish
 
@@ -215,35 +369,51 @@ finish:
 ;;
 ;;************************************************************************************
 
-VERSION equ "1.3.2"
+VERSION equ "0.1.0"
 
-rm:
+adduser:
 
-.fileNotFound:
-db 10, "File not found.", 0
 .use:
-db 10, "Usage: rm [file]", 10, 10
-db "Requests to delete a file on the current volume.", 10, 10
-db "rm version ", VERSION, 10, 10
-db "Copyright (C) 2017-", __stringYear, " Felipe Miguel Nery Lunkes", 10
+db 10, "Usage: adduser", 10, 10
+db "Interactively creates a new Hexagonix user account.", 10, 10
+db "adduser version ", VERSION, 10, 10
+db "Copyright (C) 2015-", __stringYear, " Felipe Miguel Nery Lunkes", 10
 db "All rights reserved.", 0
-.confimation:
-db "Are you sure you want to delete this file (y/N)? ", 0
-.unlinking:
-db 10, "The requested file was successfully removed.", 0
-.unlinkError:
-db 10, "An error occurred during the request. No files were removed.", 0
-.cancel:
-db 10, "The operation was aborted by the user.", 0
-.helpParameter:
-db "?", 0
-.helpParameter2:
-db "--help", 0
-.withoutParameter:
-db 10, "A required filename is missing.", 10
-db "Use 'rm ?' for help with this utility.", 0
 .permissionDenied:
 db 10, "Only an administrative (or root) user can complete this action.", 10
 db "Login in this user to perform the desired operation.", 0
+.promptUser:
+db 10, "Username: ", 0
+.promptPassword:
+db 10, "Password: ", 0
+.promptPasswordAgain:
+db 10, "Repeat password: ", 0
+.promptShell:
+db 10, "Shell [sh]: ", 0
+.promptTheme:
+db 10, "Theme (dark/light) [dark]: ", 0
+.withoutUsername:
+db 10, "A username is required.", 0
+.userExists:
+db 10, "That username already exists.", 0
+.passwordMismatch:
+db 10, "The passwords entered do not match.", 0
+.writeError:
+db 10, "Could not write /shadow. No user was created.", 0
+.success:
+db 10, "User created.", 0
+.defaultShell:
+db "sh", 0
+.defaultTheme:
+db "dark", 0
+.defaultCode:
+db "555", 0
 
-parameters: dd ?
+newUser:
+times 17 db 0
+passwordFirst:
+times 65 db 0
+newShell:
+times 12 db 0
+newTheme:
+times 8 db 0
