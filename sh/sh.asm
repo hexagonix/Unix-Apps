@@ -401,6 +401,11 @@ shellStart:
 
     pop esi
 
+;; Protect the arguments from Shell.checkShebang before it opens the
+;; resolved command's own file into appFileBuffer
+
+    call Shell.protectArguments
+
 ;; Resolve the command name against PATH if it isn't already valid as
 ;; given, then check for a "#!name" shebang on the resolved file
 
@@ -521,44 +526,15 @@ runShellScript:
     cmp byte[esi], 0
     je .argumentRequired
 
-    mov word[sh.positionBX], 0FFFFh ;; With each execution, reset the counter
-
-    mov edi, appFileBuffer
-
-    hx.syscall hx.open
-
-    jc .shellScriptNotFound
-
-    call searchCommands
-
-    jc .notFound
-
-.loadImage:
-
-    mov esi, sh.diskImage
+    push esi
 
     hx.syscall hx.fileExists
 
-    jc .nextCommand
+    pop esi
 
-    mov eax, 0 ;; Do not pass arguments
-    mov esi, sh.diskImage ;; Filename
+    jc .shellScriptNotFound
 
-    stc
-
-    hx.syscall hx.exec ;; Request execution of the first command
-
-    jnc .nextCommand
-
-.nextCommand:
-
-    clc
-
-    call searchCommands
-
-    jmp .loadImage
-
-.notFound: ;; The service could not be find
+    call Shell.runScriptFile
 
     jmp shellStart.getCommandLine
 
@@ -573,99 +549,6 @@ runShellScript:
     fputs sh.argumentRequired
 
     jmp shellStart.getCommandLine
-
-;;************************************************************************************
-
-;; Components for shell batch command execution
-
-searchCommands:
-
-    pusha
-
-    push es
-
-    push ds ;; User mode data segment (38h selector)
-    pop es
-
-    mov si, appFileBuffer ;; Points to the buffer with the file contents
-    mov bx, word[sh.positionBX]
-
-    jmp .searchBetweenDelimiters
-
-.searchBetweenDelimiters:
-
-    inc bx
-
-    mov word[sh.positionBX], bx
-
-    cmp bx, searchSizeLimit
-    je shellStart.getCommandLine
-
-    mov al, [ds:si+bx]
-
-    cmp al, '>'
-    jne .searchBetweenDelimiters ;; The initial delimiter has been found
-
-;; BX now points to the first character of the command name retrieved from the file
-
-    push ds ;; User mode data segment (38h selector)
-    pop es
-
-    mov di, sh.diskImage ;; The command name will be copied to ES:DI
-
-    mov si, appFileBuffer
-
-    add si, bx ;; Move SI to where BX points
-
-    mov bx, 0 ;; Start at 0
-
-.getCommandLine:
-
-    inc bx
-
-    cmp bx, 13
-    je .invalidCommandName ;; If file name greater than 11, the name is invalid
-
-    mov al, [ds:si+bx]
-
-;; Now let's look for the final limiters of a command name, which could be:
-;;
-;; EOL - new line (10)
-;; Space - a space after the last character
-;; # - If used after the last character of the service name, mark as a comment
-
-    cmp al, 10 ;; If another delimiter is found, the name was loaded successfully
-    je .commandNameObtained
-
-    cmp al, ' ' ;; If another delimiter is found, the name was loaded successfully
-    je .commandNameObtained
-
-    cmp al, '#' ;; If another delimiter is found, the name was loaded successfully
-    je .commandNameObtained
-
-;; If not ready, store the obtained character
-
-    stosb
-
-    jmp .getCommandLine
-
-.commandNameObtained:
-
-    pop es
-
-    popa
-
-    ret
-
-.invalidCommandName:
-
-    pop es
-
-    popa
-
-    stc
-
-    ret
 
 ;;************************************************************************************
 
@@ -764,11 +647,7 @@ finishShell:
 ;;
 ;;************************************************************************************
 
-;; TODO: improve shell scripting support
-
 VERSION equ "2.2.1"
-
-searchSizeLimit = 32768
 
 sh:
 
@@ -808,10 +687,6 @@ db 10, "Process in background: [", 0
 .backgroundEnd:
 db "]", 0
 
-.positionBX: dw 0 ;; Marking the search position in the file content
-
-.diskImage: ;; Stores the name of the image to be used
-times 12 db 0
 .userName: ;; Stores the username
 times 64 db 0
 .promptSymbol: ;; Stores # or $

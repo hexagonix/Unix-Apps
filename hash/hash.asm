@@ -370,6 +370,11 @@ shellStart:
 
     pop esi
 
+;; Protect the arguments from Shell.checkShebang before it opens the
+;; resolved command's own file into appFileBuffer
+
+    call Shell.protectArguments
+
 ;; Resolve the command name against PATH if it isn't already valid as
 ;; given, then check for a "#!name" shebang on the resolved file
 
