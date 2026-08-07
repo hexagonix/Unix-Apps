@@ -112,6 +112,11 @@ keySpawn:
 db "spawn", 0
 keyRespawn:
 db "respawn", 0
+keyPath:
+db "PATH", 0
+
+pathName: ;; Environment variable name set by the PATH key
+db "PATH", 0
 
 init:
 
@@ -141,6 +146,8 @@ db "Process started, being monitored (respawn):", 0
 db "Process failed to start (respawn):", 0
 .respawned:
 db "Process respawned:", 0
+.pathSet:
+db "Environment variable set (PATH):", 0
 
 ;;************************************************************************************
 
@@ -414,6 +421,13 @@ processLine:
 
     jc .doSpawn
 
+    mov esi, dword[keyPtr]
+    mov edi, keyPath
+
+    hx.syscall hx.compareWordsString
+
+    jc .doPath
+
     ret ;; Unknown key, ignore
 
 .doStart:
@@ -485,6 +499,19 @@ processLine:
 .respawnFailed:
 
     mov esi, init.respawnFailed
+
+    call logWithName
+
+    ret
+
+.doPath:
+
+    mov esi, pathName
+    mov edi, dword[valuePtr]
+
+    hx.syscall hx.setenv
+
+    mov esi, init.pathSet
 
     call logWithName
 
