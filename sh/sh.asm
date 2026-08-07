@@ -81,6 +81,7 @@ include "hexagon.s"
 include "console.s"
 include "macros.s"
 include "errors.s"
+include "shell.s"
 
 ;;************************************************************************************
 
@@ -107,6 +108,21 @@ shellStart:
     cmp byte[esi], 0
     je .start
 
+;; Launched with a single existing file as an argument: run it as a
+;; script instead of starting an interactive prompt. This is how a
+;; shebang dispatch from Shell.checkShebang hands a script off to the
+;; shell named on its "#!" line
+
+    hx.syscall hx.fileExists
+
+    jc .start ;; Not a file (or some other argument shape); interactive as usual
+
+    mov esi, [commandLine]
+
+    call Shell.runScriptFile
+
+    jmp finishShell
+
 .start:
 
 ;; Start terminal configuration
@@ -128,26 +144,9 @@ shellStart:
 
 .processRC:
 
-    mov esi, sh.fileRC
-
-    hx.syscall hx.fileExists
-
-    jc .continue
-
-    jmp .processShellFile
-
-.processShellFile:
-
-    mov esi, sh.fileRC
-    mov edi, appFileBuffer
-
-    hx.syscall hx.open
-
     putNewLine
 
-    fputs appFileBuffer
-
-    jmp .continue
+    call Shell.loadRc
 
 .continue:
 
@@ -301,6 +300,14 @@ shellStart:
 
     jc runShellScript ;; Start batch file execution
 
+    ;; SET command
+
+    mov edi, commands.set
+
+    hx.syscall hx.compareWordsString
+
+    jc commandSET
+
 ;; Check for a trailing "&", which backgrounds the command instead of
 ;; blocking the shell until it exits
 
@@ -394,6 +401,37 @@ shellStart:
 
     pop esi
 
+;; Resolve the command name against PATH if it isn't already valid as
+;; given, then check for a "#!name" shebang on the resolved file
+
+    call Shell.resolveCommandPath
+
+    mov [sh.resolvedPath], esi
+
+    call Shell.checkShebang
+
+    jc .noShebang
+
+;; ESI = shell name from the shebang line; run that shell with the
+;; resolved script as its own argument, ignoring any arguments this
+;; command line itself may have had
+
+    mov edi, dword[sh.resolvedPath]
+
+    mov eax, 1
+
+    stc
+
+    hx.syscall hx.exec
+
+    jc .executionFailure
+
+    jmp .getCommandLine
+
+.noShebang:
+
+    mov esi, dword[sh.resolvedPath]
+
     cmp byte[sh.background], 1
     je .loadBackground
 
@@ -455,6 +493,18 @@ commandCD:
 .argumentRequired:
 
     fputs sh.argumentRequired
+
+    jmp shellStart.getCommandLine
+
+;;************************************************************************************
+
+commandSET:
+
+    add esi, 03h
+
+    hx.syscall hx.trimString
+
+    call Shell.handleSet
 
     jmp shellStart.getCommandLine
 
@@ -726,8 +776,6 @@ sh:
 db "@Hexagonix", 0
 .commandNotFound:
 db ": command not found.", 0
-.fileRC:
-db "/etc/shrc", 0
 .invalidImage:
 db ": unable to load image. Unsupported executable format.", 0
 .processLimit:
@@ -769,6 +817,7 @@ times 64 db 0
 .promptSymbol: ;; Stores # or $
 times 8 db 0
 .background: db 0 ;; Set to 1 when the current command line ends in "&"
+.resolvedPath: dd 0 ;; Command path after Shell.resolveCommandPath, across the shebang check
 
 ;;**************************
 
@@ -780,6 +829,8 @@ db "cd", 0
 db "exit", 0
 .rc:
 db "rc", 0
+.set:
+db "set", 0
 
 ;;**************************
 
