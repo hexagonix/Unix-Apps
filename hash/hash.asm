@@ -694,7 +694,7 @@ hash:
 .commandNotFound:
 db ": command not found.", 0
 .fileRC:
-db "shrc", 0
+db "/etc/shrc", 0
 .invalidImage:
 db ": unable to load image. Unsupported executable format.", 0
 .processLimit:

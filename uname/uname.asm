@@ -140,7 +140,7 @@ db "-v", 0
 .showOperatingSystemParameter:
 db "-o", 0
 .hostFilename:
-db "host", 0
+db "/etc/host", 0
 .notSupported:
 db "Unknown architecture.", 0
 .platformPC:

@@ -178,7 +178,7 @@ db "?", 0
 .helpParameter2:
 db "--help", 0
 .fileUnix:
-db "host", 0
+db "/etc/host", 0
 
 parameters: dd ?
 
