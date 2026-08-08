@@ -272,7 +272,7 @@ list:
 
     pop esi
 
-    mov eax, AZUL_MEDIO
+    mov eax, AZUL
 
     call setFileColor
 
@@ -627,7 +627,7 @@ checkFile:
 ;;
 ;;************************************************************************************
 
-VERSION equ "4.4.0"
+VERSION equ "4.4.1"
 
 ls:
 
