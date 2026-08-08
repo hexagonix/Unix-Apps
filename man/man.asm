@@ -83,7 +83,7 @@ include "macros.s"
 
 ;;************************************************************************************
 
-VERSION equ "3.0.4"
+VERSION equ "3.1.0"
 
 CoreUtilsVersion equ "Mineru-1.0"
 UnixUtilsVersion equ "Mineru-1.0"
@@ -113,7 +113,7 @@ db ": manual not found for this utility.", 0
 .manFileExtension:
 db ".man", 0
 .manDirectory:
-db "/usr/man/", 0
+db "/usr/share/man/", 0
 .morePrompt:
 db "-- More -- (press any key to continue, <q> to quit)", 0
 .endPrompt:
