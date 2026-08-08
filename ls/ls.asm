@@ -364,9 +364,6 @@ list:
 
     pop esi
 
-    cmp byte[ls.listAll], 01h
-    jne .skipFile
-
     mov eax, TOMATE
 
     call setFileColor
@@ -636,7 +633,7 @@ checkFile:
 ;;
 ;;************************************************************************************
 
-VERSION equ "4.1.0"
+VERSION equ "4.2.0"
 
 ls:
 
