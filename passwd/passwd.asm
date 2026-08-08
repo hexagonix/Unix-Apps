@@ -82,7 +82,7 @@ use32
 include "HAPP.s" ;; Here is a structure for the HAPP header
 
 ;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
-appHeader headerHAPP HAPP.Architectures.i386, 1, 5, applicationStart, 01h
+appHeader headerHAPP HAPP.Architectures.i386, 1, 7, applicationStart, 01h
 
 ;;************************************************************************************
 
@@ -318,7 +318,7 @@ finish:
 ;;
 ;;************************************************************************************
 
-VERSION equ "0.1.2"
+VERSION equ "0.1.3"
 
 passwd:
 
