@@ -410,7 +410,7 @@ db "--help", 0
 .authenticationFailure:
 db 10, "su: authentication failed.", 0
 .defaultShell: ;; Name of the file containing the default Hexagonix shell
-db "sh", 0
+db "/bin/sh", 0
 
 ;; Buffers
 

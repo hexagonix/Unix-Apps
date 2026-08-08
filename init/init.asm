@@ -102,7 +102,7 @@ lineBufferSize = 64 ;; Big enough for "respawn=" plus a 12 character name
 respawnTable.limit = 8 ;; How many respawn= services init can supervise at once
 
 defaultShell: ;; Name of the file containing the default Unix shell
-db "sh", 0
+db "/bin/sh", 0
 rcFile: ;; init configuration file path
 db "/etc/rc", 0
 
@@ -195,6 +195,8 @@ startProcessing:
     mov esi, rcFile
     mov edi, appFileBuffer
 
+    xor ecx, ecx
+
     hx.syscall hx.open
 
     jc .rcNotFound
@@ -230,9 +232,13 @@ clearConsole:
 
     mov esi, Hexagon.LibASM.Dev.video.tty1 ;; Open the first virtual console
 
+    xor ecx, ecx
+
     hx.syscall hx.open ;; Open the device
 
     mov esi, Hexagon.LibASM.Dev.video.tty0 ;; Reopen the default console
+
+    xor ecx, ecx
 
     hx.syscall hx.open ;; Open the device
 

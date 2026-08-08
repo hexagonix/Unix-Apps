@@ -220,6 +220,8 @@ applicationStart:
 
     mov edi, appFileBuffer
 
+    xor ecx, ecx
+
     hx.syscall hx.open
 
     jc .innerCow

@@ -112,6 +112,8 @@ applicationStart:
     mov edi, appFileBuffer
     mov esi, hostname.fileUnix
 
+    xor ecx, ecx
+
     hx.syscall hx.open
 
     jc .fileNotFound

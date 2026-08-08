@@ -506,6 +506,8 @@ getHostname:
     mov edi, appFileBuffer
     mov esi, uname.hostFilename
 
+    xor ecx, ecx
+
     hx.syscall hx.open
 
     jc .fileNotFound ;; If not found, display the default

@@ -115,6 +115,8 @@ performCleaning:
 
     mov esi, Hexagon.LibASM.Dev.video.tty1 ;; Open the first virtual console
 
+    xor ecx, ecx
+
     hx.syscall hx.open ;; Open the device
 
     jc .error
@@ -122,6 +124,8 @@ performCleaning:
     hx.syscall hx.clearConsole ;; Clean your content
 
     mov esi, Hexagon.LibASM.Dev.video.tty0 ;; Reopen the main console
+
+    xor ecx, ecx
 
     hx.syscall hx.open ;; Open the device
 

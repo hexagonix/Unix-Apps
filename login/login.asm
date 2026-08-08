@@ -108,7 +108,7 @@ VERSION equ "6.1.0"
 login:
 
 .defaultShell: ;; Name of the file containing the default Hexagonix shell
-db "sh", 0
+db "/bin/sh", 0
 .fileNotFound:
 db 10, 10, "The user database was not found on the volume.", 10, 0
 .requestUser:
@@ -128,7 +128,7 @@ db "--help", 0
 .wrongData:
 db 10, "Login incorrect", 0
 .logind:
-db "logind", 0
+db "/sbin/logind", 0
 .lightTheme:
 db "light", 0
 .darkTheme:
@@ -430,6 +430,8 @@ applyTheme:
 
     mov esi, Hexagon.LibASM.Dev.video.tty0
 
+    xor ecx, ecx
+
     hx.syscall hx.open
 
     hx.syscall hx.getColor ;; EAX = current font color, EBX = current background
@@ -446,6 +448,8 @@ applyTheme:
 
     mov esi, Hexagon.LibASM.Dev.video.tty1 ;; Open first virtual console
 
+    xor ecx, ecx
+
     hx.syscall hx.open
 
     mov eax, HEXAGONIX_CLASSICO_PRETO
@@ -456,6 +460,8 @@ applyTheme:
     hx.syscall hx.clearConsole
 
     mov esi, Hexagon.LibASM.Dev.video.tty0 ;; Reopens the standard console
+
+    xor ecx, ecx
 
     hx.syscall hx.open
 
@@ -471,6 +477,8 @@ applyTheme:
 .dark:
 
     mov esi, Hexagon.LibASM.Dev.video.tty0
+
+    xor ecx, ecx
 
     hx.syscall hx.open
 
@@ -488,6 +496,8 @@ applyTheme:
 
     mov esi, Hexagon.LibASM.Dev.video.tty1 ;; Open first virtual console
 
+    xor ecx, ecx
+
     hx.syscall hx.open
 
     mov eax, HEXAGONIX_BLOSSOM_AMARELO
@@ -498,6 +508,8 @@ applyTheme:
     hx.syscall hx.clearConsole
 
     mov esi, Hexagon.LibASM.Dev.video.tty0 ;; Reopens the standard console
+
+    xor ecx, ecx
 
     hx.syscall hx.open
 

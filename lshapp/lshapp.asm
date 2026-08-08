@@ -225,8 +225,15 @@ applicationStart:
 
 checkFileByHeader:
 
+;; Only the header (checked below, up to imageFormat at edi+11) is actually
+;; looked at, so there's no reason to pull in the rest of a possibly much
+;; larger image just to inspect it. 128 bytes leaves headroom over the
+;; real header size without reading a whole cluster's worth for nothing
+
     mov esi, filename
     mov edi, appFileBuffer
+
+    mov ecx, 128
 
     hx.syscall hx.open
 

@@ -185,6 +185,8 @@ applicationStart:
 
     mov esi, [utility]
 
+    xor ecx, ecx
+
     hx.syscall hx.open
 
     jc manNotFound

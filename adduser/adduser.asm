@@ -256,6 +256,8 @@ appendUser:
     mov esi, Hexagon.LibASM.PasswdHash.file
     mov edi, Hexagon.LibASM.PasswdHash.fileBuffer
 
+    xor ecx, ecx
+
     hx.syscall hx.open
 
     jc .empty
@@ -403,7 +405,7 @@ db 10, "Could not write /shadow. No user was created.", 0
 .success:
 db 10, "User created.", 0
 .defaultShell:
-db "sh", 0
+db "/bin/sh", 0
 .defaultTheme:
 db "dark", 0
 .defaultCode:
