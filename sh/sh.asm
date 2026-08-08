@@ -73,7 +73,7 @@ use32
 include "HAPP.s" ;; Here is a structure for the HAPP header
 
 ;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
-appHeader headerHAPP HAPP.Architectures.i386, 1, 5, shellStart, 01h
+appHeader headerHAPP HAPP.Architectures.i386, 1, 7, shellStart, 01h
 
 ;;************************************************************************************
 
@@ -115,7 +115,7 @@ shellStart:
 
     hx.syscall hx.fileExists
 
-    jc .start ;; Not a file (or some other argument shape); interactive as usual
+    jc .start ;; Not a file (or some other argument shape). Interactive as usual
 
     mov esi, [commandLine]
 
@@ -348,7 +348,7 @@ shellStart:
 ;; knows its nature
 
     cmp eax, Hexagon.processesLimit ;; Limit of running processes reached
-    je .limitReached                 ;; If yes, display the appropriate message
+    je .limitReached                ;; If yes, display the appropriate message
 
     cmp eax, Hexagon.invalidImage
     je .invalidHAPPImage
@@ -417,7 +417,7 @@ shellStart:
 
     jc .noShebang
 
-;; ESI = shell name from the shebang line; run that shell with the
+;; ESI = shell name from the shebang line. Run that shell with the
 ;; resolved script as its own argument, ignoring any arguments this
 ;; command line itself may have had
 
@@ -647,7 +647,7 @@ finishShell:
 ;;
 ;;************************************************************************************
 
-VERSION equ "2.2.1"
+VERSION equ "2.2.2"
 
 sh:
 
@@ -691,7 +691,7 @@ db "]", 0
 times 64 db 0
 .promptSymbol: ;; Stores # or $
 times 8 db 0
-.background: db 0 ;; Set to 1 when the current command line ends in "&"
+.background:   db 0 ;; Set to 1 when the current command line ends in "&"
 .resolvedPath: dd 0 ;; Command path after Shell.resolveCommandPath, across the shebang check
 
 ;;**************************
