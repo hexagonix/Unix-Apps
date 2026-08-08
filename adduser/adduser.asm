@@ -82,7 +82,7 @@ use32
 include "HAPP.s" ;; Here is a structure for the HAPP header
 
 ;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
-appHeader headerHAPP HAPP.Architectures.i386, 1, 5, applicationStart, 01h
+appHeader headerHAPP HAPP.Architectures.i386, 1, 7, applicationStart, 01h
 
 ;;************************************************************************************
 
@@ -371,7 +371,7 @@ finish:
 ;;
 ;;************************************************************************************
 
-VERSION equ "0.1.0"
+VERSION equ "0.1.1"
 
 adduser:
 
@@ -391,7 +391,7 @@ db 10, "Password: ", 0
 .promptPasswordAgain:
 db 10, "Repeat password: ", 0
 .promptShell:
-db 10, "Shell [sh]: ", 0
+db 10, "Shell [/bin/sh]: ", 0
 .promptTheme:
 db 10, "Theme (dark/light) [dark]: ", 0
 .withoutUsername:
@@ -401,7 +401,7 @@ db 10, "That username already exists.", 0
 .passwordMismatch:
 db 10, "The passwords entered do not match.", 0
 .writeError:
-db 10, "Could not write /shadow. No user was created.", 0
+db 10, "Could not write /etc/shadow. No user was created.", 0
 .success:
 db 10, "User created.", 0
 .defaultShell:
