@@ -82,7 +82,7 @@ use32
 include "HAPP.s" ;; Here is a structure for the HAPP header
 
 ;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
-appHeader headerHAPP HAPP.Architectures.i386, 1, 5, initHexagonix, 01h
+appHeader headerHAPP HAPP.Architectures.i386, 1, 7, initHexagonix, 01h
 
 ;;************************************************************************************
 
@@ -93,13 +93,11 @@ include "dev.s"
 
 ;;************************************************************************************
 
-VERSION equ "3.0.1"
+VERSION equ "3.0.2"
 
 searchSizeLimit = 32768 ;; Maximum /etc/rc size read while parsing: 32 kbytes
-
-lineBufferSize = 64 ;; Big enough for "respawn=" plus a 12 character name
-
-respawnTable.limit = 8 ;; How many respawn= services init can supervise at once
+lineBufferSize = 64     ;; Big enough for "respawn=" plus a 12 character name
+respawnTable.limit = 8  ;; How many respawn= services init can supervise at once
 
 defaultShell: ;; Name of the file containing the default Unix shell
 db "/bin/sh", 0
