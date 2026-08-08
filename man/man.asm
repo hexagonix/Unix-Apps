@@ -83,7 +83,7 @@ include "macros.s"
 
 ;;************************************************************************************
 
-VERSION equ "3.0.2"
+VERSION equ "3.0.3"
 
 CoreUtilsVersion equ "Dormin-1.1"
 UnixUtilsVersion equ "Dormin-1.1"
@@ -112,6 +112,8 @@ db "Press <q> to exit.", 0
 db ": manual not found for this utility.", 0
 .manFileExtension:
 db ".man", 0
+.manDirectory:
+db "/usr/man/", 0
 .morePrompt:
 db "-- More -- (press any key to continue, <q> to quit)", 0
 .endPrompt:
@@ -120,13 +122,78 @@ db "(END) (press <q> to quit)", 0
 db "Hexagonix", 0
 
 utility:              dd ?
-nameLength:           db 0 ;; Length of the utility name, before ".man" is appended to it
+manPath:              times 64 db 0 ;; "/usr/man/" plus the utility name plus ".man"
 pageSize:             db 0 ;; Content lines per screen, computed from the console info
 lineCount:            db 0 ;; Content lines printed on the current page so far
 readPos:              dd ? ;; Where the next page starts reading from in appFileBuffer
 numberColumns:        db 0
 savedFontColor:       dd 0
 savedBackgroundColor: dd 0
+
+;;************************************************************************************
+
+;; Builds "/usr/man/" plus the typed utility name plus ".man" into manPath,
+;; leaving "utility" itself untouched so it still reads as the plain name
+;; wherever it gets displayed later
+
+buildManPath:
+
+    push esi
+    push edi
+
+    mov esi, man.manDirectory
+    mov edi, manPath
+
+.copyDirectory:
+
+    mov al, byte[esi]
+
+    cmp al, 0
+    je .directoryCopied
+
+    mov byte[edi], al
+
+    inc esi
+    inc edi
+
+    jmp .copyDirectory
+
+.directoryCopied:
+
+    mov esi, [utility]
+
+.copyName:
+
+    mov al, byte[esi]
+
+    mov byte[edi], al
+
+    inc esi
+    inc edi
+
+    cmp al, 0
+    jne .copyName
+
+    dec edi ;; Back onto the name's own null, so .man overwrites it instead of following it
+
+    mov esi, man.manFileExtension
+
+.copyExtension:
+
+    mov al, byte[esi]
+
+    mov byte[edi], al
+
+    inc esi
+    inc edi
+
+    cmp al, 0
+    jne .copyExtension
+
+    pop edi
+    pop esi
+
+    ret
 
 ;;************************************************************************************
 
@@ -151,31 +218,9 @@ applicationStart:
 
     jc applicationUsage
 
-    mov esi, [utility]
+    call buildManPath
 
-    hx.syscall hx.stringSize
-
-    mov ebx, eax
-
-    mov byte[nameLength], bl
-
-    mov al, byte[man.manFileExtension+0]
-
-    mov byte[esi+ebx+0], al
-
-    mov al, byte[man.manFileExtension+1]
-
-    mov byte[esi+ebx+1], al
-
-    mov al, byte[man.manFileExtension+2]
-
-    mov byte[esi+ebx+2], al
-
-    mov al, byte[man.manFileExtension+3]
-
-    mov byte[esi+ebx+3], al
-
-    mov byte[esi+ebx+4], 0 ;; End of string
+    mov esi, manPath
 
     hx.syscall hx.fileExists
 
@@ -183,23 +228,13 @@ applicationStart:
 
     mov edi, appFileBuffer
 
-    mov esi, [utility]
+    mov esi, manPath
 
     xor ecx, ecx
 
     hx.syscall hx.open
 
     jc manNotFound
-
-;; The file has been located and opened, "utility" is no longer needed with
-;; the ".man" extension appended to it, so strip it back to just the plain
-;; name for display
-
-    mov esi, [utility]
-
-    movzx ecx, byte[nameLength]
-
-    mov byte[esi+ecx], 0
 
 ;; Environment preparation
 
