@@ -73,7 +73,7 @@ use32
 include "HAPP.s" ;; Here is a structure for the HAPP header
 
 ;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
-appHeader headerHAPP HAPP.Architectures.i386, 1, 5, applicationStart, 01h
+appHeader headerHAPP HAPP.Architectures.i386, 1, 7, applicationStart, 01h
 
 ;;************************************************************************************
 
@@ -83,10 +83,10 @@ include "macros.s"
 
 ;;************************************************************************************
 
-VERSION equ "3.0.3"
+VERSION equ "3.0.4"
 
-CoreUtilsVersion equ "Dormin-1.1"
-UnixUtilsVersion equ "Dormin-1.1"
+CoreUtilsVersion equ "Mineru-1.0"
+UnixUtilsVersion equ "Mineru-1.0"
 
 manBarColor     = AZUL_CALMANTE
 manBarFontColor = HEXAGONIX_CLASSICO_BRANCO
