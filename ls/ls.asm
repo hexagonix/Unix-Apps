@@ -374,9 +374,6 @@ list:
 
     pop esi
 
-    cmp byte[ls.listAll], 01h
-    jne .skipFile
-
     mov eax, HEXAGONIX_BLOSSOM_AZUL_PO
 
     call setFileColor
@@ -633,7 +630,7 @@ checkFile:
 ;;
 ;;************************************************************************************
 
-VERSION equ "4.2.0"
+VERSION equ "4.3.0"
 
 ls:
 
