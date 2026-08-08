@@ -103,7 +103,7 @@ include "passwdHash.s"
 
 ;;************************************************************************************
 
-VERSION equ "6.1.0"
+VERSION equ "6.1.1"
 
 login:
 
@@ -139,11 +139,11 @@ db "dark", 0
 .verboseLogin:
 db "login version ", VERSION, ".", 0
 .verboseFindFile:
-db "Searching user database in /...", 0
+db "Searching user database in /etc/shadow...", 0
 .verboseFileFound:
 db "The user database was found.", 0
 .verboseFileNotFound:
-db "The user database was not found. The default shell will run (sh.app).", 0
+db "The user database was not found. The default shell will run (/bin/sh).", 0
 .verboseError:
 db "An unhandled error was encountered.", 0
 .verboseLoginAccept:
