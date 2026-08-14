@@ -183,20 +183,20 @@ finish:
 BCDToASCII:
 
     mov ah, al
-    
+
     and ax, 0xF00F ;; Mask bits
-    
+
     shr ah, 4      ;; Shift right AH to get unwrapped BCD
-    
+
     or ax, 0x3030  ;; Match 30 to get ASCII
-    
+
     xchg ah, al    ;; Swap for ASCII convention
 
     ret
 
 ;;************************************************************************************
 
-VERSION equ "0.2.0"
+VERSION equ "0.2.1"
 
 clock:
 
