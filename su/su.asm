@@ -222,12 +222,12 @@ startProcessing:
 
 ;;************************************************************************************
 
-;; CF set if the authenticated user's code is root (777), used to show the
+;; CF set if the authenticated user's code is root (0), used to show the
 ;; "great powers" warning before starting the shell
 
 checkUser:
 
-    cmp dword[Hexagon.LibASM.PasswdHash.codeFound], 777
+    cmp dword[Hexagon.LibASM.PasswdHash.codeFound], 0
     je .isRoot
 
     clc
@@ -245,8 +245,6 @@ checkUser:
 registerUser:
 
     mov eax, [Hexagon.LibASM.PasswdHash.codeFound]
-
-    mov esi, [userRequested]
 
     hx.syscall hx.setUser
 
@@ -314,29 +312,6 @@ getDefaultShell:
 
 saveCurrentUser:
 
-    push es
-
-    push ds ;; User mode data segment (38h selector)
-    pop es
-
-    hx.syscall hx.getUser
-
-    push esi
-
-    hx.syscall hx.stringSize
-
-    pop esi
-
-    push eax
-
-    mov edi, previousUser
-
-    pop ecx
-
-    rep movsb
-
-    pop es
-
     hx.syscall hx.getUser
 
     mov [previousCode], eax
@@ -347,7 +322,6 @@ saveCurrentUser:
 
 restoreUser:
 
-    mov esi, previousUser
     mov eax, [previousCode]
 
     hx.syscall hx.setUser
@@ -384,7 +358,7 @@ finish:
 ;;
 ;;************************************************************************************
 
-VERSION equ "2.1.1"
+VERSION equ "2.2.0"
 
 su:
 
@@ -415,8 +389,6 @@ db "/bin/sh", 0
 ;; Buffers
 
 userRequested: ;; Requested User Buffer
-times 17 db 0
-previousUser: ;; Previous User Buffer
 times 17 db 0
 shellHexagonix: ;; Stores the filename of the shell to be used by the system
 times 12 db 0
