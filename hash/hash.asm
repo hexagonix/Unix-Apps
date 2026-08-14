@@ -154,11 +154,10 @@ shellStart:
 
     hx.syscall hx.getUser
 
-    cmp eax, 555
-    je .commonUser
-
-    cmp eax, 777
+    cmp eax, 0
     je .rootUser
+
+    jmp .commonUser
 
 .commonUser:
 
@@ -616,7 +615,7 @@ finishShell:
 ;;
 ;;************************************************************************************
 
-VERSION equ "0.4.3"
+VERSION equ "0.4.4"
 
 hash:
 
