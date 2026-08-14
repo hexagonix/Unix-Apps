@@ -80,6 +80,8 @@ appHeader headerHAPP HAPP.Architectures.i386, 1, 00, applicationStart, 01h
 include "hexagon.s"
 include "console.s"
 include "macros.s"
+include "passwdHash.s"
+include "user.s"
 
 ;;************************************************************************************
 
@@ -123,9 +125,17 @@ displayUser:
 
     putNewLine
 
-    hx.syscall hx.getUser
+    call Hexagon.LibASM.User.currentUsername
+
+    jc .notFound
 
     printString
+
+    jmp finish
+
+.notFound:
+
+    fputs whoami.notFound
 
     jmp finish
 
@@ -135,17 +145,23 @@ userAndGroup:
 
     putNewLine
 
-    hx.syscall hx.getUser
+    call Hexagon.LibASM.User.currentUsername
 
-    push eax
+    jc .notFound
 
     printString
 
     fputs whoami.group
 
-    pop eax
+    hx.syscall hx.getUser
 
     printInteger
+
+    jmp finish
+
+.notFound:
+
+    fputs whoami.notFound
 
     jmp finish
 
@@ -171,7 +187,7 @@ finish:
 ;;
 ;;************************************************************************************
 
-VERSION equ "1.3.0"
+VERSION equ "1.4.0"
 
 whoami:
 
@@ -194,5 +210,7 @@ db "-t", 0
 db "-u", 0
 .group:
 db ", of the group ", 0
+.notFound:
+db 10, "Could not find a /etc/shadow entry for the current user.", 0
 
 parameters: dd ?
