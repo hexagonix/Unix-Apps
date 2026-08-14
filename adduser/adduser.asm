@@ -100,7 +100,7 @@ applicationStart:
 
     hx.syscall hx.getUser
 
-    cmp eax, 777
+    cmp eax, 0
     je .isRoot
 
     fputs adduser.permissionDenied
@@ -208,6 +208,14 @@ applicationStart:
 
     call Hexagon.LibASM.PasswdHash.copyString
 
+    call Hexagon.LibASM.PasswdHash.nextCode
+
+    hx.syscall hx.toString
+
+    mov edi, newCode
+
+    call Hexagon.LibASM.PasswdHash.copyString
+
     call appendUser
 
     jc .writeError
@@ -242,19 +250,28 @@ applicationStart:
 
 ;;************************************************************************************
 
-;; Appends a new username:hash:555:shell:theme line to /shadow and writes the
+;; Appends a new username:hash:code:shell:theme line to /shadow and writes the
 ;; whole file back (hx.unlink then hx.create, see the plan's Decisions:
 ;; hx.create's own overwrite behavior is never relied on)
 ;;
-;; Input: newUser, Hexagon.LibASM.PasswdHash.hashBuffer, newShell, newTheme
-;; already filled in by the caller
+;; Input: newUser, Hexagon.LibASM.PasswdHash.hashBuffer, newCode, newShell,
+;; newTheme already filled in by the caller
 ;;
 ;; Output: CF set on write failure
 
 appendUser:
 
+    mov ebx, Hexagon.LibASM.PasswdHash.searchSizeLimit
+
+    hx.syscall hx.malloc
+
+    cmp eax, 0
+    je .mallocFailed
+
+    mov [appendUserBufferPtr], ebx
+
     mov esi, Hexagon.LibASM.PasswdHash.file
-    mov edi, Hexagon.LibASM.PasswdHash.fileBuffer
+    mov edi, ebx
 
     xor ecx, ecx
 
@@ -262,11 +279,11 @@ appendUser:
 
     jc .empty
 
-    mov esi, Hexagon.LibASM.PasswdHash.fileBuffer
+    mov esi, [appendUserBufferPtr]
 
     hx.syscall hx.stringSize
 
-    mov edi, Hexagon.LibASM.PasswdHash.fileBuffer
+    mov edi, [appendUserBufferPtr]
 
     add edi, eax
 
@@ -288,7 +305,7 @@ appendUser:
 
 .empty:
 
-    mov edi, Hexagon.LibASM.PasswdHash.fileBuffer
+    mov edi, [appendUserBufferPtr]
 
 .buildLine:
 
@@ -308,7 +325,7 @@ appendUser:
 
     inc edi
 
-    mov esi, adduser.defaultCode
+    mov esi, newCode
 
     call Hexagon.LibASM.PasswdHash.appendString
 
@@ -338,14 +355,29 @@ appendUser:
 
     hx.syscall hx.unlink
 
-    mov esi, Hexagon.LibASM.PasswdHash.fileBuffer
+    mov esi, [appendUserBufferPtr]
 
     hx.syscall hx.stringSize
 
     mov esi, Hexagon.LibASM.PasswdHash.file
-    mov edi, Hexagon.LibASM.PasswdHash.fileBuffer
+    mov edi, [appendUserBufferPtr]
 
     hx.syscall hx.create
+
+    pushf
+
+    mov ebx, [appendUserBufferPtr]
+    mov ecx, Hexagon.LibASM.PasswdHash.searchSizeLimit
+
+    hx.syscall hx.free
+
+    popf
+
+    ret
+
+.mallocFailed:
+
+    stc
 
     ret
 
@@ -371,7 +403,7 @@ finish:
 ;;
 ;;************************************************************************************
 
-VERSION equ "0.1.1"
+VERSION equ "0.2.0"
 
 adduser:
 
@@ -408,8 +440,6 @@ db 10, "User created.", 0
 db "/bin/sh", 0
 .defaultTheme:
 db "dark", 0
-.defaultCode:
-db "555", 0
 
 newUser:
 times 17 db 0
@@ -419,3 +449,6 @@ newShell:
 times 12 db 0
 newTheme:
 times 8 db 0
+newCode:
+times 9 db 0
+appendUserBufferPtr: dd 0
