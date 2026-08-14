@@ -103,7 +103,7 @@ include "passwdHash.s"
 
 ;;************************************************************************************
 
-VERSION equ "6.1.2"
+VERSION equ "6.1.3"
 
 login:
 
@@ -152,8 +152,6 @@ db "Login accepted.", 0
 db "Login attempt prevented by authentication failure.", 0
 .verboseLogout:
 db "Logout performed successfully.", 0
-.rootUser:
-db "root", 0
 
 ;; Buffers
 
@@ -165,12 +163,9 @@ wrong:           db 0
 ;; of leaking account existence through an early exit
 userMissing:     db 0
 
-
 hexagonixShell: ;; Stores the name of the shell to be used
 times 12 db 0
 requestedUser:
-times 17 db 0
-previousUser:
 times 17 db 0
 
 ;;************************************************************************************
@@ -532,8 +527,6 @@ registerUser:
 
     mov eax, [Hexagon.LibASM.PasswdHash.codeFound]
 
-    mov esi, [requestedUser]
-
     hx.syscall hx.setUser
 
     ret
@@ -568,29 +561,6 @@ getDefaultShell:
 
 saveCurrentUser:
 
-    push es
-
-    push ds ;; User mode data segment (38h selector)
-    pop es
-
-    hx.syscall hx.getUser
-
-    push esi
-
-    hx.syscall hx.stringSize
-
-    pop esi
-
-    push eax
-
-    mov edi, previousUser
-
-    pop ecx
-
-    rep movsb
-
-    pop es
-
     hx.syscall hx.getUser
 
     mov [previousCode], eax
@@ -601,7 +571,6 @@ saveCurrentUser:
 
 restoreUser:
 
-    mov esi, previousUser
     mov eax, [previousCode]
 
     hx.syscall hx.setUser
@@ -644,9 +613,7 @@ defaultLogin:
 
 ;; First, log in as root
 
-    mov eax, 777 ;; Root user code
-
-    mov esi, login.rootUser
+    mov eax, 0 ;; Root user code
 
     hx.syscall hx.setUser
 
