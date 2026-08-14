@@ -294,7 +294,6 @@ getParameters:
 ;; So let's go. Some things will be done here to check parameters, like changing
 ;; of the character to be displayed and the parameters to be sended to output
 
-
 ;; First, let's look for '"'. This indicates that it is a sentence and that you should skip the
 ;; searches for a character change parameter, which is the first parameter.
 ;; You must use this character to skip loading another character in the case of a sentence.
@@ -442,7 +441,7 @@ finish:
 
 ;;************************************************************************************
 
-VERSION equ "2.5.0"
+VERSION equ "2.5.1"
 
 cowsay:
 
