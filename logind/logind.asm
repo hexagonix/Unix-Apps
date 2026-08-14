@@ -84,7 +84,6 @@ include "HAPP.s" ;; Here is a structure for the HAPP header
 ;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
 appHeader headerHAPP HAPP.Architectures.i386, 1, 7, daemonStart, 01h
 
-
 ;;************************************************************************************
 
 include "hexagon.s"
@@ -103,7 +102,7 @@ include "passwdHash.s"
 
 ;;************************************************************************************
 
-VERSION equ "2.0.1"
+VERSION equ "2.0.2"
 
 logind:
 
