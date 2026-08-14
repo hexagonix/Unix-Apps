@@ -121,7 +121,7 @@ applicationStart:
 
     hx.syscall hx.getUser
 
-    cmp eax, 777
+    cmp eax, 0
     je .isRoot
 
     fputs deluser.permissionDenied
@@ -142,6 +142,11 @@ applicationStart:
     call Hexagon.LibASM.PasswdHash.findUser
 
     jc .userNotFound
+
+    hx.syscall hx.getUser
+
+    cmp eax, [Hexagon.LibASM.PasswdHash.codeFound]
+    je .cannotRemoveSelf
 
     putNewLine
 
@@ -194,6 +199,12 @@ applicationStart:
 
     jmp finish
 
+.cannotRemoveSelf:
+
+    fputs deluser.cannotRemoveSelf
+
+    jmp finish
+
 .userNotFound:
 
     fputs deluser.userNotFound
@@ -236,7 +247,7 @@ finish:
 ;;
 ;;************************************************************************************
 
-VERSION equ "0.1.1"
+VERSION equ "0.2.0"
 
 deluser:
 
@@ -251,6 +262,8 @@ db 10, "Only an administrative (or root) user can complete this action.", 10
 db "Login in this user to perform the desired operation.", 0
 .cannotRemoveRoot:
 db 10, "The root user cannot be removed.", 0
+.cannotRemoveSelf:
+db 10, "You cannot remove the account you are currently logged in as.", 0
 .userNotFound:
 db 10, "That user was not found.", 0
 .confirmation:
