@@ -93,7 +93,7 @@ include "dev.s"
 
 ;;************************************************************************************
 
-VERSION equ "3.0.2"
+VERSION equ "3.0.3"
 
 searchSizeLimit = 32768 ;; Maximum /etc/rc size read while parsing: 32 kbytes
 lineBufferSize = 64     ;; Big enough for "respawn=" plus a path and 12 character name
@@ -739,11 +739,11 @@ procCount:      dd 0
 procRecordSize: dd 0
 procRecords:    dd ?
 
-respawnTable.pid: 
+respawnTable.pid:
 times respawnTable.limit dd 0
-respawnTable.used: 
+respawnTable.used:
 times respawnTable.limit db 0
-respawnTable.name: 
+respawnTable.name:
 times respawnTable.limit*13 db 0
 
 lineBuffer:
