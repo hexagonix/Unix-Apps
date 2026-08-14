@@ -81,6 +81,8 @@ include "hexagon.s"
 include "console.s"
 include "macros.s"
 include "errors.s"
+include "passwdHash.s"
+include "user.s"
 include "shell.s"
 
 ;;************************************************************************************
@@ -152,9 +154,17 @@ shellStart:
 
 .startSession:
 
-    hx.syscall hx.getUser
+    call Hexagon.LibASM.User.currentUsername
 
-    push eax
+    jc .unknownUser
+
+    jmp .gotUserName
+
+.unknownUser:
+
+    mov esi, sh.unknownUser
+
+.gotUserName:
 
     push es
 
@@ -177,13 +187,12 @@ shellStart:
 
     pop es
 
-    pop eax
+    hx.syscall hx.getUser
 
-    cmp eax, 555
-    je .commonUser
-
-    cmp eax, 777
+    cmp eax, 0
     je .rootUser
+
+    jmp .commonUser
 
 .commonUser:
 
@@ -647,7 +656,7 @@ finishShell:
 ;;
 ;;************************************************************************************
 
-VERSION equ "2.2.2"
+VERSION equ "2.3.0"
 
 sh:
 
@@ -666,6 +675,8 @@ db ".", 0
 db "$ ", 0
 .rootUser:
 db "# ", 0
+.unknownUser:
+db "?", 0
 .use:
 db 10, 10, "Usage: sh", 10, 10
 db "Start a Unix shell for the current user.", 10, 10
