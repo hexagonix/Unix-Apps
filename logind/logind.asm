@@ -82,8 +82,7 @@ use32
 include "HAPP.s" ;; Here is a structure for the HAPP header
 
 ;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
-appHeader headerHAPP HAPP.Architectures.i386, 1, 00, daemonStart, 01h
-
+appHeader headerHAPP HAPP.Architectures.i386, 1, 7, daemonStart, 01h
 
 ;;************************************************************************************
 
@@ -103,7 +102,7 @@ include "passwdHash.s"
 
 ;;************************************************************************************
 
-VERSION equ "2.0.0"
+VERSION equ "2.0.2"
 
 logind:
 
@@ -173,11 +172,15 @@ startProcessing:
 
     mov esi, Hexagon.LibASM.Dev.video.tty1 ;; Open the secondary console
 
+    xor ecx, ecx
+
     hx.syscall hx.open ;; Open the device
 
     hx.syscall hx.clearConsole
 
     mov esi, Hexagon.LibASM.Dev.video.tty0 ;; Reopen the default console
+
+    xor ecx, ecx
 
     hx.syscall hx.open ;; Open the device
 
@@ -230,6 +233,8 @@ verifyTheme:
 
     mov esi, Hexagon.LibASM.Dev.video.tty1 ;; Open first virtual console
 
+    xor ecx, ecx
+
     hx.syscall hx.open ;; Open the device
 
     mov eax, HEXAGONIX_BLOSSOM_AMARELO
@@ -240,6 +245,8 @@ verifyTheme:
     hx.syscall hx.clearConsole ;; Clean the console
 
     mov esi, Hexagon.LibASM.Dev.video.tty0 ;; Reopens the standard console
+
+    xor ecx, ecx
 
     hx.syscall hx.open ;; Open the console
 

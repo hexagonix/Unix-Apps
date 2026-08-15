@@ -80,6 +80,7 @@ appHeader headerHAPP HAPP.Architectures.i386, 1, 7, applicationStart, 01h
 include "hexagon.s"
 include "console.s"
 include "macros.s"
+include "errors.s"
 
 ;;************************************************************************************
 
@@ -93,51 +94,55 @@ applicationStart:
     mov esi, [parameters]
 
     cmp byte[esi], 0
-    jne applicationUsage
+    je withoutParameter
 
-    mov edi, hostname.helpParameter
+    mov edi, rmdir.helpParameter
     mov esi, [parameters]
 
     hx.syscall hx.compareWordsString
 
     jc applicationUsage
 
-    mov edi, hostname.helpParameter2
+    mov edi, rmdir.helpParameter2
     mov esi, [parameters]
 
     hx.syscall hx.compareWordsString
 
     jc applicationUsage
 
-    mov edi, appFileBuffer
-    mov esi, hostname.fileUnix
+    mov esi, [parameters]
 
-    xor ecx, ecx
+    hx.syscall hx.rmdir
 
-    hx.syscall hx.open
-
-    jc .fileNotFound
-
-    putNewLine
-
-    mov esi, appFileBuffer
-
-    hx.syscall hx.stringSize
-
-    mov edx, eax
-    dec edx
-
-    mov al, 0
-
-    hx.syscall hx.insertCharacter
-
-    fputs appFileBuffer
+    jc .rmdirError
 
     jmp finish
 
-.fileNotFound:
+.rmdirError:
 
-    fputs hostname.notFound
+    push eax
+
+    fputs rmdir.rmdirError
+
+    pop eax
+
+    cmp eax, IO.operationDenied
+    je .permissionDenied
+
+    cmp eax, IO.directoryNotEmpty
+    je .notEmpty
+
+    jmp finish
+
+.permissionDenied:
+
+    fputs rmdir.permissionDenied
+
+    jmp finish
+
+.notEmpty:
+
+    fputs rmdir.notEmpty
 
     jmp finish
 
@@ -145,7 +150,15 @@ applicationStart:
 
 applicationUsage:
 
-    fputs hostname.use
+    fputs rmdir.use
+
+    jmp finish
+
+;;************************************************************************************
+
+withoutParameter:
+
+    fputs rmdir.withoutParameter
 
     jmp finish
 
@@ -163,27 +176,30 @@ finish:
 ;;
 ;;************************************************************************************
 
-VERSION equ "1.4.1"
+VERSION equ "1.0.1"
 
-hostname:
+rmdir:
 
-.notFound:
-db 10, "Host file not found. Check that it has been set.", 0
 .use:
-db 10, "Usage: hostname", 10, 10
-db "Displays the hostname defined for this device.", 10, 10
-db "hostname version ", VERSION, 10, 10
-db "Copyright (C) 2021-", __stringYear, " Felipe Miguel Nery Lunkes", 10
+db 10, "Usage: rmdir [path]", 10, 10
+db "Removes an empty directory at the given path, absolute or relative to", 10
+db "the current directory.", 10, 10
+db "rmdir version ", VERSION, 10, 10
+db "Copyright (C) 2026-", __stringYear, " Felipe Miguel Nery Lunkes", 10
 db "All rights reserved.", 0
 .helpParameter:
 db "?", 0
 .helpParameter2:
 db "--help", 0
-.fileUnix:
-db "/etc/host", 0
+.withoutParameter:
+db 10, "A required path is missing.", 10
+db "Use 'rmdir ?' for help with this utility.", 0
+.rmdirError:
+db 10, "The directory could not be removed.", 0
+.permissionDenied:
+db 10, "Only an administrative (or root) user can complete this action.", 10
+db "Login in this user to perform the desired operation.", 0
+.notEmpty:
+db 10, "The directory is not empty.", 0
 
 parameters: dd ?
-
-;;************************************************************************************
-
-appFileBuffer:

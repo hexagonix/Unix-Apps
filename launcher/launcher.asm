@@ -134,8 +134,8 @@ launcher:
 
 .starting:       db "launcher: starting, about to spawn workera and workerb", 0
 .bothSpawned:    db "launcher: both workers spawned", 0
-.spawnAFailed:   db "launcher: spawn of workera failed", 0
-.spawnBFailed:   db "launcher: spawn of workerb failed", 0
+.spawnAFailed:   db "launcher: spawn of /bin/workera failed", 0
+.spawnBFailed:   db "launcher: spawn of /bin/workerb failed", 0
 .tick:           db "launcher: tick", 0
-.workerAName:    db "workera", 0
-.workerBName:    db "workerb", 0
+.workerAName:    db "/bin/workera", 0
+.workerBName:    db "/bin/workerb", 0

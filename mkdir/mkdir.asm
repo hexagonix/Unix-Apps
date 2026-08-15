@@ -80,6 +80,7 @@ appHeader headerHAPP HAPP.Architectures.i386, 1, 7, applicationStart, 01h
 include "hexagon.s"
 include "console.s"
 include "macros.s"
+include "errors.s"
 
 ;;************************************************************************************
 
@@ -93,51 +94,55 @@ applicationStart:
     mov esi, [parameters]
 
     cmp byte[esi], 0
-    jne applicationUsage
+    je withoutParameter
 
-    mov edi, hostname.helpParameter
+    mov edi, mkdir.helpParameter
     mov esi, [parameters]
 
     hx.syscall hx.compareWordsString
 
     jc applicationUsage
 
-    mov edi, hostname.helpParameter2
+    mov edi, mkdir.helpParameter2
     mov esi, [parameters]
 
     hx.syscall hx.compareWordsString
 
     jc applicationUsage
 
-    mov edi, appFileBuffer
-    mov esi, hostname.fileUnix
+    mov esi, [parameters]
 
-    xor ecx, ecx
+    hx.syscall hx.mkdir
 
-    hx.syscall hx.open
-
-    jc .fileNotFound
-
-    putNewLine
-
-    mov esi, appFileBuffer
-
-    hx.syscall hx.stringSize
-
-    mov edx, eax
-    dec edx
-
-    mov al, 0
-
-    hx.syscall hx.insertCharacter
-
-    fputs appFileBuffer
+    jc .mkdirError
 
     jmp finish
 
-.fileNotFound:
+.mkdirError:
 
-    fputs hostname.notFound
+    push eax
+
+    fputs mkdir.mkdirError
+
+    pop eax
+
+    cmp eax, IO.operationDenied
+    je .permissionDenied
+
+    cmp eax, IO.pathNotFound
+    je .pathNotFound
+
+    jmp finish
+
+.permissionDenied:
+
+    fputs mkdir.permissionDenied
+
+    jmp finish
+
+.pathNotFound:
+
+    fputs mkdir.pathNotFound
 
     jmp finish
 
@@ -145,7 +150,15 @@ applicationStart:
 
 applicationUsage:
 
-    fputs hostname.use
+    fputs mkdir.use
+
+    jmp finish
+
+;;************************************************************************************
+
+withoutParameter:
+
+    fputs mkdir.withoutParameter
 
     jmp finish
 
@@ -163,27 +176,30 @@ finish:
 ;;
 ;;************************************************************************************
 
-VERSION equ "1.4.1"
+VERSION equ "1.0.1"
 
-hostname:
+mkdir:
 
-.notFound:
-db 10, "Host file not found. Check that it has been set.", 0
 .use:
-db 10, "Usage: hostname", 10, 10
-db "Displays the hostname defined for this device.", 10, 10
-db "hostname version ", VERSION, 10, 10
-db "Copyright (C) 2021-", __stringYear, " Felipe Miguel Nery Lunkes", 10
+db 10, "Usage: mkdir [path]", 10, 10
+db "Creates a new, empty directory at the given path, absolute or relative", 10
+db "to the current directory.", 10, 10
+db "mkdir version ", VERSION, 10, 10
+db "Copyright (C) 2026-", __stringYear, " Felipe Miguel Nery Lunkes", 10
 db "All rights reserved.", 0
 .helpParameter:
 db "?", 0
 .helpParameter2:
 db "--help", 0
-.fileUnix:
-db "/etc/host", 0
+.withoutParameter:
+db 10, "A required path is missing.", 10
+db "Use 'mkdir ?' for help with this utility.", 0
+.mkdirError:
+db 10, "The directory could not be created.", 0
+.permissionDenied:
+db 10, "Only an administrative (or root) user can complete this action.", 10
+db "Login in this user to perform the desired operation.", 0
+.pathNotFound:
+db 10, "A directory in the given path does not exist.", 0
 
 parameters: dd ?
-
-;;************************************************************************************
-
-appFileBuffer:

@@ -119,5 +119,5 @@ testa:
 .spawnOk:      db "testa: spawn returned success", 0
 .spawnFailed:  db "testa: spawn returned an error", 0
 .stillRunning: db "testa: still running right after spawn (proves non-blocking)", 0
-.childName:    db "testb", 0
+.childName:    db "/bin/testb", 0
 .spawnedPID:   dd 0

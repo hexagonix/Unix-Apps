@@ -73,7 +73,7 @@ use32
 include "HAPP.s" ;; Here is a structure for the HAPP header
 
 ;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
-appHeader headerHAPP HAPP.Architectures.i386, 1, 5, shellStart, 01h
+appHeader headerHAPP HAPP.Architectures.i386, 1, 7, shellStart, 01h
 
 ;;************************************************************************************
 
@@ -81,6 +81,7 @@ include "hexagon.s"
 include "console.s"
 include "macros.s"
 include "errors.s"
+include "shell.s"
 
 ;;************************************************************************************
 
@@ -107,6 +108,21 @@ shellStart:
     cmp byte[esi], 0
     je .start
 
+;; Launched with a single existing file as an argument: run it as a
+;; script instead of starting an interactive prompt. This is how a
+;; shebang dispatch from Shell.checkShebang hands a script off to the
+;; shell named on its "#!" line
+
+    hx.syscall hx.fileExists
+
+    jc .start ;; Not a file (or some other argument shape). Interactive as usual
+
+    mov esi, [commandLine]
+
+    call Shell.runScriptFile
+
+    jmp finishShell
+
 .start:
 
 ;; Start terminal configuration
@@ -128,26 +144,9 @@ shellStart:
 
 .processRC:
 
-    mov esi, hash.fileRC
-
-    hx.syscall hx.fileExists
-
-    jc .continue
-
-    jmp .processShellFile
-
-.processShellFile:
-
-    mov esi, hash.fileRC
-    mov edi, appFileBuffer
-
-    hx.syscall hx.open
-
     putNewLine
 
-    fputs appFileBuffer
-
-    jmp .continue
+    call Shell.loadRc
 
 .continue:
 
@@ -155,11 +154,10 @@ shellStart:
 
     hx.syscall hx.getUser
 
-    cmp eax, 555
-    je .commonUser
-
-    cmp eax, 777
+    cmp eax, 0
     je .rootUser
+
+    jmp .commonUser
 
 .commonUser:
 
@@ -272,6 +270,14 @@ shellStart:
 
     jc runShellScript ;; Start batch file execution
 
+    ;; SET command
+
+    mov edi, commands.set
+
+    hx.syscall hx.compareWordsString
+
+    jc commandSET
+
 ;; Check for a trailing "&", which backgrounds the command instead of
 ;; blocking the shell until it exits
 
@@ -310,7 +316,7 @@ shellStart:
 ;; knows its nature
 
     cmp eax, Hexagon.processesLimit ;; Limit of running processes reached
-    je .limitReached                 ;; If yes, display the appropriate message
+    je .limitReached                ;; If yes, display the appropriate message
 
     cmp eax, Hexagon.invalidImage
     je .invalidHAPPImage
@@ -362,6 +368,42 @@ shellStart:
     hx.syscall hx.trimString
 
     pop esi
+
+;; Protect the arguments from Shell.checkShebang before it opens the
+;; resolved command's own file into appFileBuffer
+
+    call Shell.protectArguments
+
+;; Resolve the command name against PATH if it isn't already valid as
+;; given, then check for a "#!name" shebang on the resolved file
+
+    call Shell.resolveCommandPath
+
+    mov [hash.resolvedPath], esi
+
+    call Shell.checkShebang
+
+    jc .noShebang
+
+;; ESI = shell name from the shebang line. Run that shell with the
+;; resolved script as its own argument, ignoring any arguments this
+;; command line itself may have had
+
+    mov edi, dword[hash.resolvedPath]
+
+    mov eax, 1
+
+    stc
+
+    hx.syscall hx.exec
+
+    jc .executionFailure
+
+    jmp .getCommandLine
+
+.noShebang:
+
+    mov esi, dword[hash.resolvedPath]
 
     cmp byte[hash.background], 1
     je .loadBackground
@@ -429,6 +471,18 @@ commandCD:
 
 ;;************************************************************************************
 
+commandSET:
+
+    add esi, 03h
+
+    hx.syscall hx.trimString
+
+    call Shell.handleSet
+
+    jmp shellStart.getCommandLine
+
+;;************************************************************************************
+
 ;; Other auxiliary functions
 
 runShellScript:
@@ -440,44 +494,15 @@ runShellScript:
     cmp byte[esi], 0
     je .argumentRequired
 
-    mov word[hash.positionBX], 0FFFFh ;; With each execution, reset the counter
-
-    mov edi, appFileBuffer
-
-    hx.syscall hx.open
-
-    jc .shellScriptNotFound
-
-    call searchCommands
-
-    jc .notFound
-
-.loadImage:
-
-    mov esi, hash.diskImage
+    push esi
 
     hx.syscall hx.fileExists
 
-    jc .nextCommand
+    pop esi
 
-    mov eax, 0 ;; Do not pass arguments
-    mov esi, hash.diskImage ;; Filename
+    jc .shellScriptNotFound
 
-    stc
-
-    hx.syscall hx.exec ;; Request execution of the first command
-
-    jnc .nextCommand
-
-.nextCommand:
-
-    clc
-
-    call searchCommands
-
-    jmp .loadImage
-
-.notFound: ;; The service could not be find
+    call Shell.runScriptFile
 
     jmp shellStart.getCommandLine
 
@@ -492,99 +517,6 @@ runShellScript:
     fputs hash.argumentRequired
 
     jmp shellStart.getCommandLine
-
-;;************************************************************************************
-
-;; Components for shell batch command execution
-
-searchCommands:
-
-    pusha
-
-    push es
-
-    push ds ;; User mode data segment (38h selector)
-    pop es
-
-    mov si, appFileBuffer ;; Points to the buffer with the file contents
-    mov bx, word[hash.positionBX]
-
-    jmp .searchBetweenDelimiters
-
-.searchBetweenDelimiters:
-
-    inc bx
-
-    mov word[hash.positionBX], bx
-
-    cmp bx, searchSizeLimit
-    je shellStart.getCommandLine
-
-    mov al, [ds:si+bx]
-
-    cmp al, '>'
-    jne .searchBetweenDelimiters ;; The initial delimiter has been found
-
-;; BX now points to the first character of the command name retrieved from the file
-
-    push ds ;; User mode data segment (38h selector)
-    pop es
-
-    mov di, hash.diskImage ;; The command name will be copied to ES:DI
-
-    mov si, appFileBuffer
-
-    add si, bx ;; Move SI to where BX points
-
-    mov bx, 0 ;; Start at 0
-
-.getCommandLine:
-
-    inc bx
-
-    cmp bx, 13
-    je .invalidCommandName ;; If file name greater than 11, the name is invalid
-
-    mov al, [ds:si+bx]
-
-;; Now let's look for the final limiters of a command name, which could be:
-;;
-;; EOL - new line (10)
-;; Space - a space after the last character
-;; # - If used after the last character of the service name, mark as a comment
-
-    cmp al, 10 ;; If another delimiter is found, the name was loaded successfully
-    je .commandNameObtained
-
-    cmp al, ' ' ;; If another delimiter is found, the name was loaded successfully
-    je .commandNameObtained
-
-    cmp al, '#' ;; If another delimiter is found, the name was loaded successfully
-    je .commandNameObtained
-
-;; If not ready, store the obtained character
-
-    stosb
-
-    jmp .getCommandLine
-
-.commandNameObtained:
-
-    pop es
-
-    popa
-
-    ret
-
-.invalidCommandName:
-
-    pop es
-
-    popa
-
-    stc
-
-    ret
 
 ;;************************************************************************************
 
@@ -683,18 +615,12 @@ finishShell:
 ;;
 ;;************************************************************************************
 
-;; TODO: improve shell scripting support
-
-VERSION equ "0.4.1"
-
-searchSizeLimit = 32768
+VERSION equ "0.4.4"
 
 hash:
 
 .commandNotFound:
 db ": command not found.", 0
-.fileRC:
-db "shrc", 0
 .invalidImage:
 db ": unable to load image. Unsupported executable format.", 0
 .processLimit:
@@ -727,13 +653,10 @@ db 10, "Process in background: [", 0
 .backgroundEnd:
 db "]", 0
 
-.positionBX: dw 0 ;; Marking the search position in the file content
-
-.diskImage: ;; Stores the name of the image to be used
-times 12 db 0
 .promptSymbol: ;; Stores # or $
 times 8  db 0
-.background: db 0 ;; Set to 1 when the current command line ends in "&"
+.background:   db 0 ;; Set to 1 when the current command line ends in "&"
+.resolvedPath: dd 0 ;; Command path after Shell.resolveCommandPath, across the shebang check
 
 ;;**************************
 
@@ -745,6 +668,8 @@ db "cd", 0
 db "exit", 0
 .rc:
 db "rc", 0
+.set:
+db "set", 0
 
 ;;**************************
 

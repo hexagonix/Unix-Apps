@@ -73,7 +73,7 @@ use32
 include "HAPP.s" ;; Here is a structure for the HAPP header
 
 ;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
-appHeader headerHAPP HAPP.Architectures.i386, 1, 3, applicationStart, 01h
+appHeader headerHAPP HAPP.Architectures.i386, 1, 7, applicationStart, 01h
 
 ;;************************************************************************************
 
@@ -272,7 +272,7 @@ list:
 
     pop esi
 
-    mov eax, AZUL_MEDIO
+    mov eax, AZUL
 
     call setFileColor
 
@@ -351,9 +351,6 @@ list:
 
     pop esi
 
-    cmp byte[ls.listAll], 01h
-    jne .skipFile
-
     mov eax, HEXAGONIX_BLOSSOM_VERDE
 
     call setFileColor
@@ -364,9 +361,6 @@ list:
 
     pop esi
 
-    cmp byte[ls.listAll], 01h
-    jne .skipFile
-
     mov eax, TOMATE
 
     call setFileColor
@@ -376,9 +370,6 @@ list:
 .fileFNT:
 
     pop esi
-
-    cmp byte[ls.listAll], 01h
-    jne .skipFile
 
     mov eax, HEXAGONIX_BLOSSOM_AZUL_PO
 
@@ -636,7 +627,7 @@ checkFile:
 ;;
 ;;************************************************************************************
 
-VERSION equ "4.1.0"
+VERSION equ "4.4.1"
 
 ls:
 

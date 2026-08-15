@@ -82,7 +82,7 @@ use32
 include "HAPP.s" ;; Here is a structure for the HAPP header
 
 ;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
-appHeader headerHAPP HAPP.Architectures.i386, 1, 5, applicationStart, 01h
+appHeader headerHAPP HAPP.Architectures.i386, 1, 7, applicationStart, 01h
 
 ;;************************************************************************************
 
@@ -124,7 +124,7 @@ applicationStart:
 
     hx.syscall hx.getUser
 
-    cmp eax, 777
+    cmp eax, 0
     je .targetGiven
 
     fputs passwd.permissionDenied
@@ -148,17 +148,16 @@ applicationStart:
 
 .ownPassword:
 
-    hx.syscall hx.getUser ;; ESI = own username
+    hx.syscall hx.getUser
 
+    call Hexagon.LibASM.PasswdHash.findUserById
+
+    jc .userNotFound
+
+    mov esi, Hexagon.LibASM.PasswdHash.usernameFound
     mov edi, targetUser
 
     call Hexagon.LibASM.PasswdHash.copyString
-
-    mov esi, targetUser
-
-    call Hexagon.LibASM.PasswdHash.findUser
-
-    jc .userNotFound
 
     fputs passwd.promptCurrent
 
@@ -318,7 +317,7 @@ finish:
 ;;
 ;;************************************************************************************
 
-VERSION equ "0.1.2"
+VERSION equ "0.2.0"
 
 passwd:
 

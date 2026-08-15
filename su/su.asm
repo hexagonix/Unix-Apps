@@ -88,7 +88,7 @@ use32
 include "HAPP.s" ;; Here is a structure for the HAPP header
 
 ;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
-appHeader headerHAPP HAPP.Architectures.i386, 1, 6, suHexagonix, 01h
+appHeader headerHAPP HAPP.Architectures.i386, 1, 7, suHexagonix, 01h
 
 ;;************************************************************************************
 
@@ -222,12 +222,12 @@ startProcessing:
 
 ;;************************************************************************************
 
-;; CF set if the authenticated user's code is root (777), used to show the
+;; CF set if the authenticated user's code is root (0), used to show the
 ;; "great powers" warning before starting the shell
 
 checkUser:
 
-    cmp dword[Hexagon.LibASM.PasswdHash.codeFound], 777
+    cmp dword[Hexagon.LibASM.PasswdHash.codeFound], 0
     je .isRoot
 
     clc
@@ -245,8 +245,6 @@ checkUser:
 registerUser:
 
     mov eax, [Hexagon.LibASM.PasswdHash.codeFound]
-
-    mov esi, [userRequested]
 
     hx.syscall hx.setUser
 
@@ -314,29 +312,6 @@ getDefaultShell:
 
 saveCurrentUser:
 
-    push es
-
-    push ds ;; User mode data segment (38h selector)
-    pop es
-
-    hx.syscall hx.getUser
-
-    push esi
-
-    hx.syscall hx.stringSize
-
-    pop esi
-
-    push eax
-
-    mov edi, previousUser
-
-    pop ecx
-
-    rep movsb
-
-    pop es
-
     hx.syscall hx.getUser
 
     mov [previousCode], eax
@@ -347,7 +322,6 @@ saveCurrentUser:
 
 restoreUser:
 
-    mov esi, previousUser
     mov eax, [previousCode]
 
     hx.syscall hx.setUser
@@ -384,7 +358,7 @@ finish:
 ;;
 ;;************************************************************************************
 
-VERSION equ "2.1.0"
+VERSION equ "2.2.0"
 
 su:
 
@@ -410,17 +384,15 @@ db "--help", 0
 .authenticationFailure:
 db 10, "su: authentication failed.", 0
 .defaultShell: ;; Name of the file containing the default Hexagonix shell
-db "sh", 0
+db "/bin/sh", 0
 
 ;; Buffers
 
 userRequested: ;; Requested User Buffer
-times 17 db 0
-previousUser: ;; Previous User Buffer
 times 17 db 0
 shellHexagonix: ;; Stores the filename of the shell to be used by the system
 times 12 db 0
 
 previousCode:    dd 0 ;; Previous user code
 tryDefaultShell: db 0 ;; Signals an attempt to load the default shell
-parameters: db 0 ;; If the application received any parameters
+parameters:      db 0 ;; If the application received any parameters

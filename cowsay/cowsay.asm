@@ -73,7 +73,7 @@ use32
 include "HAPP.s" ;; Here is a structure for the HAPP header
 
 ;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
-appHeader headerHAPP HAPP.Architectures.i386, 1, 00, applicationStart, 01h
+appHeader headerHAPP HAPP.Architectures.i386, 1, 7, applicationStart, 01h
 
 ;;************************************************************************************
 
@@ -186,39 +186,18 @@ applicationStart:
     cmp byte[externalFile], 0
     je .innerCow
 
-    mov esi, [cowProfile]
+    call buildCowPath
 
-    hx.syscall hx.stringSize
-
-    mov ebx, eax
-
-    mov al, byte[cowsay.extensionCOW+0]
-
-    mov byte[esi+ebx+0], al
-
-    mov al, byte[cowsay.extensionCOW+1]
-
-    mov byte[esi+ebx+1], al
-
-    mov al, byte[cowsay.extensionCOW+2]
-
-    mov byte[esi+ebx+2], al
-
-    mov al, byte[cowsay.extensionCOW+3]
-
-    mov byte[esi+ebx+3], al
-
-    mov byte[esi+ebx+4], 0 ;; End of string, will be cut here and nothing after will be relevant
-
-    push esi
+    mov esi, cowPath
 
     hx.syscall hx.fileExists
 
     jc .innerCow
 
-    pop esi
-
     mov edi, appFileBuffer
+    mov esi, cowPath
+
+    xor ecx, ecx
 
     hx.syscall hx.open
 
@@ -238,6 +217,70 @@ applicationStart:
 
 ;;************************************************************************************
 
+;; Builds "/usr/share/cowsay/" plus the typed profile name plus ".cow" into
+;; cowPath, leaving "cowProfile" itself untouched
+
+buildCowPath:
+
+    push esi
+    push edi
+
+    mov esi, cowsay.cowDirectory
+    mov edi, cowPath
+
+.copyDirectory:
+
+    mov al, byte[esi]
+
+    cmp al, 0
+    je .directoryCopied
+
+    mov byte[edi], al
+
+    inc esi
+    inc edi
+
+    jmp .copyDirectory
+
+.directoryCopied:
+
+    mov esi, [cowProfile]
+
+.copyName:
+
+    mov al, byte[esi]
+
+    mov byte[edi], al
+
+    inc esi
+    inc edi
+
+    cmp al, 0
+    jne .copyName
+
+    dec edi ;; Back onto the name's own null, so .cow overwrites it instead of following it
+
+    mov esi, cowsay.extensionCOW
+
+.copyExtension:
+
+    mov al, byte[esi]
+
+    mov byte[edi], al
+
+    inc esi
+    inc edi
+
+    cmp al, 0
+    jne .copyExtension
+
+    pop edi
+    pop esi
+
+    ret
+
+;;************************************************************************************
+
 ;; Obtains the necessary parameters, directly from the command line
 
 getParameters:
@@ -250,7 +293,6 @@ getParameters:
 
 ;; So let's go. Some things will be done here to check parameters, like changing
 ;; of the character to be displayed and the parameters to be sended to output
-
 
 ;; First, let's look for '"'. This indicates that it is a sentence and that you should skip the
 ;; searches for a character change parameter, which is the first parameter.
@@ -399,7 +441,7 @@ finish:
 
 ;;************************************************************************************
 
-VERSION equ "2.4.0"
+VERSION equ "2.5.1"
 
 cowsay:
 
@@ -433,12 +475,15 @@ db "             ||----w |", 10
 db "             ||     ||", 0
 .extensionCOW:
 db ".cow", 0
+.cowDirectory:
+db "/usr/share/cowsay/", 0
 
 parameters:      dd ?
 cowProfile:      dd ?
 userMessage:     dd ?
 externalFile:    db 0
 userMessageSize: dd 0
+cowPath:         times 64 db 0 ;; "/usr/share/cowsay/" plus the profile name plus ".cow"
 
 ;;************************************************************************************
 

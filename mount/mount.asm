@@ -130,6 +130,8 @@ applicationStart:
 
     mov esi, [volume]
 
+    xor ecx, ecx
+
     hx.syscall hx.open
 
     jc openingError

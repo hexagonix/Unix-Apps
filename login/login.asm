@@ -82,7 +82,7 @@ use32
 include "HAPP.s" ;; Here is a structure for the HAPP header
 
 ;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
-appHeader headerHAPP HAPP.Architectures.i386, 1, 6, loginHexagonix, 01h
+appHeader headerHAPP HAPP.Architectures.i386, 1, 7, loginHexagonix, 01h
 
 ;;************************************************************************************
 
@@ -103,12 +103,12 @@ include "passwdHash.s"
 
 ;;************************************************************************************
 
-VERSION equ "6.1.0"
+VERSION equ "6.1.3"
 
 login:
 
 .defaultShell: ;; Name of the file containing the default Hexagonix shell
-db "sh", 0
+db "/bin/sh", 0
 .fileNotFound:
 db 10, 10, "The user database was not found on the volume.", 10, 0
 .requestUser:
@@ -128,7 +128,7 @@ db "--help", 0
 .wrongData:
 db 10, "Login incorrect", 0
 .logind:
-db "logind", 0
+db "/sbin/logind", 0
 .lightTheme:
 db "light", 0
 .darkTheme:
@@ -139,11 +139,11 @@ db "dark", 0
 .verboseLogin:
 db "login version ", VERSION, ".", 0
 .verboseFindFile:
-db "Searching user database in /...", 0
+db "Searching user database in /etc/shadow...", 0
 .verboseFileFound:
 db "The user database was found.", 0
 .verboseFileNotFound:
-db "The user database was not found. The default shell will run (sh.app).", 0
+db "The user database was not found. The default shell will run (/bin/sh).", 0
 .verboseError:
 db "An unhandled error was encountered.", 0
 .verboseLoginAccept:
@@ -152,8 +152,6 @@ db "Login accepted.", 0
 db "Login attempt prevented by authentication failure.", 0
 .verboseLogout:
 db "Logout performed successfully.", 0
-.rootUser:
-db "root", 0
 
 ;; Buffers
 
@@ -165,12 +163,9 @@ wrong:           db 0
 ;; of leaking account existence through an early exit
 userMissing:     db 0
 
-
 hexagonixShell: ;; Stores the name of the shell to be used
 times 12 db 0
 requestedUser:
-times 17 db 0
-previousUser:
 times 17 db 0
 
 ;;************************************************************************************
@@ -430,6 +425,8 @@ applyTheme:
 
     mov esi, Hexagon.LibASM.Dev.video.tty0
 
+    xor ecx, ecx
+
     hx.syscall hx.open
 
     hx.syscall hx.getColor ;; EAX = current font color, EBX = current background
@@ -446,6 +443,8 @@ applyTheme:
 
     mov esi, Hexagon.LibASM.Dev.video.tty1 ;; Open first virtual console
 
+    xor ecx, ecx
+
     hx.syscall hx.open
 
     mov eax, HEXAGONIX_CLASSICO_PRETO
@@ -456,6 +455,8 @@ applyTheme:
     hx.syscall hx.clearConsole
 
     mov esi, Hexagon.LibASM.Dev.video.tty0 ;; Reopens the standard console
+
+    xor ecx, ecx
 
     hx.syscall hx.open
 
@@ -471,6 +472,8 @@ applyTheme:
 .dark:
 
     mov esi, Hexagon.LibASM.Dev.video.tty0
+
+    xor ecx, ecx
 
     hx.syscall hx.open
 
@@ -488,6 +491,8 @@ applyTheme:
 
     mov esi, Hexagon.LibASM.Dev.video.tty1 ;; Open first virtual console
 
+    xor ecx, ecx
+
     hx.syscall hx.open
 
     mov eax, HEXAGONIX_BLOSSOM_AMARELO
@@ -498,6 +503,8 @@ applyTheme:
     hx.syscall hx.clearConsole
 
     mov esi, Hexagon.LibASM.Dev.video.tty0 ;; Reopens the standard console
+
+    xor ecx, ecx
 
     hx.syscall hx.open
 
@@ -519,8 +526,6 @@ applyTheme:
 registerUser:
 
     mov eax, [Hexagon.LibASM.PasswdHash.codeFound]
-
-    mov esi, [requestedUser]
 
     hx.syscall hx.setUser
 
@@ -556,29 +561,6 @@ getDefaultShell:
 
 saveCurrentUser:
 
-    push es
-
-    push ds ;; User mode data segment (38h selector)
-    pop es
-
-    hx.syscall hx.getUser
-
-    push esi
-
-    hx.syscall hx.stringSize
-
-    pop esi
-
-    push eax
-
-    mov edi, previousUser
-
-    pop ecx
-
-    rep movsb
-
-    pop es
-
     hx.syscall hx.getUser
 
     mov [previousCode], eax
@@ -589,7 +571,6 @@ saveCurrentUser:
 
 restoreUser:
 
-    mov esi, previousUser
     mov eax, [previousCode]
 
     hx.syscall hx.setUser
@@ -632,9 +613,7 @@ defaultLogin:
 
 ;; First, log in as root
 
-    mov eax, 777 ;; Root user code
-
-    mov esi, login.rootUser
+    mov eax, 0 ;; Root user code
 
     hx.syscall hx.setUser
 

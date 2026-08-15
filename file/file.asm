@@ -309,10 +309,15 @@ applicationStart:
 
 ;;************************************************************************************
 
+;; Only the first 4 bytes (checked below) matter here, so there's no reason
+;; to pull in the rest of a possibly much larger file just to check it
+
 verifyHAPPFile:
 
     mov esi, fileName
     mov edi, appFileBuffer
+
+    mov ecx, 128
 
     hx.syscall hx.open
 
@@ -340,10 +345,15 @@ verifyHAPPFile:
 
 ;;************************************************************************************
 
+;; Only the first 5 bytes (checked below) matter here, so there's no reason
+;; to pull in the rest of a possibly much larger file just to check it
+
 verifyHBootFile:
 
     mov esi, fileName
     mov edi, appFileBuffer
+
+    mov ecx, 128
 
     hx.syscall hx.open
 

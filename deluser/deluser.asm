@@ -82,7 +82,7 @@ use32
 include "HAPP.s" ;; Here is a structure for the HAPP header
 
 ;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
-appHeader headerHAPP HAPP.Architectures.i386, 1, 5, applicationStart, 01h
+appHeader headerHAPP HAPP.Architectures.i386, 1, 7, applicationStart, 01h
 
 ;;************************************************************************************
 
@@ -121,7 +121,7 @@ applicationStart:
 
     hx.syscall hx.getUser
 
-    cmp eax, 777
+    cmp eax, 0
     je .isRoot
 
     fputs deluser.permissionDenied
@@ -142,6 +142,11 @@ applicationStart:
     call Hexagon.LibASM.PasswdHash.findUser
 
     jc .userNotFound
+
+    hx.syscall hx.getUser
+
+    cmp eax, [Hexagon.LibASM.PasswdHash.codeFound]
+    je .cannotRemoveSelf
 
     putNewLine
 
@@ -194,6 +199,12 @@ applicationStart:
 
     jmp finish
 
+.cannotRemoveSelf:
+
+    fputs deluser.cannotRemoveSelf
+
+    jmp finish
+
 .userNotFound:
 
     fputs deluser.userNotFound
@@ -236,7 +247,7 @@ finish:
 ;;
 ;;************************************************************************************
 
-VERSION equ "0.1.0"
+VERSION equ "0.2.0"
 
 deluser:
 
@@ -251,6 +262,8 @@ db 10, "Only an administrative (or root) user can complete this action.", 10
 db "Login in this user to perform the desired operation.", 0
 .cannotRemoveRoot:
 db 10, "The root user cannot be removed.", 0
+.cannotRemoveSelf:
+db 10, "You cannot remove the account you are currently logged in as.", 0
 .userNotFound:
 db 10, "That user was not found.", 0
 .confirmation:
@@ -260,7 +273,7 @@ db 10, "The operation was aborted by the user.", 0
 .success:
 db 10, "User removed.", 0
 .writeError:
-db 10, "Could not write /shadow. No user was removed.", 0
+db 10, "Could not write /etc/shadow. No user was removed.", 0
 .withoutParameter:
 db 10, "A username is required.", 10
 db "Use 'deluser ?' for help with this utility.", 0

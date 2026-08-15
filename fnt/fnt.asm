@@ -220,10 +220,16 @@ applicationUsage:
 
 ;;************************************************************************************
 
+;; Only the "HFNT" magic (checked below) is actually looked at here, so
+;; there's no reason to pull in the rest of a possibly much larger file
+;; just to inspect it
+
 validateFont:
 
     mov esi, [parameters]
     mov edi, appFileBuffer
+
+    mov ecx, 128
 
     hx.syscall hx.open
 
