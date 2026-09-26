@@ -122,6 +122,8 @@ performCleaning:
 
     jc .error
 
+    push eax ;; The descriptor
+
     mov ebx, 1 ;; Activate console
     mov ecx, 1 ;; Secondary console
 
@@ -129,16 +131,16 @@ performCleaning:
 
     hx.syscall hx.clearConsole ;; Clean content
 
-    mov esi, Hexagon.LibASM.Dev.video.tty ;; Reopen the main console
-
-    xor ecx, ecx
-
-    hx.syscall hx.open ;; Open the device
+    mov eax, dword[esp]
 
     mov ebx, 1 ;; Activate console
     mov ecx, 0 ;; Main console
 
     hx.syscall hx.ioctl
+
+    pop eax
+
+    hx.syscall hx.close
 
     hx.syscall hx.clearConsole
 

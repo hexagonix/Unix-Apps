@@ -172,29 +172,11 @@ startProcessing:
 
     push edx ;; Save current console position
 
-    mov esi, Hexagon.LibASM.Dev.video.tty
-
-    xor ecx, ecx
-
-    hx.syscall hx.open ;; Open the device
-
-    mov ebx, 1 ;; Activate console
-    mov ecx, 1 ;; Secondary console
-
-    hx.syscall hx.ioctl
+    activateConsole 1
 
     hx.syscall hx.clearConsole
 
-    mov esi, Hexagon.LibASM.Dev.video.tty ;; Reopens this console
-
-    xor ecx, ecx
-
-    hx.syscall hx.open ;; Open the device
-
-    mov ebx, 1 ;; Activate console
-    mov ecx, 0 ;; Main console
-
-    hx.syscall hx.ioctl
+    activateConsole 0
 
     pop edx ;; Restore console position
 
@@ -236,16 +218,7 @@ verifyTheme:
 
     pusha
 
-    mov esi, Hexagon.LibASM.Dev.video.tty
-
-    xor ecx, ecx
-
-    hx.syscall hx.open ;; Open the device
-
-    mov ebx, 1 ;; Activate console
-    mov ecx, 1 ;; Secondary console
-
-    hx.syscall hx.ioctl
+    activateConsole 1
 
     mov eax, HEXAGONIX_BLOSSOM_AMARELO
     mov ebx, HEXAGONIX_BLOSSOM_CINZA
@@ -254,16 +227,7 @@ verifyTheme:
 
     hx.syscall hx.clearConsole ;; Clean the console
 
-    mov esi, Hexagon.LibASM.Dev.video.tty ;; Reopens this console
-
-    xor ecx, ecx
-
-    hx.syscall hx.open ;; Open the console
-
-    mov ebx, 1 ;; Activate console
-    mov ecx, 0 ;; Main console
-
-    hx.syscall hx.ioctl
+    activateConsole 0
 
     mov eax, BRANCO_ANDROMEDA
     mov ebx, PRETO

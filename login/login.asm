@@ -422,12 +422,6 @@ applyTheme:
 
 .light:
 
-    mov esi, Hexagon.LibASM.Dev.video.tty
-
-    xor ecx, ecx
-
-    hx.syscall hx.open
-
     hx.syscall hx.getColor ;; EAX = current font color, EBX = current background
 
     cmp eax, PRETO
@@ -440,16 +434,7 @@ applyTheme:
 
 .lightApply:
 
-    mov esi, Hexagon.LibASM.Dev.video.tty
-
-    xor ecx, ecx
-
-    hx.syscall hx.open
-
-    mov ebx, 1 ;; Activate console
-    mov ecx, 1 ;; Secondary console
-
-    hx.syscall hx.ioctl
+    activateConsole 1
 
     mov eax, HEXAGONIX_CLASSICO_PRETO
     mov ebx, HEXAGONIX_CLASSICO_BRANCO
@@ -458,16 +443,7 @@ applyTheme:
 
     hx.syscall hx.clearConsole
 
-    mov esi, Hexagon.LibASM.Dev.video.tty ;; Reopens this console
-
-    xor ecx, ecx
-
-    hx.syscall hx.open
-
-    mov ebx, 1 ;; Activate console
-    mov ecx, 0 ;; Main console
-
-    hx.syscall hx.ioctl
+    activateConsole 0
 
     mov eax, PRETO
     mov ebx, BRANCO_ANDROMEDA
@@ -479,12 +455,6 @@ applyTheme:
     jmp .done
 
 .dark:
-
-    mov esi, Hexagon.LibASM.Dev.video.tty
-
-    xor ecx, ecx
-
-    hx.syscall hx.open
 
     hx.syscall hx.getColor ;; EAX = current font color, EBX = current background
 
@@ -498,16 +468,7 @@ applyTheme:
 
 .darkApply:
 
-    mov esi, Hexagon.LibASM.Dev.video.tty
-
-    xor ecx, ecx
-
-    hx.syscall hx.open
-
-    mov ebx, 1 ;; Activate console
-    mov ecx, 1 ;; Secondary console
-
-    hx.syscall hx.ioctl
+    activateConsole 1
 
     mov eax, HEXAGONIX_BLOSSOM_AMARELO
     mov ebx, HEXAGONIX_BLOSSOM_CINZA
@@ -516,16 +477,7 @@ applyTheme:
 
     hx.syscall hx.clearConsole
 
-    mov esi, Hexagon.LibASM.Dev.video.tty ;; Reopens this console
-
-    xor ecx, ecx
-
-    hx.syscall hx.open
-
-    mov ebx, 1 ;; Activate console
-    mov ecx, 0 ;; Main console
-
-    hx.syscall hx.ioctl
+    activateConsole 0
 
     mov eax, BRANCO_ANDROMEDA
     mov ebx, PRETO

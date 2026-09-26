@@ -239,21 +239,27 @@ clearConsole:
 
     hx.syscall hx.open ;; Open the device
 
+    jc .end
+
+    push eax ;; The descriptor
+
     mov ebx, 1 ;; Activate console
     mov ecx, 1 ;; Secondary console
 
     hx.syscall hx.ioctl
 
-    mov esi, Hexagon.LibASM.Dev.video.tty0 ;; Reopen the default console
-
-    xor ecx, ecx
-
-    hx.syscall hx.open ;; Open the device
+    mov eax, dword[esp]
 
     mov ebx, 1 ;; Activate console
     mov ecx, 0 ;; Main console
 
     hx.syscall hx.ioctl
+
+    pop eax
+
+    hx.syscall hx.close
+
+.end:
 
     ret
 
