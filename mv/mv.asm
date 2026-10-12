@@ -72,14 +72,15 @@ use32
 
 include "HAPP.s" ;; Here is a structure for the HAPP header
 
-;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
-appHeader headerHAPP HAPP.Architectures.i386, 1, 00, applicationStart, 01h
+;; Architecture | Version | Subversion | Entry point | Image type | BSS size
+headerHAPP HAPP.Architectures.i386, 1, 8, applicationStart, 01h
 
 ;;************************************************************************************
 
 include "hexagon.s"
 include "console.s"
 include "macros.s"
+include "string.s"
 
 ;;************************************************************************************
 
@@ -100,14 +101,14 @@ applicationStart:
     mov edi, mv.helpParameter
     mov esi, [parameters]
 
-    hx.syscall hx.compareWordsString
+    call compareWordsInString
 
     jc applicationUsage
 
     mov edi, mv.helpParameter2
     mov esi, [parameters]
 
-    hx.syscall hx.compareWordsString
+    call compareWordsInString
 
     jc applicationUsage
 
@@ -116,13 +117,13 @@ applicationStart:
 
     mov esi, [inputFile]
 
-    hx.syscall hx.fileExists
+    hx.syscall hx.stat
 
     jc sourceNotFound
 
     mov esi, [outputFile]
 
-    hx.syscall hx.fileExists
+    hx.syscall hx.stat
 
     jnc destinationPresent
 
@@ -181,7 +182,7 @@ getParameters:
 
     mov al, ' '
 
-    hx.syscall hx.findCharacter
+    call findCharacterInString
 
     jc applicationUsage
 
@@ -243,7 +244,7 @@ applicationUsage:
 ;;
 ;;************************************************************************************
 
-VERSION equ "0.2.0"
+VERSION equ "0.3.0"
 
 mv:
 
