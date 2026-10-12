@@ -72,14 +72,16 @@ use32
 
 include "HAPP.s" ;; Here is a structure for the HAPP header
 
-;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
-appHeader headerHAPP HAPP.Architectures.i386, 1, 00, applicationStart, 01h
+;; Architecture | Version | Subversion | Entry point | Image type | BSS size
+headerHAPP HAPP.Architectures.i386, 1, 00, applicationStart, 01h
 
 ;;************************************************************************************
 
 include "hexagon.s"
 include "console.s"
 include "macros.s"
+include "string.s"
+include "malloc.s"
 include "passwdHash.s"
 include "user.s"
 
@@ -88,32 +90,31 @@ include "user.s"
 applicationStart:
 
     mov [parameters], edi
-
     mov edi, whoami.helpParameter
     mov esi, [parameters]
 
-    hx.syscall hx.compareWordsString
+    call compareWordsInString
 
     jc applicationUsage
 
     mov edi, whoami.helpParameter2
     mov esi, [parameters]
 
-    hx.syscall hx.compareWordsString
+    call compareWordsInString
 
     jc applicationUsage
 
     mov edi, whoami.parameterAll
     mov esi, [parameters]
 
-    hx.syscall hx.compareWordsString
+    call compareWordsInString
 
     jc userAndGroup
 
     mov edi, whoami.parameterUser
     mov esi, [parameters]
 
-    hx.syscall hx.compareWordsString
+    call compareWordsInString
 
     jc displayUser
 
@@ -187,7 +188,7 @@ finish:
 ;;
 ;;************************************************************************************
 
-VERSION equ "1.4.0"
+VERSION equ "1.5.0"
 
 whoami:
 
