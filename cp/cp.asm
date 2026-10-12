@@ -72,14 +72,16 @@ use32
 
 include "HAPP.s" ;; Here is a structure for the HAPP header
 
-;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
-appHeader headerHAPP HAPP.Architectures.i386, 1, 00, applicationStart, 01h
+;; Architecture | Version | Subversion | Entry point | Image type | BSS size
+headerHAPP HAPP.Architectures.i386, 1, 00, applicationStart, 01h, HAPP.bss.none
 
 ;;************************************************************************************
 
 include "hexagon.s"
 include "console.s"
 include "macros.s"
+include "string.s"
+include "malloc.s"
 
 ;;************************************************************************************
 
@@ -100,14 +102,14 @@ applicationStart:
     mov edi, cp.helpParameter
     mov esi, [parameters]
 
-    hx.syscall hx.compareWordsString
+    call compareWordsInString
 
     jc applicationUsage
 
     mov edi, cp.helpParameter2
     mov esi, [parameters]
 
-    hx.syscall hx.compareWordsString
+    call compareWordsInString
 
     jc applicationUsage
 
@@ -116,22 +118,37 @@ applicationStart:
 
     mov esi, [inputFile]
 
-    hx.syscall hx.fileExists
+    hx.syscall hx.stat ;; EAX = size
 
     jc inputFileNotFound
 
+    mov [fileSize], eax
+
     mov esi, [outputFile]
 
-    hx.syscall hx.fileExists
+    hx.syscall hx.stat
 
     jnc outputPresent
+
+;; Room for exactly this file, rather than whatever happens to sit past the
+;; end of this image
+
+    mov ebx, [fileSize]
+
+    inc ebx ;; The terminator, in memory the kernel hands over already zeroed
+
+    call malloc
+
+    cmp eax, 0
+    je withoutMemory
+
+    mov [fileBuffer], ebx
 
 ;; Now let's open the source file for copying
 
     mov esi, [inputFile]
-    mov edi, appFileBuffer
-
-    xor ecx, ecx
+    mov edi, ebx
+    mov ecx, [fileSize] ;; Never past what was asked for
 
     hx.syscall hx.open
 
@@ -139,12 +156,12 @@ applicationStart:
 
     mov esi, [inputFile]
 
-    hx.syscall hx.fileExists
+    hx.syscall hx.stat
 
 ;; Save file
 
     mov esi, [outputFile]
-    mov edi, appFileBuffer
+    mov edi, [fileBuffer]
 
     hx.syscall hx.create
 
@@ -159,6 +176,14 @@ applicationStart:
 saveError:
 
     fputs cp.saveError
+
+    jmp finish
+
+;;************************************************************************************
+
+withoutMemory:
+
+    fputs cp.withoutMemory
 
     jmp finish
 
@@ -190,6 +215,17 @@ outputPresent:
 
 finish:
 
+    cmp dword[fileBuffer], 0
+    je .nothingToFree
+
+    mov ebx, [fileBuffer]
+
+    call free
+
+    mov dword[fileBuffer], 0
+
+.nothingToFree:
+
     hx.syscall hx.exit
 
 ;;************************************************************************************
@@ -206,7 +242,7 @@ getParameters:
 
     mov al, ' '
 
-    hx.syscall hx.findCharacter
+    call findCharacterInString
 
     jc applicationUsage
 
@@ -268,7 +304,7 @@ applicationUsage:
 ;;
 ;;************************************************************************************
 
-VERSION equ "2.4.0"
+VERSION equ "2.5.0"
 
 cp:
 
@@ -286,6 +322,8 @@ db 10, "The source file cannot be found on this volume.", 0
 db 10, "A file with the given name already exists for the destination. Please remove the file and try again.", 0
 .openError:
 db 10, "An error occurred while trying to open the source file.", 0
+.withoutMemory:
+db 10, "Not enough memory to copy this file.", 0
 .saveError:
 db 10, "An error occurred while requesting to save the file.", 10
 db "This could be due to write protection, volume removal, out of storage or because the system is busy.", 10
@@ -298,7 +336,7 @@ db "--help", 0
 parameters: dd 0
 inputFile:  dd ?
 outputFile: dd ?
+fileBuffer: dd 0
+fileSize:   dd 0
 
 ;;************************************************************************************
-
-appFileBuffer:
