@@ -74,7 +74,7 @@ use32
 
 include "HAPP.s"
 
-appHeader headerHAPP HAPP.Architectures.i386, 1, 00, applicationStart, 01h
+headerHAPP HAPP.Architectures.i386, 1, 8, applicationStart, 01h
 
 ;;************************************************************************************
 
@@ -88,6 +88,8 @@ applicationStart:
     systemLog testa.starting, 0, Log.Priorities.p4
 
     mov esi, testa.childName
+
+    xor eax, eax ;; No arguments
 
     hx.syscall hx.spawn
 
