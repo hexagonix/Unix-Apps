@@ -72,14 +72,15 @@ use32
 
 include "HAPP.s" ;; Here is a structure for the HAPP header
 
-;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
-appHeader headerHAPP HAPP.Architectures.i386, 1, 5, applicationStart, 01h
+;; Architecture | Version | Subversion | Entry point | Image type | BSS size
+headerHAPP HAPP.Architectures.i386, 1, 5, applicationStart, 01h
 
 ;;************************************************************************************
 
 include "hexagon.s"
 include "console.s"
 include "macros.s"
+include "string.s"
 include "errors.s"
 
 ;;************************************************************************************
@@ -91,14 +92,14 @@ applicationStart:
     mov edi, kill.helpParameter
     mov esi, [parameters]
 
-    hx.syscall hx.compareWordsString
+    call compareWordsInString
 
     jc applicationUsage
 
     mov edi, kill.helpParameter2
     mov esi, [parameters]
 
-    hx.syscall hx.compareWordsString
+    call compareWordsInString
 
     jc applicationUsage
 
@@ -107,9 +108,9 @@ applicationStart:
     cmp byte[esi], 0
     je applicationUsage
 
-    hx.syscall hx.trimString
+    call trimString
 
-    hx.syscall hx.stringToInt
+    call stringToInteger
 
     jc invalidPID
 
@@ -160,7 +161,7 @@ finish:
 
 ;;************************************************************************************
 
-VERSION equ "0.2.0"
+VERSION equ "0.3.0"
 
 kill:
 
