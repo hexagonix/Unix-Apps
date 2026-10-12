@@ -87,14 +87,16 @@ use32
 
 include "HAPP.s" ;; Here is a structure for the HAPP header
 
-;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
-appHeader headerHAPP HAPP.Architectures.i386, 1, 7, suHexagonix, 01h
+;; Architecture | Version | Subversion | Entry point | Image type | BSS size
+headerHAPP HAPP.Architectures.i386, 1, 8, suHexagonix, 01h
 
 ;;************************************************************************************
 
 include "hexagon.s"
 include "console.s"
 include "macros.s"
+include "string.s"
+include "malloc.s"
 include "passwdHash.s"
 
 ;;************************************************************************************
@@ -106,14 +108,14 @@ suHexagonix: ;; Entry point
     mov edi, su.helpParameter
     mov esi, [userRequested]
 
-    hx.syscall hx.compareWordsString
+    call compareWordsInString
 
     jc applicationUsage
 
     mov edi, su.helpParameter2
     mov esi, [userRequested]
 
-    hx.syscall hx.compareWordsString
+    call compareWordsInString
 
     jc applicationUsage
 
@@ -139,19 +141,21 @@ startProcessing:
     fputs su.solicitarSenha
 
     mov eax, 64
-
     mov ebx, 1234h ;; We don't want to echo the password!
+    mov edi, typedLine
 
     hx.syscall hx.getString
 
-    hx.syscall hx.trimString
+    mov esi, typedLine
+
+    call trimString
 
     call Hexagon.LibASM.PasswdHash.hash ;; ESI still points at the trimmed, typed password
 
     mov esi, Hexagon.LibASM.PasswdHash.hashBuffer
     mov edi, Hexagon.LibASM.PasswdHash.hashFound
 
-    hx.syscall hx.compareWordsString
+    call compareWordsInString
 
     jc .loginAccepted
 
@@ -248,6 +252,8 @@ registerUser:
 
     hx.syscall hx.setUser
 
+    jc finishExecution ;; su itself isn't setuid/root, can't switch to the target
+
     ret
 
 ;;************************************************************************************
@@ -267,7 +273,7 @@ copyFoundShell:
 
     mov esi, Hexagon.LibASM.PasswdHash.shellFound
 
-    hx.syscall hx.stringSize
+    call stringSize
 
     push eax
 
@@ -293,7 +299,7 @@ getDefaultShell:
 
     mov esi, su.defaultShell
 
-    hx.syscall hx.stringSize
+    call stringSize
 
     push eax
 
@@ -324,7 +330,7 @@ restoreUser:
 
     mov eax, [previousCode]
 
-    hx.syscall hx.setUser
+    hx.syscall hx.setUser ;; May legitimately fail once the target wasn't root, su exits right after either way
 
     ret
 
@@ -358,7 +364,7 @@ finish:
 ;;
 ;;************************************************************************************
 
-VERSION equ "2.2.0"
+VERSION equ "2.3.0"
 
 su:
 
@@ -396,3 +402,6 @@ times 12 db 0
 previousCode:    dd 0 ;; Previous user code
 tryDefaultShell: db 0 ;; Signals an attempt to load the default shell
 parameters:      db 0 ;; If the application received any parameters
+
+typedLine: ;; hx.getString writes the typed line into a buffer of the caller's own
+times 256 db 0
