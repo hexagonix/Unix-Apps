@@ -72,21 +72,22 @@ use32
 
 include "HAPP.s" ;; Here is a structure for the HAPP header
 
-;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
-appHeader headerHAPP HAPP.Architectures.i386, 1, 5, applicationStart, 01h
+;; Architecture | Version | Subversion | Entry point | Image type | BSS size
+headerHAPP HAPP.Architectures.i386, 1, 5, applicationStart, 01h
 
 ;;************************************************************************************
 
 include "hexagon.s"
 include "console.s"
 include "macros.s"
+include "string.s"
 
 ;;************************************************************************************
 
 ;; Prints the current time in the top-right corner of the console once a
-;; second, saving and restoring the caller's cursor position around it so it
-;; can safely run alongside an interactive shell. Meant to be launched with
-;; "clock &" and stopped with "kill <pid>", it never exits on its own
+;; second, drawn directly at that fixed position so it never touches the
+;; shell's own cursor. Meant to be launched with "clock &" and stopped
+;; with "kill <pid>", it never exits on its own
 
 applicationStart:
 
@@ -95,60 +96,71 @@ applicationStart:
     mov edi, clock.helpParameter
     mov esi, [parameters]
 
-    hx.syscall hx.compareWordsString
+    call compareWordsInString
 
     jc applicationUsage
 
     mov edi, clock.helpParameter2
     mov esi, [parameters]
 
-    hx.syscall hx.compareWordsString
+    call compareWordsInString
 
     jc applicationUsage
 
     hx.syscall hx.getConsoleInfo
 
     mov al, bl
+
     sub al, 9 ;; "HH:MM:SS" is 8 characters, plus 1 column of padding
 
     mov byte[clock.cornerColumn], al
 
 .loop:
 
-    hx.syscall hx.getCursor
-
-    mov byte[clock.savedX], dl
-    mov byte[clock.savedY], dh
-
-    gotoxy [clock.cornerColumn], 0
-
     hx.syscall hx.time ;; EAX = hour, EBX = minute, ECX = second, all BCD
 
     call BCDToASCII
 
-    mov word[clock.hour], ax
+    mov word[clock.timeString], ax
 
     mov eax, ebx
 
     call BCDToASCII
 
-    mov word[clock.minute], ax
+    mov word[clock.timeString + 3], ax
 
     mov eax, ecx
 
     call BCDToASCII
 
-    mov word[clock.second], ax
+    mov word[clock.timeString + 6], ax
 
-    fputs clock.hour
-    fputs clock.sepHour
-    fputs clock.minute
-    fputs clock.sepHour
-    fputs clock.second
+;; Drawn character by character straight into the corner
 
-    gotoxy [clock.savedX], [clock.savedY]
+    xor ecx, ecx ;; Not EBX: hx.print's own mode selector needs it below
 
-    mov ecx, 100 ;; ~1 second, at the kernel's 100 Hz timer rate
+.drawLoop:
+
+    movzx eax, byte[clock.timeString + ecx]
+
+    mov dl, byte[clock.cornerColumn]
+
+    add dl, cl
+
+    mov dh, 0
+
+    push ecx
+
+    printBitmap
+
+    pop ecx
+
+    inc ecx
+
+    cmp ecx, 8 ;; "HH:MM:SS" is 8 characters
+    jb .drawLoop
+
+    mov ecx, 100 ;; ~1 second
 
     hx.syscall hx.sleep
 
@@ -196,7 +208,7 @@ BCDToASCII:
 
 ;;************************************************************************************
 
-VERSION equ "0.2.1"
+VERSION equ "0.3.0"
 
 clock:
 
@@ -212,14 +224,10 @@ db "All rights reserved.", 0
 db "?", 0
 .helpParameter2:
 db "--help", 0
-.sepHour:
-db ":", 0
 
 .cornerColumn: db 0
-.savedX:       db 0
-.savedY:       db 0
-.hour:         db 0, 0, 0
-.minute:       db 0, 0, 0
-.second:       db 0, 0, 0
+
+.timeString:
+db 0, 0, ":", 0, 0, ":", 0, 0, 0
 
 parameters: dd ?
