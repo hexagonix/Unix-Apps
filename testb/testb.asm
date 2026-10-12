@@ -75,7 +75,7 @@ use32
 
 include "HAPP.s"
 
-appHeader headerHAPP HAPP.Architectures.i386, 1, 00, applicationStart, 01h
+headerHAPP HAPP.Architectures.i386, 1, 00, applicationStart, 01h
 
 ;;************************************************************************************
 
