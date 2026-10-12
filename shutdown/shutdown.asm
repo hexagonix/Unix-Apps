@@ -72,14 +72,17 @@ use32
 
 include "HAPP.s" ;; Here is a structure for the HAPP header
 
-;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
-appHeader headerHAPP HAPP.Architectures.i386, 1, 00, applicationStart, 01h
+;; Architecture | Version | Subversion | Entry point | Image type | BSS size
+headerHAPP HAPP.Architectures.i386, 1, 8, applicationStart, 01h
 
 ;;************************************************************************************
 
 include "hexagon.s"
 include "console.s"
 include "macros.s"
+include "string.s"
+include "malloc.s"
+include "process.s"
 include "log.s"
 
 ;;************************************************************************************
@@ -102,49 +105,51 @@ applicationStart:
     mov edi, shutdown.helpParameter
     mov esi, [parameters]
 
-    hx.syscall hx.compareWordsString
+    call compareWordsInString
 
     jc applicationUsage
 
     mov edi, shutdown.helpParameter2
     mov esi, [parameters]
 
-    hx.syscall hx.compareWordsString
+    call compareWordsInString
 
     jc applicationUsage
+
+    call requireRoot
 
     mov edi, shutdown.shutdownParameter
     mov esi, [parameters]
 
-    hx.syscall hx.compareWordsString
+    call compareWordsInString
 
     jc startShutdown
 
     mov edi, shutdown.shuydownNow
     mov esi, [parameters]
 
-    hx.syscall hx.compareWordsString
+    call compareWordsInString
 
     jc startShutdown
 
     mov edi, shutdown.rebootParameter
     mov esi, [parameters]
 
-    hx.syscall hx.compareWordsString
+    call compareWordsInString
 
     jc startReboot
 
     mov edi, shutdown.shutdownWithoutEchoParameter
     mov esi, [parameters]
 
-    hx.syscall hx.compareWordsString
+    call compareWordsInString
 
     jc startShutdownWithoutEcho
 
     mov edi, shutdown.rebootWithoutEchoParameter
     mov esi, [parameters]
 
-    hx.syscall hx.compareWordsString
+    call compareWordsInString
 
     jc startRebootWithoutEcho
 
@@ -226,6 +231,10 @@ prepareSystemWithoutEcho:
 
     hx.syscall hx.sleep
 
+    call terminateProcesses
+
+    call execUmountAll
+
     ret
 
 ;;************************************************************************************
@@ -238,11 +247,145 @@ prepareSystem:
 
     hx.syscall hx.sleep
 
+    call terminateProcesses
+
     fputs shutdown.disksMessage
 
     mov ecx, 100
 
     hx.syscall hx.sleep
+
+    call execUmountAll
+
+    ret
+
+;;************************************************************************************
+
+;; Kills every process except PID 0, init (PID 1) and shutdown's own PID
+
+terminateProcesses:
+
+    hx.syscall hx.pid
+
+    mov [ownPID], eax
+    mov dword[processesBufferSize], 2048 ;; Arbitrary starting guess
+
+.allocateBuffer:
+
+    mov ebx, dword[processesBufferSize]
+
+    call malloc
+
+    cmp eax, 0
+    je .done ;; No buffer available, nothing left to try
+
+    mov [processesBuffer], ebx
+    mov esi, ebx
+    mov ecx, dword[processesBufferSize]
+
+    hx.syscall hx.getProcesses ;; EAX = record count, or exact size needed if CF is set
+
+    jnc .haveProcesses
+
+    push eax
+
+    mov ebx, [processesBuffer]
+    mov ecx, dword[processesBufferSize]
+
+    call free
+
+    pop eax
+
+    mov dword[processesBufferSize], eax
+
+    jmp .allocateBuffer
+
+.haveProcesses:
+
+    mov [processesCount], eax
+    mov esi, [processesBuffer]
+    mov eax, dword[esi] ;; Record size, read from the message itself
+    mov [processRecordSize], eax
+
+    add esi, 4 ;; Skip past the record size
+
+    mov [recordsPointer], esi
+
+.killLoop:
+
+    cmp dword[processesCount], 0
+    je .freeBuffer
+
+    mov esi, [recordsPointer]
+    mov ebx, dword[esi + hx.process.record.pid]
+
+    cmp ebx, 0
+    je .killNext ;; The kernel itself, never a real process
+
+    cmp ebx, 1
+    je .killNext ;; init
+
+    cmp ebx, [ownPID]
+    je .killNext
+
+    hx.syscall hx.kill
+
+.killNext:
+
+    mov eax, [recordsPointer]
+
+    add eax, [processRecordSize]
+    
+    mov [recordsPointer], eax
+
+    dec dword[processesCount]
+
+    jmp .killLoop
+
+.freeBuffer:
+
+    mov ebx, [processesBuffer]
+    mov ecx, [processesBufferSize]
+
+    call free
+
+.done:
+
+    ret
+
+;;************************************************************************************
+
+;; Requests every mounted volume come down before the power off or
+;; reboot completes. Reading the mount list and walking the mount table
+;; both stay the invoked binary's own responsibility, not shutdown's
+
+execUmountAll:
+
+    mov esi, shutdown.umountPath
+    mov edi, shutdown.umountAllArgument
+    mov eax, edi
+
+    hx.syscall hx.exec
+
+    ret
+
+;;************************************************************************************
+
+;; Only root, directly or through a setuid elevation such as sudo, may
+;; power off or reboot the system
+
+requireRoot:
+
+    hx.syscall hx.getUser
+
+    cmp eax, 0
+    je .authorized
+
+    fputs shutdown.operationDenied
+
+    jmp finish
+
+.authorized:
 
     ret
 
@@ -278,7 +421,7 @@ finish:
 
 messageLabel equ "[shutdown]: "
 
-VERSION equ "1.8.0"
+VERSION equ "1.9.0"
 
 shutdown:
 
@@ -300,19 +443,28 @@ db 10, "Stoping disks and shutting down the computer...", 0
 db "[Ok]", 0
 .failMessage:
 db "[Fail]", 0
+.umountPath:
+db "/sbin/umount", 0
+.umountAllArgument:
+db "-a", 0
 .helpParameter:
 db "?", 0
 .helpParameter2:
 db "--help", 0
 .arguments:
 db 10, "An argument is required.", 0
+.operationDenied:
+db 10, "Only the root user (root), directly or through sudo, can shut down or reboot the system.", 0
 .use:
 db 10, "Usage: shutdown [argument]", 10, 10
 db "Power off or reboot the computer.", 10, 10
+db "Every other running process is terminated and every mounted volume is", 10
+db "unmounted first.", 10, 10
 db "Possible arguments:", 10, 10
 db "-d  - Power the computer off.", 10
 db "-r  - Reboot the computer.", 10
 db "now - Same as -d.", 10, 10
+db "Only the root user can run this.", 10, 10
 db "shutdown version ", VERSION, 10, 10
 db "Copyright (C) 2022-", __stringYear, " Felipe Miguel Nery Lunkes", 10
 db "All rights reserved.", 0
@@ -333,3 +485,10 @@ db messageLabel, "sending signal to processes and request to Hexagon...", 0
 db messageLabel, "failed to process the request or request rejected by Hexagon.", 0
 
 parameters: dd ?
+
+ownPID:              dd ?
+processesBufferSize: dd ?
+processesBuffer:     dd ?
+processesCount:      dd ?
+processRecordSize:   dd ?
+recordsPointer:      dd ?
