@@ -72,14 +72,15 @@ use32
 
 include "HAPP.s" ;; Here is a structure for the HAPP header
 
-;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
-appHeader headerHAPP HAPP.Architectures.i386, 1, 00, applicationStart, 01h
+;; Architecture | Version | Subversion | Entry point | Image type | BSS size
+headerHAPP HAPP.Architectures.i386, 1, 00, applicationStart, 01h
 
 ;;************************************************************************************
 
 include "hexagon.s"
 include "console.s"
 include "macros.s"
+include "string.s"
 
 ;;************************************************************************************
 
@@ -89,20 +90,17 @@ applicationStart:
     pop es
 
     mov [parameters], edi
-
-    mov esi, [parameters]
-
     mov edi, date.helpParameter
     mov esi, [parameters]
 
-    hx.syscall hx.compareWordsString
+    call compareWordsInString
 
     jc applicationUsage
 
     mov edi, date.helpParameter2
     mov esi, [parameters]
 
-    hx.syscall hx.compareWordsString
+    call compareWordsInString
 
     jc applicationUsage
 
@@ -319,9 +317,13 @@ processBCD:
 BCDToASCII:
 
     mov ah, al
+    
     and ax, 0xF00F ;; Mask bits
+    
     shr ah, 4      ;; Shift right AH to get unwrapped BCD
+    
     or ax, 0x3030  ;; Match 30 to get ASCII
+    
     xchg ah, al    ;; Swap for ASCII convention
 
     ret
@@ -342,7 +344,7 @@ finish:
 
 ;;************************************************************************************
 
-VERSION equ "1.4.1"
+VERSION equ "1.5.0"
 
 date:
 
