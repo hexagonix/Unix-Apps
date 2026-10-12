@@ -81,14 +81,16 @@ use32
 
 include "HAPP.s" ;; Here is a structure for the HAPP header
 
-;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
-appHeader headerHAPP HAPP.Architectures.i386, 1, 7, applicationStart, 01h
+;; Architecture | Version | Subversion | Entry point | Image type | BSS size
+headerHAPP HAPP.Architectures.i386, 1, 7, applicationStart, 01h
 
 ;;************************************************************************************
 
 include "hexagon.s"
 include "console.s"
 include "macros.s"
+include "string.s"
+include "malloc.s"
 include "passwdHash.s"
 
 ;;************************************************************************************
@@ -99,7 +101,6 @@ applicationStart:
     pop es
 
     mov [parameters], edi
-
     mov esi, [parameters]
 
     cmp byte[esi], 0
@@ -108,14 +109,14 @@ applicationStart:
     mov edi, deluser.helpParameter
     mov esi, [parameters]
 
-    hx.syscall hx.compareWordsString
+    call compareWordsInString
 
     jc applicationUsage
 
     mov edi, deluser.helpParameter2
     mov esi, [parameters]
 
-    hx.syscall hx.compareWordsString
+    call compareWordsInString
 
     jc applicationUsage
 
@@ -133,7 +134,7 @@ applicationStart:
     mov edi, deluser.rootUser
     mov esi, [parameters]
 
-    hx.syscall hx.compareWordsString
+    call compareWordsInString
 
     jc .cannotRemoveRoot
 
@@ -247,7 +248,7 @@ finish:
 ;;
 ;;************************************************************************************
 
-VERSION equ "0.2.0"
+VERSION equ "0.2.1"
 
 deluser:
 
