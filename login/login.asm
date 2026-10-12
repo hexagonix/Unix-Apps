@@ -81,14 +81,16 @@ use32
 
 include "HAPP.s" ;; Here is a structure for the HAPP header
 
-;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
-appHeader headerHAPP HAPP.Architectures.i386, 1, 7, loginHexagonix, 01h
+;; Architecture | Version | Subversion | Entry point | Image type | BSS size
+headerHAPP HAPP.Architectures.i386, 1, 7, loginHexagonix, 01h
 
 ;;************************************************************************************
 
 include "hexagon.s"
 include "console.s"
 include "macros.s"
+include "string.s"
+include "malloc.s"
 include "log.s"
 include "dev.s"
 include "passwdHash.s"
@@ -103,7 +105,7 @@ include "passwdHash.s"
 
 ;;************************************************************************************
 
-VERSION equ "6.1.3"
+VERSION equ "6.2.0"
 
 login:
 
@@ -177,14 +179,14 @@ loginHexagonix: ;; Entry point
     mov edi, login.helpParameter
     mov esi, [requestedUser]
 
-    hx.syscall hx.compareWordsString
+    call compareWordsInString
 
     jc applicationUsage
 
     mov edi, login.helpParameter2
     mov esi, [requestedUser]
 
-    hx.syscall hx.compareWordsString
+    call compareWordsInString
 
     jc applicationUsage
 
@@ -218,12 +220,14 @@ startProcessing:
     fputs login.requestUser
 
     mov eax, 15
-
     mov ebx, 01h
+    mov edi, typedLine
 
     hx.syscall hx.getString
 
-    hx.syscall hx.trimString
+    mov esi, typedLine
+
+    call trimString
 
     mov [requestedUser], esi
 
@@ -246,12 +250,14 @@ startProcessing:
     fputs login.requestPassword
 
     mov eax, 64
-
     mov ebx, 1234h ;; We don't want to echo the password!
+    mov edi, typedLine
 
     hx.syscall hx.getString
 
-    hx.syscall hx.trimString
+    mov esi, typedLine
+
+    call trimString
 
     cmp byte[wrong], 1
     jne .continueProcessing
@@ -274,7 +280,7 @@ startProcessing:
     mov esi, Hexagon.LibASM.PasswdHash.hashBuffer
     mov edi, Hexagon.LibASM.PasswdHash.hashFound
 
-    hx.syscall hx.compareWordsString
+    call compareWordsInString
 
     jc .loginAccepted
 
@@ -309,7 +315,7 @@ match =Modern, LOGIN_STYLE
 
     mov esi, hexagonixShell
 
-    hx.syscall hx.fileExists
+    hx.syscall hx.stat
 
     jc .notFound
 
@@ -374,7 +380,7 @@ copyFoundShell:
 
     mov esi, Hexagon.LibASM.PasswdHash.shellFound
 
-    hx.syscall hx.stringSize
+    call stringSize
 
     push eax
 
@@ -391,13 +397,6 @@ copyFoundShell:
 
 ;;************************************************************************************
 
-;; Colors the console to match the authenticated user's theme field. Checks
-;; tty0's actual current colors against the target theme's pair first, since
-;; the console may already be showing it (Apps/Unix/logind/logind.asm's
-;; verifyTheme paints its own fixed default before any user is known), and
-;; skips the repaint if so; whatever painted the console before is not
-;; assumed to be any particular theme
-
 applyTheme:
 
     push es
@@ -408,14 +407,14 @@ applyTheme:
     mov edi, Hexagon.LibASM.PasswdHash.themeFound
     mov esi, login.lightTheme
 
-    hx.syscall hx.compareWordsString
+    call compareWordsInString
 
     jc .light
 
     mov edi, Hexagon.LibASM.PasswdHash.themeFound
     mov esi, login.darkTheme
 
-    hx.syscall hx.compareWordsString
+    call compareWordsInString
 
     jc .dark
 
@@ -423,7 +422,7 @@ applyTheme:
 
 .light:
 
-    mov esi, Hexagon.LibASM.Dev.video.tty0
+    mov esi, Hexagon.LibASM.Dev.video.tty
 
     xor ecx, ecx
 
@@ -441,11 +440,16 @@ applyTheme:
 
 .lightApply:
 
-    mov esi, Hexagon.LibASM.Dev.video.tty1 ;; Open first virtual console
+    mov esi, Hexagon.LibASM.Dev.video.tty
 
     xor ecx, ecx
 
     hx.syscall hx.open
+
+    mov ebx, 1 ;; Activate console
+    mov ecx, 1 ;; Secondary console
+
+    hx.syscall hx.ioctl
 
     mov eax, HEXAGONIX_CLASSICO_PRETO
     mov ebx, HEXAGONIX_CLASSICO_BRANCO
@@ -454,11 +458,16 @@ applyTheme:
 
     hx.syscall hx.clearConsole
 
-    mov esi, Hexagon.LibASM.Dev.video.tty0 ;; Reopens the standard console
+    mov esi, Hexagon.LibASM.Dev.video.tty ;; Reopens this console
 
     xor ecx, ecx
 
     hx.syscall hx.open
+
+    mov ebx, 1 ;; Activate console
+    mov ecx, 0 ;; Main console
+
+    hx.syscall hx.ioctl
 
     mov eax, PRETO
     mov ebx, BRANCO_ANDROMEDA
@@ -471,7 +480,7 @@ applyTheme:
 
 .dark:
 
-    mov esi, Hexagon.LibASM.Dev.video.tty0
+    mov esi, Hexagon.LibASM.Dev.video.tty
 
     xor ecx, ecx
 
@@ -489,11 +498,16 @@ applyTheme:
 
 .darkApply:
 
-    mov esi, Hexagon.LibASM.Dev.video.tty1 ;; Open first virtual console
+    mov esi, Hexagon.LibASM.Dev.video.tty
 
     xor ecx, ecx
 
     hx.syscall hx.open
+
+    mov ebx, 1 ;; Activate console
+    mov ecx, 1 ;; Secondary console
+
+    hx.syscall hx.ioctl
 
     mov eax, HEXAGONIX_BLOSSOM_AMARELO
     mov ebx, HEXAGONIX_BLOSSOM_CINZA
@@ -502,11 +516,16 @@ applyTheme:
 
     hx.syscall hx.clearConsole
 
-    mov esi, Hexagon.LibASM.Dev.video.tty0 ;; Reopens the standard console
+    mov esi, Hexagon.LibASM.Dev.video.tty ;; Reopens this console
 
     xor ecx, ecx
 
     hx.syscall hx.open
+
+    mov ebx, 1 ;; Activate console
+    mov ecx, 0 ;; Main console
+
+    hx.syscall hx.ioctl
 
     mov eax, BRANCO_ANDROMEDA
     mov ebx, PRETO
@@ -529,7 +548,15 @@ registerUser:
 
     hx.syscall hx.setUser
 
+    jc .denied
+
     ret
+
+.denied: ;; Can't happen, login always still runs as root here. Fail closed anyway
+
+    systemLog login.verboseError, 0, Log.Priorities.p4
+
+    jmp finish
 
 ;;************************************************************************************
 
@@ -542,7 +569,7 @@ getDefaultShell:
 
     mov esi, login.defaultShell
 
-    hx.syscall hx.stringSize
+    call stringSize
 
     push eax
 
@@ -589,7 +616,7 @@ applicationUsage:
 
 runLogind:
 
-    mov eax, 0 ;; Do not pass arguments
+    mov eax, 0            ;; Do not pass arguments
     mov esi, login.logind ;; File name
 
     clc
@@ -609,13 +636,15 @@ finish:
 defaultLogin:
 
 ;; If the user database file is not found, we must start a standard system shell,
-;; logged in as root.
+;; logged in as root
 
 ;; First, log in as root
 
     mov eax, 0 ;; Root user code
 
     hx.syscall hx.setUser
+
+    jc .denied ;; Can't happen, login always still runs as root here. Fail closed anyway
 
     mov eax, 0
     mov esi, login.defaultShell
@@ -626,11 +655,21 @@ defaultLogin:
 
     je finish
 
+    jmp .fallthrough
+
+.denied:
+
+    systemLog login.verboseError, 0, Log.Priorities.p4
+
+    jmp finish
+
+.fallthrough:
+
 ;;************************************************************************************
 
 ;; First, we must check the user database.
 ;; If the database is not available, the system must be logged in with the root user
-;; and the default shell must be started.
+;; and the default shell must be started
 
 checkDatabase:
 
@@ -638,8 +677,11 @@ checkDatabase:
 
     mov esi, Hexagon.LibASM.PasswdHash.file
 
-    hx.syscall hx.fileExists
+    hx.syscall hx.stat
 
     jc defaultLogin
 
     ret
+
+typedLine: ;; hx.getString writes the typed line into a buffer of the caller's own
+times 256 db 0
