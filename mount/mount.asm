@@ -72,15 +72,18 @@ use32
 
 include "HAPP.s" ;; Here is a structure for the HAPP header
 
-;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
-appHeader headerHAPP HAPP.Architectures.i386, 1, 00, applicationStart, 01h
+;; Architecture | Version | Subversion | Entry point | Image type | BSS size
+
+headerHAPP HAPP.Architectures.i386, 1, 8, applicationStart, 01h
 
 ;;************************************************************************************
 
 include "hexagon.s"
 include "console.s"
 include "macros.s"
-include "errors.s"
+include "string.s"
+include "malloc.s"
+include "mount.s"
 
 ;;************************************************************************************
 
@@ -96,6 +99,13 @@ applicationStart:
     cmp byte[esi], 0
     je displayMounts
 
+    mov edi, mount.allParameter
+    mov esi, [parameters]
+
+    call compareWordsInString
+
+    jc mountAll
+
     call getParameters
 
     jc  applicationUsage
@@ -103,138 +113,339 @@ applicationStart:
     mov edi, mount.helpParameter
     mov esi, [parameters]
 
-    hx.syscall hx.compareWordsString
+    call compareWordsInString
 
     jc applicationUsage
 
-    mov edi, mount.defaultPath
-    mov esi, [mountPoint]
-
-    hx.syscall hx.compareWordsString
-
-    jc .mountFilesysten
-
-    jmp mountPointError
-
-.mountFilesysten:
-
-    fputs mount.volume
-
-    fputs [volume]
-
-    fputs mount.mountPoint
-
-    fputs [mountPoint]
-
-    fputs mount.closeBracket
-
     mov esi, [volume]
+    mov edi, [mountPoint]
 
-    xor ecx, ecx
+    hx.syscall hx.mount
 
-    hx.syscall hx.open
-
-    jc openingError
+    jc mountingError
 
     jmp finish
 
 ;;************************************************************************************
+
+;; Lists every mount point currently in use, one per line ("device on point
+;; type fstype"). hx.getMounts needs its own caller-supplied buffer,
+;; so this mallocs one and frees it after printing
 
 displayMounts:
 
     putNewLine
 
-    hx.syscall hx.getVolume
+    mov byte[mountsFirstLine], 1
+    mov ebx, mount.mountsBufferSize
 
-    push edi
-    push eax
+    call malloc
+
+    cmp eax, 0
+
+    je mountsMallocError
+
+    mov [mountsBuffer], ebx
+
+    mov esi, ebx
+
+    hx.syscall hx.getMounts
+
+    mov [mountsCount], eax
+    mov eax, [mountsBuffer]
+    mov [mountsPointer], eax
+
+.mountsLoop:
+
+    cmp dword[mountsCount], 0
+    je .mountsDone
+
+    cmp byte[mountsFirstLine], 0
+    je .separator
+
+    mov byte[mountsFirstLine], 0
+
+    jmp .printRecord
+
+.separator:
+
+    putNewLine
+
+.printRecord:
+
+    mov esi, [mountsPointer]
+
+    add esi, hx.mount.record.deviceName
 
     printString
 
-    fputs mount.volumeInformation
+    fputs mount.on
 
-    fputs mount.defaultPath
+    mov esi, [mountsPointer] ;; Mount point path sits at record offset 0
 
-    fputs mount.filesystemType
+    printString
 
-    pop eax
+    fputs mount.type
 
-    cmp ah, 01h
+    mov esi, [mountsPointer]
+    movzx eax, byte[esi + hx.mount.record.filesystemType]
+
+    call printMountFilesystemType
+
+    mov eax, [mountsPointer]
+
+    add eax, hx.mount.record.size
+    
+    mov [mountsPointer], eax
+
+    dec dword[mountsCount]
+
+    jmp .mountsLoop
+
+.mountsDone:
+
+    mov ebx, [mountsBuffer]
+    mov ecx, mount.mountsBufferSize
+
+    call free
+
+    jmp finish
+
+;;************************************************************************************
+
+mountsMallocError:
+
+    fputs mount.mallocError
+
+    jmp finish
+
+;;************************************************************************************
+
+;; Reads /etc/fstab and calls hx.mount for each entry in it (type and
+;; options are accepted but unused). A missing /etc/fstab simply leaves
+;; nothing mounted, not an error
+
+mountAll:
+
+    mov ebx, mount.fstabBufferSize
+
+    call malloc
+
+    cmp eax, 0
+    je mountsMallocError
+
+    mov [fstabBuffer], ebx
+
+    mov esi, mount.fstabPath
+    mov edi, ebx
+
+    xor ecx, ecx
+
+    hx.syscall hx.open
+
+    jc .noFstab
+
+    mov esi, ebx
+
+.lineLoop:
+
+    mov edi, mount.lineBuffer
+
+.copyChar:
+
+    lodsb
+
+    cmp al, 0
+    je .lastLine
+
+    cmp al, 10
+    je .lineComplete
+
+;; /etc/fstab may carry CRLF line endings, so the CR is skipped outright instead of copied
+
+    cmp al, 13 
+    je .copyChar 
+
+    mov byte[edi], al
+
+    inc edi
+
+    cmp edi, mount.lineBuffer + mount.lineBufferSize - 1
+    jae .lineComplete ;; Line too long for the buffer, process what fits
+
+    jmp .copyChar
+
+.lineComplete:
+
+    mov byte[edi], 0
+
+    push esi
+
+    call .mountLine
+
+    pop esi
+
+    jmp .lineLoop
+
+.lastLine:
+
+    mov byte[edi], 0
+
+    call .mountLine
+
+.noFstab:
+
+    mov ebx, [fstabBuffer]
+    mov ecx, mount.fstabBufferSize
+
+    call free
+
+    jmp finish
+
+;; Parses one NUL terminated fstab line and mounts it. Blank lines and
+;; lines starting with '#' are silently ignored
+
+.mountLine:
+
+    mov esi, mount.lineBuffer
+
+    call trimString
+
+    cmp byte[esi], 0
+    je .mountLineDone
+
+    cmp byte[esi], '#'
+    je .mountLineDone
+
+    push esi ;; Device field start, saved across the mount point split below
+
+    call findFieldEnd ;; Terminates the device field, ESI now at the next field
+
+    jc .mountLineNoTarget ;; No mount point on this line, nothing to mount
+
+    mov edi, esi
+
+    call findFieldEnd ;; Terminates the mount point field, dropping type/options
+
+    pop esi ;; Device field start
+
+    hx.syscall hx.mount
+
+    jnc .mountLineDone
+
+    fputs mount.fstabMountFailed
+
+    jmp .mountLineDone
+
+.mountLineNoTarget:
+
+    pop esi ;; Balances the push above, value unused
+
+.mountLineDone:
+
+    ret
+
+;;************************************************************************************
+
+;; Prints the filesystem name for a mount record's type code at the current
+;; cursor position
+;;
+;; Input:
+;;
+;; AL - Filesystem type code
+
+printMountFilesystemType:
+
+    cmp al, 01h
     je .fat12
 
-    cmp ah, 04h
+    cmp al, 04h
     je .fat16_32
 
-    cmp ah, 06h
+    cmp al, 06h
     je .fat16
+
+    cmp al, 0FFh ;; Hexagon.VFS.FS.DEVFS
+    je .devfs
 
     fputs mount.unknownFilesystem
 
-    jmp .continue
+    ret
 
 .fat12:
 
     fputs mount.FAT12
 
-    jmp .continue
+    ret
 
 .fat16_32:
 
     fputs mount.FAT16_32
 
-    jmp .continue
+    ret
 
 .fat16:
 
     fputs mount.FAT16
 
-    jmp .continue
+    ret
 
-.continue:
+.devfs:
 
-    fputs mount.filesystemLabel
+    fputs mount.devfs
 
-    pop edi
-
-    mov esi, edi
-
-    hx.syscall hx.trimString
-
-    printString
-
-    jmp finish
+    ret
 
 ;;************************************************************************************
 
-mountPointError:
+mountingError:
 
-    fputs mount.mountPointError
+    cmp eax, 01h
+    je .permissionDenied
+
+    cmp eax, 02h
+    je .deviceNotFound
+
+    cmp eax, 03h
+    je .badMountPoint
+
+    cmp eax, 04h
+    je .noFreeSlots
+
+    cmp eax, 06h
+    je .mountPointBusy
+
+    fputs mount.badBPB ;; Only remaining code is 05h, a bad partition BPB
 
     jmp finish
 
-;;************************************************************************************
-
-openingError:
-
-    cmp eax, IO.operationDenied
-    je .operationDenied
-
-    cmp eax, IO.notFound
-    je .notFound
-
-    fputs mount.openingError
-
-    jmp finish
-
-.operationDenied:
+.permissionDenied:
 
     fputs mount.operationDenied
 
     jmp finish
 
-.notFound:
+.deviceNotFound:
 
     fputs mount.notFound
+
+    jmp finish
+
+.badMountPoint:
+
+    fputs mount.mountPointError
+
+    jmp finish
+
+.noFreeSlots:
+
+    fputs mount.noFreeSlots
+
+    jmp finish
+
+.mountPointBusy:
+
+    fputs mount.mountPointBusy
 
     jmp finish
 
@@ -258,7 +469,7 @@ getParameters:
 
     mov al, ' '
 
-    hx.syscall hx.findCharacter
+    call findCharacterInString
 
     jc applicationUsage
 
@@ -306,6 +517,45 @@ findCharacterMount:
 
 ;;************************************************************************************
 
+;; Scans forward from ESI until a space or the end of the string, cutting
+;; the field off in place at whichever it finds
+;;
+;; Input:
+;;
+;; ESI - Start of the field
+;;
+;; Output:
+;;
+;; ESI - Start of whatever follows the field
+;; CF  - Set if the field already reached the end of the string, with no
+;;       space separating it from anything after
+
+findFieldEnd:
+
+    lodsb
+
+    cmp al, 0
+    je .terminated
+
+    cmp al, ' '
+    jne findFieldEnd
+
+    mov byte[esi-1], 0
+
+    clc
+
+    ret
+
+.terminated:
+
+    mov byte[esi-1], 0
+
+    stc
+
+    ret
+
+;;************************************************************************************
+
 applicationUsage:
 
     fputs mount.use
@@ -320,53 +570,70 @@ applicationUsage:
 ;;
 ;;************************************************************************************
 
-VERSION equ "2.7.1"
+VERSION equ "2.8.0"
 
 mount:
 
-.volume:
-db 10, "Mounting [", 0
-.mountPoint:
-db "] on [", 0
-.closeBracket:
-db "]...", 0
 .use:
-db 10, "Usage: mount [volume] [mount point]", 10, 10
+db 10, "Usage: mount [volume] [mount point]", 10
+db "       mount -a", 10, 10
 db "Performs mounting a volume to a file system mount point.", 10, 10
-db "If no parameter is provided, the mounting points will be displayed.", 10, 10
+db "If no parameter is provided, the mounting points will be displayed.", 10
+db "With -a, every volume listed in /etc/fstab is mounted.", 10, 10
 db "mount version ", VERSION, 10, 10
 db "Copyright (C) 2017-", __stringYear, " Felipe Miguel Nery Lunkes", 10
 db "All rights reserved.", 0
-.openingError:
-db 10, "Error mounting volume at specified mount point.", 10
-db "Try to enter a valid name or reference of an attached volume.", 0
 .helpParameter:
 db "?", 0
-.defaultPath:
-db "/", 0
+.allParameter:
+db "-a", 0
 .mountPointError:
 db 10, "Please enter a valid mount point for this volume and file system.", 0
-.volumeInformation:
+.on:
 db " on ", 0
-.filesystemLabel:
-db " with the label ", 0
-.filesystemType:
+.type:
 db " type ", 0
-.notFound:
-db 10, "Device not found or filesystem not supported.", 0
-.operationDenied:
-db "The mount was refused by the system. This may be explained due to the fact that the current user", 10
-db "does not have administrative privileges, not being a root user (root).", 10, 10
-db "Only the root user (root) can perform mounts. Login in this user to perform the desired mount.", 0
+.mallocError:
+db 10, "Failed to allocate a buffer for the mount listing.", 0
 .FAT16:
-db "FAT16B", 0
+db "fat16b", 0
 .FAT12:
-db "FAT12", 0
+db "fat12", 0
 .FAT16_32:
-db "FAT16 <32 MB", 0
+db "fat16 <32 mb", 0
+.devfs:
+db "devfs", 0
 .unknownFilesystem:
 db "unknown", 0
+.notFound:
+db 10, "Device not found or filesystem not supported.", 0
+.noFreeSlots:
+db 10, "No free mount slots are available. Unmount an existing volume first.", 0
+.mountPointBusy:
+db 10, "That mount point already has a different device mounted on it.", 0
+.badBPB:
+db 10, "Failed to read the partition's own boot parameter block.", 0
+.operationDenied:
+db "Only the root user can perform mounts. Login in this user to perform the desired mount.", 0
+.fstabPath:
+db "/etc/fstab", 0
+.fstabMountFailed:
+db 10, "Failed to mount an entry listed in /etc/fstab.", 0
+
+mount.mountsBufferSize = 64 * 1024 ;; Sized well past hx.getMounts.record.limit records
+mount.fstabBufferSize  = 4 * 1024
+mount.lineBufferSize   = 128
 
 parameters: dd 0
 volume:     dd ?
 mountPoint: dd ?
+
+mountsBuffer:    dd ?
+mountsCount:     dd ?
+mountsPointer:   dd ?
+mountsFirstLine: db ?
+
+fstabBuffer: dd ?
+
+mount.lineBuffer:
+times mount.lineBufferSize db 0
