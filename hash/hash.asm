@@ -72,14 +72,16 @@ use32
 
 include "HAPP.s" ;; Here is a structure for the HAPP header
 
-;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
-appHeader headerHAPP HAPP.Architectures.i386, 1, 7, shellStart, 01h
+;; Architecture | Version | Subversion | Entry point | Image type | BSS size
+headerHAPP HAPP.Architectures.i386, 1, 7, shellStart, 01h, HAPP.bss.none
 
 ;;************************************************************************************
 
 include "hexagon.s"
 include "console.s"
 include "macros.s"
+include "string.s"
+include "malloc.s"
 include "errors.s"
 include "shell.s"
 
@@ -92,14 +94,14 @@ shellStart:
     mov edi, hash.helpParameter
     mov esi, [commandLine]
 
-    hx.syscall hx.compareWordsString
+    call compareWordsInString
 
     jc applicationUsage
 
     mov edi, hash.helpParameter2
     mov esi, [commandLine]
 
-    hx.syscall hx.compareWordsString
+    call compareWordsInString
 
     jc applicationUsage
 
@@ -113,7 +115,7 @@ shellStart:
 ;; shebang dispatch from Shell.checkShebang hands a script off to the
 ;; shell named on its "#!" line
 
-    hx.syscall hx.fileExists
+    hx.syscall hx.stat
 
     jc .start ;; Not a file (or some other argument shape). Interactive as usual
 
@@ -168,7 +170,7 @@ shellStart:
 
     mov esi, hash.commonUser
 
-    hx.syscall hx.stringSize
+    call stringSize
 
     push eax
 
@@ -192,7 +194,7 @@ shellStart:
 
     mov esi, hash.rootUser
 
-    hx.syscall hx.stringSize
+    call stringSize
 
     push eax
 
@@ -213,7 +215,7 @@ shellStart:
 
     mov esi, hash.promptSymbol
 
-    hx.syscall hx.stringSize
+    call stringSize
 
     inc eax
 
@@ -237,9 +239,13 @@ shellStart:
 
     sub al, 20
 
+    mov edi, typedLine
+
     hx.syscall hx.getString
 
-    hx.syscall hx.trimString ;; Remove extra spaces
+    mov esi, typedLine
+
+    call trimString ;; Remove extra spaces
 
     cmp byte[esi], 0 ;; No command entered
     je .getCommandLine
@@ -250,7 +256,7 @@ shellStart:
 
     mov edi, commands.exit
 
-    hx.syscall hx.compareWordsString
+    call compareWordsInString
 
     jc finishShell
 
@@ -258,7 +264,7 @@ shellStart:
 
     mov edi, commands.cd
 
-    hx.syscall hx.compareWordsString
+    call compareWordsInString
 
     jc commandCD
 
@@ -266,7 +272,7 @@ shellStart:
 
     mov edi, commands.rc
 
-    hx.syscall hx.compareWordsString
+    call compareWordsInString
 
     jc runShellScript ;; Start batch file execution
 
@@ -274,14 +280,14 @@ shellStart:
 
     mov edi, commands.set
 
-    hx.syscall hx.compareWordsString
+    call compareWordsInString
 
     jc commandSET
 
 ;; Check for a trailing "&", which backgrounds the command instead of
 ;; blocking the shell until it exits
 
-    hx.syscall hx.stringSize
+    call stringSize
 
     mov byte[hash.background], 0
 
@@ -293,7 +299,7 @@ shellStart:
 
     mov byte[esi+eax-1], 0
 
-    hx.syscall hx.trimString
+    call trimString
 
     mov byte[hash.background], 1
 
@@ -365,12 +371,12 @@ shellStart:
 
     mov esi, edi
 
-    hx.syscall hx.trimString
+    call trimString
 
     pop esi
 
 ;; Protect the arguments from Shell.checkShebang before it opens the
-;; resolved command's own file into appFileBuffer
+;; resolved command's own file into a buffer of its own
 
     call Shell.protectArguments
 
@@ -420,6 +426,8 @@ shellStart:
 
 .loadBackground:
 
+    mov eax, edi
+
     hx.syscall hx.spawn
 
     jc .executionFailure
@@ -442,7 +450,7 @@ commandCD:
 
     add esi, 02h
 
-    hx.syscall hx.trimString
+    call trimString
 
     cmp byte[esi], 0
     je .argumentRequired
@@ -452,8 +460,6 @@ commandCD:
     hx.syscall hx.changeDirectory
 
     jc .errorChangingDirectory
-
-    pop esi
 
     jmp shellStart.getCommandLine
 
@@ -475,7 +481,7 @@ commandSET:
 
     add esi, 03h
 
-    hx.syscall hx.trimString
+    call trimString
 
     call Shell.handleSet
 
@@ -489,14 +495,14 @@ runShellScript:
 
     add esi, 02h
 
-    hx.syscall hx.trimString
+    call trimString
 
     cmp byte[esi], 0
     je .argumentRequired
 
     push esi
 
-    hx.syscall hx.fileExists
+    hx.syscall hx.stat
 
     pop esi
 
@@ -563,7 +569,7 @@ getArguments:
     mov byte[esi-1], 0
     mov ebx, esi
 
-    hx.syscall hx.stringSize
+    call stringSize
 
     mov ecx, eax
 
@@ -575,13 +581,13 @@ getArguments:
     pop es
 
     mov esi, ebx
-    mov edi, appFileBuffer
+    mov edi, argumentsBuffer
 
     rep movsb ;; Copy (ECX) string characters from ESI to EDI
 
     pop es
 
-    mov edi, appFileBuffer
+    mov edi, argumentsBuffer
 
     pop esi
 
@@ -615,7 +621,7 @@ finishShell:
 ;;
 ;;************************************************************************************
 
-VERSION equ "0.4.4"
+VERSION equ "0.5.0"
 
 hash:
 
@@ -679,4 +685,14 @@ commandLine:   dd 0
 
 ;;************************************************************************************
 
-appFileBuffer: ;; Address for opening files
+;; hx.getString writes the typed line into a buffer of the caller's own
+
+typedLine:
+times 256 db 0
+
+;; Where a command's arguments are copied to, out of the typed line, so that
+;; opening a file cannot land on top of them
+
+argumentsBuffer:
+times 256 db 0
+
