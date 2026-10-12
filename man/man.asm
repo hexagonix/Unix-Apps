@@ -72,21 +72,23 @@ use32
 
 include "HAPP.s" ;; Here is a structure for the HAPP header
 
-;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
-appHeader headerHAPP HAPP.Architectures.i386, 1, 7, applicationStart, 01h
+;; Architecture | Version | Subversion | Entry point | Image type | BSS size
+headerHAPP HAPP.Architectures.i386, 1, 7, applicationStart, 01h, HAPP.bss.none
 
 ;;************************************************************************************
 
 include "hexagon.s"
 include "console.s"
 include "macros.s"
+include "string.s"
+include "malloc.s"
 
 ;;************************************************************************************
 
-VERSION equ "3.1.0"
+VERSION equ "3.2.0"
 
-CoreUtilsVersion equ "Mineru-1.0"
-UnixUtilsVersion equ "Mineru-1.0"
+CoreUtilsVersion equ "Hylia-1.0"
+UnixUtilsVersion equ "Hylia-1.0"
 
 manBarColor     = AZUL_CALMANTE
 manBarFontColor = HEXAGONIX_CLASSICO_BRANCO
@@ -97,6 +99,8 @@ man:
 db "?", 0
 .helpParameter2:
 db "--help",0
+.withoutMemory:
+db 10, "Not enough memory to read this manual page.", 0
 .use:
 db 10, "Usage: man [utility]", 10, 10
 db "Display detailed help for installed Unix utilities.", 10, 10
@@ -122,13 +126,16 @@ db "(END) (press <q> to quit)", 0
 db "Hexagonix", 0
 
 utility:              dd ?
-manPath:              times 64 db 0 ;; "/usr/man/" plus the utility name plus ".man"
 pageSize:             db 0 ;; Content lines per screen, computed from the console info
 lineCount:            db 0 ;; Content lines printed on the current page so far
-readPos:              dd ? ;; Where the next page starts reading from in appFileBuffer
+readPos:              dd ? ;; Where the next page starts reading from in the page itself
+fileBuffer:           dd 0
+fileSize:             dd 0
 numberColumns:        db 0
 savedFontColor:       dd 0
 savedBackgroundColor: dd 0
+manPath: ;; "/usr/man/" plus the utility name plus ".man"
+times 64 db 0
 
 ;;************************************************************************************
 
@@ -165,7 +172,6 @@ buildManPath:
 .copyName:
 
     mov al, byte[esi]
-
     mov byte[edi], al
 
     inc esi
@@ -181,7 +187,6 @@ buildManPath:
 .copyExtension:
 
     mov al, byte[esi]
-
     mov byte[edi], al
 
     inc esi
@@ -207,14 +212,14 @@ applicationStart:
     mov edi, man.helpParameter
     mov esi, [utility]
 
-    hx.syscall hx.compareWordsString
+    call compareWordsInString
 
     jc applicationUsage
 
     mov edi, man.helpParameter2
     mov esi, [utility]
 
-    hx.syscall hx.compareWordsString
+    call compareWordsInString
 
     jc applicationUsage
 
@@ -222,15 +227,28 @@ applicationStart:
 
     mov esi, manPath
 
-    hx.syscall hx.fileExists
+    hx.syscall hx.stat ;; EAX = size
 
     jc manNotFound
 
-    mov edi, appFileBuffer
+;; Room for exactly this page, rather than whatever happens to sit past the
+;; end of this image
 
+    mov [fileSize], eax
+
+    inc eax ;; The terminator, in memory the kernel hands over already zeroed
+
+    mov ebx, eax
+
+    call malloc
+
+    cmp eax, 0
+    je withoutMemory
+
+    mov [fileBuffer], ebx
+    mov edi, ebx
     mov esi, manPath
-
-    xor ecx, ecx
+    mov ecx, [fileSize] ;; Never past what was asked for
 
     hx.syscall hx.open
 
@@ -240,7 +258,7 @@ applicationStart:
 
     call buildInterface
 
-    mov esi, appFileBuffer
+    mov esi, [fileBuffer]
 
     call showPaginated
 
@@ -260,6 +278,7 @@ buildInterface:
 ;; "-- More --"/"(END)" prompt, so content gets the rest
 
     mov al, bh
+
     sub al, 2
 
     mov byte[pageSize], al
@@ -298,7 +317,6 @@ drawBar:
 
     mov dword[savedFontColor], eax
     mov dword[savedBackgroundColor], ebx
-
     mov eax, manBarFontColor
     mov ebx, manBarColor
 
@@ -314,10 +332,9 @@ drawBar:
 
     mov esi, [utility]
 
-    hx.syscall hx.stringSize
+    call stringSize
 
     mov ecx, eax
-
     movzx eax, byte[numberColumns]
 
     sub eax, ecx
@@ -359,7 +376,6 @@ showPaginated:
 .pageLoop:
 
     mov esi, dword[readPos]
-
     mov byte[lineCount], 0
 
 .charLoop:
@@ -379,7 +395,6 @@ showPaginated:
     mov al, byte[lineCount]
 
     cmp al, byte[pageSize]
-
     jb .charLoop
 
 ;; A full page has been printed. Remember where the next one continues from
@@ -467,6 +482,14 @@ pauseForKeyPress:
 
 ;;************************************************************************************
 
+withoutMemory:
+
+    fputs man.withoutMemory
+
+    jmp finish
+
+;;************************************************************************************
+
 manNotFound:
 
     putNewLine
@@ -489,8 +512,18 @@ applicationUsage:
 
 finish:
 
+    cmp dword[fileBuffer], 0
+    je .nothingToFree
+
+    mov ebx, [fileBuffer]
+
+    call free
+
+    mov dword[fileBuffer], 0
+
+.nothingToFree:
+
     hx.syscall hx.exit
 
 ;;*****************************************************************************
 
-appFileBuffer:
