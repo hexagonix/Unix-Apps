@@ -81,14 +81,16 @@ use32
 
 include "HAPP.s" ;; Here is a structure for the HAPP header
 
-;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
-appHeader headerHAPP HAPP.Architectures.i386, 1, 7, applicationStart, 01h
+;; Architecture | Version | Subversion | Entry point | Image type | BSS size
+headerHAPP HAPP.Architectures.i386, 1, 7, applicationStart, 01h
 
 ;;************************************************************************************
 
 include "hexagon.s"
 include "console.s"
 include "macros.s"
+include "string.s"
+include "malloc.s"
 include "passwdHash.s"
 
 ;;************************************************************************************
@@ -112,12 +114,14 @@ applicationStart:
     fputs adduser.promptUser
 
     mov eax, 15
-
     mov ebx, 1
+    mov edi, typedLine
 
     hx.syscall hx.getString
 
-    hx.syscall hx.trimString
+    mov esi, typedLine
+
+    call trimString
 
     cmp byte[esi], 0
     je .noUsername
@@ -135,12 +139,14 @@ applicationStart:
     fputs adduser.promptPassword
 
     mov eax, 64
-
     mov ebx, 1234h ;; We don't want to echo the password!
+    mov edi, typedLine
 
     hx.syscall hx.getString
 
-    hx.syscall hx.trimString
+    mov esi, typedLine
+
+    call trimString
 
     mov edi, passwordFirst
 
@@ -149,16 +155,18 @@ applicationStart:
     fputs adduser.promptPasswordAgain
 
     mov eax, 64
-
     mov ebx, 1234h
+    mov edi, typedLine
 
     hx.syscall hx.getString
 
-    hx.syscall hx.trimString
+    mov esi, typedLine
+
+    call trimString
 
     mov edi, passwordFirst
 
-    hx.syscall hx.compareWordsString
+    call compareWordsInString
 
     jnc .passwordMismatch
 
@@ -169,12 +177,14 @@ applicationStart:
     fputs adduser.promptShell
 
     mov eax, 11
-
     mov ebx, 1
+    mov edi, typedLine
 
     hx.syscall hx.getString
 
-    hx.syscall hx.trimString
+    mov esi, typedLine
+
+    call trimString
 
     cmp byte[esi], 0
     jne .shellGiven
@@ -190,12 +200,14 @@ applicationStart:
     fputs adduser.promptTheme
 
     mov eax, 7
-
     mov ebx, 1
+    mov edi, typedLine
 
     hx.syscall hx.getString
 
-    hx.syscall hx.trimString
+    mov esi, typedLine
+
+    call trimString
 
     cmp byte[esi], 0
     jne .themeGiven
@@ -210,11 +222,9 @@ applicationStart:
 
     call Hexagon.LibASM.PasswdHash.nextCode
 
-    hx.syscall hx.toString
+    mov edi, newCode ;; hx.toString writes straight into the caller's own buffer
 
-    mov edi, newCode
-
-    call Hexagon.LibASM.PasswdHash.copyString
+    call integetToString
 
     call appendUser
 
@@ -263,7 +273,7 @@ appendUser:
 
     mov ebx, Hexagon.LibASM.PasswdHash.searchSizeLimit
 
-    hx.syscall hx.malloc
+    call malloc
 
     cmp eax, 0
     je .mallocFailed
@@ -281,7 +291,7 @@ appendUser:
 
     mov esi, [appendUserBufferPtr]
 
-    hx.syscall hx.stringSize
+    call stringSize
 
     mov edi, [appendUserBufferPtr]
 
@@ -357,7 +367,7 @@ appendUser:
 
     mov esi, [appendUserBufferPtr]
 
-    hx.syscall hx.stringSize
+    call stringSize
 
     mov esi, Hexagon.LibASM.PasswdHash.file
     mov edi, [appendUserBufferPtr]
@@ -369,7 +379,7 @@ appendUser:
     mov ebx, [appendUserBufferPtr]
     mov ecx, Hexagon.LibASM.PasswdHash.searchSizeLimit
 
-    hx.syscall hx.free
+    call free
 
     popf
 
@@ -449,6 +459,11 @@ newShell:
 times 12 db 0
 newTheme:
 times 8 db 0
-newCode:
-times 9 db 0
+newCode: ;; Room for the longest number hx.toString can write, plus its terminator
+times 12 db 0
 appendUserBufferPtr: dd 0
+
+;; hx.getString writes the typed line into a buffer of the caller's own
+
+typedLine:
+times 256 db 0
