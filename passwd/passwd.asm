@@ -81,14 +81,16 @@ use32
 
 include "HAPP.s" ;; Here is a structure for the HAPP header
 
-;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
-appHeader headerHAPP HAPP.Architectures.i386, 1, 7, applicationStart, 01h
+;; Architecture | Version | Subversion | Entry point | Image type | BSS size
+headerHAPP HAPP.Architectures.i386, 1, 7, applicationStart, 01h
 
 ;;************************************************************************************
 
 include "hexagon.s"
 include "console.s"
 include "macros.s"
+include "string.s"
+include "malloc.s"
 include "passwdHash.s"
 
 ;;************************************************************************************
@@ -99,18 +101,17 @@ applicationStart:
     pop es
 
     mov [parameters], edi
-
     mov edi, passwd.helpParameter
     mov esi, [parameters]
 
-    hx.syscall hx.compareWordsString
+    call compareWordsInString
 
     jc applicationUsage
 
     mov edi, passwd.helpParameter2
     mov esi, [parameters]
 
-    hx.syscall hx.compareWordsString
+    call compareWordsInString
 
     jc applicationUsage
 
@@ -162,19 +163,21 @@ applicationStart:
     fputs passwd.promptCurrent
 
     mov eax, 64
-
     mov ebx, 1234h ;; We don't want to echo the password!
+    mov edi, typedLine
 
     hx.syscall hx.getString
 
-    hx.syscall hx.trimString
+    mov esi, typedLine
+
+    call trimString
 
     call Hexagon.LibASM.PasswdHash.hash
 
     mov esi, Hexagon.LibASM.PasswdHash.hashBuffer
     mov edi, Hexagon.LibASM.PasswdHash.hashFound
 
-    hx.syscall hx.compareWordsString
+    call compareWordsInString
 
     jnc .wrongCurrent
 
@@ -183,12 +186,14 @@ applicationStart:
     fputs passwd.promptNew
 
     mov eax, 64
-
     mov ebx, 1234h
+    mov edi, typedLine
 
     hx.syscall hx.getString
 
-    hx.syscall hx.trimString
+    mov esi, typedLine
+
+    call trimString
 
     mov edi, newPasswordFirst
 
@@ -197,16 +202,18 @@ applicationStart:
     fputs passwd.promptNewAgain
 
     mov eax, 64
-
     mov ebx, 1234h
+    mov edi, typedLine
 
     hx.syscall hx.getString
 
-    hx.syscall hx.trimString
+    mov esi, typedLine
+
+    call trimString
 
     mov edi, newPasswordFirst
 
-    hx.syscall hx.compareWordsString
+    call compareWordsInString
 
     jnc .mismatch
 
@@ -219,7 +226,6 @@ applicationStart:
 ;; resolved for targetUser, only the hash field actually changes
 
     mov edi, replacementLine
-
     mov esi, targetUser
 
     call Hexagon.LibASM.PasswdHash.appendString
@@ -238,7 +244,18 @@ applicationStart:
 
     mov eax, [Hexagon.LibASM.PasswdHash.codeFound]
 
-    hx.syscall hx.toString
+;; EDI is the running cursor over the line being built, so the number goes into
+;; a buffer of its own and is appended from there
+
+    push edi
+
+    mov edi, passwd.codeString
+
+    call integetToString
+
+    pop edi
+
+    mov esi, passwd.codeString
 
     call Hexagon.LibASM.PasswdHash.appendString
 
@@ -317,7 +334,7 @@ finish:
 ;;
 ;;************************************************************************************
 
-VERSION equ "0.2.0"
+VERSION equ "0.3.0"
 
 passwd:
 
@@ -359,3 +376,7 @@ newPasswordFirst:
 times 65 db 0
 replacementLine:
 times 96 db 0
+passwd.codeString:
+times 12 db 0
+typedLine: ;; hx.getString writes the typed line into a buffer of the caller's own
+times 256 db 0
