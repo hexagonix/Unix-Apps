@@ -72,14 +72,16 @@ use32
 
 include "HAPP.s" ;; Here is a structure for the HAPP header
 
-;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
-appHeader headerHAPP HAPP.Architectures.i386, 1, 7, shellStart, 01h
+;; Architecture | Version | Subversion | Entry point | Image type | BSS size
+headerHAPP HAPP.Architectures.i386, 1, 8, shellStart, 01h, HAPP.bss.none
 
 ;;************************************************************************************
 
 include "hexagon.s"
 include "console.s"
 include "macros.s"
+include "string.s"
+include "malloc.s"
 include "errors.s"
 include "passwdHash.s"
 include "user.s"
@@ -90,18 +92,17 @@ include "shell.s"
 shellStart:
 
     mov [commandLine], edi
-
     mov edi, sh.helpParameter
     mov esi, [commandLine]
 
-    hx.syscall hx.compareWordsString
+    call compareWordsInString
 
     jc applicationUsage
 
     mov edi, sh.helpParameter2
     mov esi, [commandLine]
 
-    hx.syscall hx.compareWordsString
+    call compareWordsInString
 
     jc applicationUsage
 
@@ -115,7 +116,7 @@ shellStart:
 ;; shebang dispatch from Shell.checkShebang hands a script off to the
 ;; shell named on its "#!" line
 
-    hx.syscall hx.fileExists
+    hx.syscall hx.stat
 
     jc .start ;; Not a file (or some other argument shape). Interactive as usual
 
@@ -173,7 +174,7 @@ shellStart:
 
     push esi
 
-    hx.syscall hx.stringSize
+    call stringSize
 
     pop esi
 
@@ -186,6 +187,57 @@ shellStart:
     rep movsb
 
     pop es
+
+;; Loaded once per session, same as the username above, rather than
+;; reading /etc/hostname again on every prompt
+
+    mov edi, sh.hostBuffer
+    mov esi, sh.hostFile
+
+    xor ecx, ecx
+
+    hx.syscall hx.open
+
+    jc .useDefaultHost
+
+    mov esi, sh.hostBuffer
+
+    call stringSize
+
+    cmp eax, 0
+    je .useDefaultHost
+
+    mov ecx, eax
+
+    dec ecx
+
+    cmp byte[sh.hostBuffer + ecx], 10 ;; A trailing newline, if any, is not part of the hostname
+    jne .haveHostLength
+
+    mov byte[sh.hostBuffer + ecx], 0
+
+.haveHostLength:
+
+    cmp byte[sh.hostBuffer], 0
+    je .useDefaultHost
+
+    jmp .hostReady
+
+.useDefaultHost:
+
+    mov esi, sh.defaultHost
+    mov edi, sh.hostBuffer
+
+    call stringSize
+
+    inc eax
+
+    mov ecx, eax
+    mov esi, sh.defaultHost
+
+    rep movsb
+
+.hostReady:
 
     hx.syscall hx.getUser
 
@@ -203,7 +255,7 @@ shellStart:
 
     mov esi, sh.commonUser
 
-    hx.syscall hx.stringSize
+    call stringSize
 
     push eax
 
@@ -227,7 +279,7 @@ shellStart:
 
     mov esi, sh.rootUser
 
-    hx.syscall hx.stringSize
+    call stringSize
 
     push eax
 
@@ -248,7 +300,7 @@ shellStart:
 
     mov esi, sh.promptSymbol
 
-    hx.syscall hx.stringSize
+    call stringSize
 
     inc eax
 
@@ -270,15 +322,31 @@ shellStart:
 
     fputs sh.prompt
 
+    fputs sh.hostBuffer
+
+    fputs sh.colon
+
+    mov edi, sh.currentDirectory
+
+    hx.syscall hx.getCurrentDirectory
+
+    mov esi, sh.currentDirectory
+
+    printString
+
     fputs sh.promptSymbol
 
     mov al, byte[numberColumns] ;; Maximum characters to get
 
     sub al, 20
 
+    mov edi, typedLine
+
     hx.syscall hx.getString
 
-    hx.syscall hx.trimString ;; Remove extra spaces
+    mov esi, typedLine
+
+    call trimString ;; Remove extra spaces
 
     cmp byte[esi], 0 ;; No command entered
     je .getCommandLine
@@ -289,7 +357,7 @@ shellStart:
 
     mov edi, commands.exit
 
-    hx.syscall hx.compareWordsString
+    call compareWordsInString
 
     jc finishShell
 
@@ -297,7 +365,7 @@ shellStart:
 
     mov edi, commands.cd
 
-    hx.syscall hx.compareWordsString
+    call compareWordsInString
 
     jc commandCD
 
@@ -305,7 +373,7 @@ shellStart:
 
     mov edi, commands.rc
 
-    hx.syscall hx.compareWordsString
+    call compareWordsInString
 
     jc runShellScript ;; Start batch file execution
 
@@ -313,14 +381,14 @@ shellStart:
 
     mov edi, commands.set
 
-    hx.syscall hx.compareWordsString
+    call compareWordsInString
 
     jc commandSET
 
 ;; Check for a trailing "&", which backgrounds the command instead of
 ;; blocking the shell until it exits
 
-    hx.syscall hx.stringSize
+    call stringSize
 
     mov byte[sh.background], 0
 
@@ -332,7 +400,7 @@ shellStart:
 
     mov byte[esi+eax-1], 0
 
-    hx.syscall hx.trimString
+    call trimString
 
     mov byte[sh.background], 1
 
@@ -406,12 +474,12 @@ shellStart:
 
     mov esi, edi
 
-    hx.syscall hx.trimString
+    call trimString
 
     pop esi
 
 ;; Protect the arguments from Shell.checkShebang before it opens the
-;; resolved command's own file into appFileBuffer
+;; resolved command's own file into a buffer of its own
 
     call Shell.protectArguments
 
@@ -431,7 +499,6 @@ shellStart:
 ;; command line itself may have had
 
     mov edi, dword[sh.resolvedPath]
-
     mov eax, 1
 
     stc
@@ -461,6 +528,8 @@ shellStart:
 
 .loadBackground:
 
+    mov eax, edi
+
     hx.syscall hx.spawn
 
     jc .executionFailure
@@ -483,7 +552,7 @@ commandCD:
 
     add esi, 02h
 
-    hx.syscall hx.trimString
+    call trimString
 
     cmp byte[esi], 0
     je .argumentRequired
@@ -493,8 +562,6 @@ commandCD:
     hx.syscall hx.changeDirectory
 
     jc .errorChangingDirectory
-
-    pop esi
 
     jmp shellStart.getCommandLine
 
@@ -516,7 +583,7 @@ commandSET:
 
     add esi, 03h
 
-    hx.syscall hx.trimString
+    call trimString
 
     call Shell.handleSet
 
@@ -530,14 +597,14 @@ runShellScript:
 
     add esi, 02h
 
-    hx.syscall hx.trimString
+    call trimString
 
     cmp byte[esi], 0
     je .argumentRequired
 
     push esi
 
-    hx.syscall hx.fileExists
+    hx.syscall hx.stat
 
     pop esi
 
@@ -604,7 +671,7 @@ getArguments:
     mov byte[esi-1], 0
     mov ebx, esi
 
-    hx.syscall hx.stringSize
+    call stringSize
 
     mov ecx, eax
 
@@ -616,13 +683,13 @@ getArguments:
     pop es
 
     mov esi, ebx
-    mov edi, appFileBuffer
+    mov edi, argumentsBuffer
 
     rep movsb ;; Copy (ECX) string characters from ESI to EDI
 
     pop es
 
-    mov edi, appFileBuffer
+    mov edi, argumentsBuffer
 
     pop esi
 
@@ -656,12 +723,14 @@ finishShell:
 ;;
 ;;************************************************************************************
 
-VERSION equ "2.3.0"
+VERSION equ "2.4.0"
 
 sh:
 
 .prompt:
-db "@Hexagonix", 0
+db "@", 0
+.colon:
+db ":", 0
 .commandNotFound:
 db ": command not found.", 0
 .invalidImage:
@@ -697,11 +766,19 @@ db 10, "Directory not found or invalid.", 0
 db 10, "Process in background: [", 0
 .backgroundEnd:
 db "]", 0
+.hostFile:
+db "/etc/hostname", 0
+.defaultHost:
+db "Hexagonix", 0
 
 .userName: ;; Stores the username
 times 64 db 0
 .promptSymbol: ;; Stores # or $
 times 8 db 0
+.currentDirectory:
+times 64 db 0
+.hostBuffer:
+times 64 db 0
 .background:   db 0 ;; Set to 1 when the current command line ends in "&"
 .resolvedPath: dd 0 ;; Command path after Shell.resolveCommandPath, across the shebang check
 
@@ -726,4 +803,12 @@ commandLine:   dd 0
 
 ;;************************************************************************************
 
-appFileBuffer: ;; Address for opening files
+typedLine: ;; hx.getString writes the typed line into a buffer of the caller's own
+times 256 db 0
+
+;; Where a command's arguments are copied to, out of the typed line, so that
+;; opening a file cannot land on top of them
+
+argumentsBuffer:
+times 256 db 0
+
