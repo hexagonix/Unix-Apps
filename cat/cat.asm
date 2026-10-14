@@ -72,14 +72,16 @@ use32
 
 include "HAPP.s" ;; Here is a structure for the HAPP header
 
-;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
-appHeader headerHAPP HAPP.Architectures.i386, 1, 00, applicationStart, 01h
+;; Architecture | Version | Subversion | Entry point | Image type | BSS size
+headerHAPP HAPP.Architectures.i386, 1, 00, applicationStart, 01h, HAPP.bss.none
 
 ;;************************************************************************************
 
 include "hexagon.s"
 include "console.s"
 include "macros.s"
+include "string.s"
+include "malloc.s"
 
 ;;************************************************************************************
 
@@ -98,21 +100,51 @@ applicationStart:
     mov edi, cat.helpParameter
     mov esi, [parameters]
 
-    hx.syscall hx.compareWordsString
+    call compareWordsInString
 
     jc applicationUsage
 
     mov edi, cat.helpParameter2
     mov esi, [parameters]
 
-    hx.syscall hx.compareWordsString
+    call compareWordsInString
 
     jc applicationUsage
 
-    mov edi, appFileBuffer
+;; How much to ask for, before asking for it. A device has no size to go by,
+;; so it gets a buffer of a fixed size, which is what cat has always had
+;; everywhere: read what fits and print that
+
     mov esi, [parameters]
 
-    xor ecx, ecx
+    hx.syscall hx.stat ;; EAX = size, EBX = 0 if this is not a device
+
+    jc .fileNotFound
+
+    cmp ebx, 0
+    je .sizeKnown
+
+    mov eax, cat.deviceRead
+
+.sizeKnown:
+
+    mov [fileSize], eax
+
+    inc eax ;; The terminator fputs stops at, which the kernel leaves zeroed
+
+    mov ebx, eax
+
+    call malloc
+
+    cmp eax, 0
+    je .withoutMemory
+
+    mov [fileBuffer], ebx
+
+    mov edi, ebx
+    mov esi, [parameters]
+
+    mov ecx, [fileSize] ;; Never past what was asked for, so the terminator stands
 
     hx.syscall hx.open
 
@@ -120,7 +152,13 @@ applicationStart:
 
     putNewLine
 
-    fputs appFileBuffer
+    fputs [fileBuffer]
+
+    jmp finish
+
+.withoutMemory:
+
+    fputs cat.withoutMemory
 
     jmp finish
 
@@ -141,6 +179,17 @@ applicationUsage:
 ;;************************************************************************************
 
 finish:
+
+    cmp dword[fileBuffer], 0
+    je .nothingToFree
+
+    mov ebx, [fileBuffer]
+
+    call free
+
+    mov dword[fileBuffer], 0
+
+.nothingToFree:
 
     hx.syscall hx.exit
 
@@ -168,9 +217,16 @@ db "All rights reserved.", 0
 db "?", 0
 .helpParameter2:
 db "--help", 0
+.withoutMemory:
+db 10, "Not enough memory to read this file.", 0
+
+;; What a device gets, having no size of its own to report
+
+cat.deviceRead = 4096
 
 parameters: dd ?
+fileBuffer: dd 0
+fileSize:   dd 0
 
 ;;************************************************************************************
 
-appFileBuffer:

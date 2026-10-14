@@ -81,29 +81,30 @@ use32
 
 include "HAPP.s" ;; Here is a structure for the HAPP header
 
-;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
-appHeader headerHAPP HAPP.Architectures.i386, 1, 7, initHexagonix, 01h
+;; Architecture | Version | Subversion | Entry point | Image type | BSS size
+headerHAPP HAPP.Architectures.i386, 1, 8, initHexagonix, 01h, HAPP.bss.trailingBuffer
 
 ;;************************************************************************************
 
 include "hexagon.s"
 include "macros.s"
+include "string.s"
+include "malloc.s"
 include "log.s"
 include "dev.s"
 
 ;;************************************************************************************
 
-VERSION equ "3.0.3"
+VERSION equ "3.1.0"
 
-searchSizeLimit = 32768 ;; Maximum /etc/rc size read while parsing: 32 kbytes
-lineBufferSize = 64     ;; Big enough for "respawn=" plus a path and 12 character name
-respawnTable.limit = 8  ;; How many respawn= services init can supervise at once
+searchSizeLimit    = 32768 ;; Maximum /etc/rc size read while parsing: 32 kbytes
+lineBufferSize     = 64    ;; Big enough for "respawn=" plus a path and parameters
+respawnTable.limit = 8     ;; How many respawn= services init can supervise at once
 
 defaultShell: ;; Name of the file containing the default Unix shell
 db "/bin/sh", 0
 rcFile: ;; init configuration file path
 db "/etc/rc", 0
-
 keyStart:
 db "start", 0
 keySpawn:
@@ -112,7 +113,6 @@ keyRespawn:
 db "respawn", 0
 keyPath:
 db "PATH", 0
-
 pathName: ;; Environment variable name set by the PATH key
 db "PATH", 0
 
@@ -129,7 +129,7 @@ db "Configuration file (/etc/rc) found.", 0
 .fileNotFound:
 db "Configuration file (/etc/rc) not found. The default shell will be executed (sh).", 0
 .setupConsole:
-db "Setting up consoles (tty0, tty1)...", 0
+db "Setting up console...", 0
 .willStart:
 db "Process will be started and will block until it exits (start):", 0
 .startFailed:
@@ -214,9 +214,14 @@ startProcessing:
 
     mov esi, defaultShell
 
+    xor edi, edi ;; No arguments
+    xor eax, eax
+
     hx.syscall hx.spawn
 
     jc monitorLoop ;; Nothing could be started at all, just idle
+
+    xor edi, edi
 
     call registerRespawn
 
@@ -228,17 +233,27 @@ clearConsole:
 
     systemLog init.setupConsole, 0, Log.Priorities.p5
 
-    mov esi, Hexagon.LibASM.Dev.video.tty1 ;; Open the first virtual console
+    mov esi, Hexagon.LibASM.Dev.video.tty0
 
     xor ecx, ecx
 
     hx.syscall hx.open ;; Open the device
+
+    mov ebx, 1 ;; Activate console
+    mov ecx, 1 ;; Secondary console
+
+    hx.syscall hx.ioctl
 
     mov esi, Hexagon.LibASM.Dev.video.tty0 ;; Reopen the default console
 
     xor ecx, ecx
 
     hx.syscall hx.open ;; Open the device
+
+    mov ebx, 1 ;; Activate console
+    mov ecx, 0 ;; Main console
+
+    hx.syscall hx.ioctl
 
     ret
 
@@ -292,9 +307,11 @@ parseConfig:
 
     mov byte[edi], 0
 
-    push esi ;; processLine uses ESI internally (trimString, compareWordsString,
-             ;; systemLog, ...) and never restores our read position in
-             ;; appFileBuffer, so it has to be saved across the call
+;; processLine uses ESI internally (trimString, compareWordsString, systemLog, ...) 
+;; and never restores our read position in appFileBuffer, so it has to be saved across
+;; the call
+
+    push esi 
 
     call processLine
 
@@ -368,6 +385,52 @@ logWithName:
 
 ;;************************************************************************************
 
+;; Splits a command line at its first space, in place, into a bare command
+;; name and its own arguments
+;;
+;; Input:
+;;
+;; ESI - Command line (already trimmed)
+;;
+;; Output:
+;;
+;; ESI - Unchanged, now NUL terminated at the first space if there was one
+;; EDI - Pointer to the arguments, or 0 if the command line had none
+;; EAX - Same as EDI
+
+splitCommandArguments:
+
+    push esi
+
+.scan:
+
+    lodsb
+
+    cmp al, 0
+    je .noArguments
+
+    cmp al, ' '
+    jne .scan
+
+    mov byte[esi - 1], 0
+    mov edi, esi
+
+    jmp .done
+
+.noArguments:
+
+    xor edi, edi
+
+.done:
+
+    mov eax, edi
+
+    pop esi
+
+    ret
+
+;;************************************************************************************
+
 ;; Parses one NUL terminated line from lineBuffer and dispatches it. Blank
 ;; lines, lines starting with '#', and lines without a real "key=value"
 ;; shape are silently ignored
@@ -376,7 +439,7 @@ processLine:
 
     mov esi, lineBuffer
 
-    hx.syscall hx.trimString
+    call trimString
 
     cmp byte[esi], 0
     je .ignore
@@ -400,35 +463,35 @@ processLine:
 
     mov dword[valuePtr], esi
 
-    hx.syscall hx.trimString
+    call trimString
 
     mov dword[valuePtr], esi
 
     mov esi, dword[keyPtr]
     mov edi, keyStart
 
-    hx.syscall hx.compareWordsString
+    call compareWordsInString
 
     jc .doStart
 
     mov esi, dword[keyPtr]
     mov edi, keyRespawn
 
-    hx.syscall hx.compareWordsString
+    call compareWordsInString
 
     jc .doRespawn
 
     mov esi, dword[keyPtr]
     mov edi, keySpawn
 
-    hx.syscall hx.compareWordsString
+    call compareWordsInString
 
     jc .doSpawn
 
     mov esi, dword[keyPtr]
     mov edi, keyPath
 
-    hx.syscall hx.compareWordsString
+    call compareWordsInString
 
     jc .doPath
 
@@ -442,7 +505,10 @@ processLine:
 
     mov esi, dword[valuePtr]
 
-    mov eax, 0
+;; A "key=value" line's value may itself carry arguments meant for the
+;; application it names, which need to reach it separately from its own name
+
+    call splitCommandArguments
 
     stc
 
@@ -463,6 +529,11 @@ processLine:
 .doSpawn:
 
     mov esi, dword[valuePtr]
+
+;; A "key=value" line's value may itself carry arguments meant for the
+;; application it names, the same as start= above
+
+    call splitCommandArguments
 
     hx.syscall hx.spawn
 
@@ -486,7 +557,13 @@ processLine:
 
     mov esi, dword[valuePtr]
 
+    call splitCommandArguments ;; ESI = service name, EDI = its own arguments (or 0)
+
+    push edi ;; registerRespawn needs this below, hx.spawn's own return value reuses EAX
+
     hx.syscall hx.spawn
+
+    pop edi
 
     jc .respawnFailed
 
@@ -533,11 +610,13 @@ processLine:
 ;;
 ;; EAX - PID of the process
 ;; ESI - Name of the service (NUL terminated)
+;; EDI - Its own arguments (NUL terminated), or 0 if it takes none
 
 registerRespawn:
 
     push eax
     push esi
+    push edi
 
     xor ecx, ecx
 
@@ -555,22 +634,31 @@ registerRespawn:
 
 .slotFound:
 
+    mov dword[.slotIndex], ecx ;; ECX itself becomes a copy counter below
+
+    pop edi
+    mov dword[.argsPtr], edi
+
     pop esi
     pop eax
+
+    mov ecx, dword[.slotIndex]
 
     mov dword[respawnTable.pid + ecx * 4], eax
 
     mov byte[respawnTable.used + ecx], 1
-
-    imul edi, ecx, 13
-    add edi, respawnTable.name
 
     push es
 
     push ds ;; User mode data segment (38h selector)
     pop es
 
-    mov ecx, 12
+;; The service's own name
+
+    imul edi, ecx, 64
+    add edi, respawnTable.name
+
+    mov ecx, 63
 
 .copyName:
 
@@ -587,16 +675,60 @@ registerRespawn:
 
     mov byte[edi], 0
 
+;; Its own arguments, an empty string rather than a NUL pointer when it
+;; takes none, so monitorLoop can tell "no arguments" from "table entry
+;; never got this far" the same way either way
+
+    mov ecx, dword[.slotIndex]
+
+    imul edi, ecx, 64
+
+    add edi, respawnTable.args
+
+    mov esi, dword[.argsPtr]
+
+    cmp esi, 0
+    je .noArgsToStore
+
+    mov ecx, 63
+
+.copyArgs:
+
+    lodsb
+
+    cmp al, 0
+    je .argsPadded
+
+    stosb
+
+    loop .copyArgs
+
+.argsPadded:
+
+    mov byte[edi], 0
+
+    jmp .storedArgs
+
+.noArgsToStore:
+
+    mov byte[edi], 0
+
+.storedArgs:
+
     pop es
 
     ret
 
 .noSlot:
 
+    pop edi
     pop esi
     pop eax
 
     ret
+
+.slotIndex: dd 0
+.argsPtr: dd 0
 
 ;;************************************************************************************
 
@@ -610,9 +742,80 @@ monitorLoop:
 
     hx.syscall hx.sleep
 
-    hx.syscall hx.getProcesses ;; EAX = record count, ESI = record size (dd) + records
+    cmp dword[procBuffer], 0
+    jne .haveBuffer
+
+;; Lazily allocated on the first tick, and kept for the rest of init's
+;; life rather than malloc'd/freed every second. Only grown below, if the
+;; process table ever needs more room than this
+
+    mov dword[procBufferSize], 2048 ;; Arbitrary starting guess
+
+    mov ebx, dword[procBufferSize]
+
+    call malloc
+
+    cmp eax, 0
+    je monitorLoop ;; Out of memory this tick. Try again next tick
+
+    mov dword[procBuffer], ebx
+
+.haveBuffer:
+
+    mov esi, dword[procBuffer]
+    mov ecx, dword[procBufferSize]
+
+    hx.syscall hx.getProcesses ;; EAX = record count, or exact size needed if CF is set
+
+    jnc .haveProcesses
+
+;; The process table grew past this buffer's own size since it was last
+;; allocated. EAX already holds the exact size needed
+
+    push eax
+
+    mov ebx, dword[procBuffer]
+    mov ecx, dword[procBufferSize]
+
+    call free
+
+;; Freed. Cleared right away so a failed regrow below leaves nothing dangling, and next
+;; tick's lazy-alloc check sees it correctly
+
+    mov dword[procBuffer], 0  
+
+    pop eax
+
+    mov dword[procBufferSize], eax
+
+    mov ebx, eax
+
+    call malloc
+
+    cmp eax, 0
+    je monitorLoop ;; Out of memory this tick. Try again next tick
+
+    mov dword[procBuffer], ebx
+
+    mov esi, ebx
+    mov ecx, dword[procBufferSize]
+
+    hx.syscall hx.getProcesses ;; Guaranteed to fit this time
+
+;; Grew again in the same tick. Extremely unlikely, skip this tick too. 
+;; The buffer itself is still valid and kept for the next tick's own retry
+
+    jc monitorLoop
+
+.haveProcesses:
 
     mov dword[procCount], eax
+
+;; getProcessTable uses ESI as its own scratch register and never
+;; restores it, so the caller's buffer pointer must be re-derived from
+;; procBuffer here rather than trusted as returned
+
+    mov esi, dword[procBuffer]
 
     mov ecx, dword[esi]
     mov dword[procRecordSize], ecx
@@ -641,8 +844,27 @@ monitorLoop:
 
     push ebx
 
-    imul esi, ebx, 13
+    imul esi, ebx, 64
+
     add esi, respawnTable.name
+
+    imul edi, ebx, 64
+    
+    add edi, respawnTable.args
+
+    cmp byte[edi], 0
+    jne .haveArgsForRelaunch
+
+    xor edi, edi
+    xor eax, eax
+
+    jmp .relaunch
+
+.haveArgsForRelaunch:
+
+    mov eax, edi
+
+.relaunch:
 
     hx.syscall hx.spawn
 
@@ -654,7 +876,8 @@ monitorLoop:
 
     push ebx ;; logWithName -> systemLog uses EBX, our slot index
 
-    imul esi, ebx, 13
+    imul esi, ebx, 64
+
     add esi, respawnTable.name
 
     mov dword[valuePtr], esi
@@ -738,13 +961,17 @@ valuePtr:       dd ?
 procCount:      dd 0
 procRecordSize: dd 0
 procRecords:    dd ?
+procBuffer:     dd 0
+procBufferSize: dd ?
 
 respawnTable.pid:
 times respawnTable.limit dd 0
 respawnTable.used:
 times respawnTable.limit db 0
 respawnTable.name:
-times respawnTable.limit*13 db 0
+times respawnTable.limit * 64 db 0
+respawnTable.args: ;; Empty string, not just a NUL pointer, when the service takes none
+times respawnTable.limit * 64 db 0
 
 lineBuffer:
 times lineBufferSize db 0

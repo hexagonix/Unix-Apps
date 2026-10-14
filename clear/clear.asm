@@ -72,14 +72,15 @@ use32
 
 include "HAPP.s" ;; Here is a structure for the HAPP header
 
-;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
-appHeader headerHAPP HAPP.Architectures.i386, 1, 00, applicationStart, 01h
+;; Architecture | Version | Subversion | Entry point | Image type | BSS size
+headerHAPP HAPP.Architectures.i386, 1, 00, applicationStart, 01h
 
 ;;************************************************************************************
 
 include "hexagon.s"
 include "console.s"
 include "macros.s"
+include "string.s"
 include "dev.s"
 
 ;;************************************************************************************
@@ -96,14 +97,14 @@ applicationStart:
     mov edi, clear.helpParameter
     mov esi, [parameters]
 
-    hx.syscall hx.compareWordsString
+    call compareWordsInString
 
     jc applicationUsage
 
     mov edi, clear.helpParameter2
     mov esi, [parameters]
 
-    hx.syscall hx.compareWordsString
+    call compareWordsInString
 
     jc applicationUsage
 
@@ -113,7 +114,7 @@ applicationStart:
 
 performCleaning:
 
-    mov esi, Hexagon.LibASM.Dev.video.tty1 ;; Open the first virtual console
+    mov esi, Hexagon.LibASM.Dev.video.tty
 
     xor ecx, ecx
 
@@ -121,13 +122,23 @@ performCleaning:
 
     jc .error
 
-    hx.syscall hx.clearConsole ;; Clean your content
+    mov ebx, 1 ;; Activate console
+    mov ecx, 1 ;; Secondary console
 
-    mov esi, Hexagon.LibASM.Dev.video.tty0 ;; Reopen the main console
+    hx.syscall hx.ioctl
+
+    hx.syscall hx.clearConsole ;; Clean content
+
+    mov esi, Hexagon.LibASM.Dev.video.tty ;; Reopen the main console
 
     xor ecx, ecx
 
     hx.syscall hx.open ;; Open the device
+
+    mov ebx, 1 ;; Activate console
+    mov ecx, 0 ;; Main console
+
+    hx.syscall hx.ioctl
 
     hx.syscall hx.clearConsole
 
@@ -161,7 +172,7 @@ applicationUsage:
 ;;
 ;;************************************************************************************
 
-VERSION equ "1.5.0"
+VERSION equ "1.6.0"
 
 clear:
 

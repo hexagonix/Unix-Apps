@@ -72,14 +72,16 @@ use32
 
 include "HAPP.s" ;; Here is a structure for the HAPP header
 
-;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
-appHeader headerHAPP HAPP.Architectures.i386, 1, 7, applicationStart, 01h
+;; Architecture | Version | Subversion | Entry point | Image type | BSS size
+headerHAPP HAPP.Architectures.i386, 1, 7, applicationStart, 01h, HAPP.bss.none
 
 ;;************************************************************************************
 
 include "hexagon.s"
 include "console.s"
 include "macros.s"
+include "string.s"
+include "malloc.s"
 
 ;;************************************************************************************
 
@@ -95,14 +97,14 @@ applicationStart:
     mov edi, cowsay.helpParameter
     mov esi, [parameters]
 
-    hx.syscall hx.compareWordsString
+    call compareWordsInString
 
     jc applicationUsage
 
     mov edi, cowsay.helpParameter2
     mov esi, [parameters]
 
-    hx.syscall hx.compareWordsString
+    call compareWordsInString
 
     jc applicationUsage
 
@@ -110,11 +112,12 @@ applicationStart:
 
     mov esi, [userMessage]
 
-    hx.syscall hx.stringSize
+    call stringSize
 
     mov dword[userMessageSize], eax
 
     mov ecx, eax
+
     add ecx, 4
 
 .loopTopBubble:
@@ -130,6 +133,7 @@ applicationStart:
     fputs cowsay.bar
 
     mov ecx, dword[userMessageSize]
+
     add ecx, 2
 
 .loopTopSpace:
@@ -159,6 +163,7 @@ applicationStart:
     fputs cowsay.bar
 
     mov ecx, dword[userMessageSize]
+
     add ecx, 2
 
 .loopBottomSpace:
@@ -190,20 +195,35 @@ applicationStart:
 
     mov esi, cowPath
 
-    hx.syscall hx.fileExists
+    hx.syscall hx.stat ;; EAX = size
 
     jc .innerCow
 
-    mov edi, appFileBuffer
-    mov esi, cowPath
+;; Room for exactly this file, rather than whatever sits past the end of this
+;; image
 
-    xor ecx, ecx
+    mov [fileSize], eax
+
+    inc eax ;; The terminator, in memory the kernel hands over already zeroed
+
+    mov ebx, eax
+
+    call malloc
+
+    cmp eax, 0
+    je .innerCow
+
+    mov [fileBuffer], ebx
+
+    mov edi, ebx
+    mov esi, cowPath
+    mov ecx, [fileSize] ;; Never past what was asked for, so the terminator stands
 
     hx.syscall hx.open
 
     jc .innerCow
 
-    fputs appFileBuffer
+    fputs [fileBuffer]
 
     jmp .finish
 
@@ -249,7 +269,6 @@ buildCowPath:
 .copyName:
 
     mov al, byte[esi]
-
     mov byte[edi], al
 
     inc esi
@@ -265,7 +284,6 @@ buildCowPath:
 .copyExtension:
 
     mov al, byte[esi]
-
     mov byte[edi], al
 
     inc esi
@@ -307,7 +325,7 @@ getParameters:
 
     clc ;; Clean the Carry
 
-    hx.syscall hx.findCharacter ;; Request character search service
+    call findCharacterInString ;; Request character search service
 
     jnc .withoutExternalFile ;; A sentence marker was identified. Skip character load
 
@@ -317,7 +335,7 @@ getParameters:
 
     mov al, ' ' ;; Let's search if there is a space, which would indicate two or more words
 
-    hx.syscall hx.findCharacter ;; Request character search service
+    call findCharacterInString ;; Request character search service
 
 ;; We don't have more than one word, which indicates that there is no character chang
 
@@ -336,6 +354,7 @@ getParameters:
 ;; The string properly cut and separated. File name trimming will be done later.
 
     mov [userMessage], esi
+
     jmp .done
 
 ;; An external character must be loaded and after it there is a word or sentence
@@ -356,20 +375,20 @@ getParameters:
 
     mov esi, [cowProfile] ;; Let's take the parameter string provided by the system
 
-    hx.syscall hx.trimString ;; Cut it (trimming) to be sure of the character positions
+    call trimString ;; Cut it (trimming) to be sure of the character positions
 
 ;; Now let's remove the '"' characters, remembering that only the first and last '"' characters
 ;; will be removed. Anyone inside the chain will remain, for now.
 
     mov eax, 00h ;; Position zero of the cut string, first '"'
 
-    hx.syscall hx.removeCharacterString ;; Remove the character
+    call removeCharacterInString ;; Remove the character
 
-    hx.syscall hx.stringSize ;; Now, how long is the residual chain?
+    call stringSize ;; Now, how long is the residual chain?
 
     dec eax ;; The last character is always the terminator, so indent one. This is the last '"'
 
-    hx.syscall hx.removeCharacterString ;; Remove the character
+    call removeCharacterInString ;; Remove the character
 
     mov [userMessage], esi ;; The message is ready to be displayed
 
@@ -390,9 +409,7 @@ getParameters:
     clc
 
     mov esi, [cowProfile]
-
     mov [userMessage], esi ;; The message is ready to be displayed
-
     mov byte[externalFile], 00h ;; Mark as use of internal character
 
     ret
@@ -437,11 +454,22 @@ applicationUsage:
 
 finish:
 
+    cmp dword[fileBuffer], 0
+    je .nothingToFree
+
+    mov ebx, [fileBuffer]
+
+    call free
+
+    mov dword[fileBuffer], 0
+
+.nothingToFree:
+
     hx.syscall hx.exit
 
 ;;************************************************************************************
 
-VERSION equ "2.5.1"
+VERSION equ "2.6.0"
 
 cowsay:
 
@@ -483,8 +511,10 @@ cowProfile:      dd ?
 userMessage:     dd ?
 externalFile:    db 0
 userMessageSize: dd 0
-cowPath:         times 64 db 0 ;; "/usr/share/cowsay/" plus the profile name plus ".cow"
+fileBuffer:      dd 0
+fileSize:        dd 0
+cowPath: ;; "/usr/share/cowsay/" plus the profile name plus ".cow"
+times 64 db 0
+
 
 ;;************************************************************************************
-
-appFileBuffer:

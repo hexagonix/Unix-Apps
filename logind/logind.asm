@@ -81,14 +81,16 @@ use32
 
 include "HAPP.s" ;; Here is a structure for the HAPP header
 
-;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
-appHeader headerHAPP HAPP.Architectures.i386, 1, 7, daemonStart, 01h
+;; Architecture | Version | Subversion | Entry point | Image type | BSS size
+headerHAPP HAPP.Architectures.i386, 1, 8, daemonStart, 01h
 
 ;;************************************************************************************
 
 include "hexagon.s"
 include "Estelar/estelar.s"
 include "macros.s"
+include "string.s"
+include "malloc.s"
 include "log.s"
 include "dev.s"
 include "verUtils.s"
@@ -102,7 +104,7 @@ include "passwdHash.s"
 
 ;;************************************************************************************
 
-VERSION equ "2.0.2"
+VERSION equ "2.3.0"
 
 logind:
 
@@ -160,31 +162,41 @@ startProcessing:
 
     systemLog logind.verboseLogind, 0, Log.Priorities.p4
 
-;; Now let's initialize the tty1 virtual console, clearing its contents and setting
+;; Now let's initialize the secondary (double buffering) console, clearing its contents and setting
 ;; its graphical properties. First, we must save the cursor position in the current console,
 ;; since it will have its position reset when the console is cleared.
 ;; This step takes this complexity out of Hexagon, reducing possible bugs and allowing expand to
-;; other consoles in the future without having to change anything in the kernel.
+;; other consoles in the future without having to change anything in the kernel
 
     hx.syscall hx.getCursor
 
     push edx ;; Save current console position
 
-    mov esi, Hexagon.LibASM.Dev.video.tty1 ;; Open the secondary console
+    mov esi, Hexagon.LibASM.Dev.video.tty
 
     xor ecx, ecx
 
     hx.syscall hx.open ;; Open the device
+
+    mov ebx, 1 ;; Activate console
+    mov ecx, 1 ;; Secondary console
+
+    hx.syscall hx.ioctl
 
     hx.syscall hx.clearConsole
 
-    mov esi, Hexagon.LibASM.Dev.video.tty0 ;; Reopen the default console
+    mov esi, Hexagon.LibASM.Dev.video.tty ;; Reopens this console
 
     xor ecx, ecx
 
     hx.syscall hx.open ;; Open the device
 
-    pop edx ;; Restaurar posição do console
+    mov ebx, 1 ;; Activate console
+    mov ecx, 0 ;; Main console
+
+    hx.syscall hx.ioctl
+
+    pop edx ;; Restore console position
 
     hx.syscall hx.setCursor
 
@@ -192,7 +204,7 @@ startProcessing:
 
     mov esi, logind.OOBE
 
-    hx.syscall hx.fileExists
+    hx.syscall hx.stat
 
     mov esi, logind.OOBE
     mov eax, 0h
@@ -220,22 +232,20 @@ match =Modern, LOGIN_STYLE
 
 ;;************************************************************************************
 
-;; Colors the login screen itself, before any user is known. Theme is a
-;; per-user /shadow field now (see Apps/Unix/login/login.asm's applyTheme),
-;; which only exists once a user has actually authenticated. logind is a
-;; one-shot daemon that exits before that ever happens, so there is no user
-;; to look up here; this just applies a fixed default so the login prompt
-;; still has a consistent, deliberate appearance
-
 verifyTheme:
 
     pusha
 
-    mov esi, Hexagon.LibASM.Dev.video.tty1 ;; Open first virtual console
+    mov esi, Hexagon.LibASM.Dev.video.tty
 
     xor ecx, ecx
 
     hx.syscall hx.open ;; Open the device
+
+    mov ebx, 1 ;; Activate console
+    mov ecx, 1 ;; Secondary console
+
+    hx.syscall hx.ioctl
 
     mov eax, HEXAGONIX_BLOSSOM_AMARELO
     mov ebx, HEXAGONIX_BLOSSOM_CINZA
@@ -244,11 +254,16 @@ verifyTheme:
 
     hx.syscall hx.clearConsole ;; Clean the console
 
-    mov esi, Hexagon.LibASM.Dev.video.tty0 ;; Reopens the standard console
+    mov esi, Hexagon.LibASM.Dev.video.tty ;; Reopens this console
 
     xor ecx, ecx
 
     hx.syscall hx.open ;; Open the console
+
+    mov ebx, 1 ;; Activate console
+    mov ecx, 0 ;; Main console
+
+    hx.syscall hx.ioctl
 
     mov eax, BRANCO_ANDROMEDA
     mov ebx, PRETO
@@ -285,6 +300,12 @@ displaySystemInfo:
 
 .continue:
 
+    hx.syscall hx.getTTY ;; EAX = VT index (0-7)
+
+    add al, '0'
+
+    mov byte[logind.console + 5], al ;; Patches the digit in " (tty0)" at runtime
+
     fputs logind.console
 
     putNewLine
@@ -317,10 +338,9 @@ checkDatabase:
 
     mov esi, Hexagon.LibASM.PasswdHash.file
 
-    hx.syscall hx.fileExists
+    hx.syscall hx.stat
 
     ret
 
 ;;************************************************************************************
 
-appFileBuffer: ;; Scratch buffer verUtils.s's getHexagonixVersion reads into

@@ -72,14 +72,15 @@ use32
 
 include "HAPP.s" ;; Here is a structure for the HAPP header
 
-;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
-appHeader headerHAPP HAPP.Architectures.i386, 1, 00, applicationStart, 01h
+;; Architecture | Version | Subversion | Entry point | Image type | BSS size
+headerHAPP HAPP.Architectures.i386, 1, 8, applicationStart, 01h, HAPP.bss.trailingBuffer
 
 ;;************************************************************************************
 
 include "hexagon.s"
 include "console.s"
 include "macros.s"
+include "string.s"
 
 ;;************************************************************************************
 ;;
@@ -87,7 +88,7 @@ include "macros.s"
 ;;
 ;;************************************************************************************
 
-VERSION equ "0.10.1"
+VERSION equ "0.11.0"
 
 lshmod:
 
@@ -137,7 +138,7 @@ db "--help", 0
 parameters: dd ?
 
 filename:
-times 13 db 0
+times 65 db 0
 moduleInternalName:
 times 8   db 0
 
@@ -158,24 +159,27 @@ applicationStart:
     mov edi, lshmod.helpParameter
     mov esi, [parameters]
 
-    hx.syscall hx.compareWordsString
+    call compareWordsInString
 
     jc applicationUsage
 
     mov edi, lshmod.helpParameter2
     mov esi, [parameters]
 
-    hx.syscall hx.compareWordsString
+    call compareWordsInString
 
     jc applicationUsage
 
     mov esi, [parameters]
 
-    hx.syscall hx.trimString
+    call trimString
 
-    hx.syscall hx.stringSize
+    call stringSize
 
-    cmp eax, 13
+;; 64 is the longest path the system accepts, slashes included, so filename
+;; below is sized to hold one plus its terminator
+
+    cmp eax, 65
     jl .getInformation
 
     fputs lshmod.invalidFile
@@ -184,7 +188,7 @@ applicationStart:
 
 .getInformation:
 
-    hx.syscall hx.fileExists
+    hx.syscall hx.stat
 
     jc .fileNotFound
 
@@ -219,7 +223,6 @@ checkFileByHeader:
 
     mov esi, filename
     mov edi, appFileBuffer
-
     mov ecx, 128
 
     hx.syscall hx.open
@@ -266,7 +269,7 @@ checkFileByHeader:
 
     mov esi, filename
 
-    hx.syscall hx.fileExists
+    hx.syscall hx.stat
 
     jc applicationStart.fileNotFound
 
@@ -338,7 +341,7 @@ checkFileByHeader:
 
     mov esi, moduleInternalName
 
-    hx.syscall hx.trimString
+    call trimString
 
     fputs moduleInternalName
 
@@ -365,12 +368,11 @@ saveFilename:
     push esi
     push eax
 
-    hx.syscall hx.trimString
+    call trimString
 
-    hx.syscall hx.stringSize
+    call stringSize
 
     mov ecx, eax
-
     mov edi, filename
 
     rep movsb ;; Copy (ECX) characters from ESI to EDI

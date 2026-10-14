@@ -72,14 +72,16 @@ use32
 
 include "HAPP.s" ;; Here is a structure for the HAPP header
 
-;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
-appHeader headerHAPP HAPP.Architectures.i386, 1, 7, applicationStart, 01h
+;; Architecture | Version | Subversion | Entry point | Image type | BSS size
+headerHAPP HAPP.Architectures.i386, 1, 8, applicationStart, 01h
 
 ;;************************************************************************************
 
 include "hexagon.s"
 include "console.s"
 include "macros.s"
+include "string.s"
+include "malloc.s"
 
 ;;************************************************************************************
 
@@ -95,10 +97,10 @@ applicationStart:
     mov dword[ls.fontColor], eax
     mov dword[ls.backgroundColor], ebx
 
-;; The resolution in use will be checked, so the application adapts to the size of the output and
-;; the amount of information that can be displayed per line.
-;; This way, it can display a smaller number of files with lower resolution and a larger number
-;;  per line if the resolution allows it.
+;; The resolution in use will be checked, so the application adapts to the size of 
+;; the output and the amount of information that can be displayed per line. 
+;; This way, it can display a smaller number of files with lower resolution and a 
+;; larger number per line if the resolution allows it
 
 checkResolution:
 
@@ -111,7 +113,7 @@ checkResolution:
     je .graphicsMode2
 
 ;; (n+1) files can be displayed, as the counter starts counting from zero.
-;; Use this information for future implementations in the application.
+;; Use this information for future implementations in the application
 
 .graphicsMode1:
 
@@ -131,26 +133,24 @@ checkResolution:
 
 checkParameters:
 
-    mov esi, [parameters]
-
     mov edi, ls.helpParameter
     mov esi, [parameters]
 
-    hx.syscall hx.compareWordsString
+    call compareWordsInString
 
     jc applicationUsage
 
     mov edi, ls.helpParameter2
     mov esi, [parameters]
 
-    hx.syscall hx.compareWordsString
+    call compareWordsInString
 
     jc applicationUsage
 
     mov edi, ls.parameterAllFiles
     mov esi, [parameters]
 
-    hx.syscall hx.compareWordsString
+    call compareWordsInString
 
     jc configureDisplay
 
@@ -173,9 +173,48 @@ list:
 
     putNewLine
 
-    hx.syscall hx.listFiles ;; Get files in ESI
+    mov dword[listBufferSize], 32768 ;; Arbitrary starting guess
 
-    jc .listError
+.allocateBuffer:
+
+    mov ebx, dword[listBufferSize]
+
+    call malloc
+
+    cmp eax, 0
+    je listMallocError
+
+    mov dword[listBuffer], ebx
+
+    mov esi, ebx
+    mov ecx, dword[listBufferSize]
+
+    hx.syscall hx.listFiles ;; EAX = entry count, or exact size needed if CF is set
+
+    jnc .haveList
+
+    cmp eax, 0
+    je .listError ;; A real filesystem error, not an undersized buffer
+
+;; The buffer was too small. EAX already holds the exact size needed,
+;; reported by the kernel before it wrote anything
+
+    push eax
+
+    mov ebx, dword[listBuffer]
+    mov ecx, dword[listBufferSize]
+
+    call free
+
+    pop eax
+
+    mov dword[listBufferSize], eax
+
+    jmp .allocateBuffer
+
+.haveList:
+
+    mov esi, dword[listBuffer]
 
     mov [remainingList], esi
 
@@ -208,61 +247,61 @@ list:
 
     mov edi, ls.extensionAPP
 
-    hx.syscall hx.compareWordsString ;; Check for .APP extension
+    call compareWordsInString ;; Check for .APP extension
 
     jc .application
 
     mov edi, ls.extensionSIS
 
-    hx.syscall hx.compareWordsString
+    call compareWordsInString
 
     jc .system
 
     mov edi, ls.extensionASM
 
-    hx.syscall hx.compareWordsString
+    call compareWordsInString
 
     jc .fileASM
 
     mov edi, ls.extensionBIN
 
-    hx.syscall hx.compareWordsString
+    call compareWordsInString
 
     jc .fileBIN
 
     mov edi, ls.extensionUNX
 
-    hx.syscall hx.compareWordsString
+    call compareWordsInString
 
     jc .fileUNX
 
     mov edi, ls.extensionFNT
 
-    hx.syscall hx.compareWordsString
+    call compareWordsInString
 
     jc .fileFNT
 
     mov edi, ls.extensionOCL
 
-    hx.syscall hx.compareWordsString
+    call compareWordsInString
 
     jc .fileOCL
 
     mov edi, ls.extensionMOD
 
-    hx.syscall hx.compareWordsString
+    call compareWordsInString
 
     jc .fileMOD
 
     mov edi, ls.extensionCOW
 
-    hx.syscall hx.compareWordsString
+    call compareWordsInString
 
     jc .fileCOW
 
     mov edi, ls.extensionMAN
 
-    hx.syscall hx.compareWordsString
+    call compareWordsInString
 
     jc .fileMAN
 
@@ -337,9 +376,6 @@ list:
 .fileMOD:
 
     pop esi
-
-    cmp byte[ls.listAll], 01h
-    jne .skipFile
 
     mov eax, HEXAGONIX_BLOSSOM_LAVANDA
 
@@ -469,7 +505,25 @@ applicationUsage:
 
 ;;************************************************************************************
 
+listMallocError:
+
+    fputs ls.mallocError
+
+    jmp finish
+
+;;************************************************************************************
+
 finish:
+
+    cmp dword[listBuffer], 0
+    je .noBufferToFree
+
+    mov ebx, dword[listBuffer]
+    mov ecx, dword[listBufferSize]
+
+    call free
+
+.noBufferToFree:
 
     hx.syscall hx.exit
 
@@ -513,7 +567,7 @@ putSpace:
 
     mov esi, [currentFile]
 
-    hx.syscall hx.stringSize
+    call stringSize
 
     mov ebx, 15
 
@@ -603,7 +657,7 @@ checkFile:
 
     mov esi, [parameters]
 
-    hx.syscall hx.fileExists
+    hx.syscall hx.stat
 
     jc finish
 
@@ -611,7 +665,7 @@ checkFile:
 
     mov esi, [parameters]
 
-    hx.syscall hx.stringToUppercase
+    call toUppercase
 
     mov [parameters], esi
 
@@ -627,7 +681,7 @@ checkFile:
 ;;
 ;;************************************************************************************
 
-VERSION equ "4.4.1"
+VERSION equ "4.5.0"
 
 ls:
 
@@ -653,6 +707,8 @@ db ".MAN", 0
 db ".MOD", 0
 .listError:
 db 10, "Error listing the files present on the volume.", 0
+.mallocError:
+db 10, "Failed to allocate a buffer for the file listing.", 0
 .use:
 db 10, "Usage: ls", 10, 10
 db "Lists and displays the files present on the current volume, sorting them by type.", 10, 10
@@ -685,7 +741,9 @@ dd 0
 .colorCOW: dd 0
 .colorMAN: dd 0
 
-parameters:    dd ?
-remainingList: dd ?
-displayLimit:  dd 0
-currentFile:   dd ' '
+parameters:      dd ?
+remainingList:   dd ?
+displayLimit:    dd 0
+currentFile:     dd ' '
+listBuffer:      dd 0
+listBufferSize:  dd ?

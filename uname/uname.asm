@@ -72,18 +72,19 @@ use32
 
 include "HAPP.s" ;; Here is a structure for the HAPP header
 
-;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
-appHeader headerHAPP HAPP.Architectures.i386, 1, 00, applicationStart, 01h
+;; Architecture | Version | Subversion | Entry point | Image type | BSS size
+headerHAPP HAPP.Architectures.i386, 1, 00, applicationStart, 01h, HAPP.bss.trailingBuffer
 
 ;;************************************************************************************
 
 include "hexagon.s"
 include "console.s"
 include "macros.s"
+include "string.s"
 
 ;;************************************************************************************
 
-VERSION equ "2.8.1"
+VERSION equ "2.9.0"
 
 uname:
 
@@ -104,7 +105,7 @@ db "Hexagonix", 0
 .space:
 db " ", 0
 .machine:
-db "Hexagonix-PC", 0
+db "Hexagonix", 0
 .buildHexagon:
 db "(build ", 0
 .closeParentheses:
@@ -140,7 +141,7 @@ db "-v", 0
 .showOperatingSystemParameter:
 db "-o", 0
 .hostFilename:
-db "/etc/host", 0
+db "/etc/hostname", 0
 .notSupported:
 db "Unknown architecture.", 0
 .platformPC:
@@ -175,14 +176,14 @@ applicationStart: ;; Entry point
     mov edi, uname.helpParameter
     mov esi, [parameters]
 
-    hx.syscall hx.compareWordsString
+    call compareWordsInString
 
     jc applicationUsage
 
     mov edi, uname.helpParameter2
     mov esi, [parameters]
 
-    hx.syscall hx.compareWordsString
+    call compareWordsInString
 
     jc applicationUsage
 
@@ -191,7 +192,7 @@ applicationStart: ;; Entry point
     mov edi, uname.showAllParameter
     mov esi, [parameters]
 
-    hx.syscall hx.compareWordsString
+    call compareWordsInString
 
     jc showAll
 
@@ -200,7 +201,7 @@ applicationStart: ;; Entry point
     mov edi, uname.showKernelNameParameter
     mov esi, [parameters]
 
-    hx.syscall hx.compareWordsString
+    call compareWordsInString
 
     jc showKernelName
 
@@ -209,7 +210,7 @@ applicationStart: ;; Entry point
     mov edi, uname.showHostnameParameter
     mov esi, [parameters]
 
-    hx.syscall hx.compareWordsString
+    call compareWordsInString
 
     jc showHostname
 
@@ -218,7 +219,7 @@ applicationStart: ;; Entry point
     mov edi, uname.showReleaseParameter
     mov esi, [parameters]
 
-    hx.syscall hx.compareWordsString
+    call compareWordsInString
 
     jc showRelease
 
@@ -227,7 +228,7 @@ applicationStart: ;; Entry point
     mov edi, uname.showMachineTypeParameter
     mov esi, [parameters]
 
-    hx.syscall hx.compareWordsString
+    call compareWordsInString
 
     jc showArch
 
@@ -236,7 +237,7 @@ applicationStart: ;; Entry point
     mov edi, uname.shorArchparameter
     mov esi, [parameters]
 
-    hx.syscall hx.compareWordsString
+    call compareWordsInString
 
     jc showArch
 
@@ -245,7 +246,7 @@ applicationStart: ;; Entry point
     mov edi, uname.showPlatformParameter
     mov esi, [parameters]
 
-    hx.syscall hx.compareWordsString
+    call compareWordsInString
 
     jc showPlatform
 
@@ -254,7 +255,7 @@ applicationStart: ;; Entry point
     mov edi, uname.showVersionParameter
     mov esi, [parameters]
 
-    hx.syscall hx.compareWordsString
+    call compareWordsInString
 
     jc showVersionOnly
 
@@ -263,7 +264,7 @@ applicationStart: ;; Entry point
     mov edi, uname.showOperatingSystemParameter
     mov esi, [parameters]
 
-    hx.syscall hx.compareWordsString
+    call compareWordsInString
 
     jc showOperatingSystemInfo
 
@@ -275,7 +276,11 @@ showKernelName:
 
     call putSpace
 
+    mov edi, unameBuffer
+
     hx.syscall hx.uname
+
+    mov esi, unameBuffer
 
     printString
 
@@ -306,6 +311,8 @@ showRelease:
 showArch:
 
     call putSpace
+
+    mov edi, unameBuffer
 
     hx.syscall hx.uname
 
@@ -363,7 +370,11 @@ showAll:
 
     fputs uname.space
 
+    mov edi, unameBuffer
+
     hx.syscall hx.uname
+
+    mov esi, unameBuffer
 
     printString
 
@@ -419,7 +430,11 @@ showVersionOnly:
 
     call putSpace
 
+    mov edi, unameBuffer
+
     hx.syscall hx.uname
+
+    mov esi, unameBuffer
 
     printString
 
@@ -434,6 +449,8 @@ showVersionOnly:
 ;; Requests the kernel version, decodes it and displays it to the user
 
 kernelVersion:
+
+    mov edi, unameBuffer
 
     hx.syscall hx.uname
 
@@ -467,9 +484,11 @@ kernelVersion:
 
     fputs uname.buildHexagon
 
+    mov edi, unameBuffer
+
     hx.syscall hx.uname
 
-    fputs edi
+    fputs unameBuild
 
     fputs uname.closeParentheses
 
@@ -518,14 +537,15 @@ getHostname:
 
     mov esi, appFileBuffer
 
-    hx.syscall hx.stringSize
+    call stringSize
 
     mov edx, eax
+    
     dec edx
 
     mov al, 0
 
-    hx.syscall hx.insertCharacter
+    call insertCharacterInString
 
     fputs appFileBuffer
 
@@ -546,5 +566,14 @@ getHostname:
 ;;                        Application variables and data
 ;;
 ;;************************************************************************************
+
+;; hx.uname writes the kernel's name at the start of this and its build at a
+;; fixed offset into it, so both are reachable without walking either. Declared
+;; here, with room of its own, rather than sharing appFileBuffer's address
+
+unameBuffer:
+times 48 db 0
+unameBuild:
+times 48 db 0
 
 appFileBuffer:

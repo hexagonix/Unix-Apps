@@ -72,14 +72,16 @@ use32
 
 include "HAPP.s" ;; Here is a structure for the HAPP header
 
-;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
-appHeader headerHAPP HAPP.Architectures.i386, 1, 7, applicationStart, 01h
+;; Architecture | Version | Subversion | Entry point | Image type | BSS size
+headerHAPP HAPP.Architectures.i386, 1, 7, applicationStart, 01h, HAPP.bss.none
 
 ;;************************************************************************************
 
 include "hexagon.s"
 include "console.s"
 include "macros.s"
+include "string.s"
+include "malloc.s"
 
 ;;************************************************************************************
 
@@ -89,7 +91,6 @@ applicationStart:
     pop es
 
     mov [parameters], edi
-
     mov esi, [parameters]
 
     cmp byte[esi], 0
@@ -98,21 +99,41 @@ applicationStart:
     mov edi, hostname.helpParameter
     mov esi, [parameters]
 
-    hx.syscall hx.compareWordsString
+    call compareWordsInString
 
     jc applicationUsage
 
     mov edi, hostname.helpParameter2
     mov esi, [parameters]
 
-    hx.syscall hx.compareWordsString
+    call compareWordsInString
 
     jc applicationUsage
 
-    mov edi, appFileBuffer
+;; Ask how big it is, then for room to hold it, rather than reading into
+;; whatever happens to sit past the end of this image
+
     mov esi, hostname.fileUnix
 
-    xor ecx, ecx
+    hx.syscall hx.stat ;; EAX = size
+
+    jc .fileNotFound
+
+    mov [fileSize], eax
+
+    inc eax ;; The terminator, in memory the kernel hands over already zeroed
+
+    mov ebx, eax
+
+    call malloc
+
+    cmp eax, 0
+    je .fileNotFound
+
+    mov [fileBuffer], ebx
+    mov edi, ebx
+    mov esi, hostname.fileUnix
+    mov ecx, [fileSize] ;; Never past what was asked for, so the terminator stands
 
     hx.syscall hx.open
 
@@ -120,18 +141,19 @@ applicationStart:
 
     putNewLine
 
-    mov esi, appFileBuffer
+    mov esi, [fileBuffer]
 
-    hx.syscall hx.stringSize
+    call stringSize
 
     mov edx, eax
+    
     dec edx
 
     mov al, 0
 
-    hx.syscall hx.insertCharacter
+    call insertCharacterInString
 
-    fputs appFileBuffer
+    fputs [fileBuffer]
 
     jmp finish
 
@@ -153,6 +175,17 @@ applicationUsage:
 
 finish:
 
+    cmp dword[fileBuffer], 0
+    je .nothingToFree
+
+    mov ebx, [fileBuffer]
+
+    call free
+
+    mov dword[fileBuffer], 0
+
+.nothingToFree:
+
     hx.syscall hx.exit
 
 ;;************************************************************************************
@@ -163,7 +196,7 @@ finish:
 ;;
 ;;************************************************************************************
 
-VERSION equ "1.4.1"
+VERSION equ "1.5.0"
 
 hostname:
 
@@ -180,10 +213,11 @@ db "?", 0
 .helpParameter2:
 db "--help", 0
 .fileUnix:
-db "/etc/host", 0
+db "/etc/hostname", 0
 
 parameters: dd ?
+fileBuffer: dd 0
+fileSize:   dd 0
 
 ;;************************************************************************************
 
-appFileBuffer:

@@ -72,14 +72,15 @@ use32
 
 include "HAPP.s" ;; Here is a structure for the HAPP header
 
-;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
-appHeader headerHAPP HAPP.Architectures.i386, 1, 7, applicationStart, 01h
+;; Architecture | Version | Subversion | Entry point | Image type | BSS size
+headerHAPP HAPP.Architectures.i386, 1, 7, applicationStart, 01h
 
 ;;************************************************************************************
 
 include "hexagon.s"
 include "console.s"
 include "macros.s"
+include "string.s"
 include "errors.s"
 
 ;;************************************************************************************
@@ -90,7 +91,6 @@ applicationStart:
     pop es
 
     mov [parameters], edi
-
     mov esi, [parameters]
 
     cmp byte[esi], 0
@@ -99,14 +99,14 @@ applicationStart:
     mov edi, touch.helpParameter
     mov esi, [parameters]
 
-    hx.syscall hx.compareWordsString
+    call compareWordsInString
 
     jc applicationUsage
 
     mov edi, touch.helpParameter2
     mov esi, [parameters]
 
-    hx.syscall hx.compareWordsString
+    call compareWordsInString
 
     jc applicationUsage
 
@@ -167,7 +167,7 @@ finish:
 ;;
 ;;************************************************************************************
 
-VERSION equ "0.1.0"
+VERSION equ "0.2.0"
 
 touch:
 

@@ -75,7 +75,7 @@ use32
 
 include "HAPP.s"
 
-appHeader headerHAPP HAPP.Architectures.i386, 1, 4, applicationStart, 01h
+headerHAPP HAPP.Architectures.i386, 1, 4, applicationStart, 01h
 
 ;;************************************************************************************
 
@@ -90,11 +90,15 @@ applicationStart:
 
     mov esi, launcher.workerAName
 
+    xor eax, eax ;; No arguments
+
     hx.syscall hx.spawn
 
     jc .spawnAFailed
 
     mov esi, launcher.workerBName
+
+    xor eax, eax ;; No arguments
 
     hx.syscall hx.spawn
 

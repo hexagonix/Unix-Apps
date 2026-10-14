@@ -72,14 +72,15 @@ use32
 
 include "HAPP.s" ;; Here is a structure for the HAPP header
 
-;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
-appHeader headerHAPP HAPP.Architectures.i386, 1, 00, applicationStart, 01h
+;; Architecture | Version | Subversion | Entry point | Image type | BSS size
+headerHAPP HAPP.Architectures.i386, 1, 00, applicationStart, 01h
 
 ;;************************************************************************************
 
 include "hexagon.s"
 include "console.s"
 include "macros.s"
+include "string.s"
 
 ;;************************************************************************************
 
@@ -98,20 +99,22 @@ applicationStart:
     mov edi, arch.helpParameter
     mov esi, [parameters]
 
-    hx.syscall hx.compareWordsString
+    call compareWordsInString
 
     jc applicationUsage
 
     mov edi, arch.helpParameter2
     mov esi, [parameters]
 
-    hx.syscall hx.compareWordsString
+    call compareWordsInString
 
     jc applicationUsage
 
 .requestHexagon:
 
     putNewLine
+
+    mov edi, unameBuffer ;; hx.uname always writes into a buffer of the caller's own
 
     hx.syscall hx.uname
 
@@ -188,3 +191,6 @@ db "?", 0
 db "--help", 0
 
 parameters: dd ?
+
+unameBuffer:
+times 96 db 0

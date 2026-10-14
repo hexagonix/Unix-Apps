@@ -72,14 +72,15 @@ use32
 
 include "HAPP.s" ;; Here is a structure for the HAPP header
 
-;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
-appHeader headerHAPP HAPP.Architectures.i386, 1, 00, applicationStart, 01h
+;; Architecture | Version | Subversion | Entry point | Image type | BSS size
+headerHAPP HAPP.Architectures.i386, 1, 00, applicationStart, 01h, HAPP.bss.trailingBuffer
 
 ;;************************************************************************************
 
 include "hexagon.s"
 include "console.s"
 include "macros.s"
+include "string.s"
 
 ;;************************************************************************************
 
@@ -98,24 +99,27 @@ applicationStart:
     mov edi, fileUnix.helpParameter
     mov esi, [parameters]
 
-    hx.syscall hx.compareWordsString
+    call compareWordsInString
 
     jc applicationUsage
 
     mov edi, fileUnix.helpParameter2
     mov esi, [parameters]
 
-    hx.syscall hx.compareWordsString
+    call compareWordsInString
 
     jc applicationUsage
 
     mov esi, [parameters]
 
-    hx.syscall hx.trimString
+    call trimString
 
-    hx.syscall hx.stringSize
+    call stringSize
 
-    cmp eax, 13
+;; 64 is the longest path the system accepts, slashes included, so fileName
+;; below is sized to hold one plus its terminator
+
+    cmp eax, 65
     jl .getInfo
 
     fputs fileUnix.arquivoInvalido
@@ -124,10 +128,11 @@ applicationStart:
 
 .getInfo:
 
-    hx.syscall hx.fileExists
+    hx.syscall hx.stat
 
     jc .fileNotFound
 
+    push ebx ;; Device class from hx.stat, checked once the size line below is printed
     push eax
 
     call saveFileName
@@ -139,6 +144,14 @@ applicationStart:
     printInteger
 
     fputs fileUnix.bytes
+
+    pop ebx
+
+;; hx.stat already answers this directly, so a device node is reported
+;; without ever trying to open it: there is no file content in it to sniff
+
+    cmp ebx, 0
+    jne .deviceNode
 
 ;; First let's see if it is an executable image. If yes, we can skip all the rest of the
 ;; processing. This ensures that executable images are reported as such even if they have
@@ -157,9 +170,9 @@ applicationStart:
 
     mov esi, fileName
 
-    hx.syscall hx.stringToUppercase ;; We will check based on the capitalized extension
+    call toUppercase ;; We will check based on the capitalized extension
 
-    hx.syscall hx.stringSize
+    call stringSize
 
     add esi, eax ;; Add name length
 
@@ -167,49 +180,49 @@ applicationStart:
 
     mov edi, fileUnix.extensionUNX
 
-    hx.syscall hx.compareWordsString ;; Check for .UNX extension
+    call compareWordsInString ;; Check for .UNX extension
 
     jc .fileUNX
 
     mov edi, fileUnix.extensionSIS
 
-    hx.syscall hx.compareWordsString ;; Check for .SIS extension
+    call compareWordsInString ;; Check for .SIS extension
 
     jc .fileSIS
 
     mov edi, fileUnix.extensionTXT
 
-    hx.syscall hx.compareWordsString ;; Check for .TXT extension
+    call compareWordsInString ;; Check for .TXT extension
 
     jc .fileTXT
 
     mov edi, fileUnix.extensionASM
 
-    hx.syscall hx.compareWordsString ;; Check for .ASM extension
+    call compareWordsInString ;; Check for .ASM extension
 
     jc .fileASM
 
     mov edi, fileUnix.extensionCOW
 
-    hx.syscall hx.compareWordsString ;; Check for .COW extension
+    call compareWordsInString ;; Check for .COW extension
 
     jc .fileCOW
 
     mov edi, fileUnix.extensionMAN
 
-    hx.syscall hx.compareWordsString ;; Check for .MAN extension
+    call compareWordsInString ;; Check for .MAN extension
 
     jc .fileMAN
 
     mov edi, fileUnix.extensionFNT
 
-    hx.syscall hx.compareWordsString ;; Check for .FNT extension
+    call compareWordsInString ;; Check for .FNT extension
 
     jc .fileFNT
 
     mov edi, fileUnix.extensionCAN
 
-    hx.syscall hx.compareWordsString ;; Check for .CAN extension
+    call compareWordsInString ;; Check for .CAN extension
 
     jc .fileCAN
 
@@ -221,7 +234,7 @@ applicationStart:
 
     mov edi, fileUnix.extensionS
 
-    hx.syscall hx.compareWordsString ;; Check for .S extension
+    call compareWordsInString ;; Check for .S extension
 
     jc .fileS
 
@@ -303,6 +316,12 @@ applicationStart:
 
     jmp .end
 
+.deviceNode:
+
+    fputs fileUnix.deviceNode
+
+    jmp .end
+
 .end:
 
     jmp finish
@@ -314,14 +333,14 @@ applicationStart:
 
 verifyHAPPFile:
 
-    mov esi, fileName
+    mov esi, [parameters]
     mov edi, appFileBuffer
 
     mov ecx, 128
 
     hx.syscall hx.open
 
-    jc applicationStart.fileNotFound
+    jc .openFailed
 
     mov edi, appFileBuffer
 
@@ -343,6 +362,14 @@ verifyHAPPFile:
 
     ret
 
+.openFailed:
+
+;; applicationStart.getInfo already handled the device node case via
+;; hx.stat before ever calling here, so any failure reaching this point is
+;; a real file error
+
+    jmp applicationStart.fileNotFound
+
 ;;************************************************************************************
 
 ;; Only the first 5 bytes (checked below) matter here, so there's no reason
@@ -350,14 +377,14 @@ verifyHAPPFile:
 
 verifyHBootFile:
 
-    mov esi, fileName
+    mov esi, [parameters]
     mov edi, appFileBuffer
 
     mov ecx, 128
 
     hx.syscall hx.open
 
-    jc applicationStart.fileNotFound
+    jc .openFailed
 
     mov edi, appFileBuffer
 
@@ -382,6 +409,14 @@ verifyHBootFile:
 
     ret
 
+.openFailed:
+
+;; applicationStart.getInfo already handled the device node case via
+;; hx.stat before ever calling here, so any failure reaching this point is
+;; a real file error
+
+    jmp applicationStart.fileNotFound
+
 ;;************************************************************************************
 
 applicationUsage:
@@ -397,15 +432,16 @@ saveFileName:
     push esi
     push eax
 
-    hx.syscall hx.trimString
+    call trimString
 
-    hx.syscall hx.stringSize
+    call stringSize
 
     mov ecx, eax
-
     mov edi, fileName
 
     rep movsb ;; Copy (ECX) characters from ESI to EDI
+
+    mov byte[edi], 0 ;; Terminate the copy, the extension scan relies on it
 
     pop eax
 
@@ -427,7 +463,7 @@ finish:
 ;;
 ;;*********************************************************************
 
-VERSION equ "1.11.0"
+VERSION equ "1.12.0"
 
 fileUnix:
 
@@ -445,8 +481,10 @@ db 10, "File size: ", 0
 db " bytes.", 0
 .fileNotFound:
 db 10, "The requested file is not available on this volume. Check the filename and try again.", 0
+.deviceNode:
+db 10, "This is a device node.", 0
 .validApplication:
-db 10, "This appears to be a Unix executable for Hexagon.", 0
+db 10, "This appears to be an executable for Hexagon.", 0
 .fileHBoot:
 db 10, "This appears to be an executable in HBoot format (HBoot or HBoot module).", 0
 .fileASM:
@@ -499,7 +537,7 @@ db ".S", 0
 parameters: dd ?
 
 fileName:
-times 13 db 0
+times 65 db 0
 
 ;;************************************************************************************
 

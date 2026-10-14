@@ -72,15 +72,18 @@ use32
 
 include "HAPP.s" ;; Here is a structure for the HAPP header
 
-;; Instance | Structure | Architecture | Version | Subversion | Entry Point | Image type
-appHeader headerHAPP HAPP.Architectures.i386, 1, 6, applicationStart, 01h
+;; Architecture | Version | Subversion | Entry point | Image type | BSS size
+headerHAPP HAPP.Architectures.i386, 1, 8, applicationStart, 01h
 
 ;;************************************************************************************
 
 include "hexagon.s"
 include "console.s"
 include "macros.s"
+include "string.s"
+include "malloc.s"
 include "memory.s"
+include "process.s"
 
 ;;************************************************************************************
 
@@ -93,35 +96,35 @@ applicationStart: ;; Entry point
     mov edi, ps.helpParameter
     mov esi, [parameters]
 
-    hx.syscall hx.compareWordsString
+    call compareWordsInString
 
     jc applicationUsage
 
     mov edi, ps.helpParameter2
     mov esi, [parameters]
 
-    hx.syscall hx.compareWordsString
+    call compareWordsInString
 
     jc applicationUsage
 
     mov edi, ps.parameterProcesses
     mov esi, [parameters]
 
-    hx.syscall hx.compareWordsString
+    call compareWordsInString
 
     jc displayProcesses
 
     mov edi, ps.parameterMemory
     mov esi, [parameters]
 
-    hx.syscall hx.compareWordsString
+    call compareWordsInString
 
     jc parameterMemory
 
     mov edi, ps.parameterOtherProcesses
     mov esi, [parameters]
 
-    hx.syscall hx.compareWordsString
+    call compareWordsInString
 
     jc parameterOtherProcesses
 
@@ -133,12 +136,46 @@ displayProcesses:
 
     fputs ps.header
 
-    hx.syscall hx.getProcesses ;; EAX = record count, ESI = record size (dd) + records
+    mov dword[processesBufferSize], 2048 ;; Arbitrary starting guess
+
+.allocateBuffer:
+
+    mov ebx, dword[processesBufferSize]
+
+    call malloc
+
+    cmp eax, 0
+    je processesMallocError
+
+    mov dword[processesBuffer], ebx
+    mov esi, ebx
+    mov ecx, dword[processesBufferSize]
+
+    hx.syscall hx.getProcesses ;; EAX = record count, or exact size needed if CF is set
+
+    jnc .haveProcesses
+
+;; The buffer was too small. EAX already holds the exact size needed,
+;; reported by the kernel before it wrote anything
+
+    push eax
+
+    mov ebx, dword[processesBuffer]
+    mov ecx, dword[processesBufferSize]
+
+    call free
+
+    pop eax
+
+    mov dword[processesBufferSize], eax
+
+    jmp .allocateBuffer
+
+.haveProcesses:
 
     mov dword[remainingCount], eax
-
+    mov esi, dword[processesBuffer]
     mov eax, dword[esi] ;; Record size, read from the message itself
-
     mov dword[processRecordSize], eax
 
     add esi, 4 ;; Skip past the record size
@@ -154,8 +191,7 @@ displayProcesses:
     pop es
 
     mov esi, [recordsPointer]
-
-    mov eax, dword[esi] ;; PID
+    mov eax, dword[esi + hx.process.record.pid]
 
     printInteger
 
@@ -163,23 +199,32 @@ displayProcesses:
 
     mov edx, esi
 
-    add edx, 9 ;; Process name field
+    add edx, hx.process.record.name
 
     mov [currentProcess], edx
 
     fputs [currentProcess]
 
     mov esi, [recordsPointer]
-
-    mov al, byte[esi+8] ;; State
+    mov al, byte[esi + hx.process.record.state]
 
     call putStatus
 
     mov esi, [recordsPointer]
-
-    mov ebx, dword[esi+4] ;; Parent PID
+    mov ebx, dword[esi + hx.process.record.parentPID]
 
     call putParent
+
+    mov esi, [recordsPointer]
+
+    mov al, byte[esi + hx.process.record.tty]
+
+    call putTTY
+
+    mov esi, [recordsPointer]
+    mov ecx, dword[esi + hx.process.record.memory]
+
+    call putMemory
 
     mov eax, dword[processRecordSize]
 
@@ -200,6 +245,14 @@ displayProcesses:
 
 ;;************************************************************************************
 
+processesMallocError:
+
+    fputs ps.mallocError
+
+    jmp finish
+
+;;************************************************************************************
+
 applicationUsage:
 
     fputs ps.use
@@ -209,6 +262,16 @@ applicationUsage:
 ;;************************************************************************************
 
 finish:
+
+    cmp dword[processesBuffer], 0
+    je .noBufferToFree
+
+    mov ebx, dword[processesBuffer]
+    mov ecx, dword[processesBufferSize]
+
+    call free
+
+.noBufferToFree:
 
     hx.syscall hx.exit
 
@@ -224,7 +287,38 @@ putSpace:
 
 ;;************************************************************************************
 
-;; Prints the state text for a process at a fixed column
+;; Pads the cursor to at least the given column. A name long enough to
+;; already be past it gets a single space instead of an overlap
+;;
+;; Input:
+;;
+;; AL - Target column
+
+padToColumn:
+
+    push eax
+
+    hx.syscall hx.getCursor
+
+    pop eax
+
+    cmp dl, al
+    jae .gapOnly
+
+    gotoxy al, dh
+
+    ret
+
+.gapOnly:
+
+    fputs ps.gap
+
+    ret
+
+;;************************************************************************************
+
+;; Prints the state text for a process, lined up under the row above via
+;; padToColumn
 ;;
 ;; Input:
 ;;
@@ -234,9 +328,9 @@ putStatus:
 
     push eax
 
-    hx.syscall hx.getCursor
+    mov al, ps.statusColumn
 
-    gotoxy 20, dh
+    call padToColumn
 
     pop eax
 
@@ -300,8 +394,9 @@ putStatus:
 
 ;;************************************************************************************
 
-;; Prints the parent PID at a fixed column, or KERNEL if the process was
-;; launched directly by the kernel rather than by another process
+;; Prints the parent PID lined up under the row above via padToColumn, or
+;; KERNEL if the process was launched directly by the kernel rather than
+;; by another process
 ;;
 ;; Input:
 ;;
@@ -311,9 +406,9 @@ putParent:
 
     push ebx
 
-    hx.syscall hx.getCursor
+    mov al, ps.parentColumn
 
-    gotoxy 30, dh
+    call padToColumn
 
     pop ebx
 
@@ -329,6 +424,59 @@ putParent:
 .kernel:
 
     fputs ps.stateKernel
+
+    ret
+
+;;************************************************************************************
+
+;; Prints the VT index lined up under the row above via padToColumn
+;;
+;; Input:
+;;
+;; AL - VT index, as returned by hx.getProcesses
+
+putTTY:
+
+    push eax
+
+    mov al, ps.ttyColumn
+
+    call padToColumn
+
+    pop eax
+
+    fputs ps.tty
+
+    movzx eax, al
+
+    printInteger
+
+    ret
+
+;;************************************************************************************
+
+;; Prints how much memory a process is holding, in kilobytes, lined up under
+;; the row above via padToColumn
+;;
+;; Input:
+;;
+;; ECX - Bytes held, as returned by hx.getProcesses
+
+putMemory:
+
+    push ecx
+
+    mov al, ps.memoryColumn
+
+    call padToColumn
+
+    pop ecx
+
+    call convertToKbytes
+
+    printInteger
+
+    fputs ps.kbytesSuffix
 
     ret
 
@@ -366,12 +514,17 @@ parameterOtherProcesses:
 
 ;;************************************************************************************
 
-VERSION equ "3.3.0"
+VERSION equ "3.4.0"
+
+ps.statusColumn = 30
+ps.parentColumn = 42
+ps.ttyColumn    = 54
+ps.memoryColumn = 62
 
 ps:
 
 .header:
-db "PID   NAME          STATUS    PARENT", 10, 0
+db "PID   NAME                    STATUS      PARENT      TTY     MEMORY", 10, 0
 .use:
 db "Usage: ps [parameter]", 10, 10
 db "Displays process information and usage of memory and system resources.", 10, 10
@@ -386,6 +539,12 @@ db "All rights reserved.", 0
 db "Memory usage: ", 0
 .kbytes:
 db " bytes used by running processes (user+kernel).", 0
+.kbytesSuffix:
+db " kB", 0
+.gap: ;; Fallback when a name already ran past the target column
+db " ", 0
+.mallocError:
+db 10, "Failed to allocate a buffer for the process listing.", 0
 .helpParameter:
 db "?", 0
 .helpParameter2:
@@ -416,6 +575,8 @@ db "IDLE", 0
 db "UNKNOWN", 0
 .stateKernel:
 db "KERNEL", 0
+.tty:
+db "tty", 0
 .positionY: db 0
 
 ;;************************************************************************************
@@ -426,3 +587,6 @@ recordsPointer: dd ?
 remainingCount: dd 0
 currentProcess: dd ' '
 parameters:     dd ?
+
+processesBuffer:     dd 0
+processesBufferSize: dd ?
