@@ -87,6 +87,7 @@ headerHAPP HAPP.Architectures.i386, 1, 7, loginHexagonix, 01h
 ;;************************************************************************************
 
 include "hexagon.s"
+include "tty.s"
 include "console.s"
 include "macros.s"
 include "string.s"
@@ -223,7 +224,7 @@ startProcessing:
     mov ebx, 01h
     mov edi, typedLine
 
-    hx.syscall hx.getString
+    call readLine
 
     mov esi, typedLine
 
@@ -253,7 +254,7 @@ startProcessing:
     mov ebx, 1234h ;; We don't want to echo the password!
     mov edi, typedLine
 
-    hx.syscall hx.getString
+    call readLine
 
     mov esi, typedLine
 
@@ -635,5 +636,5 @@ checkDatabase:
 
     ret
 
-typedLine: ;; hx.getString writes the typed line into a buffer of the caller's own
+typedLine: ;; readLine writes the typed line into a buffer of the caller's own
 times 256 db 0

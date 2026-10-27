@@ -78,6 +78,7 @@ headerHAPP HAPP.Architectures.i386, 1, 7, shellStart, 01h, HAPP.bss.none
 ;;************************************************************************************
 
 include "hexagon.s"
+include "tty.s"
 include "console.s"
 include "macros.s"
 include "string.s"
@@ -241,7 +242,7 @@ shellStart:
 
     mov edi, typedLine
 
-    hx.syscall hx.getString
+    call readLine
 
     mov esi, typedLine
 
@@ -685,7 +686,7 @@ commandLine:   dd 0
 
 ;;************************************************************************************
 
-;; hx.getString writes the typed line into a buffer of the caller's own
+;; readLine writes the typed line into a buffer of the caller's own
 
 typedLine:
 times 256 db 0

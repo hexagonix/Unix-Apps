@@ -87,6 +87,7 @@ headerHAPP HAPP.Architectures.i386, 1, 7, applicationStart, 01h
 ;;************************************************************************************
 
 include "hexagon.s"
+include "tty.s"
 include "console.s"
 include "macros.s"
 include "string.s"
@@ -117,7 +118,7 @@ applicationStart:
     mov ebx, 1
     mov edi, typedLine
 
-    hx.syscall hx.getString
+    call readLine
 
     mov esi, typedLine
 
@@ -142,7 +143,7 @@ applicationStart:
     mov ebx, 1234h ;; We don't want to echo the password!
     mov edi, typedLine
 
-    hx.syscall hx.getString
+    call readLine
 
     mov esi, typedLine
 
@@ -158,7 +159,7 @@ applicationStart:
     mov ebx, 1234h
     mov edi, typedLine
 
-    hx.syscall hx.getString
+    call readLine
 
     mov esi, typedLine
 
@@ -180,7 +181,7 @@ applicationStart:
     mov ebx, 1
     mov edi, typedLine
 
-    hx.syscall hx.getString
+    call readLine
 
     mov esi, typedLine
 
@@ -203,7 +204,7 @@ applicationStart:
     mov ebx, 1
     mov edi, typedLine
 
-    hx.syscall hx.getString
+    call readLine
 
     mov esi, typedLine
 
@@ -463,7 +464,7 @@ newCode: ;; Room for the longest number hx.toString can write, plus its terminat
 times 12 db 0
 appendUserBufferPtr: dd 0
 
-;; hx.getString writes the typed line into a buffer of the caller's own
+;; readLine writes the typed line into a buffer of the caller's own
 
 typedLine:
 times 256 db 0
