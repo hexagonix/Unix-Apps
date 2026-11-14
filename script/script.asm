@@ -157,6 +157,17 @@ applicationStart:
 
     jc noFreePair
 
+;; The shell's window is the terminal script runs on
+
+    ttyGetSize
+
+    mov ecx, eax
+    mov edx, ebx
+    mov eax, [managerFD]
+    mov ebx, 7
+
+    hx.syscall hx.ioctl
+
     fputs script.started
     fputs [fileName]
 

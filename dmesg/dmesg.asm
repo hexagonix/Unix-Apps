@@ -78,6 +78,7 @@ headerHAPP HAPP.Architectures.i386, 1, 8, applicationStart, 01h
 ;;************************************************************************************
 
 include "hexagon.s"
+include "tty.s"
 include "console.s"
 include "macros.s"
 include "string.s"
@@ -154,12 +155,12 @@ finish:
 
 showPaginated:
 
-    hx.syscall hx.getConsoleInfo
+    ttyGetSize
 
-;; BH is the row count. The bottom row is reserved for the "-- More --"
+;; BL is the row count. The bottom row is reserved for the "-- More --"
 ;; prompt, the rest is content
 
-    mov al, bh
+    mov al, bl
 
     dec al
 
@@ -173,7 +174,7 @@ showPaginated:
     cmp al, 0
     je .end
 
-    hx.syscall hx.printCharacter
+    putCharacter
 
     cmp al, 10
     jne .charLoop
@@ -189,7 +190,7 @@ showPaginated:
 
     fputs dmesg.morePrompt
 
-    hx.syscall hx.waitKeyboard
+    call readKey
 
     cmp al, 'q'
     je .end

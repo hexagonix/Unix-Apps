@@ -142,7 +142,9 @@ performCleaning:
 
     hx.syscall hx.close
 
-    hx.syscall hx.clearConsole
+;; The terminal itself is cleared by what it is sent, so this also works on a pty
+
+    call Lib.Console.clear
 
     jmp finish
 

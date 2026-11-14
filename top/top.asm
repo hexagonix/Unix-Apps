@@ -91,11 +91,6 @@ applicationStart: ;; Entry point
 
     mov [parameters], edi
 
-    hx.syscall hx.getColor
-
-    mov dword[top.fontColor], eax
-    mov dword[top.backgroundColor], ebx
-
     putNewLine
 
     mov edi, top.helpParameter
@@ -124,10 +119,6 @@ displayProcesses:
 
     call makeDescriptionBanner
 
-    hx.syscall hx.getCursor
-
-    mov byte[top.positionY], dh
-
     hx.syscall hx.memoryUsage
 
 ;; Save memory used by processes
@@ -138,13 +129,13 @@ displayProcesses:
 
     printInteger
 
-    gotoxy 13, [top.positionY]
+    gotoColumn 13
 
     hx.syscall hx.memoryUsage
 
     printInteger
 
-    gotoxy 40, [top.positionY]
+    gotoColumn 40
 
     hx.syscall hx.memoryUsage
 
@@ -156,7 +147,7 @@ displayProcesses:
 
     printInteger
 
-    gotoxy 64, [top.positionY]
+    gotoColumn 64
 
     pop eax
     pop ebx
@@ -242,7 +233,9 @@ displayProcesses:
 
     mov [currentProcess], edx
 
-    fputs [currentProcess]
+    mov esi, [currentProcess]
+
+    call putTracked
 
     mov esi, [recordsPointer]
     mov al, byte[esi + hx.process.record.state]
@@ -325,9 +318,7 @@ finish:
 
 setTextColor:
 
-    mov ebx, [top.backgroundColor]
-
-    hx.syscall hx.setColor
+    setConsoleForeground eax
 
     ret
 
@@ -335,10 +326,7 @@ setTextColor:
 
 setDefaultColor:
 
-    mov eax, [top.fontColor]
-    mov ebx, [top.backgroundColor]
-
-    hx.syscall hx.setColor
+    resetConsoleColor
 
     ret
 
@@ -346,15 +334,16 @@ setDefaultColor:
 
 putSpace:
 
-    hx.syscall hx.getCursor
+    gotoColumn top.nameColumn
 
-    gotoxy 6, dh
+    mov dword[column], top.nameColumn
 
     ret
 
 ;;************************************************************************************
 
-;; Pads the cursor to at least the given column. A name long enough to
+;; Pads the line to at least the given column, counting what putTracked
+;; printed, as no terminal is asked where its cursor is. A name long enough to
 ;; already be past it gets a single space instead of an overlap
 ;;
 ;; Input:
@@ -363,22 +352,63 @@ putSpace:
 
 padToColumn:
 
-    push eax
+    movzx eax, al
 
-    hx.syscall hx.getCursor
+    cmp dword[column], eax
 
-    pop eax
-
-    cmp dl, al
     jae .gapOnly
 
-    gotoxy al, dh
+    mov dword[column], eax
+
+    gotoColumn al
 
     ret
 
 .gapOnly:
 
-    fputs top.gap
+    mov esi, top.gap
+
+    call putTracked
+
+    ret
+
+;;************************************************************************************
+
+;; Prints ESI and counts the columns it takes
+;;
+;; Input:
+;;
+;; ESI - String
+
+putTracked:
+
+    push eax
+
+    fputs esi
+
+    call stringSize
+
+    add dword[column], eax
+
+    pop eax
+
+    ret
+
+;; Input: EAX - Number to print, counted like putTracked
+
+putNumberTracked:
+
+    push edi
+
+    mov edi, numberBuffer
+
+    call integetToString
+
+    mov esi, numberBuffer
+
+    call putTracked
+
+    pop edi
 
     ret
 
@@ -419,43 +449,57 @@ putStatus:
     cmp al, 6
     je .idle
 
-    fputs top.stateUnknown
+    mov esi, top.stateUnknown
+
+    call putTracked
 
     ret
 
 .ready:
 
-    fputs top.stateReady
+    mov esi, top.stateReady
+
+    call putTracked
 
     ret
 
 .running:
 
-    fputs top.stateRunning
+    mov esi, top.stateRunning
+
+    call putTracked
 
     ret
 
 .blocked:
 
-    fputs top.stateBlocked
+    mov esi, top.stateBlocked
+
+    call putTracked
 
     ret
 
 .zombie:
 
-    fputs top.stateZombie
+    mov esi, top.stateZombie
+
+    call putTracked
 
     ret
 
 .sleeping:
 
-    fputs top.stateSleeping
+    mov esi, top.stateSleeping
+
+    call putTracked
 
     ret
 
 .idle:
 
-    fputs top.stateIdle
+    mov esi, top.stateIdle
+
+    call putTracked
 
     ret
 
@@ -484,13 +528,15 @@ putParent:
 
     mov eax, ebx
 
-    printInteger
+    call putNumberTracked
 
     ret
 
 .kernel:
 
-    fputs top.stateKernel
+    mov esi, top.stateKernel
+
+    call putTracked
 
     ret
 
@@ -512,11 +558,13 @@ putTTY:
 
     pop eax
 
-    fputs top.tty
+    mov esi, top.tty
+
+    call putTracked
 
     movzx eax, al
 
-    printInteger
+    call putNumberTracked
 
     ret
 
@@ -563,18 +611,9 @@ makeDescriptionBanner:
 
     push esi
 
-    mov eax, [top.backgroundColor]
-    mov ebx, [top.fontColor]
+    reverseConsoleColor
 
-    hx.syscall hx.setColor
-
-    ;; Get and set position on screen
-
-    hx.syscall hx.getCursor
-
-    mov al, dh
-
-    hx.syscall hx.clearLine
+    clearConsoleLine ;; The whole row in the swapped colors
 
     pop esi
 
@@ -590,6 +629,7 @@ makeDescriptionBanner:
 
 VERSION equ "4.4.0"
 
+top.nameColumn   = 6
 top.statusColumn = 30
 top.parentColumn = 42
 top.ttyColumn    = 54
@@ -638,9 +678,6 @@ db " kB", 0
 db " ", 0
 .mallocError:
 db 10, "Failed to allocate a buffer for the process listing.", 0
-.fontColor:       dd 0
-.backgroundColor: dd 0
-.positionY: db 0
 
 ;;************************************************************************************
 
@@ -649,6 +686,8 @@ processRecordSize: dd 0 ;; Read from the hx.getProcesses response itself
 recordsPointer: dd ?
 remainingCount: dd 0
 currentProcess: dd ' '
+column:         dd 0 ;; Of the line being printed, as putTracked counts it
+numberBuffer:   times 12 db 0
 parameters:     dd ?
 
 processesBuffer:     dd 0

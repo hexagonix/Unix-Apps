@@ -78,6 +78,7 @@ headerHAPP HAPP.Architectures.i386, 1, 8, applicationStart, 01h
 ;;************************************************************************************
 
 include "hexagon.s"
+include "tty.s"
 include "console.s"
 include "macros.s"
 include "string.s"
@@ -122,7 +123,7 @@ applicationStart:
 
 .getConfirmationKeys:
 
-    hx.syscall hx.waitKeyboard
+    call readKey
 
     cmp al, 'y'
     je .safeDelete
@@ -146,7 +147,7 @@ applicationStart:
 
 .safeDelete:
 
-    hx.syscall hx.printCharacter
+    putCharacter
 
     mov esi, [parameters]
 
@@ -160,7 +161,7 @@ applicationStart:
 
 .cancel:
 
-    hx.syscall hx.printCharacter
+    putCharacter
 
     fputs rm.cancel
 

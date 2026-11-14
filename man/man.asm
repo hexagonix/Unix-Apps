@@ -78,6 +78,7 @@ headerHAPP HAPP.Architectures.i386, 1, 7, applicationStart, 01h, HAPP.bss.none
 ;;************************************************************************************
 
 include "hexagon.s"
+include "tty.s"
 include "console.s"
 include "macros.s"
 include "string.s"
@@ -126,14 +127,12 @@ db "(END) (press <q> to quit)", 0
 db "Hexagonix", 0
 
 utility:              dd ?
-pageSize:             db 0 ;; Content lines per screen, computed from the console info
+pageSize:             db 0 ;; Content lines per screen, computed from the terminal size
 lineCount:            db 0 ;; Content lines printed on the current page so far
 readPos:              dd ? ;; Where the next page starts reading from in the page itself
 fileBuffer:           dd 0
 fileSize:             dd 0
 numberColumns:        db 0
-savedFontColor:       dd 0
-savedBackgroundColor: dd 0
 manPath: ;; "/usr/man/" plus the utility name plus ".man"
 times 64 db 0
 
@@ -268,16 +267,16 @@ applicationStart:
 
 buildInterface:
 
-    hx.syscall hx.clearConsole
+    call Lib.Console.clear
 
-    hx.syscall hx.getConsoleInfo
+    ttyGetSize
 
-    mov byte[numberColumns], bl
+    mov byte[numberColumns], al
 
-;; BH is the row count. Row 0 is the bar and the last row (BH - 1) is the
+;; BL is the row count. Row 0 is the bar and the last row (BL - 1) is the
 ;; "-- More --"/"(END)" prompt, so content gets the rest
 
-    mov al, bh
+    mov al, bl
 
     sub al, 2
 
@@ -294,15 +293,11 @@ buildInterface:
 
 refreshBar:
 
-    hx.syscall hx.getCursor
-
-    push edx
+    saveCursor
 
     call drawBar
 
-    pop edx
-
-    hx.syscall hx.setCursor
+    restoreCursor
 
     ret
 
@@ -313,20 +308,11 @@ refreshBar:
 
 drawBar:
 
-    hx.syscall hx.getColor
-
-    mov dword[savedFontColor], eax
-    mov dword[savedBackgroundColor], ebx
-    mov eax, manBarFontColor
-    mov ebx, manBarColor
-
-    hx.syscall hx.setColor
-
-    mov al, 0
-
-    hx.syscall hx.clearLine ;; Fills row 0 with the current background color
+    setConsoleColor manBarFontColor, manBarColor
 
     gotoxy 0, 0
+
+    clearConsoleLine ;; Fills row 0 with the current background color
 
     fputs man.systemName
 
@@ -345,10 +331,7 @@ drawBar:
 
     fputs [utility]
 
-    mov eax, dword[savedFontColor]
-    mov ebx, dword[savedBackgroundColor]
-
-    hx.syscall hx.setColor
+    resetConsoleColor
 
     ret
 
@@ -385,7 +368,7 @@ showPaginated:
     cmp al, 0
     je .documentEnd
 
-    hx.syscall hx.printCharacter
+    putCharacter
 
     cmp al, 10
     jne .charLoop
@@ -434,7 +417,7 @@ waitForQuit:
 
 .waitLoop:
 
-    hx.syscall hx.waitKeyboard
+    call readKey
 
     cmp al, 'q'
     je .done
@@ -462,7 +445,7 @@ pauseForKeyPress:
 
     fputs man.morePrompt
 
-    hx.syscall hx.waitKeyboard
+    call readKey
 
     cmp al, 'q'
     je .stop

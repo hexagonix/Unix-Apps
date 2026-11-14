@@ -132,16 +132,12 @@ shellStart:
 
     putNewLine
 
-    hx.syscall hx.getConsoleInfo
+    ttyGetSize
 
-    mov byte[numberColumns], bl
-    mov byte[numberRows], bh
+    mov byte[numberColumns], al
+    mov byte[numberRows], bl
 
-    hx.syscall hx.getCursor
-
-    dec dh
-
-    hx.syscall hx.setCursor
+    cursorUp
 
     putNewLine
 
@@ -230,9 +226,7 @@ shellStart:
 
     putNewLine
 
-    hx.syscall hx.getCursor
-
-    hx.syscall hx.setCursor
+    drawCursor
 
     fputs hash.promptSymbol
 
@@ -680,8 +674,8 @@ db "set", 0
 
 ;;**************************
 
-numberColumns: db 0 ;; Total columns available in the video at the current resolution
-numberRows:    db 0 ;; Total rows available in the video at the current resolution
+numberColumns: db 0 ;; Columns of the terminal
+numberRows:    db 0 ;; Rows of the terminal
 commandLine:   dd 0
 
 ;;************************************************************************************
