@@ -286,7 +286,9 @@ openPair:
 ;;************************************************************************************
 
 ;; Starts the shell with 0, 1 and 2 on the subsidiary. They are pointed there
-;; only for the spawn, which copies them into the shell, and then put back
+;; only for the spawn, which copies them into the shell, and then put back. The
+;; manager and the terminal's copy are kept from the shell, so it holds nothing
+;; but its terminal, and ends the session's input once script is gone
 ;;
 ;; Output:
 ;;
@@ -323,6 +325,9 @@ startShell:
 
     hx.syscall hx.close
 
+    hx.setCloseOnSpawn script.savedFD, 1
+    hx.setCloseOnSpawn [managerFD], 1
+
     mov esi, script.shell
     xor eax, eax
 
@@ -331,6 +336,8 @@ startShell:
     mov [shellPID], eax
 
     setc byte[shellFailedFlag]
+
+    hx.setCloseOnSpawn [managerFD], 0 ;; The second instance needs it
 
     xor ebx, ebx
 
@@ -738,7 +745,7 @@ shellFailed:
 
     jmp finish
 
-;; The shell holds the manager too, so it would never see its terminal go
+;; With no second instance there is no session, so the shell goes too
 
 relayFailed:
 
