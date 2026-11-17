@@ -238,6 +238,8 @@ shellStart:
 
     call readLine
 
+    jc finishShell ;; The end of the input, as when the terminal is gone
+
     mov esi, typedLine
 
     call trimString ;; Remove extra spaces
