@@ -106,6 +106,14 @@ Raava.savedFD    = 15 ;; The terminal's copy while 0, 1 and 2 are lent to a shel
 Raava.readSize   = 1024
 Raava.outputSize = 65536
 Raava.commandKey = 01h ;; Ctrl+A, as in screen
+Raava.minWidth   = 10  ;; Smallest terminal a window keeps
+Raava.minHeight  = 3
+
+;; What a held left button is doing
+
+Raava.Drag.none   = 0
+Raava.Drag.move   = 1 ;; By the title bar
+Raava.Drag.resize = 2 ;; By the bottom right corner
 
 ;; One window. Its size is the size of its terminal, inside the border
 
@@ -153,6 +161,16 @@ applicationStart:
     hx.syscall hx.getTTY
 
     mov [originalVT], eax
+
+;; The mouse is in pixels, and the console's resolution turns it into cells
+
+    hx.syscall hx.getConsoleInfo ;; EAX = width in its low word, height in its high
+
+    movzx ebx, ax
+    mov [resolutionX], ebx
+
+    shr eax, 16
+    mov [resolutionY], eax
 
     call claimFreeVT
 
@@ -236,6 +254,8 @@ mainLoop:
     call readWindows
 
     call readKeys
+
+    call readMouse
 
     cmp byte[quit], 0
 
@@ -430,7 +450,116 @@ runCommand:
 
     cmp al, Raava.commandKey
 
-    jne .done
+    je .literal
+
+;; Moving and sizing the window in focus, as the keys of vi point
+
+    call focusedWindow ;; EBP = window
+
+    jc .done
+
+    mov ecx, dword[ebp + Raava.Window.x]
+    mov edx, dword[ebp + Raava.Window.y]
+    mov esi, dword[ebp + Raava.Window.width]
+    mov edi, dword[ebp + Raava.Window.height]
+
+    cmp al, 'h'
+
+    je .left
+
+    cmp al, 'l'
+
+    je .right
+
+    cmp al, 'k'
+
+    je .up
+
+    cmp al, 'j'
+
+    je .down
+
+    cmp al, 'H'
+
+    je .narrower
+
+    cmp al, 'L'
+
+    je .wider
+
+    cmp al, 'K'
+
+    je .shorter
+
+    cmp al, 'J'
+
+    je .taller
+
+    jmp .done
+
+.left:
+
+    dec ecx
+
+    jmp .move
+
+.right:
+
+    inc ecx
+
+    jmp .move
+
+.up:
+
+    dec edx
+
+    jmp .move
+
+.down:
+
+    inc edx
+
+.move:
+
+    mov eax, ecx
+    mov ebx, edx
+
+    call moveWindow
+
+    jmp .done
+
+.narrower:
+
+    dec esi
+
+    jmp .resize
+
+.wider:
+
+    inc esi
+
+    jmp .resize
+
+.shorter:
+
+    dec edi
+
+    jmp .resize
+
+.taller:
+
+    inc edi
+
+.resize:
+
+    mov eax, esi
+    mov ebx, edi
+
+    call resizeWindow
+
+    jmp .done
+
+.literal:
 
     call sendToFocused ;; Ctrl+A twice is one Ctrl+A for the window
 
@@ -495,6 +624,523 @@ sendToFocused:
     mov ecx, 1
 
     hx.syscall hx.write ;; A full ring drops the key, as nobody reads it anyway
+
+.done:
+
+    popad
+
+    ret
+
+;;************************************************************************************
+
+;; Reads the mouse. A press on a window brings it to the top, on its title bar
+;; it starts moving the window and on its bottom right corner sizing it, for as
+;; long as the button is held
+
+readMouse:
+
+    pushad
+
+    hx.syscall hx.getMouse ;; EAX = X, EBX = Y, EDX = buttons
+
+    and edx, 07h
+
+    mov [buttonsNow], dl
+
+    mul dword[columns]
+
+    div dword[resolutionX]
+
+    cmp eax, [columns]
+
+    jb .columnInside
+
+    mov eax, [columns]
+
+    dec eax
+
+.columnInside:
+
+    mov ecx, eax ;; Column
+
+    mov eax, ebx
+
+    mul dword[rows]
+
+    div dword[resolutionY]
+
+    cmp eax, [rows]
+
+    jb .rowInside
+
+    mov eax, [rows]
+
+    dec eax
+
+.rowInside:
+
+    mov edx, eax ;; Row
+
+    cmp ecx, [mouseColumn]
+
+    jne .changed
+
+    cmp edx, [mouseRow]
+
+    jne .changed
+
+    mov al, [buttonsNow]
+
+    cmp al, [mouseButtons]
+
+    je .done
+
+.changed:
+
+    mov [mouseColumn], ecx
+    mov [mouseRow], edx
+
+    mov byte[activity], 1
+    mov byte[redraw], 1
+
+    mov al, [buttonsNow]
+    mov ah, [mouseButtons]
+
+    mov [mouseButtons], al
+
+    test al, 1
+
+    jz .released
+
+    test ah, 1
+
+    jnz .held
+
+    call pressAt
+
+    jmp .done
+
+.held:
+
+    call dragTo
+
+    jmp .done
+
+.released:
+
+    mov byte[dragMode], Raava.Drag.none
+
+.done:
+
+    popad
+
+    ret
+
+;; Input: ECX - Column, EDX - Row
+
+pressAt:
+
+    pushad
+
+    mov eax, ecx
+
+    call windowAt ;; EAX = window index
+
+    jc .done
+
+    call focusWindow
+
+    mov [dragWindow], eax
+
+    imul ebp, eax, Raava.Window.size
+    add ebp, windows
+
+    cmp edx, dword[ebp + Raava.Window.y]
+
+    jne .notTitle
+
+    mov eax, ecx
+    sub eax, dword[ebp + Raava.Window.x]
+
+    mov [dragOffset], eax
+    mov byte[dragMode], Raava.Drag.move
+
+    jmp .done
+
+.notTitle:
+
+    mov eax, dword[ebp + Raava.Window.x]
+    add eax, dword[ebp + Raava.Window.width]
+    inc eax
+
+    cmp ecx, eax
+
+    jne .done
+
+    mov eax, dword[ebp + Raava.Window.y]
+    add eax, dword[ebp + Raava.Window.height]
+    inc eax
+
+    cmp edx, eax
+
+    jne .done
+
+    mov byte[dragMode], Raava.Drag.resize
+
+.done:
+
+    popad
+
+    ret
+
+;; Input: ECX - Column, EDX - Row
+
+dragTo:
+
+    pushad
+
+    cmp byte[dragMode], Raava.Drag.none
+
+    je .done
+
+    mov eax, [dragWindow]
+
+    imul ebp, eax, Raava.Window.size
+    add ebp, windows
+
+    cmp byte[ebp + Raava.Window.used], 0
+
+    je .stop ;; Its shell ended while it was held
+
+    cmp byte[dragMode], Raava.Drag.move
+
+    jne .resize
+
+    mov eax, ecx
+    sub eax, [dragOffset]
+    mov ebx, edx
+
+    call moveWindow
+
+    jmp .done
+
+.resize:
+
+    mov eax, ecx
+    sub eax, dword[ebp + Raava.Window.x]
+    dec eax
+
+    mov ebx, edx
+    sub ebx, dword[ebp + Raava.Window.y]
+    dec ebx
+
+    call resizeWindow
+
+    jmp .done
+
+.stop:
+
+    mov byte[dragMode], Raava.Drag.none
+
+.done:
+
+    popad
+
+    ret
+
+;; The window over a cell, the one on top when they overlap
+;;
+;; Input: EAX - Column, EDX - Row
+;;
+;; Output: EAX - Window index, CF set if there is none
+
+windowAt:
+
+    push ebx
+    push ecx
+    push ebp
+
+    mov ecx, [orderCount]
+
+.nextWindow:
+
+    jecxz .none
+
+    dec ecx
+
+    movzx ebx, byte[order + ecx]
+
+    imul ebp, ebx, Raava.Window.size
+    add ebp, windows
+
+    cmp eax, dword[ebp + Raava.Window.x]
+
+    jl .nextWindow
+
+    cmp edx, dword[ebp + Raava.Window.y]
+
+    jl .nextWindow
+
+    push eax
+
+    mov eax, dword[ebp + Raava.Window.x]
+    add eax, dword[ebp + Raava.Window.width]
+    inc eax ;; Its right border
+
+    cmp dword[esp], eax
+
+    pop eax
+
+    jg .nextWindow
+
+    push eax
+
+    mov eax, dword[ebp + Raava.Window.y]
+    add eax, dword[ebp + Raava.Window.height]
+    inc eax ;; Its bottom border
+
+    cmp edx, eax
+
+    pop eax
+
+    jg .nextWindow
+
+    mov eax, ebx
+
+    pop ebp
+    pop ecx
+    pop ebx
+
+    clc
+
+    ret
+
+.none:
+
+    pop ebp
+    pop ecx
+    pop ebx
+
+    stc
+
+    ret
+
+;; Output: EBP - The window in focus, CF set if there is none
+
+focusedWindow:
+
+    cmp dword[orderCount], 0
+
+    je .none
+
+    push ebx
+
+    mov ebx, [orderCount]
+    movzx ebx, byte[order + ebx - 1]
+
+    imul ebp, ebx, Raava.Window.size
+    add ebp, windows
+
+    pop ebx
+
+    clc
+
+    ret
+
+.none:
+
+    stc
+
+    ret
+
+;; Brings a window to the top, in focus
+;;
+;; Input: EAX - Window index
+
+focusWindow:
+
+    pushad
+
+    xor ecx, ecx
+
+.find:
+
+    cmp ecx, [orderCount]
+
+    jae .done
+
+    cmp byte[order + ecx], al
+
+    je .found
+
+    inc ecx
+
+    jmp .find
+
+.found:
+
+    mov edx, [orderCount]
+
+    dec edx
+
+.shift:
+
+    cmp ecx, edx
+
+    jae .top
+
+    mov bl, byte[order + ecx + 1]
+    mov byte[order + ecx], bl
+
+    inc ecx
+
+    jmp .shift
+
+.top:
+
+    mov byte[order + edx], al
+
+    mov byte[redraw], 1
+
+.done:
+
+    popad
+
+    ret
+
+;; Moves a window, kept inside the VT and under the status bar
+;;
+;; Input: EBP - Window, EAX - Column of its border, EBX - Row, both signed
+
+moveWindow:
+
+    pushad
+
+    cmp eax, 0
+
+    jge .xNotNegative
+
+    xor eax, eax
+
+.xNotNegative:
+
+    mov ecx, [columns]
+    sub ecx, dword[ebp + Raava.Window.width]
+    sub ecx, 2
+
+    cmp eax, ecx
+
+    jle .xInside
+
+    mov eax, ecx
+
+.xInside:
+
+    cmp ebx, 1
+
+    jge .yUnderBar
+
+    mov ebx, 1
+
+.yUnderBar:
+
+    mov ecx, [rows]
+    sub ecx, dword[ebp + Raava.Window.height]
+    sub ecx, 2
+
+    cmp ebx, ecx
+
+    jle .yInside
+
+    mov ebx, ecx
+
+.yInside:
+
+    mov dword[ebp + Raava.Window.x], eax
+    mov dword[ebp + Raava.Window.y], ebx
+
+    mov byte[redraw], 1
+
+    popad
+
+    ret
+
+;; Changes the size of a window's terminal, kept inside the VT, and tells its
+;; pty, for the programs in it to see when they next ask
+;;
+;; Input: EBP - Window, EAX - Columns, EBX - Rows, both signed
+
+resizeWindow:
+
+    pushad
+
+    cmp eax, Raava.minWidth
+
+    jge .wideEnough
+
+    mov eax, Raava.minWidth
+
+.wideEnough:
+
+    mov ecx, [columns]
+    sub ecx, dword[ebp + Raava.Window.x]
+    sub ecx, 2
+
+    cmp eax, ecx
+
+    jle .widthInside
+
+    mov eax, ecx
+
+.widthInside:
+
+    cmp ebx, Raava.minHeight
+
+    jge .tallEnough
+
+    mov ebx, Raava.minHeight
+
+.tallEnough:
+
+    mov ecx, [rows]
+    sub ecx, dword[ebp + Raava.Window.y]
+    sub ecx, 2
+
+    cmp ebx, ecx
+
+    jle .heightInside
+
+    mov ebx, ecx
+
+.heightInside:
+
+    cmp eax, dword[ebp + Raava.Window.width]
+
+    jne .changed
+
+    cmp ebx, dword[ebp + Raava.Window.height]
+
+    je .done
+
+.changed:
+
+    lea edi, [ebp + Raava.Window.term]
+
+    call termResize
+
+    jc .done
+
+    mov dword[ebp + Raava.Window.width], eax
+    mov dword[ebp + Raava.Window.height], ebx
+
+    mov ecx, eax
+    mov edx, ebx
+    mov eax, dword[ebp + Raava.Window.manager]
+    mov ebx, 7
+
+    hx.syscall hx.ioctl
+
+    mov byte[redraw], 1
 
 .done:
 
@@ -1183,7 +1829,7 @@ compose:
 
     cmp ecx, [orderCount]
 
-    jae .done
+    jae .pointer
 
     movzx ebx, byte[order + ecx]
 
@@ -1202,6 +1848,28 @@ compose:
     inc ecx
 
     jmp .nextWindow
+
+;; The mouse pointer, as the cell under it with its colors swapped
+
+.pointer:
+
+    mov eax, [mouseRow]
+
+    cmp eax, [rows]
+
+    jae .done
+
+    imul eax, [columns]
+    add eax, [mouseColumn]
+
+    imul edi, eax, Lib.Term.Cell.size
+    add edi, [screen]
+
+    mov eax, dword[edi + Lib.Term.Cell.font]
+    mov ebx, dword[edi + Lib.Term.Cell.background]
+
+    mov dword[edi + Lib.Term.Cell.font], ebx
+    mov dword[edi + Lib.Term.Cell.background], eax
 
 .done:
 
@@ -1853,7 +2521,9 @@ raava:
 db 10, "Usage: raava", 10, 10
 db "Shows shells in windows on a virtual terminal of its own. Ctrl+A then", 10
 db "c opens a window, n goes to the next one, x closes it and q leaves.", 10
-db "Ctrl+A twice sends Ctrl+A to the window.", 10, 10
+db "h, j, k and l move the window in focus, H, J, K and L change its size,", 10
+db "and Ctrl+A twice sends Ctrl+A to it. With the mouse, a click brings a", 10
+db "window to the top, its title moves it and its bottom right corner sizes it.", 10, 10
 db "raava version ", VERSION, 10, 10
 db "Copyright (C) 2026-", __stringYear, " Felipe Miguel Nery Lunkes", 10
 db "All rights reserved.", 0
@@ -1866,7 +2536,7 @@ db 10, "raava: no virtual terminal is free.", 0
 .noMemory:
 db 10, "raava: not enough memory.", 0
 .statusBar:
-db " Raava   Ctrl+A then: c new window, n next, x close, q quit", 0
+db " Raava   Ctrl+A then: c new, n next, x close, q quit, hjkl move, HJKL size", 0
 .title:
 db " [1] sh ", 0
 .shell:
@@ -1912,6 +2582,15 @@ activity:        db 0
 redraw:          db 0
 quit:            db 0
 sendByte:        db 0
+resolutionX:     dd 1
+resolutionY:     dd 1
+mouseColumn:     dd -1 ;; No pointer until the mouse is read
+mouseRow:        dd -1
+dragWindow:      dd 0
+dragOffset:      dd 0
+mouseButtons:    db 0
+buttonsNow:      db 0
+dragMode:        db 0
 
 order:      times Raava.maxWindows db 0 ;; Window indexes, bottom first
 keyBuffer:  times 64 db 0
