@@ -448,6 +448,10 @@ runCommand:
 
     je .quit
 
+    cmp al, 'r'
+
+    je .repaint
+
     cmp al, Raava.commandKey
 
     je .literal
@@ -588,6 +592,12 @@ runCommand:
     mov ecx, 1 ;; Its shell still runs
 
     call closeWindow
+
+    jmp .done
+
+.repaint:
+
+    call repaint
 
     jmp .done
 
@@ -1143,6 +1153,29 @@ resizeWindow:
     mov byte[redraw], 1
 
 .done:
+
+    popad
+
+    ret
+
+;; Forgets what is on the VT and draws all of it again, for when something else
+;; drew there
+
+repaint:
+
+    pushad
+
+    mov edi, [previous]
+    mov ecx, [screenBytes]
+    xor eax, eax
+
+    cld
+
+    rep stosb
+
+    call Lib.Console.clear
+
+    mov byte[redraw], 1
 
     popad
 
@@ -1717,6 +1750,15 @@ claimFreeVT:
 
     mov eax, dword[esp]
     mov ebx, 2 ;; Shown
+
+    hx.syscall hx.ioctl
+
+;; Held for Raava alone, so a program in a window that draws on the console
+;; directly cannot draw over the windows
+
+    mov eax, dword[esp]
+    mov ebx, 8
+    mov ecx, 1
 
     hx.syscall hx.ioctl
 
@@ -2520,7 +2562,8 @@ raava:
 .use:
 db 10, "Usage: raava", 10, 10
 db "Shows shells in windows on a virtual terminal of its own. Ctrl+A then", 10
-db "c opens a window, n goes to the next one, x closes it and q leaves.", 10
+db "c opens a window, n goes to the next one, x closes it, r draws the", 10
+db "screen again and q leaves.", 10
 db "h, j, k and l move the window in focus, H, J, K and L change its size,", 10
 db "and Ctrl+A twice sends Ctrl+A to it. With the mouse, a click brings a", 10
 db "window to the top, its title moves it and its bottom right corner sizes it.", 10, 10
@@ -2536,7 +2579,7 @@ db 10, "raava: no virtual terminal is free.", 0
 .noMemory:
 db 10, "raava: not enough memory.", 0
 .statusBar:
-db " Raava   Ctrl+A then: c new, n next, x close, q quit, hjkl move, HJKL size", 0
+db " Raava   Ctrl+A then: c new, n next, x close, r redraw, q quit, hjkl move, HJKL size", 0
 .title:
 db " [1] sh ", 0
 .shell:
