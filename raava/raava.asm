@@ -106,10 +106,13 @@ Raava.savedFD    = 15 ;; The terminal's copy while 0, 1 and 2 are lent to a shel
 Raava.readSize   = 1024
 Raava.outputSize = 65536
 Raava.commandKey = 01h ;; Ctrl+A, as in screen
-Raava.minWidth   = 10  ;; Smallest terminal a window keeps
+Raava.minWidth   = 16  ;; Smallest terminal a window keeps, its title and close box apart
 Raava.minHeight  = 3
 
 ;; What a held left button is doing
+
+Raava.closeBoxOffset = 3 ;; Columns from the right corner back to the close box, [x]
+Raava.closeBoxWidth  = 3
 
 Raava.Drag.none   = 0
 Raava.Drag.move   = 1 ;; By the title bar
@@ -752,6 +755,22 @@ pressAt:
 
     pushad
 
+;; A button of the status bar runs its command
+
+    cmp edx, 0
+
+    jne .window
+
+    call statusButtonAt ;; AL = command letter
+
+    jc .done
+
+    call runCommand
+
+    jmp .done
+
+.window:
+
     mov eax, ecx
 
     call windowAt ;; EAX = window index
@@ -768,6 +787,30 @@ pressAt:
     cmp edx, dword[ebp + Raava.Window.y]
 
     jne .notTitle
+
+;; Its close box, at the right of the title bar
+
+    mov ebx, dword[ebp + Raava.Window.x]
+    add ebx, dword[ebp + Raava.Window.width]
+    sub ebx, Raava.closeBoxOffset
+
+    cmp ecx, ebx
+
+    jl .titleBar
+
+    add ebx, Raava.closeBoxWidth
+
+    cmp ecx, ebx
+
+    jge .titleBar
+
+    mov ecx, 1 ;; Its shell still runs
+
+    call closeWindow
+
+    jmp .done
+
+.titleBar:
 
     mov eax, ecx
     sub eax, dword[ebp + Raava.Window.x]
@@ -855,6 +898,84 @@ dragTo:
 .done:
 
     popad
+
+    ret
+
+;; The button of the status bar over a column, a stretch between brackets with
+;; the letter of its command right after the opening one
+;;
+;; Input: ECX - Column
+;;
+;; Output: AL - Command letter, CF set if there is no button there
+
+statusButtonAt:
+
+    push ebx
+    push edx
+    push esi
+
+    mov esi, raava.statusBar
+    xor edx, edx ;; Column of the character
+
+.next:
+
+    mov al, byte[esi + edx]
+
+    cmp al, 0
+
+    je .none
+
+    cmp al, '['
+
+    jne .skip
+
+    mov ebx, edx ;; Where the button starts
+
+.findEnd:
+
+    inc edx
+
+    mov al, byte[esi + edx]
+
+    cmp al, 0
+
+    je .none
+
+    cmp al, ']'
+
+    jne .findEnd
+
+    cmp ecx, ebx
+
+    jb .skip
+
+    cmp ecx, edx
+
+    ja .skip
+
+    mov al, byte[esi + ebx + 1]
+
+    pop esi
+    pop edx
+    pop ebx
+
+    clc
+
+    ret
+
+.skip:
+
+    inc edx
+
+    jmp .next
+
+.none:
+
+    pop esi
+    pop edx
+    pop ebx
+
+    stc
 
     ret
 
@@ -1834,6 +1955,8 @@ compose:
     xor edx, edx ;; Row
     mov esi, raava.statusBar
 
+;; Its buttons, between brackets, in the colors of the theme
+
 .statusText:
 
     mov bl, byte[esi]
@@ -1842,7 +1965,31 @@ compose:
 
     je .statusPad
 
+    cmp bl, '['
+
+    jne .statusDraw
+
+    mov ecx, [themeFont]
+    mov [putFont], ecx
+
+    mov ecx, [themeBackground]
+    mov [putBackground], ecx
+
+.statusDraw:
+
     call putCell
+
+    cmp bl, ']'
+
+    jne .statusNext
+
+    mov ecx, [themeBackground]
+    mov [putFont], ecx
+
+    mov ecx, [themeFont]
+    mov [putBackground], ecx
+
+.statusNext:
 
     inc esi
     inc eax
@@ -1990,7 +2137,7 @@ drawWindow:
 
     cmp bl, 0
 
-    je .inside
+    je .closeBox
 
     call putCell
 
@@ -1998,6 +2145,30 @@ drawWindow:
     inc eax
 
     jmp .title
+
+;; The box that closes it, at the right of the top border
+
+.closeBox:
+
+    mov eax, dword[ebp + Raava.Window.x]
+    add eax, dword[ebp + Raava.Window.width]
+    sub eax, Raava.closeBoxOffset
+    mov esi, raava.closeBox
+
+.closeBoxText:
+
+    mov bl, byte[esi]
+
+    cmp bl, 0
+
+    je .inside
+
+    call putCell
+
+    inc esi
+    inc eax
+
+    jmp .closeBoxText
 
 ;; The cells of its terminal
 
@@ -2566,7 +2737,8 @@ db "c opens a window, n goes to the next one, x closes it, r draws the", 10
 db "screen again and q leaves.", 10
 db "h, j, k and l move the window in focus, H, J, K and L change its size,", 10
 db "and Ctrl+A twice sends Ctrl+A to it. With the mouse, a click brings a", 10
-db "window to the top, its title moves it and its bottom right corner sizes it.", 10, 10
+db "window to the top, its title moves it, its bottom right corner sizes it and", 10
+db "its [x] closes it. The buttons of the status bar run their commands.", 10, 10
 db "raava version ", VERSION, 10, 10
 db "Copyright (C) 2026-", __stringYear, " Felipe Miguel Nery Lunkes", 10
 db "All rights reserved.", 0
@@ -2579,9 +2751,11 @@ db 10, "raava: no virtual terminal is free.", 0
 .noMemory:
 db 10, "raava: not enough memory.", 0
 .statusBar:
-db " Raava   Ctrl+A then: c new, n next, x close, r redraw, q quit, hjkl move, HJKL size", 0
+db " Raava  [c new] [n next] [x close] [r redraw] [q quit]  Ctrl+A and a letter, hjkl move, HJKL size", 0
 .title:
 db " [1] sh ", 0
+.closeBox:
+db "[x]", 0
 .shell:
 db "/bin/sh", 0
 .manager:
