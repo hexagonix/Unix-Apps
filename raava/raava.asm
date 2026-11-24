@@ -80,7 +80,7 @@ use32
 include "HAPP.s" ;; Here is a structure for the HAPP header
 
 ;; Architecture | Version | Subversion | Entry point | Image type | BSS size
-headerHAPP HAPP.Architectures.i386, 1, 8, applicationStart, 01h, HAPP.bss.none
+headerHAPP HAPP.Architectures.i386, 1, 9, applicationStart, 01h, HAPP.bss.none
 
 ;;************************************************************************************
 
