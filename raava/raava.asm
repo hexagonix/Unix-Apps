@@ -2751,7 +2751,7 @@ db 10, "raava: no virtual terminal is free.", 0
 .noMemory:
 db 10, "raava: not enough memory.", 0
 .statusBar:
-db " Raava  [c new] [n next] [x close] [r redraw] [q quit]  Ctrl+A and a letter, hjkl move, HJKL size", 0
+db " Raava  [c new] [n next] [x close] [r redraw] [q quit]. Ctrl+A and a letter", 0
 .title:
 db " [1] sh ", 0
 .closeBox:
