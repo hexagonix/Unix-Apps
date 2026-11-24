@@ -331,9 +331,21 @@ shellStart:
 
     fputs sh.promptSymbol
 
-    mov al, byte[numberColumns] ;; Maximum characters to get
+;; The size is asked for each line, as the terminal may have changed it since,
+;; a window of Raava being sized
 
-    sub al, 20
+    ttyGetSize
+
+    mov byte[numberColumns], al
+    mov byte[numberRows], bl
+
+    sub al, 20 ;; Maximum characters to get
+
+    ja .lineLengthKnown
+
+    mov al, 1
+
+.lineLengthKnown:
 
     mov edi, typedLine
 
