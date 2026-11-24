@@ -95,9 +95,8 @@ include "malloc.s"
 ;;************************************************************************************
 
 ;; Two instances share the work, as the script of BSD did with fork. The first
-;; one starts the shell on the subsidiary and copies the keyboard into the
-;; manager. The second one, started with the relay argument, copies the manager
-;; to the screen and into the file, and ends the session once the shell is gone
+;; starts the shell and copies the keyboard to the manager. The second copies the
+;; manager to the screen and the file, and ends the session with the shell
 
 applicationStart:
 

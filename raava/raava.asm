@@ -96,10 +96,9 @@ include "term.s"
 
 ;;************************************************************************************
 
-;; Raava shows terminals in windows on a VT of its own. Each window is a shell on
-;; a pty, with Raava on the manager, and its terminal kept by term.s. The screen
-;; is composed as a grid of cells from the bottom window up, and only the cells
-;; that changed since the last time are written to the VT
+;; Raava shows terminals in windows on a VT of its own, each a shell on a pty.
+;; The screen is a grid of cells composed from the bottom window up, and only
+;; the cells that changed are written to the VT
 
 Raava.maxWindows = 8
 Raava.savedFD    = 15 ;; The terminal's copy while 0, 1 and 2 are lent to a shell
