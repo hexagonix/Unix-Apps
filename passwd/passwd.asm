@@ -82,11 +82,12 @@ use32
 include "HAPP.s" ;; Here is a structure for the HAPP header
 
 ;; Architecture | Version | Subversion | Entry point | Image type | BSS size
-headerHAPP HAPP.Architectures.i386, 1, 7, applicationStart, 01h
+headerHAPP HAPP.Architectures.i386, 1, 9, applicationStart, 01h
 
 ;;************************************************************************************
 
 include "hexagon.s"
+include "tty.s"
 include "console.s"
 include "macros.s"
 include "string.s"
@@ -166,7 +167,7 @@ applicationStart:
     mov ebx, 1234h ;; We don't want to echo the password!
     mov edi, typedLine
 
-    hx.syscall hx.getString
+    call readLine
 
     mov esi, typedLine
 
@@ -189,7 +190,7 @@ applicationStart:
     mov ebx, 1234h
     mov edi, typedLine
 
-    hx.syscall hx.getString
+    call readLine
 
     mov esi, typedLine
 
@@ -205,7 +206,7 @@ applicationStart:
     mov ebx, 1234h
     mov edi, typedLine
 
-    hx.syscall hx.getString
+    call readLine
 
     mov esi, typedLine
 
@@ -378,5 +379,5 @@ replacementLine:
 times 96 db 0
 passwd.codeString:
 times 12 db 0
-typedLine: ;; hx.getString writes the typed line into a buffer of the caller's own
+typedLine: ;; readLine writes the typed line into a buffer of the caller's own
 times 256 db 0

@@ -73,7 +73,7 @@ use32
 include "HAPP.s" ;; Here is a structure for the HAPP header
 
 ;; Architecture | Version | Subversion | Entry point | Image type | BSS size
-headerHAPP HAPP.Architectures.i386, 1, 00, applicationStart, 01h
+headerHAPP HAPP.Architectures.i386, 1, 9, applicationStart, 01h
 
 ;;************************************************************************************
 
@@ -122,6 +122,8 @@ performCleaning:
 
     jc .error
 
+    push eax ;; The descriptor
+
     mov ebx, 1 ;; Activate console
     mov ecx, 1 ;; Secondary console
 
@@ -129,18 +131,20 @@ performCleaning:
 
     hx.syscall hx.clearConsole ;; Clean content
 
-    mov esi, Hexagon.LibASM.Dev.video.tty ;; Reopen the main console
-
-    xor ecx, ecx
-
-    hx.syscall hx.open ;; Open the device
+    mov eax, dword[esp]
 
     mov ebx, 1 ;; Activate console
     mov ecx, 0 ;; Main console
 
     hx.syscall hx.ioctl
 
-    hx.syscall hx.clearConsole
+    pop eax
+
+    hx.syscall hx.close
+
+;; The terminal itself is cleared by what it is sent, so this also works on a pty
+
+    call Lib.Console.clear
 
     jmp finish
 

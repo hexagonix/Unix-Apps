@@ -82,11 +82,12 @@ use32
 include "HAPP.s" ;; Here is a structure for the HAPP header
 
 ;; Architecture | Version | Subversion | Entry point | Image type | BSS size
-headerHAPP HAPP.Architectures.i386, 1, 7, applicationStart, 01h
+headerHAPP HAPP.Architectures.i386, 1, 9, applicationStart, 01h
 
 ;;************************************************************************************
 
 include "hexagon.s"
+include "tty.s"
 include "console.s"
 include "macros.s"
 include "string.s"
@@ -155,7 +156,7 @@ applicationStart:
 
 .getConfirmationKeys:
 
-    hx.syscall hx.waitKeyboard
+    call readKey
 
     cmp al, 'y'
     je .confirmed
@@ -173,7 +174,7 @@ applicationStart:
 
 .confirmed:
 
-    hx.syscall hx.printCharacter
+    putCharacter
 
     mov esi, [parameters]
     mov edi, 0
@@ -188,7 +189,7 @@ applicationStart:
 
 .cancelled:
 
-    hx.syscall hx.printCharacter
+    putCharacter
 
     fputs deluser.cancel
 

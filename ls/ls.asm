@@ -73,11 +73,12 @@ use32
 include "HAPP.s" ;; Here is a structure for the HAPP header
 
 ;; Architecture | Version | Subversion | Entry point | Image type | BSS size
-headerHAPP HAPP.Architectures.i386, 1, 8, applicationStart, 01h
+headerHAPP HAPP.Architectures.i386, 1, 9, applicationStart, 01h
 
 ;;************************************************************************************
 
 include "hexagon.s"
+include "tty.s"
 include "console.s"
 include "macros.s"
 include "string.s"
@@ -92,40 +93,29 @@ applicationStart:
 
     mov [parameters], edi ;; Save command line parameters for future use
 
-    hx.syscall hx.getColor
+;; As many files per line as columns of ls.fileWidth fit in the terminal, so
+;; a wider one shows more of them
 
-    mov dword[ls.fontColor], eax
-    mov dword[ls.backgroundColor], ebx
+checkSize:
 
-;; The resolution in use will be checked, so the application adapts to the size of 
-;; the output and the amount of information that can be displayed per line. 
-;; This way, it can display a smaller number of files with lower resolution and a 
-;; larger number per line if the resolution allows it
+    ttyGetSize
 
-checkResolution:
+    xor edx, edx
+    mov ecx, ls.fileWidth
 
-    hx.syscall hx.getResolution
+    div ecx
 
     cmp eax, 1
-    je .graphicsMode1
 
-    cmp eax, 2
-    je .graphicsMode2
+    jae .atLeastOne
 
-;; (n+1) files can be displayed, as the counter starts counting from zero.
-;; Use this information for future implementations in the application
+    mov eax, 1
 
-.graphicsMode1:
+.atLeastOne:
 
-    mov dword[displayLimit], 5h ;; 6 files can be displayed per line (n+1)
+    dec eax ;; The counter starts from zero, so n+1 files fit
 
-    jmp checkParameters
-
-.graphicsMode2:
-
-    mov dword[displayLimit], 7h ;; 8 files can be displayed per line (n+1)
-
-    jmp checkParameters
+    mov dword[displayLimit], eax
 
 ;;************************************************************************************
 
@@ -537,9 +527,7 @@ finish:
 
 setFileColor:
 
-    mov ebx, dword[ls.backgroundColor]
-
-    hx.syscall hx.setColor
+    setConsoleForeground eax
 
     ret
 
@@ -547,10 +535,7 @@ setFileColor:
 
 setDefaultColor:
 
-    mov eax, dword[ls.fontColor]
-    mov ebx, dword[ls.backgroundColor]
-
-    hx.syscall hx.setColor
+    resetConsoleColor
 
     ret
 
@@ -577,9 +562,7 @@ putSpace:
 
 .loopSpace:
 
-    mov al, ' '
-
-    hx.syscall hx.printCharacter
+    fputs ls.space
 
     dec ecx
 
@@ -683,6 +666,8 @@ checkFile:
 
 VERSION equ "4.5.0"
 
+ls.fileWidth = 16 ;; Columns each file takes on a line
+
 ls:
 
 .extensionAPP:
@@ -727,10 +712,8 @@ db "-a" ,0
 db 0
 .pendingNewLine:
 db 0
-.fontColor:
-dd 0
-.backgroundColor:
-dd 0
+.space:
+db " ", 0
 .colorAPP: dd 0
 .colorSIS: dd 0
 .colorASM: dd 0

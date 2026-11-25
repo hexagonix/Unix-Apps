@@ -73,11 +73,12 @@ use32
 include "HAPP.s" ;; Here is a structure for the HAPP header
 
 ;; Architecture | Version | Subversion | Entry point | Image type | BSS size
-headerHAPP HAPP.Architectures.i386, 1, 8, shellStart, 01h, HAPP.bss.none
+headerHAPP HAPP.Architectures.i386, 1, 9, shellStart, 01h, HAPP.bss.none
 
 ;;************************************************************************************
 
 include "hexagon.s"
+include "tty.s"
 include "console.s"
 include "macros.s"
 include "string.s"
@@ -132,16 +133,12 @@ shellStart:
 
     putNewLine
 
-    hx.syscall hx.getConsoleInfo
+    ttyGetSize
 
-    mov byte[numberColumns], bl
-    mov byte[numberRows], bh
+    mov byte[numberColumns], al
+    mov byte[numberRows], bl
 
-    hx.syscall hx.getCursor
-
-    dec dh
-
-    hx.syscall hx.setCursor
+    cursorUp
 
     putNewLine
 
@@ -314,9 +311,7 @@ shellStart:
 
     putNewLine
 
-    hx.syscall hx.getCursor
-
-    hx.syscall hx.setCursor
+    drawCursor
 
     fputs sh.userName
 
@@ -336,13 +331,27 @@ shellStart:
 
     fputs sh.promptSymbol
 
-    mov al, byte[numberColumns] ;; Maximum characters to get
+;; The size is asked for each line, as the terminal may have changed it since,
+;; a window of Raava being sized
 
-    sub al, 20
+    ttyGetSize
+
+    mov byte[numberColumns], al
+    mov byte[numberRows], bl
+
+    sub al, 20 ;; Maximum characters to get
+
+    ja .lineLengthKnown
+
+    mov al, 1
+
+.lineLengthKnown:
 
     mov edi, typedLine
 
-    hx.syscall hx.getString
+    call readLine
+
+    jc finishShell ;; The end of the input, as when the terminal is gone
 
     mov esi, typedLine
 
@@ -797,13 +806,13 @@ db "set", 0
 
 ;;**************************
 
-numberColumns: db 0 ;; Total columns available in the video at the current resolution
-numberRows:    db 0 ;; Total rows available in the video at the current resolution
+numberColumns: db 0 ;; Columns of the terminal
+numberRows:    db 0 ;; Rows of the terminal
 commandLine:   dd 0
 
 ;;************************************************************************************
 
-typedLine: ;; hx.getString writes the typed line into a buffer of the caller's own
+typedLine: ;; readLine writes the typed line into a buffer of the caller's own
 times 256 db 0
 
 ;; Where a command's arguments are copied to, out of the typed line, so that

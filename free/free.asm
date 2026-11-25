@@ -73,7 +73,7 @@ use32
 include "HAPP.s" ;; Here is a structure for the HAPP header
 
 ;; Architecture | Version | Subversion | Entry point | Image type | BSS size
-headerHAPP HAPP.Architectures.i386, 1, 00, applicationStart, 01h
+headerHAPP HAPP.Architectures.i386, 1, 9, applicationStart, 01h
 
 ;;************************************************************************************
 
@@ -109,10 +109,6 @@ applicationStart:
 
     fputs free.memory
 
-    hx.syscall hx.getCursor
-
-    mov byte[free.positionY], dh
-
     hx.syscall hx.memoryUsage
 
     mov eax, ecx
@@ -123,13 +119,13 @@ applicationStart:
 
     hx.syscall hx.memoryUsage
 
-    gotoxy 20, [free.positionY]
+    gotoColumn 20
 
     printInteger
 
     fputs free.kbytes
 
-    gotoxy 40, [free.positionY]
+    gotoColumn 40
 
     hx.syscall hx.memoryUsage
 
@@ -187,6 +183,5 @@ db "16", 0
 db "?", 0
 .helpParameter2:
 db "--help", 0
-.positionY: db 0
 
 parameters: dd ?

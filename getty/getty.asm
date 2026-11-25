@@ -80,7 +80,7 @@ use32
 include "HAPP.s" ;; Here is a structure for the HAPP header
 
 ;; Architecture | Version | Subversion | Entry point | Image type | BSS size
-headerHAPP HAPP.Architectures.i386, 1, 8, applicationStart, 01h
+headerHAPP HAPP.Architectures.i386, 1, 9, applicationStart, 01h
 
 ;;************************************************************************************
 
@@ -146,11 +146,17 @@ applicationStart:
 ;; Opening a tty is pure bookkeeping now. Claiming it as this process's own
 ;; VT is a separate, explicit step
 
+    push eax ;; The descriptor
+
     mov ebx, 3 ;; Claim the open tty as the caller's own VT
     
     xor ecx, ecx
 
     hx.syscall hx.ioctl
+
+    pop eax
+
+    hx.syscall hx.close ;; Output now follows the claimed VT through 0, 1 and 2
 
     mov eax, 0 ;; Do not pass arguments
 

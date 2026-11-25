@@ -73,7 +73,7 @@ use32
 include "HAPP.s" ;; Here is a structure for the HAPP header
 
 ;; Architecture | Version | Subversion | Entry point | Image type | BSS size
-headerHAPP HAPP.Architectures.i386, 1, 8, applicationStart, 01h
+headerHAPP HAPP.Architectures.i386, 1, 9, applicationStart, 01h
 
 ;;************************************************************************************
 
@@ -203,7 +203,9 @@ displayProcesses:
 
     mov [currentProcess], edx
 
-    fputs [currentProcess]
+    mov esi, [currentProcess]
+
+    call putTracked
 
     mov esi, [recordsPointer]
     mov al, byte[esi + hx.process.record.state]
@@ -279,15 +281,16 @@ finish:
 
 putSpace:
 
-    hx.syscall hx.getCursor
+    gotoColumn ps.nameColumn
 
-    gotoxy 6, dh
+    mov dword[column], ps.nameColumn
 
     ret
 
 ;;************************************************************************************
 
-;; Pads the cursor to at least the given column. A name long enough to
+;; Pads the line to at least the given column, counting what putTracked
+;; printed, as no terminal is asked where its cursor is. A name long enough to
 ;; already be past it gets a single space instead of an overlap
 ;;
 ;; Input:
@@ -296,22 +299,63 @@ putSpace:
 
 padToColumn:
 
-    push eax
+    movzx eax, al
 
-    hx.syscall hx.getCursor
+    cmp dword[column], eax
 
-    pop eax
-
-    cmp dl, al
     jae .gapOnly
 
-    gotoxy al, dh
+    mov dword[column], eax
+
+    gotoColumn al
 
     ret
 
 .gapOnly:
 
-    fputs ps.gap
+    mov esi, ps.gap
+
+    call putTracked
+
+    ret
+
+;;************************************************************************************
+
+;; Prints ESI and counts the columns it takes
+;;
+;; Input:
+;;
+;; ESI - String
+
+putTracked:
+
+    push eax
+
+    fputs esi
+
+    call stringSize
+
+    add dword[column], eax
+
+    pop eax
+
+    ret
+
+;; Input: EAX - Number to print, counted like putTracked
+
+putNumberTracked:
+
+    push edi
+
+    mov edi, numberBuffer
+
+    call integetToString
+
+    mov esi, numberBuffer
+
+    call putTracked
+
+    pop edi
 
     ret
 
@@ -352,43 +396,57 @@ putStatus:
     cmp al, 6
     je .idle
 
-    fputs ps.stateUnknown
+    mov esi, ps.stateUnknown
+
+    call putTracked
 
     ret
 
 .ready:
 
-    fputs ps.stateReady
+    mov esi, ps.stateReady
+
+    call putTracked
 
     ret
 
 .running:
 
-    fputs ps.stateRunning
+    mov esi, ps.stateRunning
+
+    call putTracked
 
     ret
 
 .blocked:
 
-    fputs ps.stateBlocked
+    mov esi, ps.stateBlocked
+
+    call putTracked
 
     ret
 
 .zombie:
 
-    fputs ps.stateZombie
+    mov esi, ps.stateZombie
+
+    call putTracked
 
     ret
 
 .sleeping:
 
-    fputs ps.stateSleeping
+    mov esi, ps.stateSleeping
+
+    call putTracked
 
     ret
 
 .idle:
 
-    fputs ps.stateIdle
+    mov esi, ps.stateIdle
+
+    call putTracked
 
     ret
 
@@ -417,13 +475,15 @@ putParent:
 
     mov eax, ebx
 
-    printInteger
+    call putNumberTracked
 
     ret
 
 .kernel:
 
-    fputs ps.stateKernel
+    mov esi, ps.stateKernel
+
+    call putTracked
 
     ret
 
@@ -445,11 +505,13 @@ putTTY:
 
     pop eax
 
-    fputs ps.tty
+    mov esi, ps.tty
+
+    call putTracked
 
     movzx eax, al
 
-    printInteger
+    call putNumberTracked
 
     ret
 
@@ -516,6 +578,7 @@ parameterOtherProcesses:
 
 VERSION equ "3.4.0"
 
+ps.nameColumn   = 6
 ps.statusColumn = 30
 ps.parentColumn = 42
 ps.ttyColumn    = 54
@@ -586,6 +649,8 @@ processRecordSize: dd 0 ;; Read from the hx.getProcesses response itself
 recordsPointer: dd ?
 remainingCount: dd 0
 currentProcess: dd ' '
+column:         dd 0 ;; Of the line being printed, as putTracked counts it
+numberBuffer:   times 12 db 0
 parameters:     dd ?
 
 processesBuffer:     dd 0

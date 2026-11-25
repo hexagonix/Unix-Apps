@@ -73,11 +73,12 @@ use32
 include "HAPP.s" ;; Here is a structure for the HAPP header
 
 ;; Architecture | Version | Subversion | Entry point | Image type | BSS size
-headerHAPP HAPP.Architectures.i386, 1, 7, shellStart, 01h, HAPP.bss.none
+headerHAPP HAPP.Architectures.i386, 1, 9, shellStart, 01h, HAPP.bss.none
 
 ;;************************************************************************************
 
 include "hexagon.s"
+include "tty.s"
 include "console.s"
 include "macros.s"
 include "string.s"
@@ -131,16 +132,12 @@ shellStart:
 
     putNewLine
 
-    hx.syscall hx.getConsoleInfo
+    ttyGetSize
 
-    mov byte[numberColumns], bl
-    mov byte[numberRows], bh
+    mov byte[numberColumns], al
+    mov byte[numberRows], bl
 
-    hx.syscall hx.getCursor
-
-    dec dh
-
-    hx.syscall hx.setCursor
+    cursorUp
 
     putNewLine
 
@@ -229,9 +226,7 @@ shellStart:
 
     putNewLine
 
-    hx.syscall hx.getCursor
-
-    hx.syscall hx.setCursor
+    drawCursor
 
     fputs hash.promptSymbol
 
@@ -241,7 +236,9 @@ shellStart:
 
     mov edi, typedLine
 
-    hx.syscall hx.getString
+    call readLine
+
+    jc finishShell ;; The end of the input, as when the terminal is gone
 
     mov esi, typedLine
 
@@ -679,13 +676,13 @@ db "set", 0
 
 ;;**************************
 
-numberColumns: db 0 ;; Total columns available in the video at the current resolution
-numberRows:    db 0 ;; Total rows available in the video at the current resolution
+numberColumns: db 0 ;; Columns of the terminal
+numberRows:    db 0 ;; Rows of the terminal
 commandLine:   dd 0
 
 ;;************************************************************************************
 
-;; hx.getString writes the typed line into a buffer of the caller's own
+;; readLine writes the typed line into a buffer of the caller's own
 
 typedLine:
 times 256 db 0
