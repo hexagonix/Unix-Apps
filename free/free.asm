@@ -82,6 +82,7 @@ include "console.s"
 include "macros.s"
 include "string.s"
 include "memory.s"
+include "sysctl.s"
 
 ;;************************************************************************************
 
@@ -106,6 +107,48 @@ applicationStart:
     jc applicationUsage
 
     putNewLine
+
+;; The pages the kernel counts, as vm.stats in BSD, when it does
+
+    mov ebx, hx.sysctl.getVMStats
+    mov esi, vmStats
+    mov ecx, hx.sysctl.vmStats.size
+
+    hx.syscall hx.sysctl
+
+    jc .totalsOnly
+
+    fputs free.header
+
+    fputs free.memoryLabel
+
+    mov eax, dword[vmStats + hx.sysctl.vmStats.total]
+
+    call putKbytes
+
+    gotoColumn free.wiredColumn
+
+    mov eax, dword[vmStats + hx.sysctl.vmStats.wiredStatic]
+
+    add eax, dword[vmStats + hx.sysctl.vmStats.wiredDynamic]
+
+    call putKbytes
+
+    gotoColumn free.processesColumn
+
+    mov eax, dword[vmStats + hx.sysctl.vmStats.processes]
+
+    call putKbytes
+
+    gotoColumn free.freeColumn
+
+    mov eax, dword[vmStats + hx.sysctl.vmStats.free]
+
+    call putKbytes
+
+    jmp finish
+
+.totalsOnly:
 
     fputs free.memory
 
@@ -155,13 +198,33 @@ finish:
 
 ;;************************************************************************************
 
+;; Input: EAX - Pages, printed as kilobytes
+
+putKbytes:
+
+    mov ecx, dword[vmStats + hx.sysctl.vmStats.pageSize]
+
+    shr ecx, 10
+
+    mul ecx
+
+    printInteger
+
+    ret
+
+;;************************************************************************************
+
 ;;************************************************************************************
 ;;
 ;;                        Application variables and data
 ;;
 ;;************************************************************************************
 
-VERSION equ "1.5.0"
+VERSION equ "1.6.0"
+
+free.wiredColumn     = 24
+free.processesColumn = 36
+free.freeColumn      = 48
 
 free:
 
@@ -171,6 +234,10 @@ db "Display information about system memory usage.", 10, 10
 db "free version ", VERSION, 10, 10
 db "Copyright (C) 2020-", __stringYear, " Felipe Miguel Nery Lunkes", 10
 db "All rights reserved.", 0
+.header:
+db "kB          total       wired       processes   free", 10, 0
+.memoryLabel:
+db "Mem:        ", 0
 .memory:
 db "Installed memory  | Used memory       | Kernel memory", 10, 0
 .kbytes:
@@ -185,3 +252,4 @@ db "?", 0
 db "--help", 0
 
 parameters: dd ?
+vmStats:    times hx.sysctl.vmStats.size db 0
