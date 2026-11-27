@@ -84,6 +84,7 @@ include "string.s"
 include "malloc.s"
 include "memory.s"
 include "process.s"
+include "sysctl.s"
 
 ;;************************************************************************************
 
@@ -162,49 +163,38 @@ displayProcesses:
 
     mov dword[processesBufferSize], 2048 ;; Arbitrary starting guess
 
-.allocateBuffer:
+;; Two readings a second apart, as the share of the processor is what changed
+;; between them
 
-    mov ebx, dword[processesBufferSize]
+    mov edi, cpuBefore
 
-    call malloc
+    call readCPUTime
 
-    cmp eax, 0
-    je processesMallocError
+    call readProcesses
 
-    mov dword[processesBuffer], ebx
-    mov esi, ebx
-    mov ecx, dword[processesBufferSize]
+    jc processesMallocError
 
-    hx.syscall hx.getProcesses ;; EAX = record count, or exact size needed if CF is set
+    call rememberTicks
 
-    jnc .haveProcesses
+    mov ecx, dword[cpuBefore + hx.sysctl.cpuTime.frequency]
 
-;; The buffer was too small. EAX already holds the exact size needed,
-;; reported by the kernel before it wrote anything
+    jecxz .secondReading
 
-    push eax
+    hx.syscall hx.sleep
 
-    mov ebx, dword[processesBuffer]
-    mov ecx, dword[processesBufferSize]
+.secondReading:
 
-    call free
+    mov edi, cpuAfter
 
-    pop eax
+    call readCPUTime
 
-    mov dword[processesBufferSize], eax
+    call readProcesses
 
-    jmp .allocateBuffer
+    jc processesMallocError
 
-.haveProcesses:
+    call putCPULine
 
-    mov dword[remainingCount], eax
-    mov esi, dword[processesBuffer]
-    mov eax, dword[esi] ;; Record size, read from the message itself
-    mov dword[processRecordSize], eax
-
-    add esi, 4 ;; Skip past the record size
-
-    mov [recordsPointer], esi
+    call putMemoryLine
 
     putNewLine
 
@@ -256,6 +246,8 @@ displayProcesses:
     mov ecx, dword[esi + hx.process.record.memory]
 
     call putMemory
+
+    call putCPU
 
     mov eax, dword[processRecordSize]
 
@@ -597,6 +589,379 @@ putMemory:
 
 ;;************************************************************************************
 
+;; Reads the processes into processesBuffer, made larger when the kernel asks
+;; for more, and points recordsPointer and remainingCount at them
+;;
+;; Output: CF set if there was no memory for the buffer
+
+readProcesses:
+
+    cmp dword[processesBuffer], 0
+
+    jne .read
+
+.allocate:
+
+    mov ebx, dword[processesBufferSize]
+
+    call malloc
+
+    cmp eax, 0
+
+    je .failed
+
+    mov dword[processesBuffer], ebx
+
+.read:
+
+    mov esi, dword[processesBuffer]
+    mov ecx, dword[processesBufferSize]
+
+    hx.syscall hx.getProcesses ;; EAX = record count, or exact size needed if CF is set
+
+    jnc .done
+
+;; The buffer was too small. EAX already holds the exact size needed,
+;; reported by the kernel before it wrote anything
+
+    push eax
+
+    mov ebx, dword[processesBuffer]
+    mov ecx, dword[processesBufferSize]
+
+    call free
+
+    pop eax
+
+    mov dword[processesBufferSize], eax
+    mov dword[processesBuffer], 0
+
+    jmp .allocate
+
+.done:
+
+    mov dword[remainingCount], eax
+    mov esi, dword[processesBuffer]
+    mov eax, dword[esi] ;; Record size, read from the message itself
+    mov dword[processRecordSize], eax
+
+    add esi, 4 ;; Skip past the record size
+
+    mov [recordsPointer], esi
+
+    clc
+
+    ret
+
+.failed:
+
+    stc
+
+    ret
+
+;;************************************************************************************
+
+;; Reads function 2 of hx.sysctl, with a frequency of 0 from a kernel that
+;; does not count ticks
+;;
+;; Input: EDI - Where it goes, hx.sysctl.cpuTime.size bytes
+
+readCPUTime:
+
+    push edi
+
+    mov ebx, hx.sysctl.getCPUTime
+    mov esi, edi
+    mov ecx, hx.sysctl.cpuTime.size
+
+    hx.syscall hx.sysctl
+
+    pop edi
+
+    jnc .done
+
+    mov dword[edi + hx.sysctl.cpuTime.frequency], 0
+
+.done:
+
+    ret
+
+;;************************************************************************************
+
+;; Keeps the ticks of each process in the first reading, by PID
+
+rememberTicks:
+
+    mov dword[firstCount], 0
+
+    cmp dword[processRecordSize], hx.process.record.withTicks
+
+    jb .done
+
+    mov esi, [recordsPointer]
+    mov ecx, [remainingCount]
+    mov edi, firstTicks
+
+.next:
+
+    cmp ecx, 0
+
+    je .done
+
+    cmp dword[firstCount], top.maxSamples
+
+    jae .done
+
+    mov eax, dword[esi + hx.process.record.pid]
+    mov dword[edi], eax
+
+    mov eax, dword[esi + hx.process.record.userTicks]
+    add eax, dword[esi + hx.process.record.systemTicks]
+    mov dword[edi + 4], eax
+
+    add edi, 8
+    add esi, dword[processRecordSize]
+
+    inc dword[firstCount]
+
+    dec ecx
+
+    jmp .next
+
+.done:
+
+    ret
+
+;;************************************************************************************
+
+;; The ticks of the processor between the two readings, by what it was doing
+;;
+;; Output: CF set, with totalDelta at 0, if there is nothing to compare
+
+cpuDeltas:
+
+    cmp dword[cpuBefore + hx.sysctl.cpuTime.frequency], 0
+
+    je .none
+
+    cmp dword[cpuAfter + hx.sysctl.cpuTime.frequency], 0
+
+    je .none
+
+    mov eax, dword[cpuAfter + hx.sysctl.cpuTime.user]
+    sub eax, dword[cpuBefore + hx.sysctl.cpuTime.user]
+    mov dword[userDelta], eax
+
+    mov eax, dword[cpuAfter + hx.sysctl.cpuTime.system]
+    sub eax, dword[cpuBefore + hx.sysctl.cpuTime.system]
+    mov dword[systemDelta], eax
+
+    mov eax, dword[cpuAfter + hx.sysctl.cpuTime.idle]
+    sub eax, dword[cpuBefore + hx.sysctl.cpuTime.idle]
+    mov dword[idleDelta], eax
+
+    add eax, dword[userDelta]
+    add eax, dword[systemDelta]
+
+    mov dword[totalDelta], eax
+
+    cmp eax, 0
+
+    je .none
+
+    clc
+
+    ret
+
+.none:
+
+    mov dword[totalDelta], 0
+
+    stc
+
+    ret
+
+;; CPU: N.N% user, N.N% system, N.N% idle, as the line of top in BSD
+
+putCPULine:
+
+    call cpuDeltas
+
+    jc .done
+
+    fputs top.cpuLabel
+
+    mov eax, dword[userDelta]
+
+    call putPercent
+
+    fputs top.cpuUser
+
+    mov eax, dword[systemDelta]
+
+    call putPercent
+
+    fputs top.cpuSystem
+
+    mov eax, dword[idleDelta]
+
+    call putPercent
+
+    fputs top.cpuIdle
+
+    putNewLine
+
+.done:
+
+    ret
+
+;; Mem: N kB wired, N kB processes, N kB free, as the line of top in BSD
+
+putMemoryLine:
+
+    mov ebx, hx.sysctl.getVMStats
+    mov esi, vmStats
+    mov ecx, hx.sysctl.vmStats.size
+
+    hx.syscall hx.sysctl
+
+    jc .done
+
+    fputs top.memoryLabel
+
+    mov eax, dword[vmStats + hx.sysctl.vmStats.wiredStatic]
+
+    add eax, dword[vmStats + hx.sysctl.vmStats.wiredDynamic]
+
+    call putPagesInKbytes
+
+    fputs top.memoryWired
+
+    mov eax, dword[vmStats + hx.sysctl.vmStats.processes]
+
+    call putPagesInKbytes
+
+    fputs top.memoryProcesses
+
+    mov eax, dword[vmStats + hx.sysctl.vmStats.free]
+
+    call putPagesInKbytes
+
+    fputs top.memoryFree
+
+    putNewLine
+
+.done:
+
+    ret
+
+;; Input: EAX - Pages, printed as kilobytes
+
+putPagesInKbytes:
+
+    mov ecx, dword[vmStats + hx.sysctl.vmStats.pageSize]
+
+    shr ecx, 10
+
+    mul ecx
+
+    printInteger
+
+    ret
+
+;; The share of the processor the process at recordsPointer had between the
+;; two readings, lined up under the row above via padToColumn
+
+putCPU:
+
+    cmp dword[totalDelta], 0
+
+    je .done
+
+    cmp dword[processRecordSize], hx.process.record.withTicks
+
+    jb .done
+
+    mov al, top.cpuColumn
+
+    call padToColumn
+
+    mov esi, [recordsPointer]
+    mov eax, dword[esi + hx.process.record.userTicks]
+    add eax, dword[esi + hx.process.record.systemTicks]
+    mov edx, dword[esi + hx.process.record.pid]
+
+;; Less what it had in the first reading, if it was there
+
+    mov edi, firstTicks
+    mov ecx, [firstCount]
+
+.find:
+
+    cmp ecx, 0
+
+    je .known
+
+    cmp dword[edi], edx
+
+    je .found
+
+    add edi, 8
+
+    dec ecx
+
+    jmp .find
+
+.found:
+
+    sub eax, dword[edi + 4]
+
+.known:
+
+    call putPercent
+
+.done:
+
+    ret
+
+;; Prints a part of totalDelta as N.N%, counted like putTracked
+;;
+;; Input: EAX - Ticks of the part
+
+putPercent:
+
+    mov ecx, 1000
+
+    mul ecx
+
+    div dword[totalDelta] ;; Tenths of a percent
+
+    xor edx, edx
+
+    mov ecx, 10
+
+    div ecx
+
+    push edx
+
+    call putNumberTracked
+
+    mov esi, top.point
+
+    call putTracked
+
+    pop eax
+
+    call putNumberTracked
+
+    mov esi, top.percent
+
+    call putTracked
+
+    ret
+
+;;************************************************************************************
+
 ;; Create a banner for memory usage description
 ;;
 ;; Input:
@@ -627,13 +992,15 @@ makeDescriptionBanner:
 
 ;;************************************************************************************
 
-VERSION equ "4.4.0"
+VERSION equ "4.5.0"
 
 top.nameColumn   = 6
 top.statusColumn = 30
 top.parentColumn = 42
 top.ttyColumn    = 54
 top.memoryColumn = 62
+top.cpuColumn    = 72
+top.maxSamples   = 64 ;; Processes kept from the first reading
 
 top:
 
@@ -642,7 +1009,7 @@ db "top version ", VERSION, 10, 0
 .memoryDescription:
 db "Total (MB) | User memory used (bytes) | Kernel memory (bytes) | Total used (bytes, kernel+user)", 0
 .header:
-db "PID   NAME                    STATUS      PARENT      TTY     MEMORY", 0
+db "PID   NAME                    STATUS      PARENT      TTY     MEMORY    CPU", 0
 .use:
 db "Usage: top", 10, 10
 db "Displays processes loaded on the system.", 10, 10
@@ -672,6 +1039,26 @@ db "IDLE", 0
 db "KERNEL", 0
 .tty:
 db "tty", 0
+.cpuLabel:
+db "CPU: ", 0
+.cpuUser:
+db " user, ", 0
+.cpuSystem:
+db " system, ", 0
+.cpuIdle:
+db " idle", 0
+.memoryLabel:
+db "Mem: ", 0
+.memoryWired:
+db " kB wired, ", 0
+.memoryProcesses:
+db " kB processes, ", 0
+.memoryFree:
+db " kB free", 0
+.point:
+db ".", 0
+.percent:
+db "%", 0
 .kbytesSuffix:
 db " kB", 0
 .gap: ;; Fallback when a name already ran past the target column
@@ -691,4 +1078,14 @@ numberBuffer:   times 12 db 0
 parameters:     dd ?
 
 processesBuffer:     dd 0
+
+cpuBefore:   times hx.sysctl.cpuTime.size db 0
+cpuAfter:    times hx.sysctl.cpuTime.size db 0
+userDelta:   dd 0
+systemDelta: dd 0
+idleDelta:   dd 0
+totalDelta:  dd 0
+firstCount:  dd 0
+firstTicks:  times top.maxSamples * 2 dd 0 ;; PID and ticks of each
+vmStats:     times hx.sysctl.vmStats.size db 0
 processesBufferSize: dd ?

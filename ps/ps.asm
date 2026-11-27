@@ -84,6 +84,7 @@ include "string.s"
 include "malloc.s"
 include "memory.s"
 include "process.s"
+include "sysctl.s"
 
 ;;************************************************************************************
 
@@ -135,6 +136,20 @@ applicationStart: ;; Entry point
 displayProcesses:
 
     fputs ps.header
+
+;; Ticks a second, to turn the ticks of each process into time
+
+    mov ebx, hx.sysctl.getCPUTime
+    mov esi, cpuTime
+    mov ecx, hx.sysctl.cpuTime.size
+
+    hx.syscall hx.sysctl
+
+    jnc .haveFrequency
+
+    mov dword[cpuTime + hx.sysctl.cpuTime.frequency], 0 ;; A kernel with no such count
+
+.haveFrequency:
 
     mov dword[processesBufferSize], 2048 ;; Arbitrary starting guess
 
@@ -227,6 +242,8 @@ displayProcesses:
     mov ecx, dword[esi + hx.process.record.memory]
 
     call putMemory
+
+    call putTime
 
     mov eax, dword[processRecordSize]
 
@@ -576,18 +593,107 @@ parameterOtherProcesses:
 
 ;;************************************************************************************
 
-VERSION equ "3.4.0"
+;; Prints the time the process at recordsPointer has had the processor, in its
+;; own code and in the kernel together, as M:SS.hh like the TIME of BSD
+
+putTime:
+
+    cmp dword[cpuTime + hx.sysctl.cpuTime.frequency], 0
+
+    je .done
+
+    cmp dword[processRecordSize], hx.process.record.withTicks
+
+    jb .done
+
+    mov al, ps.timeColumn
+
+    call padToColumn
+
+    mov esi, [recordsPointer]
+    mov eax, dword[esi + hx.process.record.userTicks]
+
+    add eax, dword[esi + hx.process.record.systemTicks]
+
+    xor edx, edx
+
+    div dword[cpuTime + hx.sysctl.cpuTime.frequency] ;; EAX = seconds, EDX = ticks left
+
+    push edx
+
+    xor edx, edx
+
+    mov ecx, 60
+
+    div ecx ;; EAX = minutes, EDX = seconds
+
+    push edx
+
+    call putNumberTracked
+
+    mov esi, ps.timeSeparator
+
+    call putTracked
+
+    pop eax
+
+    call putTwoDigits
+
+    mov esi, ps.fractionSeparator
+
+    call putTracked
+
+    pop eax
+
+    mov ecx, 100
+
+    mul ecx
+
+    div dword[cpuTime + hx.sysctl.cpuTime.frequency] ;; Hundredths of a second
+
+    call putTwoDigits
+
+.done:
+
+    ret
+
+;; Input: EAX - Number below 100, printed with a leading zero below 10
+
+putTwoDigits:
+
+    cmp eax, 10
+
+    jae .print
+
+    push eax
+
+    mov esi, ps.zero
+
+    call putTracked
+
+    pop eax
+
+.print:
+
+    call putNumberTracked
+
+    ret
+
+;;************************************************************************************
+
+VERSION equ "3.5.0"
 
 ps.nameColumn   = 6
 ps.statusColumn = 30
 ps.parentColumn = 42
 ps.ttyColumn    = 54
 ps.memoryColumn = 62
+ps.timeColumn   = 72
 
 ps:
 
 .header:
-db "PID   NAME                    STATUS      PARENT      TTY     MEMORY", 10, 0
+db "PID   NAME                    STATUS      PARENT      TTY     MEMORY    TIME", 10, 0
 .use:
 db "Usage: ps [parameter]", 10, 10
 db "Displays process information and usage of memory and system resources.", 10, 10
@@ -640,6 +746,12 @@ db "UNKNOWN", 0
 db "KERNEL", 0
 .tty:
 db "tty", 0
+.timeSeparator:
+db ":", 0
+.fractionSeparator:
+db ".", 0
+.zero:
+db "0", 0
 .positionY: db 0
 
 ;;************************************************************************************
@@ -654,4 +766,5 @@ numberBuffer:   times 12 db 0
 parameters:     dd ?
 
 processesBuffer:     dd 0
+cpuTime:             times hx.sysctl.cpuTime.size db 0
 processesBufferSize: dd ?
